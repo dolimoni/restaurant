@@ -1,0 +1,16 @@
+.ready{
+    background: #6cc !important;
+    color: white;
+}
+.notReady{
+    background:#483D8B !important;
+    color: white;
+}
+.occupied{
+    background: #F08080 !important;
+    color: white;
+}
+.anomaly{
+    background: #FF8C00 !important;
+    color: white;
+}
