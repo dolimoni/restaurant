@@ -37,7 +37,7 @@ if($room['status']==='2'){
     </td>
     <td>
         <button class="btn btn-success btn-xs action"
-                onclick="window.location.href='<?php echo base_url('' ); ?>'"><span
+                onclick="window.location.href='<?php echo base_url('index.php/room/view/'. $room['id'] ); ?>'"><span
                 class="fa fa-eye"></span></button>
     </td>
 </tr>

@@ -16,5 +16,6 @@ class Booking extends CI_Controller {
         $this->load->view('room/view_list.php', $data);
 	}
 
+
 }
 ?>

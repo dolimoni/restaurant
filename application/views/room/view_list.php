@@ -74,4 +74,25 @@
 
 <?php $this->load->view('partials/admin_footer'); ?>
 
+<!--<script>
+    $('button[name="view"]').on('click',view);
+    function  view() {
+        var myData={'room':$(this).attr('data-id')};
+        $.ajax({
+            type: 'POST',
+            url: "<?php /*echo base_url('index.php/room/view'); */?>",
+            dataType: "json",
+            data: myData,
+            success: function (data) {
+                console.log("success");
+                console.log(data);
+            },
+            error: function (data) {
+                console.log("error");
+                console.log(data);
+            }
+        });
+    }
+</script>-->
+
 

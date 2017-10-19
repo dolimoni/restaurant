@@ -7,13 +7,12 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Ruban d'or</title>
+    <title>Gestion Hôtel</title>
 
 
     <!-- Bootstrap -->
     <link href="<?php echo base_url("assets/vendors/bootstrap/dist/css/bootstrap.min.css"); ?>" rel="stylesheet">
 	<!--date picker -->
-	<link href="<?php echo base_url("assets/datepicker3.css"); ?>" rel="stylesheet">
     <!-- Font Awesome -->
     <link href="<?php echo base_url("assets/vendors/font-awesome/css/font-awesome.min.css"); ?>" rel="stylesheet">
     <!-- NProgress -->
@@ -26,9 +25,7 @@
 
     <!-- Custom Theme Style -->
     <link href="<?php echo base_url("assets/build/css/custom.min.css"); ?>" rel="stylesheet">
-    <link href="<?php echo base_url("assets/build2/css/custom.min.css"); ?>" rel="stylesheet">
 
-    <link href="<?php echo base_url("assets/css/main.css"); ?>" rel="stylesheet">
   </head>
 
   <body class="nav-md">
@@ -37,7 +34,7 @@
         <div class="col-md-3 left_col">
           <div class="left_col scroll-view">
             <div class="navbar nav_title" style="border: 0;">
-             <a href="<?= base_url('admin/dashboard'); ?>" class="site_title"><i class="fa fa-paw"></i> <span>Restaurant</span></a>
+             <a href="<?= base_url('admin/dashboard'); ?>" class="site_title"><i class="fa fa-paw"></i> <span>Hôtle</span></a>
             </div>
 
             <div class="clearfix"></div>

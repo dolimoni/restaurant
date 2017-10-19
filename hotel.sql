@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.6.5.2
--- https://www.phpmyadmin.net/
+-- version 4.1.14
+-- http://www.phpmyadmin.net
 --
 -- Client :  127.0.0.1
--- Généré le :  Mar 17 Octobre 2017 à 00:30
--- Version du serveur :  10.1.21-MariaDB
--- Version de PHP :  5.6.30
+-- Généré le :  Jeu 19 Octobre 2017 à 02:31
+-- Version du serveur :  5.6.17
+-- Version de PHP :  5.5.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -14,7 +14,7 @@ SET time_zone = "+00:00";
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
+/*!40101 SET NAMES utf8 */;
 
 --
 -- Base de données :  `hotel`
@@ -23,124 +23,104 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Structure de la table `chambres`
+-- Structure de la table `booking`
 --
 
-CREATE TABLE `chambres` (
-  `id_chambre` varchar(11) NOT NULL,
-  `nbr_lits` int(11) NOT NULL,
-  `status` tinyint(1) NOT NULL,
-  `observation` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Contenu de la table `chambres`
---
-
-INSERT INTO `chambres` (`id_chambre`, `nbr_lits`, `status`, `observation`) VALUES
-('chambre_1', 2, 1, ''),
-('chambre_10', 4, 1, ''),
-('chambre_11', 2, 1, ''),
-('chambre_12', 2, 1, ''),
-('chambre_13', 3, 1, ''),
-('chambre_14', 3, 1, ''),
-('chambre_15', 3, 1, ''),
-('chambre_16', 4, 1, ''),
-('chambre_17', 4, 1, ''),
-('chambre_18', 1, 1, ''),
-('chambre_19', 2, 1, ''),
-('chambre_2', 3, 1, ''),
-('chambre_20', 1, 1, ''),
-('chambre_3', 4, 1, ''),
-('chambre_4', 1, 1, ''),
-('chambre_5', 2, 1, ''),
-('chambre_6', 2, 1, ''),
-('chambre_7', 3, 1, ''),
-('chambre_8', 2, 1, ''),
-('chambre_9', 4, 1, '');
-
--- --------------------------------------------------------
-
---
--- Structure de la table `clients`
---
-
-CREATE TABLE `clients` (
-  `id_client` int(11) NOT NULL,
-  `nom` varchar(25) NOT NULL,
-  `prenom` varchar(25) NOT NULL,
-  `tel` varchar(25) NOT NULL,
-  `datenaissance` varchar(10) NOT NULL,
-  `lieunaissance` varchar(25) NOT NULL,
-  `nationalite` varchar(25) NOT NULL,
-  `profession` varchar(25) NOT NULL,
-  `cinsejour` varchar(25) NOT NULL,
-  `num_passeport` varchar(25) NOT NULL,
-  `num_entree_maroc` varchar(25) NOT NULL,
-  `date_entree` varchar(25) NOT NULL,
-  `lieu_provenance` varchar(25) NOT NULL,
-  `destination` varchar(25) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Contenu de la table `clients`
---
-
-INSERT INTO `clients` (`id_client`, `nom`, `prenom`, `tel`, `datenaissance`, `lieunaissance`, `nationalite`, `profession`, `cinsejour`, `num_passeport`, `num_entree_maroc`, `date_entree`, `lieu_provenance`, `destination`) VALUES
-(1, 'abida', 'omar', '0635359166', '09/01/1993', 'casablanca', 'marocain', 'professeur', 'bh222222', '', '', '', '', '');
-
--- --------------------------------------------------------
-
---
--- Structure de la table `reservation`
---
-
-CREATE TABLE `reservation` (
-  `id_reservation` int(11) NOT NULL,
-  `id_client` varchar(255) NOT NULL,
-  `id_chambre` varchar(30) NOT NULL,
+CREATE TABLE IF NOT EXISTS `booking` (
+  `id_reservation` int(11) NOT NULL AUTO_INCREMENT,
+  `client` varchar(255) NOT NULL,
+  `room` int(11) NOT NULL,
   `logement` decimal(50,0) NOT NULL,
   `paiment_de_jour` decimal(50,0) NOT NULL,
   `autre` decimal(50,0) NOT NULL,
-  `reste` decimal(50,0) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `reste` decimal(50,0) NOT NULL,
+  `date` date NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_reservation`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=3 ;
 
 --
--- Index pour les tables exportées
+-- Contenu de la table `booking`
 --
 
---
--- Index pour la table `chambres`
---
-ALTER TABLE `chambres`
-  ADD PRIMARY KEY (`id_chambre`);
+INSERT INTO `booking` (`id_reservation`, `client`, `room`, `logement`, `paiment_de_jour`, `autre`, `reste`, `date`, `created_at`) VALUES
+(1, '3', 6, '250', '250', '2017', '0', '0000-00-00', '2017-10-19 00:28:17'),
+(2, '4', 4, '250', '250', '2017', '0', '0000-00-00', '2017-10-19 00:28:34');
+
+-- --------------------------------------------------------
 
 --
--- Index pour la table `clients`
---
-ALTER TABLE `clients`
-  ADD PRIMARY KEY (`id_client`);
-
---
--- Index pour la table `reservation`
---
-ALTER TABLE `reservation`
-  ADD PRIMARY KEY (`id_reservation`);
-
---
--- AUTO_INCREMENT pour les tables exportées
+-- Structure de la table `client`
 --
 
+CREATE TABLE IF NOT EXISTS `client` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `firstName` varchar(255) NOT NULL,
+  `lastName` varchar(255) NOT NULL,
+  `tel` varchar(25) NOT NULL,
+  `dateofbirth` varchar(50) NOT NULL,
+  `placeofbirth` varchar(25) NOT NULL,
+  `nationality` varchar(25) NOT NULL,
+  `profession` varchar(25) NOT NULL,
+  `cin` varchar(255) NOT NULL,
+  `passeportNumber` varchar(25) NOT NULL,
+  `inMoroccoNumber` varchar(25) NOT NULL,
+  `inMorocco` varchar(25) NOT NULL,
+  `provenance` varchar(25) NOT NULL,
+  `destination` varchar(25) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=5 ;
+
 --
--- AUTO_INCREMENT pour la table `clients`
+-- Contenu de la table `client`
 --
-ALTER TABLE `clients`
-  MODIFY `id_client` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+INSERT INTO `client` (`id`, `firstName`, `lastName`, `tel`, `dateofbirth`, `placeofbirth`, `nationality`, `profession`, `cin`, `passeportNumber`, `inMoroccoNumber`, `inMorocco`, `provenance`, `destination`, `created_at`) VALUES
+(1, 'abida', 'omar', '0635359166', '09/01/1993', 'casablanca', 'marocain', 'professeur', 'bh222222', '', '', '', '', '', '2017-10-17 00:51:53'),
+(2, '', '', '', '', 'aa', '', '', '', '', '', '', '', '', '2017-10-19 00:26:49'),
+(3, '', '', '', '', 'aa', '', '', '', '', '', '', '', '', '2017-10-19 00:28:17'),
+(4, '', '', '', '', '', '', '', '', '', '', '', '', '', '2017-10-19 00:28:34');
+
+-- --------------------------------------------------------
+
 --
--- AUTO_INCREMENT pour la table `reservation`
+-- Structure de la table `room`
 --
-ALTER TABLE `reservation`
-  MODIFY `id_reservation` int(11) NOT NULL AUTO_INCREMENT;
+
+CREATE TABLE IF NOT EXISTS `room` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nbr_lits` int(11) NOT NULL,
+  `status` tinyint(1) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=21 ;
+
+--
+-- Contenu de la table `room`
+--
+
+INSERT INTO `room` (`id`, `nbr_lits`, `status`) VALUES
+(1, 2, 1),
+(2, 4, 1),
+(3, 2, 1),
+(4, 2, 0),
+(5, 3, 1),
+(6, 3, 0),
+(7, 3, 1),
+(8, 4, 1),
+(9, 4, 1),
+(10, 1, 2),
+(11, 2, 1),
+(12, 3, 1),
+(13, 1, 1),
+(14, 4, 3),
+(15, 1, 1),
+(16, 2, 1),
+(17, 2, 1),
+(18, 3, 1),
+(19, 2, 1),
+(20, 4, 1);
+
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

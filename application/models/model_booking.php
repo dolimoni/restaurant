@@ -1,12 +1,12 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class model_room extends CI_Model {
+class model_booking extends CI_Model {
 
 
 
 
     public function getAll(){
-        $result = $this->db->get('room');
+        $result = $this->db->get('booking');
         return $result->result_array();
     }
 
@@ -34,20 +34,24 @@ class model_room extends CI_Model {
 		$this->db->insert('users', $data); 
 	}
 
-	public function add($meal)
+	public function book($book)
 	{
-		$data = array(
-			   'name' => $meal['name'],
-			   'group' => $meal['group'],
-			   'cost' => $meal['cost'],
-			   'sellPrice' => $meal['sellPrice'],
-			   'profit' => $meal['profit'],
-			   'products_count' => 2,
-            );
-		$this->db->insert('meal', $data);
-        $meal_id = $this->db->insert_id();
-        $this->addProductsForMeal($meal_id,$meal['productsList']);
-        return $meal_id;
+        $this->load->model('model_client');
+        $this->load->model('model_room');
+
+        $client = $this->model_client->add($book['client']);
+	    $this->model_room->updateStatus($book['room'],'0'); // status 0 : room indisponible
+
+        $data = array(
+            'client' => $client,
+            'room' => $book['room'],
+            'logement' => 250,
+            'paiment_de_jour' => 250,
+            'autre' => 0,
+            'reste' => 0,
+            'autre' => date("Y-m-d")
+        );
+        $this->db->insert('booking', $data);
 	}
 
 	public function addProductsForMeal($meal_id,$productsList){
@@ -138,18 +142,33 @@ class model_room extends CI_Model {
 	public function get($u_id)
 	{
 		$this->db->where('id', $u_id);
-		$result = $this->db->get('room');
+		$result = $this->db->get('booking');
+		return $result->row_array();
+	}
+	public function getByRoom($u_id)
+	{
+		$this->db->where('room', $u_id);
+		$result = $this->db->get('booking');
 		return $result->row_array();
 	}
 	
-	public function updateStatus($id,$status)
+	public function update($f_name,$l_name,$u_bday,$u_position,$u_type,$u_pass,$u_mobile,$u_gender,$u_address,$u_id)
 	{
 		$data = array(
-			'status' => $status,
+			'first_name' => $f_name,
+			'last_name' => $l_name,
+			'birthday' => $u_bday,
+			'position' => $u_position,
+			'type' => $u_type,
+			'password' => $u_pass,
+			'mobile' => $u_mobile,
+			'gender' => $u_gender,
+			'address' => $u_address
         );
 
-		$this->db->where('id', $id);
-		$this->db->update('room', $data);
+		$this->db->where('id', $u_id);
+		$this->db->where("(su != 1)");
+		$this->db->update('users', $data); 
 	}
 
 
