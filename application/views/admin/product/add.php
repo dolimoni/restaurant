@@ -47,9 +47,8 @@
                                 <div class="form-group">
                                     Fournisseur :
                                     <select class="form-control" name="provider">
-                                        <option name="provider" value="0">Aucun</option>
                                         <?php foreach ($providers as $provide) { ?>
-                                        <option name="provider" value="<?php echo $provide['name']; ?>"><?php echo $provide['name'];?></option>
+                                        <option name="unit" value="<?php echo $provide['name']; ?>"><?php echo $provide['name'];?></option>
                                         <?php } ?>
                                     </select>
                                 </div>
@@ -59,7 +58,7 @@
                                 </div>
 
                                 <div class="form-group">
-                                    Quantité minimum du stock : <input class="form-control" placeholder="Quantité minimum"
+                                    Quantité minimum du stock : <input class="form-control" placeholder="Prix unitaire"
                                                            name="min_quantity" type="text">
                                 </div>
                                 <div class="form-group">
@@ -146,7 +145,17 @@
         var productSize = 1;
         var productsList = [];
         var productsCount=1;
+        /*$(".productSize").click(function () {
+            productSize = $('input[name="productSize"]').val();
+            if (productSize > 1) {
+                $('.right-product').fadeIn("slow");
+            }
+            if (productSize > 2) {
+                $('.row[data-id=2]').fadeIn("slow");
+            }
 
+            // container.append(productContainer[0]);
+        });*/
         $('input[name="buttonSubmit"]').on('click', function () {
 
             for (var i = 1; i <= productsCount; i++) {
@@ -156,11 +165,10 @@
                 var name = row.find('input[name="name"]').val();
                 var quantity = row.find('input[name="quantity"]').val();
                 var unit = row.find('select[name="unit"]').val();
-                var provider = row.find('select[name="provider"]').val();
                 var unit_price = row.find('input[name="unit_price"]').val();
                 var daily_quantity = row.find('input[name="daily_quantity"]').val();
                 var min_quantity = row.find('input[name="min_quantity"]').val();
-                var product1 = {'name': name, 'quantity': quantity, 'unit': unit, 'unit_price': unit_price,'provider': provider, 'min_quantity': min_quantity, 'daily_quantity': daily_quantity,'status':'active'};
+                var product1 = {'name': name, 'quantity': quantity, 'unit': unit, 'unit_price': unit_price,'provider':'', 'min_quantity': min_quantity, 'daily_quantity': daily_quantity,'status':'active'};
                 productsList.push(product1);
             }
             console.log(productsList);

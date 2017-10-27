@@ -9,37 +9,34 @@
 
         <!-- page content -->
         <div class="right_col" role="main">
-             <pre>
-                <?php print_r($report); ?>
-            </pre>
             <!-- top tiles -->
             <div class="row tile_count">
                 <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
                     <span class="count_top"><i class="fa fa-user"></i> Total de vente</span>
-                    <div class="count"><?php echo number_format((float)$report['s_amount'], 2, '.', '') ;?>DH</div>
+                    <div class="count"><?php echo $report['s_amount'];?></div>
                     <span class="count_bottom"><i class="green">4% </i> From last Week</span>
                 </div>
                 <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
                     <span class="count_top"><i class="fa fa-clock-o"></i> Quantitées vendu</span>
-                    <div class="count"><?php echo number_format((float)$report['s_quantity'], 0, '.', '');  ?></div>
+                    <div class="count"><?php echo $report['s_quantity']; ?></div>
                     <span class="count_bottom"><i class="green"><i
                                 class="fa fa-sort-asc"></i>3% </i> From last Week</span>
                 </div>
                 <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
                     <span class="count_top"><i class="fa fa-user"></i>Coût de fabrication</span>
-                    <div class="count green"><?php echo number_format((float)($report['s_amount'] - $report['s_profit']), 2, '.', ''); ?></div>
+                    <div class="count green">2,500</div>
                     <span class="count_bottom"><i class="green"><i
                                 class="fa fa-sort-asc"></i>34% </i> From last Week</span>
                 </div>
                 <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
                     <span class="count_top"><i class="fa fa-user"></i> Profit</span>
-                    <div class="count"><?php echo number_format((float)$report['s_profit'], 2, '.', ''); ?>DH</div>
+                    <div class="count"><?php echo $report['s_profit']; ?></div>
                     <span class="count_bottom"><i class="red"><i
                                 class="fa fa-sort-desc"></i>12% </i> From last Week</span>
                 </div>
                 <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
                     <span class="count_top"><i class="fa fa-user"></i> Nombre de produits</span>
-                    <div class="count"><?php echo count($report['mealConsumptionRate']);?></div>
+                    <div class="count"><?php echo $report['products_count'];?></div>
                     <span class="count_bottom"><i class="green"><i
                                 class="fa fa-sort-asc"></i>34% </i> From last Week</span>
                 </div>
@@ -77,9 +74,8 @@
                             </div>
                         </div>
 
-                        <div class="col-md-12 col-sm-12 col-xs-12">
-                            <div id="chart_plot_01" class="demo-placeholder" hidden></div>
-                            <div id="chartContainer1" style="height: 370px; width: 100%;" hidden></div>
+                        <div class="col-md-9 col-sm-9 col-xs-12">
+                            <div id="chart_plot_01" class="demo-placeholder"></div>
                         </div>
                         <!--<div class="col-md-3 col-sm-3 col-xs-12 bg-white">
                             <div class="x_title">
@@ -140,57 +136,8 @@
             <div class="row">
 
 
-                <div class="col-md-6 col-sm-6 col-xs-12">
+                <div class="col-md-4 col-sm-4 col-xs-12">
                     <div class="x_panel tile fixed_height_320">
-                        <div class="x_title">
-                            <h2>Quantité des produits utitlisés</h2>
-                            <ul class="nav navbar-right panel_toolbox">
-                                <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
-                                </li>
-                                <li class="dropdown">
-                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
-                                       aria-expanded="false"><i class="fa fa-wrench"></i></a>
-                                    <ul class="dropdown-menu" role="menu">
-                                        <li><a href="#">Settings 1</a>
-                                        </li>
-                                        <li><a href="#">Settings 2</a>
-                                        </li>
-                                    </ul>
-                                </li>
-                                <li><a class="close-link"><i class="fa fa-close"></i></a>
-                                </li>
-                            </ul>
-                            <div class="clearfix"></div>
-                        </div>
-                        <div class="x_content">
-                            <h4>Quantité des produits utitlisés</h4>
-                            <?php foreach ($report['mealConsumptionRate'] as $mealConsumptionRate) { ?>
-
-                            <div class="widget_summary">
-                                <div class="w_left w_25">
-                                    <?php echo $mealConsumptionRate['name'];?>
-                                </div>
-                                <div class="w_center w_55">
-                                    <div class="progress">
-                                        <div class="progress-bar bg-green" role="progressbar"
-                                              style="width: <?php echo round($mealConsumptionRate['sum_quantity']/ $report['totalConsumptionQuantity']*100);?>%;">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="w_right w_20">
-                                    <span><?php echo $mealConsumptionRate['sum_quantity']; ?></span>
-                                </div>
-                                <div class="clearfix"></div>
-                            </div>
-
-                            <?php } ?>
-
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-6 col-sm-6 col-xs-12">
-                    <div class="x_panel tile ">
                         <div class="x_title">
                             <h2>Consomation des produits</h2>
                             <ul class="nav navbar-right panel_toolbox">
@@ -212,10 +159,99 @@
                             <div class="clearfix"></div>
                         </div>
                         <div class="x_content">
-                            <div id="chartContainer" style="height:238px; width: 100%;"></div>
+                            <h4>Consomation des produits</h4>
+                            <div class="widget_summary">
+                                <div class="w_left w_25">
+                                    <span>0.1.5.2</span>
+                                </div>
+                                <div class="w_center w_55">
+                                    <div class="progress">
+                                        <div class="progress-bar bg-green" role="progressbar" aria-valuenow="60"
+                                             aria-valuemin="0" aria-valuemax="100" style="width: 66%;">
+                                            <span class="sr-only">60% Complete</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="w_right w_20">
+                                    <span>123k</span>
+                                </div>
+                                <div class="clearfix"></div>
+                            </div>
+
+                            <div class="widget_summary">
+                                <div class="w_left w_25">
+                                    <span>0.1.5.3</span>
+                                </div>
+                                <div class="w_center w_55">
+                                    <div class="progress">
+                                        <div class="progress-bar bg-green" role="progressbar" aria-valuenow="60"
+                                             aria-valuemin="0" aria-valuemax="100" style="width: 45%;">
+                                            <span class="sr-only">60% Complete</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="w_right w_20">
+                                    <span>53k</span>
+                                </div>
+                                <div class="clearfix"></div>
+                            </div>
+                            <div class="widget_summary">
+                                <div class="w_left w_25">
+                                    <span>0.1.5.4</span>
+                                </div>
+                                <div class="w_center w_55">
+                                    <div class="progress">
+                                        <div class="progress-bar bg-green" role="progressbar" aria-valuenow="60"
+                                             aria-valuemin="0" aria-valuemax="100" style="width: 25%;">
+                                            <span class="sr-only">60% Complete</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="w_right w_20">
+                                    <span>23k</span>
+                                </div>
+                                <div class="clearfix"></div>
+                            </div>
+                            <div class="widget_summary">
+                                <div class="w_left w_25">
+                                    <span>0.1.5.5</span>
+                                </div>
+                                <div class="w_center w_55">
+                                    <div class="progress">
+                                        <div class="progress-bar bg-green" role="progressbar" aria-valuenow="60"
+                                             aria-valuemin="0" aria-valuemax="100" style="width: 5%;">
+                                            <span class="sr-only">60% Complete</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="w_right w_20">
+                                    <span>3k</span>
+                                </div>
+                                <div class="clearfix"></div>
+                            </div>
+                            <div class="widget_summary">
+                                <div class="w_left w_25">
+                                    <span>0.1.5.6</span>
+                                </div>
+                                <div class="w_center w_55">
+                                    <div class="progress">
+                                        <div class="progress-bar bg-green" role="progressbar" aria-valuenow="60"
+                                             aria-valuemin="0" aria-valuemax="100" style="width: 2%;">
+                                            <span class="sr-only">60% Complete</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="w_right w_20">
+                                    <span>1k</span>
+                                </div>
+                                <div class="clearfix"></div>
+                            </div>
+
                         </div>
                     </div>
-                </div><!--<div class="col-md-6 col-sm-6 col-xs-12">
+                </div>
+
+                <div class="col-md-4 col-sm-4 col-xs-12">
                     <div class="x_panel tile fixed_height_320 overflow_hidden">
                         <div class="x_title">
                             <h2>Consomation des produits</h2>
@@ -238,8 +274,11 @@
                             <div class="clearfix"></div>
                         </div>
                         <div class="x_content">
-                            <table style="width:100%">
+                            <table class="" style="width:100%">
                                 <tr>
+                                    <th style="width:37%;">
+                                        <p>Top 5</p>
+                                    </th>
                                     <th>
                                         <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7">
                                             <p class="">Device</p>
@@ -251,18 +290,22 @@
                                 </tr>
                                 <tr>
                                     <td>
+                                        <canvas class="canvasDoughnut" height="140" width="140"
+                                                style="margin: 15px 10px 10px 0"></canvas>
+                                    </td>
+                                    <td>
                                         <table class="tile_info">
                                             <tr>
                                                 <td>
                                                     <p><i class="fa fa-square blue"></i>Produit 1 </p>
                                                 </td>
-                                                <td>35%</td>
+                                                <td>30%</td>
                                             </tr>
                                             <tr>
                                                 <td>
                                                     <p><i class="fa fa-square green"></i>Produit 2 </p>
                                                 </td>
-                                                <td>5%</td>
+                                                <td>10%</td>
                                             </tr>
                                             <tr>
                                                 <td>
@@ -288,10 +331,10 @@
                             </table>
                         </div>
                     </div>
-                </div>-->
+                </div>
 
 
-                <!--<div class="col-md-4 col-sm-4 col-xs-12">
+                <div class="col-md-4 col-sm-4 col-xs-12">
                     <div class="x_panel tile fixed_height_320">
                         <div class="x_title">
                             <h2>Quick Settings</h2>
@@ -343,7 +386,7 @@
                             </div>
                         </div>
                     </div>
-                </div>-->
+                </div>
 
             </div>
 
@@ -376,69 +419,23 @@
 <script src="<?php echo base_url('assets/vendors/Flot/jquery.flot.time.js');?>"></script>
 <script src="<?php echo base_url('assets/vendors/Flot/jquery.flot.stack.js');?>"></script>
 <script src="<?php echo base_url('assets/vendors/Flot/jquery.flot.resize.js');?>"></script>
-<script>
-    window.onload = function () {
-
-        <?php
-        $js_array = json_encode($report['mealConsumptionRate']);
-        echo "var mealConsumptionRate = " . $js_array . ";\n";
-        ?>
-
-        var myDataPoints=[];
-          $.each(mealConsumptionRate, function (key, mealConsumptionRateProduct) {
-                var point={
-                    y: mealConsumptionRateProduct['avg_unit_price']* mealConsumptionRateProduct['sum_quantity'],
-                    label: mealConsumptionRateProduct['name']
-                };
-              myDataPoints.push(point);
-            });
-        var chart = new CanvasJS.Chart("chartContainer", {
-            animationEnabled: true,
-            data: [{
-                type: "doughnut",
-                startAngle: 60,
-                //innerRadius: 60,
-                indexLabelFontSize: 17,
-                indexLabel: "{label} - #percent%",
-                toolTipContent: "<b>{label}:</b> {y} (#percent%)",
-                dataPoints: myDataPoints
-            }]
-        });
-        chart.render();
-
-    }
-</script>
-<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
-
-
 <script src="<?php echo base_url('assets/vendors/flot.orderbars/js/jquery.flot.orderBars.js');?>"></script>
 <script src="<?php echo base_url('assets/vendors/flot-spline/js/jquery.flot.spline.min.js');?>"></script>
 <script src="<?php echo base_url('assets/vendors/flot.curvedlines/curvedLines.js');?>"></script>
-
 <script src="<?php echo base_url('assets/vendors/DateJS/build/date.js');?>"></script>
 <script src="<?php echo base_url('assets/vendors/gauge.js/dist/gauge.min.js');?>"></script>
 
 
-
-
 <script>
-    var daysInReport=<?php echo $report['days']; ?>;
     $.ajax({
         url: "<?php echo base_url('admin/meal/apiEvolution'); ?>",
         type: "POST",
         dataType: "json",
-        data: {'id':<?php echo $report['meal'];?>},
+        data: {'id':1},
         success: function (data) {
             if (data.status === true) {
-                if(daysInReport===1){
-                    $("#chart_plot_01").hide();
-                    $("#chartContainer1").fadeIn();
-                    oneDayChart(data.evolution);
-                }else{
-                    $("#chartContainer1").hide();
-                    $("#chart_plot_01").fadeIn();
-                    flot_chart(data.evolution);
-                }
+                console.log(data.evolution);
+                flot_chart(data.evolution);
             }
             else {
                 console.log('Error');
@@ -447,95 +444,6 @@
         error: function (data) {
         }
     });
-
-    function oneDayChart(data){
-        var amount = [];
-        var quantity = [];
-        var profit = [];
-
-        var amountData = {y: parseInt(<?php echo number_format((float)$report['s_amount'], 2, '.', '');?>), label: "<?php echo $report['name'];?>"};
-        var quantityData = {y: parseInt(<?php echo number_format((float)$report['s_amount'], 0, '.', '');?>), label: "<?php echo $report['name'];?>"};
-        var profitData = {y: parseInt(<?php echo number_format((float)$report['s_profit'], 2, '.', '');?>), label: "<?php echo $report['name'];?>"};
-
-        console.log(data[0]['s_amount']);
-        console.log(data[0]['s_quantity']);
-        console.log(data[0]['profit']);
-        if(data){
-             amountData = {
-                 y: parseInt(data[0]['s_amount']),
-                 label: "'"+ data[0]['name']+"'"
-             };
-            quantityData = {
-                 y: parseInt(data[0]['s_quantity']),
-                 label: "'"+ data[0]['name']+"'"
-             };
-            profitData = {
-                 y: parseInt(data[0]['profit']),
-                 label: "'"+ data[0]['name']+"'"
-             };
-
-        }
-        console.log(amountData);
-        amount.push(amountData);
-        quantity.push(quantityData);
-        profit.push(profitData);
-
-        var chart = new CanvasJS.Chart("chartContainer1", {
-            animationEnabled: true,
-            axisY: {
-                title: "Prix en Dh"
-            },
-            legend: {
-                cursor: "pointer",
-                itemclick: toggleDataSeries
-            },
-            toolTip: {
-                shared: true,
-                content: toolTipFormatter
-            },
-            data: [{
-                type: "bar",
-                showInLegend: true,
-                name: "Vente",
-                color: "#34495e",
-                dataPoints: amount
-            },
-                {
-                    type: "bar",
-                    showInLegend: true,
-                    name: "Profit",
-                    color: "#6cc",
-                    dataPoints: profit
-                }]
-        });
-        chart.render();
-
-        function toolTipFormatter(e) {
-            var str = "";
-            var total = 0;
-            var str3;
-            var str2;
-            for (var i = 0; i < e.entries.length; i++) {
-                var str1 = "<span style= \"color:" + e.entries[i].dataSeries.color + "\">" + e.entries[i].dataSeries.name + "</span>: <strong>" + e.entries[i].dataPoint.y + "</strong> <br/>";
-                total = e.entries[i].dataPoint.y + total;
-                str = str.concat(str1);
-            }
-            total = parseFloat(e.entries[0].dataPoint.y - e.entries[1].dataPoint.y);
-            str2 = "<strong>" + e.entries[0].dataPoint.label + "</strong> <br/>";
-            str3 = "<span style = \"color:Tomato\">Coût: </span><strong>" + total + "</strong><br/>";
-            return (str2.concat(str)).concat(str3);
-        }
-
-        function toggleDataSeries(e) {
-            if (typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
-                e.dataSeries.visible = false;
-            }
-            else {
-                e.dataSeries.visible = true;
-            }
-            chart.render();
-        }
-    }
     function flot_chart(data) {
         var chart_plot_01_settings = {
             series: {
@@ -567,8 +475,8 @@
             xaxis: {
                 tickColor: "rgba(51, 51, 51, 0.06)",
                 mode: "time",
-                tickSize: [1, "day"],
-                tickLength: 10,
+                //tickSize: [10, "day"],
+                //tickLength: 10,
                 axisLabel: "Date",
                 axisLabelUseCanvas: true,
                 axisLabelFontSizePixels: 12,
@@ -579,48 +487,21 @@
                 ticks: 8,
                 tickColor: "rgba(51, 51, 51, 0.06)",
             },
-            tooltip: true,
-            legend:{
-               labelFormatter: function labelFormatter(label, series) {
-                   return "<div style='font-size:8pt; text-align:center; padding:2px; color:black;'>" + label + "</div>";
-               }
-            }
+            tooltip: false
         };
 
         var arr_data1=[];
-        var myChart={
-            'label':'Ventes',
-            'data':{},
-        };
-
-        var myChartArray=[];
-
 
         $.each(data, function (key, entry) {
             var d = new Date(entry['ca']);
 
             if (!!d.valueOf()) { // Valid date
                 console.log(d.getMonth());
-                myChartArray.push([gd(d.getFullYear(), d.getMonth()+1, d.getDate()), entry['s_amount']]);
+                arr_data1.push([gd(d.getFullYear(), d.getMonth()+1, d.getDate()), entry['s_amount']/1000]);
             }
         });
-        myChart['data']= myChartArray;
-        arr_data1.push(myChart);
 
-        var DATA = [{
-            "label": "Group-1",
-            "data": [
-                [0.25, 0.25],
-                [0.5, 0.5],
-                [0.875, 0.875],
-                [1, 1]
-            ]
-        }];
-
-        console.log(arr_data1);
-        console.log(DATA);
-
-        $.plot($("#chart_plot_01"), arr_data1, chart_plot_01_settings);
+        $.plot($("#chart_plot_01"), [arr_data1], chart_plot_01_settings);
 
     }
 
@@ -630,7 +511,7 @@
         $('#reportrange1 span').html(start.format('YYYY/MM/DD') + ' - ' + end.format('MMMM D, YYYY'));
         console.log(start.format('YYYY/MM/DD'));
 
-        myData = {'id':<?php echo $report['meal'];?>,'startDate': start.format('YYYY/MM/DD'), 'endDate': end.format('YYYY/MM/DD')};
+        myData = {'id':1,'startDate': start.format('YYYY/MM/DD'), 'endDate': end.format('YYYY/MM/DD')};
         $.ajax({
             url: "<?php echo base_url('admin/meal/apiEvolutionRange'); ?>",
             type: "POST",
@@ -638,15 +519,7 @@
             data: myData,
             success: function (data) {
                 if (data.status === true) {
-                    if (data.evolution.length===1) {
-                        $("#chart_plot_01").hide();
-                        $("#chartContainer1").fadeIn();
-                        oneDayChart(data.evolution);
-                    } else {
-                        $("#chartContainer1").hide();
-                        $("#chart_plot_01").fadeIn();
-                        flot_chart(data.evolution);
-                    }
+                    flot_chart(data.evolution);
                 }
                 else {
                     console.log('Error');
