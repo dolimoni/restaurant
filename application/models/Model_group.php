@@ -113,10 +113,10 @@ class model_group extends CI_Model {
 	}
 
 
-	public function get($u_id)
+	public function get($group_id)
 	{
-		$this->db->where('id', $u_id);
-		$result = $this->db->get('users');
+		$this->db->where('id', $group_id);
+		$result = $this->db->get('group');
 		return $result->row_array();
 	}
 
@@ -127,30 +127,41 @@ class model_group extends CI_Model {
 		return $result->row_array();
 	}
 	
-	public function update($f_name,$l_name,$u_bday,$u_position,$u_type,$u_pass,$u_mobile,$u_gender,$u_address,$u_id)
+	public function edit($id,$group)
 	{
-		$data = array(
-			'first_name' => $f_name,
-			'last_name' => $l_name,
-			'birthday' => $u_bday,
-			'position' => $u_position,
-			'type' => $u_type,
-			'password' => $u_pass,
-			'mobile' => $u_mobile,
-			'gender' => $u_gender,
-			'address' => $u_address
-        );
-
-		$this->db->where('id', $u_id);
-		$this->db->where("(su != 1)");
-		$this->db->update('users', $data); 
+		$this->db->where('id', $id);
+		$this->db->update('group', $group);
 	}
 
 
-	public function delete($u_id)
+	public function createGroupsIfNotExists($groups)
 	{
-		$this->db->where('id', $u_id);
-		$this->db->where("(su != 1)");
-		$this->db->delete('users'); 
+        foreach ($groups as $group) {
+            $l_group = $this->getByNum($group['num']);
+            if(!$l_group){
+                $data = array(
+                    'num' => $group['num'],
+                    'name' => $group['name'],
+                    'image' => 'restaurant.jpg',
+                );
+
+                $this->db->insert('group', $data);
+            }
+        }
+	}
+
+	public function switchProductsGroup($from,$to)
+	{
+	    $data=array(
+	        'group'=> $to
+        );
+        $this->db->where('group', $from);
+        $this->db->update('meal', $data);
+	}
+
+	public function delete($id)
+	{
+		$this->db->where('id', $id);
+		$this->db->delete('group');
 	}
 }

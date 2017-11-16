@@ -4,7 +4,7 @@
     <div class="productsList">
         <div class="page-title">
             <div class="title_left">
-                <h3>Liste des fourniesseurs</h3>
+                <h3>Liste des fournisseurs</h3>
             </div>
         </div>
         <div class="clearfix"></div>
@@ -83,7 +83,7 @@
             <?php foreach ($providers as $provider) { ?>
             <div class="col-md-4 col-sm-4 col-xs-12 profile_details" data-id="<?php echo $provider['id']; ?>">
                 <div class="well profile_view">
-                    <div class="col-sm-12">
+                    <div class="col-sm-12 showProvider" data-id="<?php echo $provider['id']; ?>">
                         <h4 class="brief"><i> <?php echo $provider['title']; ?> </i></h4>
                         <div class="left col-xs-7">
                             <h2><?php echo $provider['prenom']; ?> <?php echo $provider['name']; ?></h2>
@@ -112,8 +112,8 @@
                             </p>
                         </div>
                         <div class="col-xs-12 col-sm-6 emphasis">
-                            <button type="button" class="btn btn-primary btn-xs">
-                                <i class="fa fa-user"> </i> Regarder profile
+                            <button data-id="<?php echo $provider['id']; ?>" type="button" class="btn btn-danger btn-xs deleteProvider">
+                                <i class="fa fa-trash"> </i> Supprimer
                             </button>
                         </div>
                     </div>
@@ -146,6 +146,7 @@
         $('#addProviderForm').on('submit', function (e) {
             e.preventDefault();
             var formData = new FormData(this);
+            $('#loading').show();
             $.ajax({
                 type: 'POST',
                 url: "<?php echo base_url(); ?>admin/provider/add",
@@ -154,22 +155,105 @@
                 contentType: false,
                 processData: false,
                 success: function (data) {
-                    console.log("success");
-                    console.log(data);
+                    $('#loading').hide();
+                    if (data.status === "success") {
+                        swal({
+                            title: "Success",
+                            text: "Le fournisseur a été bien ajouté",
+                            type: "success",
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+                    } else {
+                        swal({
+                            title: "Erreur",
+                            text: "Une erreur s'est produite",
+                            type: "warning",
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+                    }
                 },
                 error: function (data) {
-                    console.log("error");
-                    console.log(data);
+                    $('#loading').hide();
+                    swal({
+                        title: "Erreur",
+                        text: "Une erreur s'est produite",
+                        type: "warning",
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
                 }
             });
 
         });
 
-        $('.profile_details').on('click',function () {
+        $('.showProvider').on('click',function () {
             var id = $(this).attr('data-id');
-            console.log(id);
             document.location.href= "<?php echo base_url('admin/provider/show/'); ?>"+"/"+id;
         });
     });
 
+</script>
+
+
+<script>
+    $(document).ready(function () {
+        $('button.deleteProvider').on('click', deleteProvider);
+
+
+        function deleteProvider() {
+            var provider_id = $(this).attr('data-id');
+            $(this).closest('tr').hide();
+            swal({
+                    title: "Attention ! ",
+                    text: "Vous voulez vraiment supprimer ce fournisseur ?",
+                    type: "warning",
+                    showConfirmButton: true,
+                    showCancelButton: true,
+                    cancelButtonText: 'Non',
+                    confirmButtonText: 'Oui'
+                },
+                function () {
+                    $.ajax({
+                        url: "<?php echo base_url('admin/provider/apiDeleteProvider'); ?>",
+                        type: "POST",
+                        dataType: "json",
+                        data: {'provider_id': provider_id},
+                        success: function (data) {
+                            if (data.status === 'success') {
+                                swal({
+                                    title: "Success",
+                                    text: "Le fournisseur a été bien supprimé",
+                                    type: "success",
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                });
+                            }
+                            else {
+                                swal({
+                                    title: "Erreur",
+                                    text: "Une erreur s'est produuite",
+                                    type: "error",
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                });
+                            }
+                        },
+                        error: function (data) {
+                            swal({
+                                title: "Erreur",
+                                text: "Une erreur s'est produuite",
+                                type: "error",
+                                timer: 1500,
+                                showConfirmButton: false
+                            });
+                        }
+                    });
+
+                });
+
+
+        }
+    });
 </script>

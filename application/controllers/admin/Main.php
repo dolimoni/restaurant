@@ -16,12 +16,22 @@ class Main extends CI_Controller
 
     }
 
+    /**
+     *
+     */
     public function index()
     {
+
+        $data = $this->readSalesCSV('uploads/XAFUL.CSV');
+
+        $this->load->view('admin/uniwell/index', $data);
+    }
+
+    private function readSalesCSV($file_name){
         $row = 1;
         $index = 0;
-        $rows=array();
-        if (($handle = fopen("uploads/XAFUL.CSV", "r")) !== FALSE) {
+        $rows = array();
+        if (($handle = fopen($file_name, "r")) !== FALSE) {
             while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
                 $num = count($data);
                 //echo "<p> $num fields in line $row: <br /></p>\n";
@@ -29,13 +39,13 @@ class Main extends CI_Controller
                 for ($c = 0; $c < $num; $c++) {
                     $data[$c] . "<br />\n";
                 }
-                if(isset($data[1]) and $data[1]!=="ALL TOTAL" and $row>7){
+                if (isset($data[1]) and $data[1] !== "ALL TOTAL" and $row > 7) {
 
                     //delete 0000 from left
                     $id = ltrim($data[0], '0');
                     $product = $this->model_meal->getByExternalCode($data[0]);
 
-                    if(!isset($product['name'])){
+                    if (!isset($product['name'])) {
                         $product = $this->model_product->nullProduct();
                     }
 
@@ -49,8 +59,34 @@ class Main extends CI_Controller
             }
             fclose($handle);
         }
-        $data['rows']=$rows;
-        $this->load->view('admin/uniwell/index', $data);
+        $data['rows'] = $rows;
+        return $data;
+    }
+    public function apiLoadFile()
+    {
+        try {
+            $file_path = $this->uploadFile();
+            $data['sales'] = $this->readSalesCSV($file_path);
+
+            foreach ($data['sales']['rows'] as $key => $sale) {
+                $meal = $this->model_meal->getByExternalCode($sale['0']);
+                $quantity = $sale[2] / 1000;
+                $priceCSV= $sale['3'] / 100 / $quantity;
+                if($meal['name']=== $sale['1'] and $priceCSV == $meal['sellPrice']){
+                    $data['sales']['rows'][$key]['status']='valid';
+                }else{
+                    $data['sales']['rows'][$key]['status'] = 'Invalid';
+                    //$data['sales']['rows'][$key]['meal'] = $meal;
+                }
+            }
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'success', 'response' => $data)));
+        } catch (Exception $e) {
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'error')));
+        }
     }
 
     public function view()
@@ -160,6 +196,7 @@ class Main extends CI_Controller
             }
         }
         $save_path = base_url() . $file_path;
+        return $file_path;
     }
 
     function apiPrintOrder()

@@ -15,7 +15,7 @@
         </div>
         <div class="collapse" id="collapseExample">
             <?php echo validation_errors(); ?>
-            <form id="addProviderForm" enctype="multipart/form-data">
+            <form id="addEmployeeForm" enctype="multipart/form-data">
                 <fieldset>
                     <div class="row">
                         <div class="col-xs-4">
@@ -83,7 +83,7 @@
                     <br/>
 
                     <div class="text-right">
-                        <input class="btn btn-success" type="submit" name="addProvider" value="Confirmer"/>
+                        <input class="btn btn-success" type="submit" name="addEmployee" value="Confirmer"/>
                     </div>
 
                 </fieldset>
@@ -91,14 +91,14 @@
             <br>
         </div>
         <div class="row">
-            <?php foreach ($providers as $provider) { ?>
-                <div class="col-md-4 col-sm-4 col-xs-12 profile_details" data-id=" <?php echo $provider['id']; ?>">
+            <?php foreach ($employees as $employee) { ?>
+                <div class="col-md-4 col-sm-4 col-xs-12 profile_details" data-id="<?php echo $employee['id']; ?>">
                     <div class="well profile_view">
                         <div class="col-sm-12">
-                            <h4 class="brief"><i> <?php echo $provider['title']; ?> </i></h4>
+                            <h4 class="brief"><i> <?php echo $employee['workType']; ?> </i></h4>
                             <div class="left col-xs-7">
-                                <h2><?php echo $provider['prenom']; ?><?php echo $provider['name']; ?></h2>
-                                <p><?php echo $provider['title']; ?></p>
+                                <h2><?php echo $employee['name']; ?> <?php echo $employee['prenom']; ?></h2>
+                                <p><?php echo $employee['workType']; ?></p>
                             </div>
                             <div class="right col-xs-5 text-center">
                                 <img src="<?php echo base_url(); ?>assets/images/itsMe.jpg" alt=""
@@ -106,9 +106,9 @@
                             </div>
                             <div class="left col-xs-12">
                                 <ul class="list-unstyled">
-                                    <li><i class="fa fa-building"></i> Adresse: <?php echo $provider['address']; ?>
+                                    <li><i class="fa fa-building"></i> Adresse: <?php echo $employee['address']; ?>
                                     </li>
-                                    <li><i class="fa fa-phone"></i> Téléphone #:<?php echo $provider['phone']; ?></li>
+                                    <li><i class="fa fa-phone"></i> Téléphone #:<?php echo $employee['phone']; ?></li>
                                 </ul>
                             </div>
                         </div>
@@ -155,19 +155,24 @@
 <script>
 
     $(document).ready(function () {
-        $('#addProviderForm').on('submit', function (e) {
+        $('#addEmployeeForm').on('submit', function (e) {
             e.preventDefault();
             var formData = new FormData(this);
             $.ajax({
                 type: 'POST',
-                url: "<?php echo base_url(); ?>admin/provider/add",
+                url: "<?php echo base_url('admin/employee/add'); ?>",
                 data: formData,
                 cache: false,
                 contentType: false,
                 processData: false,
                 success: function (data) {
-                    console.log("success");
-                    console.log(data);
+                    swal({
+                        title: "Success",
+                        text: "L'employée a été bien ajouté",
+                        type: "success",
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
                 },
                 error: function (data) {
                     console.log("error");

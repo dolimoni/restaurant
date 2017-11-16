@@ -37,16 +37,15 @@
                                 <div class="form-group">
                                     Unité de mesure :
                                     <select class="form-control" name="unit">
-                                        <option name="unit" value="gr">Gr</option>
                                         <option name="unit" value="kg">Kg</option>
                                         <option name="unit" value="pcs">Pcs</option>
-                                        <option name="unit" value="L">L</option>
-                                        <option name="unit" value="Cl">Cl</option>
+                                        <option name="unit" value="L">Litre</option>
                                     </select>
                                 </div>
                                 <div class="form-group">
                                     Fournisseur :
                                     <select class="form-control" name="provider">
+                                        <option value="0">Aucun</option>
                                         <?php foreach ($providers as $provide) { ?>
                                         <option name="unit" value="<?php echo $provide['name']; ?>"><?php echo $provide['name'];?></option>
                                         <?php } ?>
@@ -58,7 +57,7 @@
                                 </div>
 
                                 <div class="form-group">
-                                    Quantité minimum du stock : <input class="form-control" placeholder="Prix unitaire"
+                                    Quantité minimum du stock : <input class="form-control" placeholder="Quantité minimum du stock"
                                                            name="min_quantity" type="text">
                                 </div>
                                 <div class="form-group">
@@ -101,14 +100,15 @@
                             <div class="form-group">
                                 Unité de mesure :
                                 <select class="form-control" name="unit">
-                                    <option name="unit" value="gr">Gr</option>
                                     <option name="unit" value="kg">Kg</option>
                                     <option name="unit" value="pcs">Pcs</option>
+                                    <option name="unit" value="l">Litre</option>
                                 </select>
                             </div>
                             <div class="form-group">
                                 Fournisseur :
                                 <select class="form-control" name="provider">
+                                    <option value="0">Aucun</option>
                                     <?php foreach ($providers as $provide) { ?>
                                         <option name="unit"
                                                 value="<?php echo $provide['name']; ?>"><?php echo $provide['name']; ?></option>
@@ -119,6 +119,10 @@
                                 Prix unitaire : <input class="form-control" placeholder="Prix unitaire"
                                                        name="unit_price" type="text">
                             </div>
+                            <div class="form-group">
+                                Quantité minimum du stock : <input class="form-control"
+                                                                   placeholder="Quantité minimum du stock"
+                                                                   name="min_quantity" type="text">
                             <div class="form-group">
                                 Consomation par jour : <input class="form-control" placeholder="Quantité" name="daily_quantity"
                                                   type="text">
@@ -168,7 +172,8 @@
                 var unit_price = row.find('input[name="unit_price"]').val();
                 var daily_quantity = row.find('input[name="daily_quantity"]').val();
                 var min_quantity = row.find('input[name="min_quantity"]').val();
-                var product1 = {'name': name, 'quantity': quantity, 'unit': unit, 'unit_price': unit_price,'provider':'', 'min_quantity': min_quantity, 'daily_quantity': daily_quantity,'status':'active'};
+                var provider = $('select[name=provider]').val();
+                var product1 = {'name': name, 'quantity': quantity, 'unit': unit, 'unit_price': unit_price,'provider': provider, 'min_quantity': min_quantity, 'daily_quantity': daily_quantity,'status':'active'};
                 productsList.push(product1);
             }
             console.log(productsList);
@@ -188,6 +193,15 @@
                         });
 
                         window.location.href = data.redirect;
+                    }else {
+                        swal({
+                            title: "Oups !",
+                            text: "Une erreur s'est produite",
+                            type: "error",
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+
                     }
                 },
                 error: function (data) {

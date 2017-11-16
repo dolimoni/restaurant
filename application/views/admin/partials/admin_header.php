@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Ruban d'or</title>
+    <title>Café Fiori</title>
 
 
     <!-- Bootstrap -->
@@ -23,6 +23,7 @@
 
 
     <link href="<?php echo base_url("assets/vendors/bootstrap-daterangepicker/daterangepicker.css"); ?>" rel="stylesheet">
+    <link href="<?php echo base_url("assets/vendors/fullcalendar/dist/fullcalendar.css"); ?>" rel="stylesheet">
 
     <!-- Custom Theme Style -->
     <link href="<?php echo base_url("assets/build/css/custom.min.css"); ?>" rel="stylesheet">
@@ -60,7 +61,7 @@
         <div class="col-md-3 left_col">
           <div class="left_col scroll-view">
             <div class="navbar nav_title" style="border: 0;">
-             <a href="<?= base_url('admin/dashboard'); ?>" class="site_title"><i class="fa fa-paw"></i> <span>Restaurant</span></a>
+             <a href="<?= base_url('admin/dashboard'); ?>" class="site_title"><i class="fa fa-paw"></i> <span>Café Fiori</span></a>
             </div>
 
             <div class="clearfix"></div>
@@ -86,29 +87,37 @@
                 <ul class="nav side-menu">
                   <li><a href="<?= base_url('admin/dashboard/index'); ?>"><i class="fa fa-home"></i> Dashboard </a></li>
                   <?php if($this->session->userdata('type') == "admin" ) : ?>
-                  <li><a><i class="fa fa-edit"></i> Gestion des produits <span class="fa fa-chevron-down"></span></a>
+                  <li><a><i class="fa fa-coffee"></i> Gestion des produits <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
                       <li><a href="<?= base_url('admin/product/add'); ?>">Ajouter des produits</a></li>
                       <li><a href="<?= base_url('admin/product/index'); ?>">Stock des produits</a></li>
                       <li><a href="<?= base_url('admin/product/toOrder'); ?>">Produits à commander</a></li>
                     </ul>
                   </li>
-                  <li><a><i class="fa fa-edit"></i> Gestion de familles <span class="fa fa-chevron-down"></span></a>
+                  <li><a><i class="fa fa-cutlery"></i> Gestion des articles <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
                       <li><a href="<?= base_url('admin/meal/group'); ?>">Mes familles</a></li>
                       <li><a href="<?= base_url('admin/meal/add'); ?>">Ajouter un article</a></li>
                       <li><a href="<?= base_url('admin/meal/index'); ?>">Liste des articles</a></li>
                     </ul>
                   </li>
-                  <li><a><i class="fa fa-edit"></i> Fournisseur <span class="fa fa-chevron-down"></span></a>
+                  <li><a><i class="fa fa-shopping-cart"></i> Fournisseurs <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
                       <li><a href="<?= base_url('admin/provider/index'); ?>">Liste des fournisseurs</a></li>
                     </ul>
                   </li>
                   <li>
-                  <a><i class="fa fa-edit"></i> Gestion du personnel <span class="fa fa-chevron-down"></span></a>
+                  <a>
+                      <i class="fa fa-male"></i>Gestion du personnel <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
                       <li><a href="<?= base_url('admin/employee/add'); ?>">Liste des employés</a></li>
+                    </ul>
+                  </li>
+                  <li>
+                  <a><i class="fa fa-edit"></i> Mes clients <span class="fa fa-chevron-down"></span></a>
+                    <ul class="nav child_menu">
+                      <li><a href="<?= base_url('admin/customer/add'); ?>">Nouveau client</a></li>
+                      <li><a href="<?= base_url('admin/customer'); ?>">Liste des clients</a></li>
                     </ul>
                   </li>
                   <li>
@@ -117,8 +126,16 @@
                       <li><a href="<?= base_url('admin/report/index'); ?>">Rapport des article</a></li>
                     </ul>
                   </li>
+                  <li>
+                      <a><i class="fa fa-dollar"></i> Budget <span class="fa fa-chevron-down"></span></a>
+                    <ul class="nav child_menu">
+                      <li><a href="<?= base_url('admin/budget/regular'); ?>">Dépenses régulières</a></li>
+                      <li><a href="<?= base_url('admin/budget/reparation'); ?>">Mes réparations</a></li>
+                      <li><a href="<?= base_url('admin/budget/purchase'); ?>">Mes achats</a></li>
+                    </ul>
+                  </li>
 
-                  <li><a href="<?= base_url('admin/Main/index'); ?>"><i class="fa fa-refresh"></i> Synchorinisation Uniwell </a></li>
+                  <li><a href="<?= base_url('admin/Main/index'); ?>"><i class="fa fa-refresh"></i> Synchorinisation System </a></li>
                   <li><a href="<?= base_url('admin/Cron/index'); ?>"><i class="fa fa-refresh"></i> Synchronisation des produits </a></li>
 
                    <!-- <li>

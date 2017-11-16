@@ -3,12 +3,20 @@
     <div class="right_col" role="main">
         <div class="">
             <div class="page-title">
+              <!--  <pre>
+                    <?php /*print_r($meals);*/?>
+                </pre>-->
                 <div class="title_left">
-                    <h3>Articles</h3>
+                    <h3>Liste des articles articles</h3>
                 </div>
             </div>
             <div class="clearfix"></div>
             <hr>
+            <div class="row tile_count">
+                <div class="text-center tile_stats_count">
+                    <div class="count"><?php echo $meals[0]['g_name']; ?></div>
+                </div>
+            </div>
             <div class="row">
                 <button type="submit" class="btn btn-success" name="new"
                         onclick="window.location.href='<?php echo base_url('admin/meal/add/'); ?>'">
@@ -30,7 +38,7 @@
                             <div class="clearfix"></div>
                         </div>
                         <div class="x_content">
-                            <table id="datatable-responsive"
+                            <table id="datatable-responsive1"
                                    class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0"
                                    width="100%">
                                 <thead>
@@ -58,20 +66,27 @@
                                 <tbody>
                                 <?php foreach ($meals as $meal) { ?>
                                     <tr>
-                                        <td><?php echo $meal['id']; ?></td>
+                                        <td><?php echo $meal['m_id']; ?></td>
                                         <td><?php echo $meal['meal_name']; ?></td>
                                         <td><?php echo $meal['cost']; ?></td>
                                         <td><?php echo $meal['sellPrice']; ?></td>
                                         <td><?php echo $meal['profit']; ?></td>
                                         <td><?php echo $meal['products_count']; ?></td>
                                         <td>
-                                            <a href=" <?php echo base_url(); ?>admin/meal/edit/<?php echo $meal['id']; ?>"
-                                               class="btn btn-primary btn-xs">Edit</a>
-                                            <div class="btn btn-primary btn-xs open">Compositions</div>
-                                            <a class="btn btn-danger btn-xs">Delete</a>
-                                            <!--<pre>
-                                                <?php /*print_r($meals); */ ?>
-                                           </pre>-->
+                                            <a href=" <?php echo base_url(); ?>admin/meal/edit/<?php echo $meal['m_id']; ?>"
+                                               class="btn btn-primary btn-xs"><i class="fa fa-pencil"></i></a>
+
+                                            <a href=" <?php echo base_url(); ?>admin/meal/view/<?php echo $meal['m_id']; ?>"
+                                               class="btn btn-primary btn-xs"><i class="fa fa-eye"></i></a>
+
+                                            <a href=" <?php echo base_url(); ?>admin/meal/report/<?php echo $meal['m_id']; ?>"
+                                               class="btn btn-success btn-xs"><i class="fa fa-line-chart"></i></a>
+
+                                            <div class="btn btn-primary btn-xs open"><i class="fa fa-plus-square"></i>
+                                            </div>
+
+                                            <a data-id="<?php echo $meal['m_id']; ?>" class="btn btn-danger btn-xs deleteMeal"><i class="fa fa-trash"></i></a>
+
                                         </td>
                                     </tr>
                                     <tr class="productsRow">
@@ -140,6 +155,7 @@
 <script>
     $(document).ready(function () {
         $(".open").click(function () {
+            console.log('herer');
             $(this).closest("tr").next().toggle();
         });
 
@@ -200,5 +216,66 @@
         }();
 
         TableManageButtons.init();
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $('a.deleteMeal').on('click',deleteMeal);
+
+
+        function deleteMeal() {
+            var meal_id = $(this).attr('data-id');
+            $(this).closest('tr').hide();
+            swal({
+                    title: "Attention ! ",
+                    text: "Vous voulez vraiment supprimer cet article ?",
+                    type: "warning",
+                    showConfirmButton: true,
+                    showCancelButton: true,
+                    cancelButtonText: 'Non',
+                    confirmButtonText: 'Oui'
+                },
+                function () {
+                    $.ajax({
+                        url: "<?php echo base_url('admin/meal/apiDeleteMeal'); ?>",
+                        type: "POST",
+                        dataType: "json",
+                        data: {'meal_id': meal_id},
+                        success: function (data) {
+                            if (data.status === 'success') {
+                                swal({
+                                    title: "Success",
+                                    text: "L'article a été bien supprimé",
+                                    type: "success",
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                });
+                            }
+                            else {
+                                swal({
+                                    title: "Erreur",
+                                    text: "Une erreur s'est produuite",
+                                    type: "error",
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                });
+                            }
+                        },
+                        error: function (data) {
+                            swal({
+                                title: "Erreur",
+                                text: "Une erreur s'est produuite",
+                                type: "error",
+                                timer: 1500,
+                                showConfirmButton: false
+                            });
+                        }
+                    });
+
+                });
+
+
+
+        }
     });
 </script>

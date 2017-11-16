@@ -6,7 +6,7 @@ class Cron extends CI_Controller {
 	{
 		parent::__construct();
         $this->load->model('model_cron');
-        $this->model_cron->updateProductsQuantity();
+        //$this->model_cron->updateProductsQuantity();
         // this controller can only be called from the command line
         if (!$this->input->is_cli_request()) show_error('Direct access is not allowed');
 

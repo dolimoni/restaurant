@@ -3,9 +3,28 @@
 class model_product extends CI_Model {
 
 
-	public function addQuantity($quantity)
+	public function addQuantity($quantity_id)
 	{
-		$this->db->insert('quantity', $quantity);
+        $this->db->where("id", $quantity_id);
+		$this->db->get('quantity')->row_array();
+	}
+
+	public function updateActiveQuantity($quantity_id,$data)
+	{
+        $this->db->where("id", $quantity_id);
+		$this->db->update('quantity',$data);
+	}
+
+	public function getQuantity($quantity_id)
+	{
+        $this->db->where("id", $quantity_id);
+		return $this->db->get('quantity')->row_array();
+	}
+	public function getActiveQuantityByProduct($product)
+	{
+        $this->db->where("product",$product );
+        $this->db->where("status", 'active');
+		$this->db->get('quantity');
 	}
 	public function add($product)
 	{
@@ -177,10 +196,14 @@ class model_product extends CI_Model {
 	}
 	public function getToOrderFromProvider($id)
 	{
-        $this->db->where('min_quantity > quantity');
+        $this->db->select('*,q.id as q_id,p.id as id');
+        $this->db->from('product p');
+        $this->db->join('quantity q', 'p.id=q.product');
+        $this->db->where('q.status', 'active');
+        $this->db->where('p.status', 'active');
+        $this->db->where('min_quantity > q.quantity');
         $this->db->where('provider',$id);
-        $this->db->where('status','active');
-		$result = $this->db->get('product');
+		$result = $this->db->get();
 		return $result->result_array();
 	}
 

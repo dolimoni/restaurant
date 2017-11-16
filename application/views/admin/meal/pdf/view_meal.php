@@ -54,27 +54,27 @@
                 <table class="table">
                     <thead class="thead-default">
                     <tr>
-                        <th>Id</th>
+                        <!--<th>Id</th>-->
                         <th>Produit</th>
                         <th>Quantité</th>
-                        <th>Coût</th>
+                       <!-- <th>Coût</th>-->
                     </tr>
                     </thead>
                     <tbody>
                     <?php foreach ($products as $product) { ?>
                     <tr class=".success">
-                        <th scope="row"><?php echo $product['id']; ?></th>
+                       <!-- <th scope="row"><?php /*echo $product['id']; */?></th>-->
                         <td><?php echo $product['name']; ?></td>
-                        <td><?php echo $product['name']; ?></td>
-                        <td><?php echo $product['unit_price']; ?></td>
+                        <td><?php echo $product['mp_quantity']; ?></td>
+                       <!-- <td><?php /*echo $product['unit_price']; */?></td>-->
                     </tr>
                    <?php } ?>
-                    <tr>
+                  <!--  <tr>
                         <td hiddenn></td>
                         <td hidden></td>
                         <td>Total</td>
                         <td>500.22 DH</td>
-                    </tr>
+                    </tr>-->
                     </tbody>
                 </table>
             </div> <!-- /col -->

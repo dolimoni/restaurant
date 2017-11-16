@@ -10,7 +10,6 @@ class Meal extends CI_Controller {
 	    }
 
 		//$this->load->database();
-		$this->load->model('model_employee');
 		$this->load->model('model_product');
 		$this->load->model('model_meal');
 		$this->load->model('model_group');
@@ -166,6 +165,49 @@ class Meal extends CI_Controller {
 
 	}
 
+	public function apiGroupEdit()
+	{
+        try {
+            $name = $this->input->post('groupNameEdit');
+            $id = $this->input->post('id');
+            $image = $_FILES['image']['name'];
+            $group = array('name' => $name);
+            if($image!==""){
+                $group['image']=$image;
+                $this->uploadFile();
+            }
+            $this->model_group->edit($id,$group);
+
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'success')));
+        } catch (Exception $e) {
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'error')));
+        }
+
+	}
+	public function apiDeleteGroup()
+	{
+        try {
+
+            $group_id = $this->input->post('group_id');
+
+            $this->model_group->switchProductsGroup($group_id,1);
+            $this->model_group->delete($group_id);
+
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'success')));
+        } catch (Exception $e) {
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'error')));
+        }
+
+	}
+
 	public function groupMeals()
 	{
 
@@ -203,15 +245,10 @@ class Meal extends CI_Controller {
             }
         }
         $save_path = base_url() . $file_path;
+        return $file_path;
     }
 
 
-	public function delete($cid)
-	{	
-        $this->model_employee->delete($cid);
-        $this->session->set_flashdata('message','Employee Successfully deleted.');
-        redirect(base_url('admin/employee'));
-	}
 
 	public function apiDeleteProductForMeal(){
         $meal_id = $this->input->post('meal_id');
@@ -220,6 +257,20 @@ class Meal extends CI_Controller {
         $this->output
             ->set_content_type("application/json")
             ->set_output(json_encode(array('status' => 'success')));
+    }
+    public function apiDeleteMeal(){
+       try {
+           $meal_id = $this->input->post('meal_id');
+           $this->model_meal->deleteMeal($meal_id);
+           $this->output
+               ->set_content_type("application/json")
+               ->set_output(json_encode(array('status' => 'success')));
+       } catch (Exception $e) {
+
+           $this->output
+               ->set_content_type("application/json")
+               ->set_output(json_encode(array('status' => 'error')));
+       }
     }
 
     public function apiConsumption()
@@ -239,13 +290,47 @@ class Meal extends CI_Controller {
 
     public function loadFile()
     {
-        $data['meals'] = $this->Parse('uploads/a.prg');
-        $this->load->view('admin/meal/load', $data);
+        //$data['meals'] = $this->Parse('uploads/a.prg');
+        $this->load->view('admin/meal/load');
+    }
+    public function apiLoadFile()
+    {
+        try {
+            $file_path = $this->uploadFile();
+            $data['meals'] = $this->Parse($file_path);
+            $data['groups'] = array();
+            $groups= $this->ParseGroup($file_path);
+            $this->model_group->createGroupsIfNotExists($groups);
+            foreach ($groups as $group) {
+                $data['groups'][]=$this->model_group->getByNum($group['num']);
+            }
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'success', 'response' => $data)));
+        } catch (Exception $e) {
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'error', 'response' => $data)));
+        }
     }
     public function loadFileGroup()
     {
         $data['meals'] = $this->ParseGroup('uploads/a.prg');
-        $this->load->view('admin/meal/loadGroup', $data);
+        $this->load->view('admin/meal/loadGroup',$data);
+    }
+    public function apiLoadFileGroup()
+    {
+        try {
+            $file_path = $this->uploadFile();
+            $data['groups'] = $this->ParseGroup($file_path);
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'success', 'response' => $data)));
+        } catch (Exception $e) {
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'error', 'response' => $data)));
+        }
     }
     public function apiFileGroup()
     {
@@ -323,7 +408,7 @@ class Meal extends CI_Controller {
             $num = (array)$grp['num'];
             $group = array('name' => $name[0], 'num' => $num[0]);
             if(strpos($name['0'], 'GROUP') === false)
-                $groups[] = $grp;
+                $groups[] = $group;
         }
         return $groups;
     }

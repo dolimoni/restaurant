@@ -64,9 +64,8 @@
                                     <i class="fa fa-phone provider-phone"> <?php echo $provider['phone']; ?></i>
                                 </li>
 
-                                <li class="m-top-xs provider-mail">
-                                    <i class="fa fa-external-link user-profile-icon"></i>
-                                    <a href="http://www.google.com" target="_blank"><?php echo $provider['mail']; ?></a>
+                                <li >
+                                    <i class="fa fa-external-link user-profile-icon provider-mail"><?php echo $provider['mail']; ?></i>
                                 </li>
                             </ul>
 
@@ -182,7 +181,7 @@
         <!--------------------------------------------Products Tab------------------------------------------------------>
                                     <div role="tabpanel" class="tab-pane fade active in" id="tab_content0"
                                          aria-labelledby="home-tab">
-                                        <table id="datatable-responsive" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+                                        <table id="datatable-responsive1" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
                                             <thead>
                                             <tr>
                                                 <th>#</th>
@@ -263,16 +262,25 @@
                                          aria-labelledby="profile-tab">
 
                                         <!-- start user projects -->
-                                        <table class="data table table-striped no-margin">
+                                        <table id="datatable-responsive5" class="data table table-striped no-margin">
                                             <thead>
                                             <tr>
                                                 <th>#</th>
-                                                <th>Sujet</th>
-                                                <th class="hidden-phone">Date</th>
-                                                <th class="hidden-phone">Status</th>
-                                                <th>Télécharger</th>
+                                                <th>Montant</th>
+                                                <th>Date</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
                                             </tr>
                                             </thead>
+                                            <tfoot>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Montant</th>
+                                                <th>Date</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                            </tfoot>
                                             <tbody>
                                             <?php foreach ($orders as $order) {
                                                 $orderStatus = "En attente";
@@ -381,7 +389,7 @@
 <script>
     $(document).ready(function () {
         var handleDataTableButtons = function () {
-            if ($("#datatable-responsive").length) {
+            if ($("#datatable-responsive1").length) {
                 $("#datatable-responsive").DataTable({
                     aaSorting: [[0, 'desc']],
                     responsive: true,
@@ -389,6 +397,12 @@
             }
             if ($("#datatable-responsive4").length) {
                 $("#datatable-responsive4").DataTable({
+                    aaSorting: [[0, 'desc']],
+                    responsive: true,
+                });
+            }
+            if ($("#datatable-responsive5").length) {
+                $("#datatable-responsive5").DataTable({
                     aaSorting: [[0, 'desc']],
                     responsive: true,
                 });
@@ -424,12 +438,32 @@
                 contentType: false,
                 processData: false,
                 success: function (data) {
-                    console.log("success");
-                    console.log(data);
+                   if(data.status==="success"){
+                       swal({
+                           title: "Success",
+                           text: "Le fournisseur a été bien ajouté",
+                           type: "success",
+                           timer: 1500,
+                           showConfirmButton: false
+                       });
+                   }else{
+                       swal({
+                           title: "Erreur",
+                           text: "Une erreur s'est produite",
+                           type: "warning",
+                           timer: 1500,
+                           showConfirmButton: false
+                       });
+                   }
                 },
                 error: function (data) {
-                    console.log("error");
-                    console.log(data);
+                    swal({
+                        title: "Erreur",
+                        text: "Une erreur s'est produite",
+                        type: "warning",
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
                 }
             });
 
@@ -451,6 +485,11 @@
 
 <script src="<?php echo base_url('assets/vendors/echarts/dist/echarts.min.js'); ?>"></script>
 <script src="<?php echo base_url('assets/vendors/moment/min/moment.min.js'); ?>"></script>
+
+
+
+
+
 <script>
 
     var productsCount=1;
@@ -706,6 +745,7 @@
                     'lastName': $('.provider-lastName').text(),
                     'address': $('.provider-address').text(),
                     'phone': $('.provider-phone').text(),
+                    'mail': $('.provider-mail').text(),
                      'id': $('#provider_id').attr('data-id')
                 },
                 'underTotal': underTotal,
@@ -723,7 +763,7 @@
                     if (data.status === true) {
                         $('#loading').hide();
                         console.log('ok');
-                        window.open("<?=site_url()?>" + data.filepath);
+                        window.open("<?=base_url()?>" + data.filepath);
                     }
                     else {
                         $('#loading').hide();
@@ -768,6 +808,7 @@
                     'lastName': $('.provider-lastName').text(),
                     'address': $('.provider-address').text(),
                     'phone': $('.provider-phone').text(),
+                    'mail': $('.provider-mail').text(),
                      'id': $('#provider_id').attr('data-id')
                 },
                 'underTotal': underTotal,
@@ -838,6 +879,7 @@
                     'lastName': $('.provider-lastName').text(),
                     'address': $('.provider-address').text(),
                     'phone': $('.provider-phone').text(),
+                    'mail': $('.provider-mail').text(),
                      'id': $('#provider_id').attr('data-id')
                 },
                 'underTotal': underTotal,
@@ -846,16 +888,19 @@
                 'other': '-'
             };
 
+
+             $('#loading').show();
             $.ajax({
                 url: "<?php echo base_url(); ?>"+ event.data.url,
                 type: "POST",
                 dataType: "json",
                 data: {'order': order},
                 success: function (data) {
+                    $('#loading').hide();
                     if (data.status === true) {
 
                         console.log('ok');
-                        window.open("<?=site_url()?>" + data.filepath);
+                        window.open("<?=base_url()?>" + data.filepath);
                     }
                     else {
                         console.log('ko');
@@ -863,7 +908,7 @@
 
                 },
                 error: function (data) {
-                    // do something
+                    $('#loading').hide();
                 }
             });
 
@@ -924,10 +969,6 @@
 
     }
 </script>
-
-
-
-
 
 <!--Edit Profile-->
 
@@ -1008,6 +1049,8 @@
     });
 </script>
 
+
+<!--init_echarts-->
 <script>
     $(document).ready(function () {
         function init_echarts() {

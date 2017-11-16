@@ -12,7 +12,7 @@ class model_meal extends CI_Model {
 			   'cost' => $meal['cost'],
 			   'sellPrice' => $meal['sellPrice'],
 			   'profit' => $meal['profit'],
-			   'products_count' => 2,
+			   'products_count' => count($meal['productsList']),
             );
 		$this->db->insert('meal', $data);
         $meal_id = $this->db->insert_id();
@@ -34,6 +34,7 @@ class model_meal extends CI_Model {
 		$this->db->where('id', $meal['id']);
 		$this->db->update('meal', $data);
         $this->addProductsForMeal($meal['id'],$meal['productsList'],'current');
+        $this->updateConsumptionRate($meal['id']);
         return $meal['id'];
 	}
 
@@ -48,7 +49,7 @@ class model_meal extends CI_Model {
 	        if(!$meal){
                 $data = array(
                     'name' => $mealItem['name'],
-                    'group' => $mealItem['group'],
+                    'group' => 1,
                     'externalCode' => $mealItem['code'],
                     'sellPrice' => $mealItem['sellPrice'],
                     'products_count' => 0,
@@ -145,9 +146,12 @@ class model_meal extends CI_Model {
 
 
 	        // donnée du produit
+
             $dataCreate = array(
                 'product' => $product['id'],
                 'quantity' => $product['quantity'],
+                'unit'=> $product['unit'],
+                'unitConvert'=> $product['unitConvert'],
                 'meal' => $meal_id,
                 'status'=>'current'
             );
@@ -195,7 +199,7 @@ class model_meal extends CI_Model {
     }
 
     public function getProducts($id){
-        $this->db->select('*,q.id as q_id,mp.id as id,mp.quantity as mp_quantity');
+        $this->db->select('*,q.id as q_id,mp.id as id,mp.quantity as mp_quantity,mp.unit as mp_unit');
         $this->db->from('meal_product mp');
         $this->db->join('product p', 'mp.product = p.id');
         $this->db->join('quantity q', 'q.product = p.id');
@@ -219,11 +223,12 @@ class model_meal extends CI_Model {
         $response = array();
         $response['status'] = "success";
         $productsErrorList=array();
+        $response['productsList']="";
 
         foreach ($mealList as $meal) {
             $data = array(
                 'meal' => $meal['id'],
-                'amount' => $meal['amount'],
+                'amount' => $meal['amount'] / $meal['quantity'],
                 'quantity' => $meal['quantity'],
             );
 
@@ -245,20 +250,21 @@ class model_meal extends CI_Model {
                 //$m_products['product'] : produit's id
                 //$m_products['quantity'] : the amount of the product in the meal
                 //$meal['quantity'] : quantity of the meal
+                //$m_product['unitConvert']: conversion du Kg vers gr ou mg ..
 
                 // update reduce the amount of a product's stock after consumption the meal
-                if($m_product['totalQuantity']> $m_product['mp_quantity'] * $meal['quantity'] ){
+                if($m_product['totalQuantity']> $m_product['mp_quantity']* $m_product['unitConvert'] * $meal['quantity'] ){
                     if($response['status'] === "success"){
                         $consumption_product=array(
                           'consumption'=> $consumption_id,
                           'meal'=> $meal['id'],
                           'product'=> $m_product['p_id'],
-                          'quantity'=> $m_product['mp_quantity'] * $meal['quantity'],
+                          'quantity'=> $m_product['mp_quantity'] * $m_product['unitConvert'] * $meal['quantity'],
                           'unit_price'=> $m_product['unit_price'],
                         );
                         $this->db->insert('consumption_product', $consumption_product);
-                        $this->model_product->updateQuantity($m_product['product'], $m_product['mp_quantity'] * $meal['quantity']);
-                        $this->model_product->updateLocalQuantity($m_product['product'], $m_product['mp_quantity'] * $meal['quantity']);
+                        $this->model_product->updateQuantity($m_product['product'], $m_product['mp_quantity'] * $m_product['unitConvert'] * $meal['quantity']);
+                        $this->model_product->updateLocalQuantity($m_product['product'], $m_product['mp_quantity'] * $m_product['unitConvert'] * $meal['quantity']);
                     }
                 }else{
                     $response['status']="error";
@@ -282,7 +288,7 @@ class model_meal extends CI_Model {
         $meals = $this->db->get()->result_array();
 		//$products = $this->db->get('meal_product')->result_array();
 
-        $this->db->select('*,mp.quantity as mp_quantity');
+        $this->db->select('*,mp.quantity as mp_quantity,mp.unit as mp_unit');
         $this->db->from('meal_product mp');
         $this->db->join('product p', 'mp.product = p.id');
         $this->db->join('quantity q', 'q.product = p.id');
@@ -313,7 +319,7 @@ class model_meal extends CI_Model {
 
     public function getByGroup($id)
     {
-        $this->db->select('*,meal.name as meal_name, g.name as g_name');
+        $this->db->select('*,meal.name as meal_name, g.name as g_name,g.id as g_id,meal.id as m_id');
         $this->db->from('meal');
         $this->db->join('group g', 'g.id = meal.group');
         $this->db->where('meal.group',$id);
@@ -323,13 +329,15 @@ class model_meal extends CI_Model {
         $this->db->select('*,mp.quantity as mp_quantity');
         $this->db->from('meal_product mp');
         $this->db->join('product p', 'mp.product = p.id');
+        $this->db->join('quantity q', 'q.product = p.id');
         $this->db->where('mp.status', 'current');
+        $this->db->where('q.status', 'active');
 
         $products = $this->db->get()->result_array();
         foreach ($meals as $key => $meal) {
             $meal['productsList'] = array();
             foreach ($products as $product) {
-                if ($meal['id'] === $product['meal']) {
+                if ($meal['m_id'] === $product['meal']) {
                     array_push($meal['productsList'], $product);
                 }
             }
@@ -338,26 +346,6 @@ class model_meal extends CI_Model {
         unset($meal);
         return $meals;
     }
-
-
-    public function update($f_name,$l_name,$u_bday,$u_position,$u_type,$u_pass,$u_mobile,$u_gender,$u_address,$u_id)
-	{
-		$data = array(
-			'first_name' => $f_name,
-			'last_name' => $l_name,
-			'birthday' => $u_bday,
-			'position' => $u_position,
-			'type' => $u_type,
-			'password' => $u_pass,
-			'mobile' => $u_mobile,
-			'gender' => $u_gender,
-			'address' => $u_address
-        );
-
-		$this->db->where('id', $u_id);
-		$this->db->where("(su != 1)");
-		$this->db->update('users', $data); 
-	}
 
 	public function updateProductsCount($meal_id,$n,$direction='up'){
 
@@ -387,7 +375,7 @@ class model_meal extends CI_Model {
 
 	    $cost=0;
 	    foreach ($products as $product){
-            $cost+=$product['mp_quantity']*$product['unit_price'];
+            $cost+=$product['mp_quantity']*$product['unitConvert']*$product['unit_price'];
         }
         $profit= $meal['sellPrice']-$cost;
 
@@ -414,23 +402,22 @@ class model_meal extends CI_Model {
         $cost=$meal['cost'];
 
 	    foreach ($products as $product){
-            $productCostRate=$product['mp_quantity']*$product['unit_price']/$cost;
+            $productCostRate=$product['mp_quantity']*$product['unitConvert']*$product['unit_price']/$cost;
 
             $data = array(
                 'consumptionRate' => $productCostRate
             );
 
             $this->db->where('meal', $meal_id);
-            $this->db->where('product', $product['id']);
+            $this->db->where('product', $product['product']);
             $this->db->update('meal_product', $data);
         }
     }
 
 
-	public function delete($u_id)
+	public function deleteMeal($meal_id)
 	{
-		$this->db->where('id', $u_id);
-		$this->db->where("(su != 1)");
-		$this->db->delete('users'); 
+		$this->db->where('id', $meal_id);
+		$this->db->delete('meal');
 	}
 }

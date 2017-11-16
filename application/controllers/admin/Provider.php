@@ -11,7 +11,6 @@ class Provider extends CI_Controller
         }
 
         //$this->load->database();
-        $this->load->model('model_employee');
         $this->load->model('model_product');
         $this->load->model('model_meal');
         $this->load->model('model_group');
@@ -86,29 +85,40 @@ class Provider extends CI_Controller
     public function add()
     {
 
-        if (!$this->input->post('addProvider')) {
-            $data['message'] = '';
-            $data['providers'] = $this->model_provider->getAll();
-            $this->parser->parse('admin/provider/add', $data);
-        } else {
-            $title = $this->input->post('title');
-            $name = $this->input->post('name');
-            $prenom = $this->input->post('prenom');
-            $address = $this->input->post('address');
-            $phone = $this->input->post('phone');
-            $mail = $this->input->post('mail');
-            if($_FILES['image']['name']){
-                $image = $_FILES['image']['name'];
-            }else{
-                $image="profile-default-male.png";
+        try {
+            if (!$this->input->post('title')) {
+                $data['message'] = '';
+                $data['providers'] = $this->model_provider->getAll();
+                $this->parser->parse('admin/provider/add', $data);
+            } else {
+                $title = $this->input->post('title');
+                $name = $this->input->post('name');
+                $prenom = $this->input->post('prenom');
+                $address = $this->input->post('address');
+                $phone = $this->input->post('phone');
+                $mail = $this->input->post('mail');
+                if ($_FILES['image']['name']) {
+                    $image = $_FILES['image']['name'];
+                } else {
+                    $image = "profile-default-male.png";
+                }
+                $file_name = $this->uploadFile();
+                if ($_FILES['image']['name']) {
+                    $image = $file_name;
+                } else {
+                    $image = "profile-default-male.png";
+                }
+                $provider = array('title' => $title, 'name' => $name, 'prenom' => $prenom, 'address' => $address, 'phone' => $phone, 'mail' => $mail, 'image' => $image);
+                $this->model_provider->add($provider);
+                $this->output
+                    ->set_content_type("application/json")
+                    ->set_output(json_encode(array('status' => 'success')));
+
             }
-            $this->uploadFile();
-            $provider = array('title' => $title, 'name' => $name, 'prenom' => prenom, 'address' => $address, 'phone' => $phone, 'mail' => $mail, 'image' => $image);
-            $this->model_provider->add($provider);
+        } catch (Exception $e) {
             $this->output
                 ->set_content_type("application/json")
-                ->set_output(json_encode(array('status' => true)));
-
+                ->set_output(json_encode(array('status' => 'error')));
         }
 
     }
@@ -184,8 +194,11 @@ class Provider extends CI_Controller
         if ($_FILES['image']['name']) {
             //if no errors...
             if (!$_FILES['image']['error']) {
+                $path = $_FILES['image']['name'];
+                $ext = pathinfo($path, PATHINFO_EXTENSION);
                 //now is the time to modify the future file name and validate the file
-                $new_file_name = strtolower($_FILES['image']['name']); //rename file
+                $new_file_name = strtolower(bin2hex(openssl_random_pseudo_bytes(16))); //rename file
+                $new_file_name .= '.' . $ext;
                 if ($_FILES['image']['size'] > (20024000)) //can't be larger than 20 MB
                 {
                     $valid_file = false;
@@ -205,6 +218,8 @@ class Provider extends CI_Controller
             }
         }
         $save_path = base_url() . $file_path;
+        return $new_file_name;
+
     }
 
     function apiPrintOrder()
@@ -224,10 +239,28 @@ class Provider extends CI_Controller
         $order = $this->input->post('order');
         $this->model_order->add($order);
         $data['order'] = $order;
+        $e_params['file_path'] = base_url('uploads/pdf/itemreport2017_10_31_21_47_56_.pdf');
+        $emailStatus = $this->sendEmail($e_params);
+        $e_params['to']= $order['provider']['mail'];
         $output = $this->createPDF($data);
+        //$output = 'uploads/pdf/itemreport2017_10_31_21_47_56_.pdf';
         $this->output
             ->set_content_type("application/json")
-            ->set_output(json_encode(array('status' => true, 'filepath' => $output)));
+            ->set_output(json_encode(array('status' => true, 'filepath' => $output,'emailStatus'=> $emailStatus)));
+    }
+
+    private function sendEmail($e_params){
+        $this->load->library('email');
+
+        $this->email->from('khalid.essalhi8@gmail.com', 'Your Name');
+        $this->email->to($e_params['to']);
+        $this->email->cc('khalid.essalhi8@gmail.com');
+        $this->email->bcc('khalid.essalhi8@gmail.com');
+        $this->email->attach(base_url('uploads/pdf/itemreport2017_10_31_21_47_56_.pdf'), 'attachment', 'commande.pdf');
+        $this->email->subject('Email Test');
+        $this->email->message('Bonjour<br/> Merci de m\'envoyer la commande ci-joint<br/>Cordialement!');
+
+       return $this->email->send();
     }
 
     function apiEditOrder()
@@ -286,7 +319,7 @@ class Provider extends CI_Controller
     }
 
 
-    public function edit($cid)
+   /* public function edit($cid)
     {
         if (!$this->input->post('buttonSubmit')) {
             $data['message'] = '';
@@ -312,14 +345,8 @@ class Provider extends CI_Controller
                 $this->load->view('view_employee', $data);
             }
         }
-    }
+    }*/
 
-    public function delete($cid)
-    {
-        $this->model_employee->delete($cid);
-        $this->session->set_flashdata('message', 'Employee Successfully deleted.');
-        redirect(base_url('admin/employee'));
-    }
 
     public function apiUpdate()
     {
@@ -330,6 +357,21 @@ class Provider extends CI_Controller
                 ->set_content_type("application/json")
                 ->set_output(json_encode(array('status' => 'success')));
         } catch (Exception $e) {
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'error')));
+        }
+    }
+
+    public function apiDeleteProvider(){
+        try {
+            $provider_id = $this->input->post('provider_id');
+            $this->model_provider->deleteProvider($provider_id);
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'success')));
+        } catch (Exception $e) {
+
             $this->output
                 ->set_content_type("application/json")
                 ->set_output(json_encode(array('status' => 'error')));

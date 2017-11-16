@@ -31,7 +31,7 @@ class model_order extends CI_Model {
         $data = array(
             'provider' => $order['provider']['id'],
             'tva' => $order['tva'],
-            'ttc' => $order['underTotal']* $order['tva'],
+            'ttc' => $order['underTotal']*(1+$order['tva']),
         );
 
         $this->db->insert('order', $data);

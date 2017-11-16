@@ -11,8 +11,7 @@ class Employee extends CI_Controller {
 
 		//$this->load->database();
 		$this->load->model('model_employee');
-        $this->load->model('model_provider');
-                
+
 	}
 	public function index()
 	{	
@@ -24,9 +23,11 @@ class Employee extends CI_Controller {
 	public function add()
     {
 
-        if (!$this->input->post('addProvider')) {
+        //$this->model_employee->automaticSalary();
+
+        if (!$this->input->post('addEmployee')) {
             $data['message'] = '';
-            $data['providers'] = $this->model_provider->getAll();
+            $data['employees'] = $this->model_employee->getAll();
             $this->parser->parse('admin/employee/add', $data);
         } else {
             $name = $this->input->post('name');
@@ -36,7 +37,10 @@ class Employee extends CI_Controller {
             $phone = $this->input->post('phone');
             $salary = $this->input->post('salary');
             $workType = $this->input->post('workType');
-            $image = $_FILES['image']['name'];
+            $image = "profile-default-male.png";
+            if ($_FILES['image']['name']) {
+                $image = $_FILES['image']['name'];
+            }
             $this->uploadFile();
             $worker = array('name' => $name, 'prenom' => $prenom, 'cin' => $cin, 'address' => $address, 'phone' => $phone, 'salary' => $salary, 'workType' => $workType, 'image' => $image);
             $this->model_employee->add($worker);
@@ -82,12 +86,58 @@ class Employee extends CI_Controller {
 		}
 	}
 
-    public
-    function show()
+    public function show()
     {
         $id = $this->uri->segment(4);
-        $data['provider'] = $this->model_employee->get(1)[0];
+        $data['employee'] = $this->model_employee->get($id);
+        $data['events'] = $this->model_employee->getEvents($id);
+        $data['salaries'] = $this->model_employee->getSalaries($id);
         $this->load->view('admin/employee/show', $data);
+    }
+
+    public function apiUpdateEvent()
+    {
+        try {
+            $event = $this->input->post('updateEvent');
+            $this->model_employee->updateEvent($event);
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'success')));
+        } catch (Exception $e) {
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'error')));
+        }
+    }
+
+    public function apiCreateEvent()
+    {
+        try {
+            $event = $this->input->post('createEvent');
+            $this->model_employee->createEvent($event);
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'success')));
+        } catch (Exception $e) {
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'error')));
+        }
+    }
+
+    public function apiDeleteEvent()
+    {
+        try {
+            $event = $this->input->post('deleteEvent');
+            $this->model_employee->deleteEvent($event);
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'success')));
+        } catch (Exception $e) {
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'error')));
+        }
     }
 
 	public function delete($cid)
@@ -96,5 +146,37 @@ class Employee extends CI_Controller {
         $this->session->set_flashdata('message','Employee Successfully deleted.');
         redirect(base_url('admin/employee'));
 	}
+
+    private function uploadFile()
+    {
+        $valid_file = true;
+        $message = '';
+        //if they DID upload a file...
+        if ($_FILES['image']['name']) {
+            //if no errors...
+            if (!$_FILES['image']['error']) {
+                //now is the time to modify the future file name and validate the file
+                $new_file_name = strtolower($_FILES['image']['name']); //rename file
+                if ($_FILES['image']['size'] > (20024000)) //can't be larger than 20 MB
+                {
+                    $valid_file = false;
+                    $message = 'Oops!  Your file\'s size is to large.';
+                }
+
+                //if the file has passed the test
+                if ($valid_file) {
+                    $file_path = 'assets/images/' . $new_file_name;
+                    move_uploaded_file($_FILES['image']['tmp_name'], FCPATH . $file_path);
+                    $message = 'Congratulations!  Your file was accepted.';
+                }
+            } //if there is an error...
+            else {
+                //set that to be the returned message
+                $message = 'Ooops!  Your upload triggered the following error:  ' . $_FILES['image']['error'];
+            }
+        }
+        $save_path = base_url() . $file_path;
+    }
+
 }
 

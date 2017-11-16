@@ -22,7 +22,7 @@
                 <?php /*print_r($articles);*/ ?>
             </pre>
             <div class="title_left">
-                <h3>Produits</h3>
+                <h3>Articles</h3>
             </div>
         </div>
         <div class="clearfix"></div>

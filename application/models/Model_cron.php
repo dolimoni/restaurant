@@ -15,9 +15,14 @@ class model_cron extends CI_Model {
                 'quantity' => $newQuantity,
             );
 
-            $this->db->where('id', $product['id']);
-            $this->db->update('product', $data);
+            /*$this->db->where('p.id', $product['id']);
+            $this->db->update('product p join quantity q on q.product = p.id', $data);*/
+
+            $sql = "UPDATE product p join quantity q on q.product = p.id SET q.quantity= ?  WHERE p.id = ? ";
+            $this->db->query($sql, array($newQuantity, $product['id']));
+
         }
+
     }
 
 	public function add($group)

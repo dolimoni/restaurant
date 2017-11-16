@@ -11,9 +11,23 @@
                     <div class="clearfix"></div>
                 </div>
                 <div class="x_content">
-                    <button type="button" class="btn btn-primary" name="save">
-                        Enregistrer
-                    </button>
+                    <form id="addSalesFileForm" enctype="multipart/form-data">
+                        <fieldset>
+                            <div class="row">
+                                <div class="col-xs-4">
+                                    <br>
+                                    <label for="image">Importer le fichier des ventes :</label>
+                                    <input type="file" class="form-control" name="image" size="20485760">
+                                </div>
+                            </div>
+                            <br/>
+
+                            <div class="text-right">
+                                <input class="btn btn-success" type="submit" name="addSalesFile" value="Confirmer"/>
+                            </div>
+
+                        </fieldset>
+                    </form>
 
                     <div class="text-center mealExists" hidden>Certain articles existent déjà ! Voulez-vous les mettre à jour ? <a data-type="update">Oui</a></div>
 
@@ -29,23 +43,19 @@
                                 Prix
                             </th>
                             <th>
-                                Group
+                                Groupe
                             </th>
                         </tr>
                         <tbody id="tbodyid">
 
-                        <?php foreach ($meals as $meal) { ?>
-                        <tr>
-                            <td data-type="code"><?php echo $meal['code'];?></td>
-                            <td data-type="name"><?php echo $meal['name'];?></td>
-                            <td data-type="price"><?php echo $meal['price'];?></td>
-                            <td data-type="group"><?php echo $meal['group'];?></td>
-                        </tr>
-                        <?php } ?>
                         </tbody>
 
 
                     </table>
+
+                    <button type="button" class="btn btn-primary" name="save">
+                        Enregistrer
+                    </button>
                 </div> <!-- /content -->
             </div><!-- /x-panel -->
         </div> <!-- /col -->
@@ -54,6 +64,80 @@
 <!-- /page content -->
 
 <?php $this->load->view('admin/partials/admin_footer'); ?>
+<script>
+
+    $(document).ready(function () {
+        $('#addSalesFileForm').on('submit', function (e) {
+            e.preventDefault();
+            var formData = new FormData(this);
+            $('#loading').show();
+            $.ajax({
+                type: 'POST',
+                url: "<?php echo base_url('admin/meal/apiLoadFile'); ?>",
+                data: formData,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function (data) {
+                    $('#loading').hide();
+                    console.log(data);
+                    if (data.status == "success") {
+                        swal({
+                            title: "Success",
+                            text: "OK",
+                            type: "success",
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+
+                        $("#tbodyid").empty();
+
+                        $.each(data.response.meals, function (key, meal) {
+                            var row = '<tr>' +
+                                '<td data-type="code">' + meal.code + '</td>' +
+                                '<td data-type="name">' + meal.name + '</td>' +
+                                '<td data-type="price">' + meal.price + '</td>' +
+                                '<td data-type="group">' + findGroup(meal.group)[0]['name'] + '</td>' +
+                                '</tr>';
+                            $("#tbodyid").append(row);
+                        });
+
+                        function findGroup(num) {
+                            return $.grep(data.response.groups, function (item) {
+                                return item.num == num;
+                            });
+                        };
+
+                    } else {
+                        swal({
+                            title: "Une erreur s'est produit",
+                            text: "Veuillez réessayer plus tard",
+                            type: "error",
+                            timer: 1500
+                        });
+                    }
+                },
+                error: function (data) {
+                    $('#loading').hide();
+                    swal({
+                        title: "Une erreur s'est produit",
+                        text: "Veuillez réessayer plus tard",
+                        type: "error",
+                        timer: 1500
+                    });
+                }
+            });
+
+        });
+
+        $('.profile_details').on('click', function () {
+            var id = $(this).attr('data-id');
+            console.log(id);
+            document.location.href = "<?php echo base_url('admin/provider/show/'); ?>" + "/" + id;
+        });
+    });
+
+</script>
 
 <script>
     var paramsSave={
@@ -77,12 +161,14 @@
             var meal={'code':code,'name':name,'sellPrice':price,'group':group};
             mealsList.push(meal);
         });
+        $('#loading').show();
         $.ajax({
             url: event.data.url,
             type: "POST",
             dataType: "json",
             data: {"mealsList": mealsList,"type":event.data.type},
             success: function (data) {
+                $('#loading').hide();
                 if(data.status=="success"){
                     swal({
                         title: "Success",
@@ -128,7 +214,7 @@
                 }
             },
             error: function (data) {
-                // do something
+                $('#loading').hide();
             }
         });
     }

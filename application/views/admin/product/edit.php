@@ -18,6 +18,7 @@
                 <th>Quantité</th>
                 <th>Prix</th>
                 <th>Status</th>
+                <th>Activer</th>
             </tr>
             </thead>
             <tfoot>
@@ -25,14 +26,26 @@
                 <th>Quantité</th>
                 <th>Prix</th>
                 <th>Status</th>
+                <th>Activer</th>
             </tr>
             </tfoot>
             <tbody>
-            <?php foreach ($quantities as $quantity) { ?>
-                <tr>
+            <?php foreach ($quantities as $quantity) {
+                    $validate="";
+                   /* if($quantity['status'] === "active"){
+                        $validate="validate";
+                    }*/
+            ?>
+                <tr class="<?php echo $validate; ?>">
                     <td><?php echo $quantity['quantity']?></td>
                     <td><?php echo $quantity['unit_price']?></td>
                     <td><?php echo $quantity['status']?></td>
+                    <td width="10%">
+                       <?php if($quantity['status']!=="active"){ ?>
+                           <button data-id="<?php echo $quantity['id'] ?>" class="btn btn-default btn-xs action activate"><span
+                                       class="glyphicon glyphicon-ok"></span></button>
+                       <?php } ?>
+                    </td>
                 </tr>
             <?php } ?>
             </tbody>
@@ -64,11 +77,12 @@
                                 <div class="form-group">
                                     Unité de mesure :
                                     <select class="form-control" name="unit">
-                                        <option name="unit" value="gr" <?php if ($product['unit'] === "gr") echo "selected"; ?>>Gr</option>
+                                        <option name="unit" value="gr" <?php if ($product['unit'] === "L") echo "selected"; ?>>L</option>
                                         <option name="unit" value="kg" <?php if ($product['unit'] === "kg") echo "selected"; ?>>Kg</option>
                                         <option name="unit" value="pcs" <?php if ($product['unit'] === "pcs") echo "selected"; ?> >Pcs</option>
                                     </select>
                                 </div>
+
                                 <div class="form-group">
                                     Fournisseur :
                                     <select class="form-control" name="provider">
@@ -169,4 +183,50 @@
     });
 
 
+</script>
+
+
+<script>
+    $(document).ready(function () {
+        $('button.activate').on('click', activateEvent);
+
+        function activateEvent() {
+            var id = $(this).attr('data-id');
+            $.ajax({
+                    url: "<?php echo base_url('admin/product/apiActivateQuantity'); ?>",
+                    type: "POST",
+                    dataType: "json",
+                    data: {'quantity_id':id},
+                    success: function (data) {
+                        if (data.status === 'success') {
+                            swal({
+                                title: "Success",
+                                text: "Success",
+                                type: "success",
+                                timer: 1500,
+                                showConfirmButton: false
+                            });
+                        }
+                        else {
+                            swal({
+                                title: "Erreur",
+                                text: "Erreur",
+                                type: "error",
+                                timer: 1500,
+                                showConfirmButton: false
+                            });
+                        }
+                    },
+                    error: function (data) {
+                        swal({
+                            title: "Erreur",
+                            text: "Erreur",
+                            type: "error",
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+                    }
+               });
+        }
+    });
 </script>

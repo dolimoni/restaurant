@@ -10,7 +10,6 @@ class Product extends CI_Controller {
 	    }
 
 		//$this->load->database();
-		$this->load->model('model_employee');
 		$this->load->model('model_product');
 		$this->load->model('model_provider');
 
@@ -29,17 +28,23 @@ class Product extends CI_Controller {
 
     public function add()
     {
-        if (!$this->input->post('productsList')) {
-            $data['products'] = $this->model_product->getAll();
-            $data['providers'] = $this->model_provider->getAll();
-            $this->load->view('admin/product/add', $data);
-        } else {
-            $productsList = $this->input->post('productsList');
-            $this->model_product->addProducts($productsList);
-            $this->output
-                ->set_content_type("application/json")
-                ->set_output(json_encode(array('status' => 'success', 'redirect' => base_url('admin/product/index'))));
-        }
+       try {
+           if (!$this->input->post('productsList')) {
+               $data['products'] = $this->model_product->getAll();
+               $data['providers'] = $this->model_provider->getAll();
+               $this->load->view('admin/product/add', $data);
+           } else {
+               $productsList = $this->input->post('productsList');
+               $this->model_product->addProducts($productsList);
+               $this->output
+                   ->set_content_type("application/json")
+                   ->set_output(json_encode(array('status' => 'success', 'redirect' => base_url('admin/product/index'))));
+           }
+       } catch (Exception $e) {
+           $this->output
+               ->set_content_type("application/json")
+               ->set_output(json_encode(array('status' => 'error', 'redirect' => base_url('admin/product/index'))));
+       }
     }
 
 
@@ -68,6 +73,45 @@ class Product extends CI_Controller {
                 ->set_output(json_encode(array('status' => 'success')));
         } catch (Exception $e) {
             $this->load->view('admin/product/edit', $data);
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'error')));
+        }
+	}
+
+	public function apiActivateQuantity()
+	{
+        try {
+
+            //id of quantity to be activated
+            $quantity_id = $this->input->post('quantity_id');
+
+            //getting quantity from db
+            $quantity = $this->model_product->getQuantity($quantity_id);
+
+            //searching actual active quantity by product
+            $activeQuantity= $this->model_product->getActiveQuantityByProduct($quantity['product']);
+
+            $data = array(
+                'status'=>'stock'
+            );
+
+
+            // update actual active quantity to be a stock quantity
+            $this->model_product->updateActiveQuantity($activeQuantity['id'],$data);
+
+            $data = array(
+                'status' => 'active'
+            );
+
+            // activate new quantity
+            $this->model_product->updateActiveQuantity($quantity_id,$data);
+
+
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'success')));
+        } catch (Exception $e) {
             $this->output
                 ->set_content_type("application/json")
                 ->set_output(json_encode(array('status' => 'error')));

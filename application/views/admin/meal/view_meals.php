@@ -3,9 +3,9 @@
     <div class="right_col" role="main">
         <div class="">
             <div class="page-title">
-                <pre>
+                <!--<pre>
                     <?php /*print_r($meals);*/ ?>
-                </pre>
+                </pre>-->
                 <div class="title_left">
                     <h3>Articles</h3>
                 </div>
@@ -100,9 +100,17 @@
                                         <td><?php echo $meal['products_count']; ?></td>
                                         <td>
                                             <a href=" <?php echo base_url(); ?>admin/meal/edit/<?php echo $meal['meal_id']; ?>"
-                                               class="btn btn-primary btn-xs">Edit</a>
-                                            <div class="btn btn-primary btn-xs open">Compositions</div>
-                                            <a class="btn btn-danger btn-xs">Delete</a>
+                                               class="btn btn-primary btn-xs"><i class="fa fa-pencil"></i></a>
+
+                                            <a href=" <?php echo base_url(); ?>admin/meal/view/<?php echo $meal['meal_id']; ?>"
+                                               class="btn btn-primary btn-xs"><i class="fa fa-eye"></i></a>
+
+                                            <a href=" <?php echo base_url(); ?>admin/meal/report/<?php echo $meal['meal_id']; ?>"
+                                               class="btn btn-success btn-xs"><i class="fa fa-line-chart"></i></a>
+
+                                            <div class="btn btn-primary btn-xs open"><i class="fa fa-plus-square"></i></div>
+
+                                            <a class="btn btn-danger btn-xs"><i class="fa fa-trash"></i></a>
                                             <!--<pre>
                                                 <?php /*print_r($meals); */ ?>
                                            </pre>-->
@@ -139,8 +147,8 @@
                                                         <td><?php echo $product['id']; ?></td>
                                                         <td><?php echo $product['name']; ?></td>
                                                         <td><?php echo $product['unit_price']; ?></td>
-                                                        <td><?php echo $product['mp_quantity']; ?></td>
-                                                        <td><?php echo $product['mp_quantity'] * $product['unit_price']; ?></td>
+                                                        <td><?php echo $product['mp_quantity'].' '.$product['mp_unit']; ?></td>
+                                                        <td><?php echo $product['mp_quantity'] * $product['unit_price']* $product['unitConvert']; ?></td>
                                                         <td><?php echo $product['consumptionRate'] * 100; ?>%</td>
                                                         <td>
                                                             <a href=" <?php echo base_url(); ?>admin/employee/edit/{id}"

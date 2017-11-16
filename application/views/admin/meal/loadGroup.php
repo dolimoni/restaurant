@@ -7,37 +7,60 @@
         <div class="col-md-12 col-sm-12 col-xs-12">
             <div class="x_panel">
                 <div class="x_title">
-                    <h2>Liste des Articles</h2>
+                    <h2>Importer des familles</h2>
                     <div class="clearfix"></div>
                 </div>
                 <div class="x_content">
-                    <button type="button" class="btn btn-primary" name="save">
-                        Enregistrer
-                    </button>
+                    <form id="addGroupsFileForm" enctype="multipart/form-data">
+                        <fieldset>
+                            <div class="row">
+                                <div class="col-xs-4">
+                                    <br>
+                                    <label for="image">Importer le fichier de programmtion :</label>
+                                    <input type="file" class="form-control" name="image" size="20485760">
+                                </div>
+                            </div>
+                            <br/>
 
-                    <div class="text-center mealExists" hidden>Certain articles existent déjà ! Voulez-vous les mettre à jour ? <a data-type="update">Oui</a></div>
+                            <div class="text-right">
+                                <input class="btn btn-success" type="submit" name="addGroupsFile" value="Confirmer"/>
+                            </div>
 
-                    <table class="table table-striped">
-                        <tr>
-                            <th>
-                                Numéro
-                            </th>
-                            <th>
-                                Nom
-                            </th>
-                        </tr>
-                        <tbody id="tbodyid">
-
-                        <?php foreach ($meals as $meal) { ?>
-                        <tr>
-                            <td data-type="num"><?php echo $meal['num'];?></td>
-                            <td data-type="name"><?php echo $meal['name'];?></td>
-                        </tr>
-                        <?php } ?>
-                        </tbody>
+                        </fieldset>
+                    </form>
+                    <div>
 
 
-                    </table>
+
+                        <div class="text-center mealExists" hidden>Certain articles existent déjà ! Voulez-vous les
+                            mettre à jour ? <a data-type="update">Oui</a></div>
+
+                        <table class="table table-striped">
+                            <tr>
+                                <th>
+                                    Numéro
+                                </th>
+                                <th>
+                                    Nom
+                                </th>
+                            </tr>
+                            <tbody id="tbodyid">
+<!--
+                            <?php /*foreach ($meals as $meal) { */?>
+                                 <tr>
+                            <td data-type="num"></td>
+                            <td data-type="name"><?php /*echo $meal['name']; */?></td>
+                              </tr>
+                            --><?php /*} */?>
+                            </tbody>
+
+
+                        </table>
+
+                        <button type="button" class="btn btn-primary" name="save">
+                            Enregistrer
+                        </button>
+                    </div>
                 </div> <!-- /content -->
             </div><!-- /x-panel -->
         </div> <!-- /col -->
@@ -46,6 +69,67 @@
 <!-- /page content -->
 
 <?php $this->load->view('admin/partials/admin_footer'); ?>
+<script>
+
+    $(document).ready(function () {
+        $('#addGroupsFileForm').on('submit', function (e) {
+            e.preventDefault();
+            var formData = new FormData(this);
+            $.ajax({
+                type: 'POST',
+                url: "<?php echo base_url('admin/meal/apiLoadFileGroup'); ?>",
+                data: formData,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function (data) {
+                    console.log(data);
+                    if (data.status == "success") {
+                        swal({
+                            title: "Success",
+                            text: "OK",
+                            type: "success",
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+
+                          $.each(data.response.groups, function (key, group) {
+                               var row =  '<tr>'+
+                                '<td data-type="num">'+group.num+'</td>'+
+                                '<td data-type="name">'+group.name+'</td>'+
+                                    '</tr>';
+                               $("#tbodyid").append(row);
+                            });
+
+                    }else {
+                        swal({
+                            title: "Une erreur s'est produit",
+                            text: "Veuillez réessayer plus tard",
+                            type: "error",
+                            timer: 1500
+                        });
+                    }
+                },
+                error: function (data) {
+                    swal({
+                        title: "Une erreur s'est produit",
+                        text: "Veuillez réessayer plus tard",
+                        type: "error",
+                        timer: 1500
+                    });
+                }
+            });
+
+        });
+
+        $('.profile_details').on('click', function () {
+            var id = $(this).attr('data-id');
+            console.log(id);
+            document.location.href = "<?php echo base_url('admin/provider/show/'); ?>" + "/" + id;
+        });
+    });
+
+</script>
 
 <script>
     var paramsSave={

@@ -28,7 +28,7 @@ class model_provider extends CI_Model {
 	public function add($provider)
 	{
 		$data = array(
-			   'title' => $provider['name'],
+			   'title' => $provider['title'],
                'name' => $provider['name'],
                'prenom' => $provider['prenom'],
                'address' => $provider['address'],
@@ -43,12 +43,21 @@ class model_provider extends CI_Model {
 	    foreach ($productsList as $product){
             $data = array(
                 'name' => $product['name'],
-                'unit_price' => $product['price'],
                 'provider' => $product['provider'],
                 'quotation' => $quotation['id'],
                 'status' => $product['status']
             );
             $this->db->insert('product', $data);
+
+            $insert_id = $this->db->insert_id();
+
+            $data = array(
+                'product' => $insert_id,
+                'unit_price' => $product['price'],
+                'status' => $product['status']
+            );
+            $this->db->insert('quantity', $data);
+
         }
 
 	}
@@ -132,9 +141,12 @@ class model_provider extends CI_Model {
 
 	public function getProducts($id,$status="active")
 	{
-		$this->db->where('provider', $id);
-		$this->db->where('status', $status);
-		$result = $this->db->get('product');
+        $this->db->select('*,p.id as id, q.id as q_id');
+        $this->db->from('product p');
+        $this->db->join('quantity q','q.product=p.id');
+        $this->db->where('q.status','active');
+		$this->db->where('p.provider', $id);
+		$result = $this->db->get();
 		return $result->result_array();
 	}
 	public function getQuotations($id)
@@ -171,10 +183,12 @@ class model_provider extends CI_Model {
         // od : order details : liste des produits par commande
         $this->db->select('*');
         $this->db->select('sum(od.quantity) as s_od_quantity');
-        $this->db->select('sum(od.quantity)*unit_price as s_od_totalPrice');// somme du montant dépensé sur l'achat d'un produit
+        $this->db->select('sum(od.quantity)*q.unit_price as s_od_totalPrice');// somme du montant dépensé sur l'achat d'un produit
         $this->db->from('orderdetails od');
         $this->db->join('order o', 'o.id=od.order_id');
         $this->db->join('product p', 'p.id= od.product');
+        $this->db->join('quantity q', 'p.id= q.product');
+        $this->db->where('q.status', 'active');
         $this->db->where('o.provider', $id);
         $this->db->where('o.status', "received");
         $this->db->group_by('od.product');
@@ -182,5 +196,11 @@ class model_provider extends CI_Model {
         $s_od_totalPrices = array_column($result, 's_od_totalPrice');
         $result['totalBuy']=array_sum($s_od_totalPrices);// total des achats chez un fournisseur
         return $result;
+    }
+
+    public function deleteProvider($provider_id)
+    {
+        $this->db->where('id', $provider_id);
+        $this->db->delete('provider');
     }
 }

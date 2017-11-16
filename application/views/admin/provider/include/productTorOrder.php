@@ -38,21 +38,22 @@
                     </div>
                 </form>
 
-                <label class="col-sm-2 control-label"
-                       for="inputPassword3">Envoyer par email</label>
-                <div class="col-sm-4">
+              <!--  <label class="col-sm-2 control-label"
+                       for="inputPassword3">Envoyer la commande par email</label>-->
+                <div class="col-sm-12">
                     <button type="button" class="selected"
-                            id="price" placeholder="Oui" style="width: 75px;" data-toggle="collapse"
-                            href="#email" aria-expanded="false" aria-controls="email">Oui</button>
+                            id="price" placeholder="Oui" style="width: 250px;" data-toggle="collapse"
+                            href="#emailProductToOrder" aria-expanded="false" aria-controls="email">Envoyer la commande
+                        par email</button>
 
-                    <button type="text" class="not-selected"
+                 <!--   <button type="text" class="not-selected"
                             id="price" placeholder="Non" style="width: 75px;" data-toggle="collapse"
-                            href="#email" aria-expanded="false" aria-controls="email">Non</button>
+                            href="#emailProductToOrder" aria-expanded="false" aria-controls="email">Non</button>-->
                 </div>
 
 
                 <br/>
-                <div class="col-md-12 col-sm-12 col-xs-12" class="collapse" id="email" hidden>
+                <div class="col-md-12 col-sm-12 col-xs-12" class="collapse" id="emailProductToOrder" hidden>
                     <div class="x_panel">
                         <div class="x_title">
                             <h2>Contenu

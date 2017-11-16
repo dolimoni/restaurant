@@ -42,19 +42,6 @@
         <div class="row mealComposition">
             <?php foreach ($productsComposition as $key => $pc) { ?>
             <div class="col-md-6 col-sm-6 col-xs-6 product" data-id="<?php echo $key+1; ?>" >
-                <div class="x_panel">
-                    <div class="x_title">
-                        <h2>Compositions</h2>
-                        <ul class="nav navbar-right panel_toolbox">
-                            <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
-                            <li><a class="close-link"><i class="fa fa-close"></i></a></li>
-                        </ul>
-                        <div class="clearfix"></div>
-                    </div>
-                    <div class="x_content">
-                        <label><?php echo $message; ?></label>
-                        <form method="post">
-                            <fieldset>
                                 <div class="x_panel">
                                    <div class="x_title">
                                        <h2>Produit</h2>
@@ -64,28 +51,40 @@
                                        </ul>
                                        <div class="clearfix"></div>
                                    </div>
-                                   <div class="x_content oldContent">
-
+                                   <div class="x_content oldContent" style="margin-top:30px;">
+                                       <label></label>
                                        <select name="product" class="productSelect" >
                                            <?php foreach ($products as $product) {
                                            $selected= $product['id'] == $pc['product'] ? 'selected':'';
-
                                            ?>
-                                           <option <?php echo $selected; ?> value="<?php echo $product['id']; ?>" data-price="<?php echo $product['unit_price']; ?>"><?php echo $product['name']; ?></option>
+                                           <option <?php echo $selected; ?> data-unit="<?php echo $product['unit']; ?>" value="<?php echo $product['id']; ?>" data-price="<?php echo $product['unit_price']; ?>"><?php echo $product['name']; ?></option>
                                            <?php } ?>
+                                       </select>
+                                       <?php
+                                       $KgUnitHidden = 'hidden';
+                                       $LUnitHidden = 'hidden';
+                                       if ($pc['unit'] === "kg") {
+                                           $KgUnitHidden = '';
+                                       }
+                                       if ($pc['unit'] === "L") {
+                                           $LUnitHidden = '';
+                                       }
+                                       ?>
+                                       <select name="kgUnitHidden" class="kgUnitHidden" <?php echo $KgUnitHidden ?>>
+                                           <option <?php if($pc['mp_unit']=='Kilogramme') echo "selected"; ?> value="1" name="Kilogramme">Kilogramme</option>
+                                           <option <?php if($pc['mp_unit'] == 'Gramme' ) echo "selected"; ?> value="0.001" name="Gramme">Gramme</option>
+                                           <option <?php if($pc['mp_unit'] == 'Kilogramme' ) echo "selected"; ?> value="0.000001" name="Milligramme">Milligramme</option>
+                                       </select>
+                                       <select name="lUnitHidden" class="lUnitHidden" <?php echo $LUnitHidden ?>>
+                                           <option>Litre</option>
+                                           <option>Centilitre</option>
+                                           <option>Millilitre</option>
                                        </select>
                                        Quantité : <input class="form-inline" placeholder="Quantité" name="quantity" value="<?php echo $pc['mp_quantity'];?>"
                                                          type="text">
                                    </div>
                                </div>
 
-                                <br/>
-                               <!-- <input type="submit" name="buttonSubmit" value="Confirmer" class="btn btn-success" />
-                                <div value="Nouveau produit" class="btn btn-info newProduct" >Nouveau produit</div>-->
-                            </fieldset>
-                        </form>
-                    </div> <!-- /content -->
-                </div><!-- /x-panel -->
             </div>
             <?php } ?>
         </div> <!-- /row -->
@@ -95,19 +94,7 @@
         </button>
 
         <div class="col-md-6 col-sm-6 col-xs-6 product productModel" hidden>
-            <div class="x_panel">
-                <div class="x_title">
-                    <h2>Compositions</h2>
-                    <ul class="nav navbar-right panel_toolbox">
-                        <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
-                        <li><a class="close-link"><i class="fa fa-close"></i></a></li>
-                    </ul>
-                    <div class="clearfix"></div>
-                </div>
-                <div class="x_content">
                     <label><?php echo $message; ?></label>
-                    <form method="post">
-                        <fieldset>
                             <div class="x_panel">
                                 <div class="x_title">
                                     <h2>Produit</h2>
@@ -117,25 +104,38 @@
                                     </ul>
                                     <div class="clearfix"></div>
                                 </div>
-                                <div class="x_content" id="newContent">
+                                <div class="x_content" style="margin-top:30px;" id="newContent">
 
                                     <select name="product" class="productSelectNew">
                                        <?php foreach ($products as $product) {?>
-                                        <option value="<?php echo $product['id'];?>" data-price="<?php echo $product['unit_price']; ?>"><?php echo $product['name']; ?></option>
+                                        <option value="<?php echo $product['id'];?>" data-unit="<?php echo $product['unit']; ?>" data-price="<?php echo $product['unit_price']; ?>"><?php echo $product['name']; ?></option>
                                         <?php } ?>
+                                    </select>
+                                    <?php
+                                    $KgUnitHidden = 'hidden';
+                                    $LUnitHidden = 'hidden';
+                                    if ($products[0]['unit'] === "kg") {
+                                        $KgUnitHidden = '';
+                                    }
+                                    if ($products[0]['unit'] === "L") {
+                                        $LUnitHidden = '';
+                                    }
+                                    ?>
+                                    <select name="kgUnitHidden" class="kgUnitHidden" <?php echo $KgUnitHidden ?>>
+                                        <option value="1" name="Kilogramme">Kilogramme</option>
+                                        <option value="0.001" name="Gramme">Gramme</option>
+                                        <option value="0.000001" name="Milligramme">Milligramme</option>
+                                    </select>
+                                    <select name="lUnitHidden" class="lUnitHidden" <?php echo $LUnitHidden ?>>
+                                        <option>Litre</option>
+                                        <option>Centilitre</option>
+                                        <option>Millilitre</option>
                                     </select>
                                     Quantité : <input class="form-inline" placeholder="Quantité" name="quantity"
                                                       type="text">
                                 </div>
                             </div>
 
-                            <br/>
-                            <!-- <input type="submit" name="buttonSubmit" value="Confirmer" class="btn btn-success" />
-                             <div value="Nouveau produit" class="btn btn-info newProduct" >Nouveau produit</div>-->
-                        </fieldset>
-                    </form>
-                </div> <!-- /content -->
-            </div><!-- /x-panel -->
         </div>
 
         <div class="article-title text-center">
@@ -173,20 +173,55 @@
         $(document).on('keyup','input[name="quantity"]',calulPrixTotal);
 
         $(document).on('change','.productSelectNew',{'checkOldProducts':true},calulPrixTotal);
-        $(document).on('change','.productSelect',calulPrixTotal);
+        $(document).on('change','.productSelect,.kgUnitHidden,.lUnitHidden',calulPrixTotal);
 
         function calulPrixTotal() {
             var prixTotal = parseFloat(0);
+            var panel = $(this).closest('.product');
             for (var i = 1; i <= productsCount; i++) {
                 var row = $('.product[data-id=' + i + ']');
+                l_panel = row.closest('.product');
+                var unit = l_panel.find('select[name="product"] option:selected').attr('data-unit');
                 var quantity = parseFloat(row.find('input[type="text"]').val().replace(',', '.'));
                 var unit_price = parseFloat(row.find('select').find('option:selected').attr('data-price').replace(',', '.'));
+
+                var unitConvertName = 'Pcs';
+                var unitConvert = 1;
+                if (unit === 'kg') {
+                    unitConvert = parseFloat(l_panel.find('select[name="kgUnitHidden"] option:selected').val());
+                    unitConvertName = l_panel.find('select[name="kgUnitHidden"] option:selected').text();
+                    unit_price *= unitConvert;
+                }
+                if (unit === 'L') {
+                    unitConvert = parseFloat(l_panel.find('select[name="lgUnitHidden"] option:selected').val());
+                    unitConvertName = l_panel.find('select[name="lUnitHidden"] option:selected').text();
+                    unit_price *= unitConvert;
+                }
+
                 if (quantity > 0 && unit_price > 0)
                     prixTotal += quantity * unit_price;
             }
-            $('.cost').html(prixTotal+'DH');
-            $('.gain').html(sellPrice - prixTotal+'DH');
+            sellPrice=$(".sellPriceProduct").val();
+            $(".count.sellPrice.green").html(sellPrice+'DH');
+            $('.cost').html(prixTotal.toFixed(2) +'DH');
+            $('.gain').html((sellPrice - prixTotal).toFixed(2)+'DH');
+
+            changeUnit(panel.find('select[name="product"] option:selected').attr('data-unit'), panel);
         };
+
+
+        function changeUnit(value, panel) {
+            if (value === 'kg') {
+                panel.find('.kgUnitHidden').removeAttr('hidden');
+                panel.find('.lUnitHidden').attr('hidden', true);
+            } else if (value === 'L') {
+                panel.find('.lUnitHidden').removeAttr('hidden');
+                panel.find('.kgUnitHidden').attr('hidden', true);
+            } else {
+                panel.find('.kgUnitHidden').attr('hidden', true);
+                panel.find('.lUnitHidden').attr('hidden', true);
+            }
+        }
 
         $('input[name="buttonSubmit"]').on('click', function () {
 
@@ -196,50 +231,102 @@
             for (var i = 1; i <= productsCount; i++) {
 
                 var row = $('.product[data-id=' + i + ']');
-                console.log(row);
+                var l_panel = row.closest('.product');
+                var unit = l_panel.find('select[name="product"] option:selected').attr('data-unit');
+
                 var quantity = parseFloat(row.find('input[type="text"]').val().replace(',', '.'));
                 var id= row.find('select').find('option:selected').val();
                 var unit_price = parseFloat(row.find('select').find('option:selected').attr('data-price').replace(',', '.'));
+
+                var unitConvertName = 'Pcs';
+                var unitConvert = 1;
+                if (unit === 'kg') {
+                    unitConvert = l_panel.find('select[name="kgUnitHidden"] option:selected').val();
+                    unitConvertName = l_panel.find('select[name="kgUnitHidden"] option:selected').text();
+                    unit_price *= unitConvert;
+                }
+                if (unit === 'L') {
+                    unitConvert = parseFloat(l_panel.find('select[name="lgUnitHidden"] option:selected').val());
+                    unitConvertName = parseFloat(l_panel.find('select[name="lUnitHidden"] option:selected').text());
+                    unit_price *= unitConvert;
+                }
+
                 if (quantity > 0 && unit_price > 0){
                     prixTotal += quantity * unit_price;
-                    var product={'id':id,'quantity':quantity,'unit_price':unit_price,'profit': profit};
+                    var product= {
+                        'id': id, 'quantity': quantity, 'unit_price': unit_price, 'profit': profit,
+                        'unit': unitConvertName,
+                        'unitConvert': unitConvert
+                    };
                     productsList.push(product);
                 }
 
             }
             var profit = prixTotal * gainRate - prixTotal;
-            if(group===0){
-                group=1;
-            }
+
             var meal={'name':name,'id':<?php echo $meal['id']; ?>,'group':group,'productsList': productsList, 'cost': prixTotal,'sellPrice': sellPrice,'profit': profit};
+            console.log(meal);
+            if(validate(meal)){
+                $.ajax({
+                    url: "<?php echo base_url(); ?>admin/meal/editApi",
+                    type: "POST",
+                    dataType: "json",
+                    data: {'meal': meal},
+                    success: function (data) {
+                        if (data.status === 'success') {
+                            swal({
+                                title: "Success",
+                                text: "Success",
+                                type: "success",
+                                timer: 1500,
+                                showConfirmButton: false
+                            });
+                        }
+                        else {
+                            /*$('#show_id').html("<div style='border:1px solid red;font-size: 11px;margin:0 auto !important;'>" + response.error + "</div>");*/
+                        }
 
-            $.ajax({
-                url: "<?php echo base_url(); ?>admin/meal/editApi",
-                type: "POST",
-                dataType: "json",
-                data: {'meal': meal},
-                success: function (data) {
-                    if (data.status === 'success'){
-                        swal({
-                            title: "Success",
-                            text: "Success",
-                            type: "success",
-                            timer: 1500,
-                            showConfirmButton: false
-                        });
+                    },
+                    error: function (data) {
+                        // do something
                     }
-                    else{
-                        /*$('#show_id').html("<div style='border:1px solid red;font-size: 11px;margin:0 auto !important;'>" + response.error + "</div>");*/
-                    }
-
-                },
-                error: function (data) {
-                    // do something
-                }
-            });
+                });
+            }
 
         });
 
+        function validate(meal) {
+            var validate = true;
+            if (meal['name'] === '') {
+                swal({
+                    title: "Attention",
+                    text: "Quel est le nom de votre article ?",
+                    type: "warning",
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+                validate = false;
+            } else if (meal['sellPrice'] === 0) {
+                swal({
+                    title: "Attention",
+                    text: "Quel est le prix de votre article ?",
+                    type: "warning",
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+                validate = false;
+            } else if (meal['group'] === 0) {
+                swal({
+                    title: "Attention",
+                    text: "Vous devez choisir une catégorie",
+                    type: "warning",
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+                validate = false;
+            }
+            return validate;
+        }
         var productSize=1;
 
 
@@ -273,6 +360,8 @@
             }
 
         });
+
+        $(".well[data-id=<?php echo $meal['group']; ?>]").trigger("click");
 
         $('button[name="addProduct"]').on('click', addProduct);
         function addProduct(event) {

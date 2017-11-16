@@ -10,25 +10,25 @@
         <div class="clearfix"></div>
         <hr>
         <div class="row">
-            <h1 class="text-center"><?php echo $meal['name']; ?></h1>
+            <h1 class="text-center">Fiche technique : <?php echo $meal['name']; ?></h1>
             <h2>Contenu</h2>
             <div class="col-md-12 col-sm-12 col-xs-12">
                 <table class="table">
                     <thead class="thead-default">
                     <tr>
-                        <th>Id</th>
+                       <!-- <th>Id</th>-->
                         <th>Produit</th>
                         <th>Quantité</th>
-                        <th>Coût</th>
+                       <!-- <th>Coût</th>-->
                     </tr>
                     </thead>
                     <tbody>
                     {products}
                     <tr>
-                        <th scope="row">{id}</th>
+                        <!--<th scope="row">{id}</th>-->
                         <td>{name}</td>
-                        <td>{name}</td>
-                        <td>{unit_price}</td>
+                        <td>{mp_quantity} {mp_unit}</td>
+                       <!-- <td>{unit_price}</td>-->
                     </tr>
                     {/products}
                     </tbody>
