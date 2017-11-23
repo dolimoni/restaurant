@@ -52,7 +52,6 @@
                                        <div class="clearfix"></div>
                                    </div>
                                    <div class="x_content oldContent" style="margin-top:30px;">
-                                       <label></label>
                                        <select name="product" class="productSelect" >
                                            <?php foreach ($products as $product) {
                                            $selected= $product['id'] == $pc['product'] ? 'selected':'';
@@ -94,7 +93,6 @@
         </button>
 
         <div class="col-md-6 col-sm-6 col-xs-6 product productModel" hidden>
-                    <label><?php echo $message; ?></label>
                             <div class="x_panel">
                                 <div class="x_title">
                                     <h2>Produit</h2>
@@ -165,7 +163,7 @@
         var productsCount=<?php echo $meal['products_count']; ?>;
 
         $('.sellPrice').html(<?php echo $meal['sellPrice']; ?> + 'DH');
-        sellPrice=<?php echo $meal['sellPrice']; ?>;
+        sellPrice='<?php echo $meal['sellPrice']; ?>';
 
         $('.sellPriceProduct').on('keyup', function () {
             calulPrixTotal();

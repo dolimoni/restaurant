@@ -93,11 +93,17 @@
                         $("#tbodyid").empty();
 
                         $.each(data.response.meals, function (key, meal) {
+
+                            var group= meal.group;
+                            if(findGroup(meal.group)[0]){
+                                group=findGroup(meal.group)[0]['name']
+                            }
+
                             var row = '<tr>' +
                                 '<td data-type="code">' + meal.code + '</td>' +
                                 '<td data-type="name">' + meal.name + '</td>' +
                                 '<td data-type="price">' + meal.price + '</td>' +
-                                '<td data-type="group">' + findGroup(meal.group)[0]['name'] + '</td>' +
+                                '<td data-type="group">' +group+ '</td>' +
                                 '</tr>';
                             $("#tbodyid").append(row);
                         });

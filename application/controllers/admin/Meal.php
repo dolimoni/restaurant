@@ -36,7 +36,7 @@ class Meal extends CI_Controller {
         $data['meal'] = $this->model_meal->get($meal_id);
         $data['products'] = $this->model_meal->getProducts($meal_id);
         $data['report'] = $this->model_report->reportById($meal_id);
-
+        //log_message('error', 'Some variable did not contain a value.');
         $this->load->view('admin/meal/report',$data);
     }
 
@@ -145,7 +145,7 @@ class Meal extends CI_Controller {
 	public function group()
 	{
 
-        if (!$this->input->post('addGroup')) {
+        if (!$this->input->post('groupName')) {
             $data['message'] = '';
             $data['groups'] = $this->model_group->getAll();
             $this->parser->parse('admin/meal/view_group', $data);
@@ -159,7 +159,7 @@ class Meal extends CI_Controller {
 
             $this->output
                 ->set_content_type("application/json")
-                ->set_output(json_encode(array('status' => true)));
+                ->set_output(json_encode(array('status' => 'success')));
 
         }
 
@@ -217,9 +217,10 @@ class Meal extends CI_Controller {
 
 	}
 
-	private function uploadFile(){
+	private function uploadFile($destination= 'assets/images/'){
         $valid_file = true;
         $message='';
+        $file_path='empty';
         //if they DID upload a file...
         if ($_FILES['image']['name']) {
             //if no errors...
@@ -234,7 +235,7 @@ class Meal extends CI_Controller {
 
                 //if the file has passed the test
                 if ($valid_file) {
-                    $file_path = 'assets/images/' . $new_file_name;
+                    $file_path = $destination . $new_file_name;
                     move_uploaded_file($_FILES['image']['tmp_name'], FCPATH . $file_path);
                     $message = 'Congratulations!  Your file was accepted.';
                 }
@@ -296,10 +297,23 @@ class Meal extends CI_Controller {
     public function apiLoadFile()
     {
         try {
-            $file_path = $this->uploadFile();
-            $data['meals'] = $this->Parse($file_path);
+            $destination="uploads/articlePrg/";
+            $this->uploadFile($destination);
+
+            $zip = new ZipArchive;
+            $res = $zip->open($file_path);
+            $file_name='';
+            if ($res === TRUE) {
+                $zip->extractTo($destination);
+                $file_name= $zip->getNameIndex(0);
+                $zip->close();
+            } else {
+            }
+
+            $file=$destination.'/'. $file_name;
+            $data['meals'] = $this->Parse($file);
             $data['groups'] = array();
-            $groups= $this->ParseGroup($file_path);
+            $groups= $this->ParseGroup($file);
             $this->model_group->createGroupsIfNotExists($groups);
             foreach ($groups as $group) {
                 $data['groups'][]=$this->model_group->getByNum($group['num']);
@@ -308,6 +322,7 @@ class Meal extends CI_Controller {
                 ->set_content_type("application/json")
                 ->set_output(json_encode(array('status' => 'success', 'response' => $data)));
         } catch (Exception $e) {
+            log_message('error', $e->getMessage());
             $this->output
                 ->set_content_type("application/json")
                 ->set_output(json_encode(array('status' => 'error', 'response' => $data)));
@@ -383,7 +398,7 @@ class Meal extends CI_Controller {
         $simpleXml = simplexml_load_string($fileContents);
         $json = json_encode($simpleXml);*/
 
-        $xml = simplexml_load_file($url) or die("Error: Cannot create object");
+        $xml = simplexml_load_file($url) or die("Error: Cannot create csv");
         $meals = array();
         foreach ($xml->plu_list->plu as $plu) {
             $name = (array) $plu['name'];
@@ -403,12 +418,14 @@ class Meal extends CI_Controller {
 
         $xml = simplexml_load_file($url) or die("Error: Cannot create object");
         $groups = array();
-        foreach ($xml->group_list->grp as $grp) {
-            $name = (array)$grp['name'];
-            $num = (array)$grp['num'];
-            $group = array('name' => $name[0], 'num' => $num[0]);
-            if(strpos($name['0'], 'GROUP') === false)
-                $groups[] = $group;
+        if(isset($xml->group_list->grp)){
+            foreach ($xml->group_list->grp as $grp) {
+                $name = (array)$grp['name'];
+                $num = (array)$grp['num'];
+                $group = array('name' => $name[0], 'num' => $num[0]);
+                if (strpos($name['0'], 'GROUP') === false)
+                    $groups[] = $group;
+            }
         }
         return $groups;
     }

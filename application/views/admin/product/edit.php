@@ -77,8 +77,10 @@
                                 <div class="form-group">
                                     Unité de mesure :
                                     <select class="form-control" name="unit">
-                                        <option name="unit" value="gr" <?php if ($product['unit'] === "L") echo "selected"; ?>>L</option>
-                                        <option name="unit" value="kg" <?php if ($product['unit'] === "kg") echo "selected"; ?>>Kg</option>
+                                        <option name="unit"
+                                                value="kg" <?php if ($product['unit'] === "kg") echo "selected"; ?>>Kg
+                                        </option>
+                                        <option name="unit" value="L" <?php if ($product['unit'] === "L") echo "selected"; ?>>L</option>
                                         <option name="unit" value="pcs" <?php if ($product['unit'] === "pcs") echo "selected"; ?> >Pcs</option>
                                     </select>
                                 </div>

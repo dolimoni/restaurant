@@ -7,7 +7,9 @@ class Main extends CI_Controller
     {
         parent::__construct();
         if (!$this->session->userdata('isLogin') || ($this->session->userdata('type') != "admin")) {
-            redirect('login');
+            if(!$this->input->is_cli_request()){
+                redirect('login');
+            }
         }
 
         $this->load->model('model_product');
@@ -22,15 +24,16 @@ class Main extends CI_Controller
     public function index()
     {
 
-        $data = $this->readSalesCSV('uploads/XAFUL.CSV');
+        //$data = $this->readSalesCSV('uploads/XAFUL.CSV');
 
-        $this->load->view('admin/uniwell/index', $data);
+        $this->load->view('admin/uniwell/index');
     }
 
     private function readSalesCSV($file_name){
         $row = 1;
         $index = 0;
         $rows = array();
+        $dateTime='';
         if (($handle = fopen($file_name, "r")) !== FALSE) {
             while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
                 $num = count($data);
@@ -55,11 +58,15 @@ class Main extends CI_Controller
                 if (isset($data[1]) and $data[1] === "ALL TOTAL" and $row > 7) {
                     break;
                 }
+                if($row===5){
+                    $dateTime= $data[2];
+                }
                 $index++;
             }
             fclose($handle);
         }
         $data['rows'] = $rows;
+        $data['dateTime'] = $dateTime;
         return $data;
     }
     public function apiLoadFile()
@@ -89,82 +96,47 @@ class Main extends CI_Controller
         }
     }
 
-    public function view()
+
+    public function ftp()
     {
-        $meal_id = $this->uri->segment(4);
-        $data['meal'] = $this->model_meal->get($meal_id);
-        $data['products'] = $this->model_meal->getProducts($meal_id);
+        try {
+            //$data['sales'] = $this->readSalesCSV(base_url('uploads/ftp/x-plu_1_0001001.csv'));
+            $data['sales'] = $this->readSalesCSV('/var/www/html/fiori/uploads/ftp/x-plu_1_0001001.csv');
+            $mealsList=array();
+            foreach ($data['sales']['rows'] as $key => $sale) {
+                $meal = $this->model_meal->getByExternalCode($sale['0']);
+                $quantity = $sale[2] / 1000;
+                $priceCSV= $sale['3'] / 100 / $quantity;
+                $date=explode('T', $data['sales']['dateTime'])[0];
+                $mealItem=array(
+                    'id'=>$meal['id'],
+                    'externalCode'=>$sale['0'],
+                    'quantity'=> $sale[2] / 1000,
+                    'amount'=>$sale['3'] / 100,
+                    'date'=> $date
+                );
+                if($meal['name']=== $sale['1'] and $priceCSV == $meal['sellPrice']){
+                    $data['sales']['rows'][$key]['status']='valid';
+                    $mealsList[]=$mealItem;
+                }else{
+                    $data['sales']['rows'][$key]['status'] = 'Invalid';
 
-        $this->parser->parse('admin/meal/view_meal', $data);
-    }
+                }
+            }
+            echo "count:".count($mealsList);
+            $this->model_meal->consumption($mealsList);
 
-    public function mypdfTest()
-    {
-        $meal_id = $this->uri->segment(4);
-        $data['meal'] = $this->model_meal->get($meal_id);
-        $data['products'] = $this->model_meal->getProducts($meal_id);
-
-        $this->parser->parse('admin/meal/pdf/view_meal', $data);
-    }
-
-    function mypdf()
-    {
-        $id = $this->input->post('id');
-        //$id=1;
-
-        $data['meal'] = $this->model_meal->get($id);
-        $data['products'] = $this->model_meal->getProducts($id);
-
-        $this->load->library('pdf');
-        $pdf = $this->pdf->load();
-
-        $html = $this->load->view('admin/meal/pdf/view_meal', $data, true);
-        $pdf->WriteHTML($html);
-        $output = 'itemreport' . date('Y_m_d_H_i_s') . '_.pdf';
-        $pdf->Output("$output", 'I');
-    }
-
-    public function add()
-    {
-
-        if (!$this->input->post('addProvider')) {
-            $data['message'] = '';
-            $data['providers'] = $this->model_provider->getAll();
-            $this->parser->parse('admin/provider/add', $data);
-        } else {
-            $title = $this->input->post('title');
-            $name = $this->input->post('name');
-            $prenom = $this->input->post('prenom');
-            $address = $this->input->post('address');
-            $phone = $this->input->post('phone');
-            $mail = $this->input->post('mail');
-            $image = $_FILES['image']['name'];
-            $this->uploadFile();
-            $provider = array('title' => $title, 'name' => $name, 'prenom' => prenom, 'address' => $address, 'phone' => $phone, 'mail' => $mail, 'image' => $image);
-            $this->model_provider->add($provider);
-            $this->output
-                ->set_content_type("application/json")
-                ->set_output(json_encode(array('status' => true)));
+        } catch (Exception $e) {
 
         }
-
     }
 
-    public function apiAddProducts()
+    public function message($to = 'World')
     {
-        $productsList = $this->input->post('productsList');
-        $this->model_provider->addProducts($productsList);
-        $this->output
-            ->set_content_type("application/json")
-            ->set_output(json_encode(array('status' => true)));
-    }
-
-    public function show()
-    {
-        $id = $this->uri->segment(4);
-        $data['provider'] = $this->model_provider->get(1)[0];
-        $data['products'] = $this->model_provider->getProducts(1);
-        $this->load->view('admin/provider/show', $data);
+        if ($this->input->is_cli_request()){
+            echo "Hello {$to}!" . PHP_EOL;
+        }
+        echo "khalid";
     }
 
     private function uploadFile()
@@ -199,80 +171,7 @@ class Main extends CI_Controller
         return $file_path;
     }
 
-    function apiPrintOrder()
-    {
-        $order = $this->input->post('order');
-        $data['order'] = $order;
-        $output = $this->createPDF($data);
-        $this->output
-            ->set_content_type("application/json")
-            ->set_output(json_encode(array('status' => true, 'filepath' => $output)));
-    }
-
-    function order()
-    {
-        $order = $this->input->post('order');
-        $data['order'] = $order;
-        $output = $this->createPDF($data);
-        $this->output
-            ->set_content_type("application/json")
-            ->set_output(json_encode(array('status' => true, 'filepath' => $output)));
-    }
-
-    function createPDF($data)
-    {
-
-        $this->load->library('pdf');
-        $pdf = $this->pdf->load();
-        $html = $this->load->view('admin/provider/pdf/order', $data, true);
-        $pdf->WriteHTML($html);
-        $output = 'uploads/pdf/itemreport' . date('Y_m_d_H_i_s') . '_.pdf';
-        $pdf->Output(FCPATH . "$output", 'F');
-        return $output;
-
-    }
-
-    function orderTest()
-    {
-        //$order = $this->input->post('order');
-        $this->load->view('admin/provider/pdf/order', true);
-
-    }
 
 
-    public function edit($cid)
-    {
-        if (!$this->input->post('buttonSubmit')) {
-            $data['message'] = '';
-            $userRow = $this->model_employee->get($cid);
-            $data['userRow'] = $userRow;
-            $this->load->view('admin/view_editemployee', $data);
-        } else {
-            if ($this->form_validation->run('editemp')) {
-                $f_name = $this->input->post('f_name');
-                $l_name = $this->input->post('l_name');
-                $u_bday = $this->input->post('u_bday');
-                $u_position = $this->input->post('u_position');
-                $u_type = $this->input->post('u_type');
-                $u_pass = md5($this->input->post('u_pass'));
-                $u_mobile = $this->input->post('u_mobile');
-                $u_gender = $this->input->post('u_gender');
-                $u_address = $this->input->post('u_address');
-                $u_id = $this->input->post('u_id');
-                $this->model_employee->update($f_name, $l_name, $u_bday, $u_position, $u_type, $u_pass, $u_mobile, $u_gender, $u_address, $u_id);
-                redirect(base_url('admin/employee'));
-            } else {
-                $data['message'] = validation_errors();  //data ta message name er lebel er kase pathay
-                $this->load->view('view_employee', $data);
-            }
-        }
-    }
-
-    public function delete($cid)
-    {
-        $this->model_employee->delete($cid);
-        $this->session->set_flashdata('message', 'Employee Successfully deleted.');
-        redirect(base_url('admin/employee'));
-    }
 }
 

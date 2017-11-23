@@ -1,10 +1,17 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
-$root = "http://" . $_SERVER['HTTP_HOST'];
-$root .= str_replace(basename($_SERVER['SCRIPT_NAME']), "", $_SERVER['SCRIPT_NAME']);
-$config['base_url'] = "$root";
+
+if (defined('STDIN')) {
+    // You should hardcode the base url for cli, otherwise it will fails.
+    //$config['base_url'] = "149.91.80.68";
+    $config['base_url'] = "fiori.ga";
+}else{
+    $root = "http://" . $_SERVER['HTTP_HOST'];
+    $root .= str_replace(basename($_SERVER['SCRIPT_NAME']), "", $_SERVER['SCRIPT_NAME']);
+    $config['base_url'] = "$root";
+}
 $config['index_page'] = 'index.php';
-$config['uri_protocol']	= 'REQUEST_URI';
+$config['uri_protocol']	= 'AUTO'; //REQUEST_URI
 $config['url_suffix'] = '';
 $config['language']	= 'english';
 $config['charset'] = 'UTF-8';
@@ -17,7 +24,7 @@ $config['controller_trigger'] = 'c';
 $config['function_trigger'] = 'm';
 $config['directory_trigger'] = 'd';
 $config['allow_get_array'] = TRUE;
-$config['log_threshold'] = 0;
+$config['log_threshold'] = 1;
 $config['log_path'] = '';
 $config['log_file_extension'] = '';
 $config['log_file_permissions'] = 0644;

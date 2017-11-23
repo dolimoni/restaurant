@@ -2,7 +2,7 @@
 
 class Pdf {
 
-    function Pdf() {
+    function __construct() {
         $CI = & get_instance();
         log_message('Debug', 'mPDF class is loaded.');
     }

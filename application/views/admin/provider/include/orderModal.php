@@ -52,7 +52,6 @@
                     <div class="x_panel">
                         <div class="x_title">
                             <h2>Contenu
-                                <small>Sessions</small>
                             </h2>
                             <ul class="nav navbar-right panel_toolbox">
                                 <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
@@ -74,7 +73,7 @@
                         </div>
                         <div class="x_content">
                             <div id="alerts"></div>
-                            <div class="btn-toolbar editor" data-role="editor-toolbar" data-target="#editor-one">
+                            <div class="btn-toolbar editor" data-role="editor-toolbar" data-target="#editor-newOrder">
                                 <div class="btn-group">
                                     <a class="btn dropdown-toggle" data-toggle="dropdown" title="Font"><i
                                                 class="fa fa-font"></i><b class="caret"></b></a>
@@ -159,7 +158,7 @@
                                 </div>
                             </div>
 
-                            <div id="editor-one" class="editor-wrapper"></div>
+                            <div id="editor-newOrder" class="editor-wrapper"></div>
 
                             <textarea name="descr" id="descr" style="display:none;"></textarea>
 

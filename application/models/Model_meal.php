@@ -220,20 +220,33 @@ class model_meal extends CI_Model {
 
     public function consumption($mealList){
         $this->load->model('model_product');
+        $this->load->model('model_report');
         $response = array();
         $response['status'] = "success";
         $productsErrorList=array();
         $response['productsList']="";
 
         foreach ($mealList as $meal) {
+
+            $todayConsumption=$this->model_report->reportMealDate($meal['id'], $meal['date']);
             $data = array(
                 'meal' => $meal['id'],
                 'amount' => $meal['amount'] / $meal['quantity'],
                 'quantity' => $meal['quantity'],
+                'report_date'=>$meal['date']
             );
+            $consumption_id=0;
+            $quantityStep = $meal['quantity'];
+            if($todayConsumption){
+                $quantityStep = abs($meal['quantity'] - $todayConsumption['quantity']);
+                $this->db->where('id', $todayConsumption['id']);
+                $this->db->update('consumption', $data);
+            }else{
+                $this->db->insert('consumption', $data);
+                $consumption_id = $this->db->insert_id();
+            }
 
-            $this->db->insert('consumption', $data);
-            $consumption_id = $this->db->insert_id();
+
             $this->db->select('*,mp.quantity as mp_quantity,p.id as p_id');
             $this->db->from('meal_product mp');
             $this->db->join('product p', 'mp.product = p.id');
@@ -255,6 +268,9 @@ class model_meal extends CI_Model {
                 // update reduce the amount of a product's stock after consumption the meal
                 if($m_product['totalQuantity']> $m_product['mp_quantity']* $m_product['unitConvert'] * $meal['quantity'] ){
                     if($response['status'] === "success"){
+                        if($consumption_id===0){
+                            $consumption_id=$todayConsumption['id'];
+                        }
                         $consumption_product=array(
                           'consumption'=> $consumption_id,
                           'meal'=> $meal['id'],
@@ -262,9 +278,17 @@ class model_meal extends CI_Model {
                           'quantity'=> $m_product['mp_quantity'] * $m_product['unitConvert'] * $meal['quantity'],
                           'unit_price'=> $m_product['unit_price'],
                         );
-                        $this->db->insert('consumption_product', $consumption_product);
-                        $this->model_product->updateQuantity($m_product['product'], $m_product['mp_quantity'] * $m_product['unitConvert'] * $meal['quantity']);
-                        $this->model_product->updateLocalQuantity($m_product['product'], $m_product['mp_quantity'] * $m_product['unitConvert'] * $meal['quantity']);
+                        if (!isset($todayConsumption) ) {
+                            $this->db->insert('consumption_product', $consumption_product);
+                        }
+                        if($meal['quantity'] >= $todayConsumption['quantity']){
+
+                            $this->model_product->updateQuantity($m_product['product'], $m_product['mp_quantity'] * $m_product['unitConvert'] * $quantityStep);
+                            $this->model_product->updateLocalQuantity($m_product['product'], $m_product['mp_quantity'] * $m_product['unitConvert'] * $quantityStep);
+                        }else{
+                            $this->model_product->updateQuantity($m_product['product'], $m_product['mp_quantity'] * $m_product['unitConvert'] * $quantityStep,'up');
+                            $this->model_product->updateLocalQuantity($m_product['product'], $m_product['mp_quantity'] * $m_product['unitConvert'] * $quantityStep,'up');
+                        }
                     }
                 }else{
                     $response['status']="error";

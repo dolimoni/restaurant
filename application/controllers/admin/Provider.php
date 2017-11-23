@@ -174,15 +174,15 @@ class Provider extends CI_Controller
         $this->load->model('model_order');
         $id = $this->input->post('id');
         $order = $this->model_order->get($id, 'EAGER');
-        $orderStatus="En attente";
-        if($order['status']==="canceled"){
-            $orderStatus="Annulée";
-        }else if($order['status'] === "received"){
+        $orderStatus = "En attente";
+        if ($order['status'] === "canceled") {
+            $orderStatus = "Annulée";
+        } else if ($order['status'] === "received") {
             $orderStatus = "Reçue";
         }
         $this->output
             ->set_content_type("application/json")
-            ->set_output(json_encode(array('status' => true, 'order' => $order,'orderStatus'=>$orderStatus)));
+            ->set_output(json_encode(array('status' => true, 'order' => $order, 'orderStatus' => $orderStatus)));
     }
 
 
@@ -240,27 +240,58 @@ class Provider extends CI_Controller
         $this->model_order->add($order);
         $data['order'] = $order;
         $e_params['file_path'] = base_url('uploads/pdf/itemreport2017_10_31_21_47_56_.pdf');
-        $emailStatus = $this->sendEmail($e_params);
-        $e_params['to']= $order['provider']['mail'];
+        $e_params['to'] = $order['provider']['mail'];
+        $emailStatus = '';
+
         $output = $this->createPDF($data);
-        //$output = 'uploads/pdf/itemreport2017_10_31_21_47_56_.pdf';
+
+        $e_params['attach']=$output;
+        $e_params['content']= $order['email']['content'];
+        try {
+            if($order['email']['send']==="true"){
+                $emailStatus = $this->sendEmail($e_params);
+            }
+        } catch (Exception $e) {
+            $emailStatus = $e->getMessage();
+        }
         $this->output
             ->set_content_type("application/json")
-            ->set_output(json_encode(array('status' => true, 'filepath' => $output,'emailStatus'=> $emailStatus)));
+            ->set_output(json_encode(array('status' => true, 'filepath' => $output, 'emailStatus' => $emailStatus)));
     }
 
-    private function sendEmail($e_params){
-        $this->load->library('email');
+    private function sendEmail($e_params)
+    {
 
-        $this->email->from('khalid.essalhi8@gmail.com', 'Your Name');
-        $this->email->to($e_params['to']);
-        $this->email->cc('khalid.essalhi8@gmail.com');
-        $this->email->bcc('khalid.essalhi8@gmail.com');
-        $this->email->attach(base_url('uploads/pdf/itemreport2017_10_31_21_47_56_.pdf'), 'attachment', 'commande.pdf');
-        $this->email->subject('Email Test');
-        $this->email->message('Bonjour<br/> Merci de m\'envoyer la commande ci-joint<br/>Cordialement!');
+        $config = Array(
+            'protocol' => 'smtp',
+            'smtp_host' => 'ssl://smtp.googlemail.com',
+            'smtp_port' => 465,
+            'smtp_user' => 'manager.contact8@gmail.com',
+            'smtp_pass' => 'boujida2030',
+            'mailtype' => 'html',
+            'newline' => "\r\n",
+            'charset' => 'utf-8'
+        );
 
-       return $this->email->send();
+        $this->load->library('email', $config);
+        $this->email->from('manager.contact8@gmail.com', 'Contact');
+        //$this->email->to($e_params['to']);
+        $this->email->to('khalid.essalhi8@gmail.com');
+        $this->email->attach(base_url($e_params['attach']), 'attachment', 'commande.pdf');
+        $this->email->subject('Bon de commande');
+        $this->email->message(mb_convert_encoding($e_params['content'], "UTF-8"));
+        //
+        //return $this->email->send();
+        if ($this->email->send()) {
+            return 'Your email was sent';
+        } else {
+            return $this->email->print_debugger();
+        }
+        /*try {
+
+       } catch (Exception $e) {
+
+       }*/
     }
 
     function apiEditOrder()
@@ -269,6 +300,7 @@ class Provider extends CI_Controller
         try {
             $this->load->model('model_order');
             $order = $this->input->post('order');
+
             if (strtolower($order['status']) === "en attente") {
                 $order['status'] = 'pending';
                 $this->model_order->update($order);
@@ -282,7 +314,7 @@ class Provider extends CI_Controller
             } else {
                 $order['status'] = 'received';
                 $this->model_order->update($order);
-                if ($order['oldStatus'] === "pending"){
+                if ($order['oldStatus'] === "pending") {
                     $this->model_product->updateQuantities($order['productsList'], 'up');
                 }
             }
@@ -290,7 +322,7 @@ class Provider extends CI_Controller
              $output = $this->createPDF($data);*/
             $this->output
                 ->set_content_type("application/json")
-                ->set_output(json_encode(array('status' => true,'orderStatus'=> $order['status'])));
+                ->set_output(json_encode(array('status' => true, 'orderStatus' => $order['status'])));
         } catch (Exception $e) {
             $this->output
                 ->set_content_type("application/json")
@@ -319,33 +351,33 @@ class Provider extends CI_Controller
     }
 
 
-   /* public function edit($cid)
-    {
-        if (!$this->input->post('buttonSubmit')) {
-            $data['message'] = '';
-            $userRow = $this->model_employee->get($cid);
-            $data['userRow'] = $userRow;
-            $this->load->view('admin/view_editemployee', $data);
-        } else {
-            if ($this->form_validation->run('editemp')) {
-                $f_name = $this->input->post('f_name');
-                $l_name = $this->input->post('l_name');
-                $u_bday = $this->input->post('u_bday');
-                $u_position = $this->input->post('u_position');
-                $u_type = $this->input->post('u_type');
-                $u_pass = md5($this->input->post('u_pass'));
-                $u_mobile = $this->input->post('u_mobile');
-                $u_gender = $this->input->post('u_gender');
-                $u_address = $this->input->post('u_address');
-                $u_id = $this->input->post('u_id');
-                $this->model_employee->update($f_name, $l_name, $u_bday, $u_position, $u_type, $u_pass, $u_mobile, $u_gender, $u_address, $u_id);
-                redirect(base_url('admin/employee'));
-            } else {
-                $data['message'] = validation_errors();  //data ta message name er lebel er kase pathay
-                $this->load->view('view_employee', $data);
-            }
-        }
-    }*/
+    /* public function edit($cid)
+     {
+         if (!$this->input->post('buttonSubmit')) {
+             $data['message'] = '';
+             $userRow = $this->model_employee->get($cid);
+             $data['userRow'] = $userRow;
+             $this->load->view('admin/view_editemployee', $data);
+         } else {
+             if ($this->form_validation->run('editemp')) {
+                 $f_name = $this->input->post('f_name');
+                 $l_name = $this->input->post('l_name');
+                 $u_bday = $this->input->post('u_bday');
+                 $u_position = $this->input->post('u_position');
+                 $u_type = $this->input->post('u_type');
+                 $u_pass = md5($this->input->post('u_pass'));
+                 $u_mobile = $this->input->post('u_mobile');
+                 $u_gender = $this->input->post('u_gender');
+                 $u_address = $this->input->post('u_address');
+                 $u_id = $this->input->post('u_id');
+                 $this->model_employee->update($f_name, $l_name, $u_bday, $u_position, $u_type, $u_pass, $u_mobile, $u_gender, $u_address, $u_id);
+                 redirect(base_url('admin/employee'));
+             } else {
+                 $data['message'] = validation_errors();  //data ta message name er lebel er kase pathay
+                 $this->load->view('view_employee', $data);
+             }
+         }
+     }*/
 
 
     public function apiUpdate()
@@ -363,10 +395,28 @@ class Provider extends CI_Controller
         }
     }
 
-    public function apiDeleteProvider(){
+    public function apiDeleteProvider()
+    {
         try {
             $provider_id = $this->input->post('provider_id');
             $this->model_provider->deleteProvider($provider_id);
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'success')));
+        } catch (Exception $e) {
+
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'error')));
+        }
+    }
+
+    public function apiDeleteOrder()
+    {
+        try {
+            $this->load->model('model_order');
+            $order_id = $this->input->post('order_id');
+            $this->model_order->delete($order_id);
             $this->output
                 ->set_content_type("application/json")
                 ->set_output(json_encode(array('status' => 'success')));

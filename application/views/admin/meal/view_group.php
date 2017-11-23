@@ -7,15 +7,30 @@
                 <h3>Liste des familles</h3>
             </div>
         </div>
+
         <div class="clearfix"></div>
         <hr>
         <div class="article-title">
-            <a class="btn btn-primary" data-toggle="collapse" href="#collapseExample" aria-expanded="false" aria-controls="collapseExample">Nouvelle famille</a>
 
-            <button type="submit" class="btn btn-warning" name="Fichier"
-                    onclick="window.location.href='<?php echo base_url('admin/meal/loadFileGroup/'); ?>'">
-                <span class="fa fa-print"></span> Importer
-            </button>
+           <div class="row">
+               <div class="col-md-9">
+                   <a class="btn btn-primary" data-toggle="collapse" href="#collapseExample" aria-expanded="false"
+                      aria-controls="collapseExample">Nouvelle famille</a>
+
+                   <button type="submit" class="btn btn-warning" name="Fichier"
+                           onclick="window.location.href='<?php echo base_url('admin/meal/loadFileGroup/'); ?>'">
+                       <span class="fa fa-print"></span> Importer
+                   </button>
+               </div>
+
+               <div class="col-md-3">
+                   <?php if (count($productsToOrder)) { ?>
+                       <a href="<?= base_url('admin/product/toOrder'); ?>">
+                           <h3 class="soldOut" style="color:#d9534f;">Stock Insuffisant</h3>
+                       </a>
+                   <?php } ?>
+               </div>
+           </div>
         </div>
 
         <div class="collapse" id="collapseExample">
@@ -122,6 +137,7 @@
         $('#addGroupForm').on('submit', function (e) {
             e.preventDefault();
             var formData = new FormData(this);
+            $('#loading').show();
             $.ajax({
                 type: 'POST',
                 url: "<?php echo base_url(); ?>admin/meal/group",
@@ -130,12 +146,34 @@
                 contentType: false,
                 processData: false,
                 success: function (data) {
-                    console.log("success");
-                    console.log(data);
+                    if (data.status === "success") {
+                        $('#loading').hide();
+                        swal({
+                            title: "Success",
+                            text: "La famille a été bien ajouté",
+                            type: "success",
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+                    } else {
+                        $('#loading').hide();
+                        swal({
+                            title: "Erreur",
+                            text: "Une erreur s'est produit",
+                            type: "error",
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+                    }
                 },
                 error: function (data) {
-                    console.log("error");
-                    console.log(data);
+                    swal({
+                        title: "Erreur",
+                        text: "Une erreur s'est produit",
+                        type: "error",
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
                 }
             });
 
@@ -260,5 +298,16 @@
 
 
         }
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        function blinker() {
+            $('.soldOut').fadeOut(500);
+            $('.soldOut').fadeIn(500);
+        }
+
+        setInterval(blinker, 1000); //Runs every second
     });
 </script>

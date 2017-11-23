@@ -4,7 +4,7 @@
         <div class="">
             <div class="page-title">
               <!--  <pre>
-                    <?php /*print_r($meals);*/?>
+                    <?php/* print_r($meals);*/?>
                 </pre>-->
                 <div class="title_left">
                     <h3>Liste des articles articles</h3>
@@ -14,7 +14,13 @@
             <hr>
             <div class="row tile_count">
                 <div class="text-center tile_stats_count">
-                    <div class="count"><?php echo $meals[0]['g_name']; ?></div>
+                    <div class="count">
+                        <?php
+                            if(isset($meals[0])){
+                                echo $meals[0]['g_name'];
+                            }
+                        ?>
+                    </div>
                 </div>
             </div>
             <div class="row">

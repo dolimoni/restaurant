@@ -14,7 +14,7 @@ class model_budget extends CI_Model {
 
     public function addRegularCost($regularCost)
     {
-        $this->db->insert('regularCost', $regularCost);
+        $this->db->insert('regularcost', $regularCost);
     }
 
 	public function getReparations()
@@ -29,7 +29,7 @@ class model_budget extends CI_Model {
 	}
 	public function getRegularCosts()
 	{
-		$result = $this->db->get('regularCost');
+		$result = $this->db->get('regularcost');
 		return $result->result_array();
 	}
 

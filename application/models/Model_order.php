@@ -41,6 +41,7 @@ class model_order extends CI_Model {
                 'product' => $product['id'],
                 'order_id' => $orderId,
                 'quantity' => $product['quantity'],
+                'od_price' => $product['unit_price'],
             );
             $this->db->insert('orderdetails', $data);
         }
@@ -50,11 +51,40 @@ class model_order extends CI_Model {
 	{
 
         $data = array(
-            'status' => $order['status']
+            'status' => $order['status'],
+            'tva' => $order['tva'],
+            'ttc' => $order['underTotal'] * (1 + $order['tva']),
         );
 
         $this->db->where("id",$order['id']);
         $this->db->update("order",$data);
+        if(isset($order['productsList'])){
+            foreach ($order['productsList'] as $product) {
+                $data = array(
+                    'quantity' => $product['quantity'],
+                    'od_price' => $product['unit_price'],
+                );
+                $this->db->where('order_id', $order['id']);
+                $this->db->where('product', $product['id']);
+                $this->db->update('orderdetails', $data);
+            }
+            $data = array(
+                'quantity' => 0,
+            );
+            $ids = array_column($order['productsList'],'id');
+            $this->db->where_not_in('product', $ids);
+            $this->db->where('order_id', $order['id']);
+            $this->db->update('orderdetails', $data);
+        // Si toute les quantité envoyé = 0 => $order['productsList'] cette variable n'existe pas
+        // On met a 0 alors toutes les quantitées de la commande.
+        }else{
+            $data = array(
+                'quantity' => 0,
+            );
+            $this->db->where('order_id', $order['id']);
+            $this->db->update('orderdetails', $data);
+        }
+
         return $this->db->affected_rows();
 	}
     public function addProducts($productsList, $quotation=null)
@@ -173,10 +203,9 @@ class model_order extends CI_Model {
 
 
 
-	public function delete($u_id)
+	public function delete($order_id)
 	{
-		$this->db->where('id', $u_id);
-		$this->db->where("(su != 1)");
-		$this->db->delete('users'); 
+		$this->db->where('id', $order_id);
+		$this->db->delete('order');
 	}
 }

@@ -80,20 +80,20 @@
                             foreach ($articles as $article) {
                                 $t_quantity+= $article['s_quantity'];
                                 $t_amount+= $article['s_amount'];
-                                $t_profits+= $article['profit'] * $article['s_quantity'];
-                                $t_costs+= $article['s_amount'] - $article['profit'] * $article['s_quantity'];
+                                $t_profits+= $article['s_amount'] - $article['s_cost'];
+                                $t_costs+= $article['s_amount'] - $article['s_cost'];
                             ?>
                                 <tr data-id="">
                                     <td data-type="name"> <?php echo $article['name']; ?></td>
                                     <td data-type="description">Test</td>
                                     <td data-type="quantity"><?php echo $article['s_quantity']; ?></td>
                                     <td data-type="amount"><?php echo $article['s_amount']; ?> DH</td>
-                                    <td data-type="benefit" style="background: #6cc; color: white;"><?php echo $article['profit']* $article['s_quantity']; ?> DH</td>
-                                    <td data-type="cost" class="danger"><?php echo $article['s_amount']-$article['profit']* $article['s_quantity']; ?> DH</td>
+                                    <td data-type="benefit" style="background: #6cc; color: white;"><?php echo $article['s_amount']-$article['s_cost']; ?> DH</td>
+                                    <td data-type="cost" class="danger"><?php echo $article['s_cost']; ?> DH</td>
                                     <td>
-                                        <button class="btn btn-danger btn-xs action" data-type="delete"
+                                        <!--<button class="btn btn-danger btn-xs action" data-type="delete"
                                                 data-toggle="modal" data-target="#delete"><span
-                                                class="glyphicon glyphicon-trash"></span></button>
+                                                class="glyphicon glyphicon-trash"></span></button>-->
                                         <button class="btn btn-success btn-xs action"
                                                 onclick="window.location.href='<?php echo base_url('admin/meal/report/'.$article['meal']); ?>'"><span
                                                     class="fa fa-eye"></span></button>
@@ -225,12 +225,14 @@
                     $.each(data.articles, function (key, article) {
                         var amountData = {y: parseInt(article['s_amount']), label: article['name']};
                         var quantityData = {y: parseInt(article['s_quantity']), label: article['name']};
-                        var profitData = {y: parseInt(article['s_profit']), label: article['name']};
+                        var profitData = {y: parseInt(article['s_amount']-article['s_cost']), label: article['name']};
 
                         amount.push(amountData);
                         quantity.push(quantityData);
                         profit.push(profitData);
                     });
+
+                    console.log(amount);
 
 
                     var chart = new CanvasJS.Chart("chartContainer", {

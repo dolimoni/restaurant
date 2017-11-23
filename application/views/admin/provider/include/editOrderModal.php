@@ -188,11 +188,11 @@
                         data-dismiss="modal">
                     Annuler
                 </button>
-                <button type="submit" class="btn btn-warning" name="print">
+                <button type="submit" class="btn btn-warning" name="editPrint">
                     <span class="fa fa-print"></span> Imprimer
                 </button>
                 <button type="button" class="btn btn-primary" name="editOrder">
-                    Enregistrer
+                    Modifier
                 </button>
             </div>
         </div>

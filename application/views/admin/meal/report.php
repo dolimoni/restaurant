@@ -1,6 +1,6 @@
 <?php $this->load->view('admin/partials/admin_header.php'); ?>
 <?php
-    if(!isset($report['s_amount'])){
+    if(!isset($report['s_cost'])){
         header('Location:'.base_url('admin/report/index'));
     }
 ?>
@@ -14,9 +14,9 @@
 
         <!-- page content -->
         <div class="right_col" role="main">
-             <!--<pre>
-                <?php /*print_r($report); */?>
-            </pre>-->
+            <pre>
+                <?php print_r($report); ?>
+            </pre>
             <!-- top tiles -->
             <div class="row tile_count">
                 <div class="col-md-3 col-sm-4 col-xs-6 tile_stats_count">
@@ -26,13 +26,13 @@
                 </div>
                 <div class="col-md-3 col-sm-4 col-xs-6 tile_stats_count">
                     <span class="count_top"><i class="fa fa-user"></i>Coût de fabrication</span>
-                    <div class="count"><?php echo number_format((float)($report['s_amount'] - $report['s_profit']), 2, '.', ''); ?>DH</div>
+                    <div class="count"><?php echo number_format((float)($report['s_cost'] ), 2, '.', ''); ?>DH</div>
                     <span class="count_bottom"><i class="green"><i
                                 class="fa fa-sort-asc"></i>34% </i> From last Week</span>
                 </div>
                 <div class="col-md-3 col-sm-4 col-xs-6 tile_stats_count">
                     <span class="count_top"><i class="fa fa-user"></i> Profit</span>
-                    <div class="count green"><?php echo number_format((float)$report['s_profit'], 2, '.', ''); ?>DH</div>
+                    <div class="count green"><?php echo number_format((float)($report['s_amount']-$report['s_cost']), 2, '.', ''); ?>DH</div>
                     <span class="count_bottom"><i class="red"><i
                                 class="fa fa-sort-desc"></i>12% </i> From last Week</span>
                 </div>

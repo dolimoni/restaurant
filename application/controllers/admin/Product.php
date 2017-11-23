@@ -47,6 +47,20 @@ class Product extends CI_Controller {
        }
     }
 
+    public function apiGetByProvider(){
+        try {
+                $product_id = $this->input->post('product');
+                $provider = $this->input->post('provider');
+                $prodcut = $this->model_product->getByProvider($product_id,$provider);
+                $this->output
+                    ->set_content_type("application/json")
+                    ->set_output(json_encode(array('status' => 'success','product'=> $prodcut)));
+        } catch (Exception $e) {
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'error', 'redirect' => base_url('admin/product/index'))));
+        }
+    }
 
     public function edit()
 	{
@@ -67,6 +81,29 @@ class Product extends CI_Controller {
                 $this->model_product->edit($product,true);
             } else {
                 $data['product'] = $this->model_product->edit($product);
+            }
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'success')));
+        } catch (Exception $e) {
+            $this->load->view('admin/product/edit', $data);
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'error')));
+        }
+	}
+
+	public function apiEditForProvider()
+	{
+        try {
+            $product = $this->input->post('product');
+            $db_product = $this->model_product->getById($product['id']);
+            $data = array();
+
+            if ($db_product['unit_price'] !== $product['unit_price']) {
+                $this->model_product->apiEditForProvider($product,true);
+            } else {
+                $data['product'] = $this->model_product->apiEditForProvider($product);
             }
             $this->output
                 ->set_content_type("application/json")

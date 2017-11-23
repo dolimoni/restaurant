@@ -187,13 +187,15 @@
                                                 <th>#</th>
                                                 <th>Produit</th>
                                                 <th class="hidden-phone">Prix</th>
+                                                <th >Actions</th>
                                             </tr>
                                             </thead>
                                             <tfoot>
                                             <tr>
                                                 <th>#</th>
                                                 <th>Produit</th>
-                                                <th class="hidden-phone">Prix</th>
+                                                <th>Prix</th>
+                                                <th>Action</th>
                                             </tr>
                                             </tfoot>
                                             <tbody>
@@ -202,6 +204,14 @@
                                                     <td> <?php echo $product['id']; ?></td>
                                                     <td> <?php echo $product['name']; ?></td>
                                                     <td> <?php echo $product['unit_price']; ?></td>
+                                                    <td class="vertical-align-mid">
+                                                        <a class="btn btn-primary btn-xs editProductsModal"
+                                                           data-toggle="modal"
+                                                           data-target="#editProductsModal"
+                                                           data-id="<?php echo $product['id']; ?>">Modifier</a>
+                                                        <!--<a data-id="<?php /*echo $product['id']; */?>"
+                                                           class="btn btn-danger btn-xs deleteProduct">Supprimer</a>-->
+                                                    </td>
                                                 </tr>
                                             <?php } ?>
                                             </tbody>
@@ -213,6 +223,7 @@
                                                    data-target="#addProductsModal"/>
                                          </div>
                                         <?php include('include/addProductsModal.php'); ?>
+                                        <?php include('include/editProductsModal.php'); ?>
                                    </div>
         <!--------------------------------------------End Products Tab------------------------------------------------------>
 
@@ -299,16 +310,18 @@
                                                     <a class="btn btn-primary btn-xs editOrderModal" data-toggle="modal"
                                                        data-target="#editOrderModal"
                                                        data-id="<?php echo $order['id']; ?>">Modifier</a>
-                                                    <a onclick="return confirm('All records will be deleted, continue?')"
-                                                       href=" <?php echo base_url(); ?>admin/employee/delete/{id}"
-                                                       class="btn btn-danger btn-xs">Supprimer</a>
+                                                    <a data-id="<?php echo $order['id']; ?>" class="btn btn-danger btn-xs deleteOrder">Supprimer</a>
                                                 </td>
                                             </tr>
                                             <?php } ?>
                                             </tbody>
                                         </table>
-                                        <input type="button" class="btn btn-info" value="Nouvelle commade" data-toggle="modal"
-                                               data-target="#orderModal"/>
+                                        <br/>
+                                        <div class="row">
+                                            <input type="button" class="btn btn-info" value="Nouvelle commade"
+                                                   data-toggle="modal"
+                                                   data-target="#orderModal"/>
+                                        </div>
                                         <?php include('include/orderModal.php'); ?>
                                         <?php include('include/editOrderModal.php'); ?>
                                         <!-- end user projects -->
@@ -672,14 +685,14 @@
             data: {'id': $(this).attr('data-id')},
             success: function (data) {
                 if (data.status === true) {
-
+                    console.log(data.order);
                     $(".orderId").val(data.order['o_id']);
                     $(".orderActualStatus").attr("data-status", data.order['status']);
                     changeStatus(data.order['status']);
                     $.each(data.order.productsList, function (key, product) {
                        var l_product = $("#editOrderModal #editProductsOrder .product[data-id='" + product['id'] + "'] ");
                        l_product.find("input[name='quantity']").val(product['od_quatity']);
-                       l_product.find(".productCost").html(product['unit_price']);
+                       l_product.find(".productCost").html((parseFloat(product['od_quatity']) * parseFloat(product['od_price'])).toFixed(2));
                     });
                 }
                 else {
@@ -707,7 +720,7 @@
         var quantity   = parseFloat(row.find('input[name="'+event.data.quantitySelector+'"]').val().replace(',', '.'));
         var unit_price = parseFloat(row.find('input[name="' + event.data.productSelector + '"]').attr('data-price').replace(',', '.'));
         if(quantity>0){
-            row.find('.productCost').html(quantity * unit_price + 'DH');
+            row.find('.productCost').html((quantity * unit_price).toFixed(2) + 'DH');
         }else{
             row.find('.productCost').html(' 0DH');
         }
@@ -718,6 +731,7 @@
     $('button[name="orderProducts"]').on('click', {url: "admin/provider/order"}, productsToOrder);
 
     $('button[name="editOrder"]').on('click', {url: "admin/provider/apiEditOrder"}, editOrder);
+    $('button[name=editPrint]').on('click', {url: "admin/provider/apiPrintOrder"}, editOrder);
 
     function newOrder(event) {
             var productsList = [];
@@ -738,6 +752,18 @@
 
             }
 
+        var emailContent = "";
+        var send = false;
+        if ($('#editor-newOrder').html() !== "") {
+            emailContent = $('#editor-newOrder').html();
+            send=true;
+        }
+        var email={
+            'send': send,
+            'content': emailContent,
+            'to': $('.provider-mail').text()
+        }
+
             var order = {
                 'productsList': productsList,
                 'provider': {
@@ -751,7 +777,8 @@
                 'underTotal': underTotal,
                 'tva': 0.2,
                 'shipping': '-',
-                'other': '-'
+                'other': '-',
+                'email':email
             };
             $('#loading').show();
             $.ajax({
@@ -768,11 +795,25 @@
                     else {
                         $('#loading').hide();
                         console.log('ko');
+                        swal({
+                            title: "Erreur",
+                            text: "Une erreur s'est produite",
+                            type: "error",
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
                     }
 
                 },
                 error: function (data) {
-                    // do something
+                    $('#loading').hide();
+                    swal({
+                        title: "Erreur",
+                        text: "Une erreur s'est produite",
+                        type: "error",
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
                 }
             });
 
@@ -829,13 +870,8 @@
                 success: function (data) {
                     $('#loading').hide();
                     if (data.status === true) {
-                        swal({
-                            title: "Success",
-                            text: "L'opératon a été effectuée avec success",
-                            type: "success",
-                            timer: 1500,
-                            showConfirmButton: false
-                        });
+                        if(data.filepath);
+                        window.open("<?=base_url()?>" + data.filepath);
                         $(".orderActualStatus").attr("data-status", data.orderStatus    );
                     }
                     else {
@@ -1049,6 +1085,141 @@
     });
 </script>
 
+
+
+<!--Edit Product-->
+
+<script>
+    $(document).ready(function () {
+        $('.editProductsModal').on('click',getProduct);
+        $('#editProviderProducts').on('click', editProductProviderForm);
+        function editProductProviderForm() {
+            var row = $(this).closest('.modal-content');
+            var product={
+              'id':     row.find('input[name=id]').val(),
+              'name':   row.find('input[name=name]').val(),
+              'unit_price':  row.find('input[name=price]').val()
+            };
+            $.ajax({
+                    url: "<?php echo base_url('admin/product/apiEditForProvider'); ?>",
+                    type: "POST",
+                    dataType: "json",
+                    data: {'product':product},
+                    success: function (data) {
+                        if (data.status === 'success') {
+                            swal({
+                                title: "Success",
+                                text: "Le produite a été bien modifié",
+                                type: "success",
+                                timer: 1500,
+                                showConfirmButton: false
+                            });
+                        }
+                        else {
+                            swal({
+                                title: "Erreur",
+                                text: "Une erreur s'est produite",
+                                type: "error",
+                                timer: 1500,
+                                showConfirmButton: false
+                            });
+                        }
+                    },
+                    error: function (data) {
+                        swal({
+                            title: "Erreur",
+                            text: "Une erreur s'est produite",
+                            type: "error",
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+                    }
+               });
+        }
+        function getProduct() {
+            var product = $(this).attr('data-id');
+            $.ajax({
+                    url: "<?php echo base_url('admin/product/apiGetByProvider'); ?>",
+                    type: "POST",
+                    dataType: "json",
+                    data: {'product':product,'provider': $('#provider_id').attr('data-id')},
+                    success: function (data) {
+                        if (data.status === 'success') {
+                            console.log(data['product']['name']);
+                            $('#editProductsModal input[name=id]').val(data['product']['id']);
+                            $('#editProductsModal input[name=name]').val(data['product']['name']);
+                            $('#editProductsModal input[name=price]').val(data['product']['unit_price']);
+                        }
+                        else {
+
+                        }
+                    },
+                    error: function (data) {
+                    }
+               });
+        }
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $('a.deleteOrder').on('click', deleteOrder);
+
+
+        function deleteOrder() {
+            var order_id = $(this).attr('data-id');
+            $(this).closest('tr').hide();
+            swal({
+                    title: "Attention ! ",
+                    text: "Vous voulez vraiment supprimer cette commande ?",
+                    type: "warning",
+                    showConfirmButton: true,
+                    showCancelButton: true,
+                    cancelButtonText: 'Non',
+                    confirmButtonText: 'Oui'
+                },
+                function () {
+                    $.ajax({
+                        url: "<?php echo base_url('admin/provider/apiDeleteOrder'); ?>",
+                        type: "POST",
+                        dataType: "json",
+                        data: {'order_id': order_id},
+                        success: function (data) {
+                            if (data.status === 'success') {
+                                swal({
+                                    title: "Success",
+                                    text: "Le commande a été bien supprimé",
+                                    type: "success",
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                });
+                            }
+                            else {
+                                swal({
+                                    title: "Erreur",
+                                    text: "Une erreur s'est produite",
+                                    type: "error",
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                });
+                            }
+                        },
+                        error: function (data) {
+                            swal({
+                                title: "Erreur",
+                                text: "Une erreur s'est produuite",
+                                type: "error",
+                                timer: 1500,
+                                showConfirmButton: false
+                            });
+                        }
+                    });
+
+                });
+
+
+        }
+    });
+</script>
 
 <!--init_echarts-->
 <script>

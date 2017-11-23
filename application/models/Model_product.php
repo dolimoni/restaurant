@@ -3,10 +3,12 @@
 class model_product extends CI_Model {
 
 
-	public function addQuantity($quantity_id)
+	public function addQuantity($quantity)
 	{
-        $this->db->where("id", $quantity_id);
-		$this->db->get('quantity')->row_array();
+
+        $this->db->insert('quantity', $quantity);
+       /* $this->db->where("id", $quantity_id);
+		$this->db->get('quantity')->row_array();*/
 	}
 
 	public function updateActiveQuantity($quantity_id,$data)
@@ -22,9 +24,9 @@ class model_product extends CI_Model {
 	}
 	public function getActiveQuantityByProduct($product)
 	{
-        $this->db->where("product",$product );
+        $this->db->where("product",$product);
         $this->db->where("status", 'active');
-		$this->db->get('quantity');
+		return $this->db->get('quantity')->row_array();
 	}
 	public function add($product)
 	{
@@ -61,6 +63,24 @@ class model_product extends CI_Model {
 
             $this->updateLocalQuantity($product['id'], $product['quantity'], 'up');
             $this->updateQuantity($product['id'], $product['quantity'], 'up');
+        }
+    }
+
+    public function apiEditForProvider($product,$newQuantity=false)
+    {
+        $dataProduct = array(
+            'name' => $product['name'],
+        );
+        $this->db->where('id', $product['id']);
+        $this->db->update('product', $dataProduct);
+
+        if($newQuantity){
+            $dataQuantity = array(
+                'product' => $product['id'],
+                'quantity' => 0,
+                'unit_price' => $product['unit_price']
+            );
+            $this->db->insert('quantity', $dataQuantity);
         }
     }
 
@@ -225,24 +245,16 @@ class model_product extends CI_Model {
 		$result = $this->db->get('product');
 		return $result->row_array();
 	}
-	
-	public function update($f_name,$l_name,$u_bday,$u_position,$u_type,$u_pass,$u_mobile,$u_gender,$u_address,$u_id)
+	public function getByProvider($product, $provider)
 	{
-		$data = array(
-			'first_name' => $f_name,
-			'last_name' => $l_name,
-			'birthday' => $u_bday,
-			'position' => $u_position,
-			'type' => $u_type,
-			'password' => $u_pass,
-			'mobile' => $u_mobile,
-			'gender' => $u_gender,
-			'address' => $u_address
-        );
-
-		$this->db->where('id', $u_id);
-		$this->db->where("(su != 1)");
-		$this->db->update('users', $data); 
+		$this->db->select('*');
+		$this->db->from('product p');
+        $this->db->join('quantity q', 'p.id=q.product');
+        $this->db->where('q.status', 'active');
+		$this->db->where('p.id', $product);
+		$this->db->where('provider', $provider);
+		$result = $this->db->get();
+		return $result->row_array();
 	}
 
 

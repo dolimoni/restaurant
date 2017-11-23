@@ -143,8 +143,8 @@ class model_provider extends CI_Model {
 	{
         $this->db->select('*,p.id as id, q.id as q_id');
         $this->db->from('product p');
-        $this->db->join('quantity q','q.product=p.id');
-        $this->db->where('q.status','active');
+        $this->db->join('quantity q','q.product=p.id and q.status="active"','left');
+        //$this->db->where('q.status','active');
 		$this->db->where('p.provider', $id);
 		$result = $this->db->get();
 		return $result->result_array();
