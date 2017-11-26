@@ -11,34 +11,39 @@
         <div class="clearfix"></div>
         <hr>
         <div class="row tile_count">
-            <div class="col-md-3 col-sm-4 col-xs-6 tile_stats_count">
+            <div class="col-md-3 col-sm-6 col-xs-12 tile_stats_count">
                 <span class="count_top"><i class="fa fa-line-chart"></i> Nombre de produits</span>
                 <div class="count productsCount">1</div>
                 <!--<span class="count_bottom"><i class="green">4% </i> From last Week</span>-->
             </div>
-            <div class="col-md-3 col-sm-4 col-xs-6 tile_stats_count">
+            <div class="col-md-3 col-sm-6 col-xs-12 tile_stats_count">
                 <span class="count_top"><i class="fa fa-line-chart"></i> Coût</span>
                 <div class="count cost">0DH</div>
                 <!--<span class="count_bottom"><i class="green"><i class="fa fa-sort-asc"></i>3% </i> From last Week</span>-->
             </div>
-            <div class="col-md-3 col-sm-4 col-xs-6 tile_stats_count">
+            <div class="col-md-3 col-sm-6 col-xs-12 tile_stats_count">
                 <span class="count_top"><i class="fa fa-line-chart"></i> Prix de vente</span>
                 <div class="count sellPrice green">0DH</div>
                 <!--<span class="count_bottom"><i class="green"><i class="fa fa-sort-asc"></i>69% </i></span>-->
             </div>
-            <div class="col-md-3 col-sm-4 col-xs-6 tile_stats_count">
+            <div class="col-md-3 col-sm-6 col-xs-12 tile_stats_count">
                 <span class="count_top"><i class="fa fa-line-chart"></i> Bénifices</span>
                 <div class="count gain">0DH</div>
                 <!--<span class="count_bottom"><i class="red"><i class="fa fa-sort-desc"></i>12% </i> par rapport au dernier prix</span>-->
             </div>
         </div>
 
-        <div class="article-title text-center">
-            <h4 style="display: inline;">Nom de l'article : </h4> <input type="text" class="mealName" name="name"/>
-            <h4 style="display: inline;">Prix de vente : </h4> <input type="text" class="sellPrice" name="sellPrice"/>
+        <div class="article-title text-center row">
+           <div class="col-md-offset-1 col-md-5 col-sm-6 col-xs-12">
+               <h4 style="display: inline;">Nom de l'article : </h4> <input type="text" class="mealName" name="name"/>
+           </div>
+            <div class="col-md-5 col-sm-6 col-xs-12">
+                <h4 style="display: inline;">Prix de vente : </h4> <input type="text" class="sellPrice"
+                                                                          name="sellPrice"/>
+            </div>
         </div>
         <div class="row mealComposition">
-            <div class="col-md-6 col-sm-6 col-xs-6 product" data-id="1">
+            <div class="col-md-6 col-sm-6 col-xs-12 product" data-id="1">
                 <div class="x_panel">
                     <div class="x_title">
                         <h2>Produit</h2>
@@ -55,7 +60,7 @@
                                 <div class="">
                                    <div class="x_content">
 
-                                       <select name="product" class="productSelect">
+                                       <select name="product" class="productSelect  md-button-v">
                                            <?php foreach ($products as $product){ ?>
                                                <option value="<?php echo $product['id'] ?>" data-unit="<?php echo $product['unit'] ?>" data-price="<?php echo $product['unit_price'] ?>">
                                                    <?php echo $product['name'] ?>
@@ -74,18 +79,18 @@
                                             }
                                         }
                                        ?>
-                                       <select name="kgUnitHidden" class="kgUnitHidden" <?php echo $KgUnitHidden ?>>
+                                       <select name="kgUnitHidden" class="kgUnitHidden  md-button-v" <?php echo $KgUnitHidden ?>>
                                            <option value="1" name="Kilogramme">Kilogramme</option>
                                            <option value="0.001" name="Gramme">Gramme</option>
                                            <option value="0.000001" name="Milligramme">Milligramme</option>
                                        </select>
-                                       <select name="lUnitHidden" class="lUnitHidden" <?php echo $LUnitHidden ?>>
+                                       <select name="lUnitHidden" class="lUnitHidden  md-button-v" <?php echo $LUnitHidden ?>>
                                                <option>Litre</option>
                                                <option>Centilitre</option>
                                                <option>Millilitre</option>
                                        </select>
                                        Quantité :
-                                       <input class="form-inline" placeholder="Quantité" name="quantity"
+                                       <input class="form-inline  md-button-v" placeholder="Quantité" name="quantity"
                                                          type="text"><!--<span class="ProductUnit"> Kg</span>
                                        <div class="text-center productCost">0 Dh</div>-->
                                    </div>
@@ -105,7 +110,7 @@
             <span class="fa fa-plus"></span> Nouveau produit
         </button>
 
-        <div class="col-md-6 col-sm-6 col-xs-6 product productModel" hidden>
+        <div class="col-md-6 col-sm-6 col-xs-12 product productModel" hidden>
             <div class="x_panel">
                 <div class="x_title">
                     <h2>Produit</h2>
@@ -122,7 +127,7 @@
                             <div class="">
                                 <div class="x_content" id="newContent">
 
-                                    <select name="product" class="productSelectNew">
+                                    <select name="product" class="productSelectNew  md-button-v">
                                         <?php foreach ($products as $product) { ?>
                                             <option value="<?php echo $product['id']; ?>"
                                                     data-unit="<?php echo $product['unit'] ?>"
@@ -131,17 +136,17 @@
                                             </option>
                                         <?php } ?>
                                     </select>
-                                    <select name="kgUnitHidden" class="kgUnitHidden" <?php echo $KgUnitHidden ?>>
+                                    <select name="kgUnitHidden" class="kgUnitHidden  md-button-v" <?php echo $KgUnitHidden ?>>
                                         <option value="1" name="Kilogramme">Kilogramme</option>
                                         <option value="0.001" name="Gramme">Gramme</option>
                                         <option value="0.000001" name="Milligramme">Milligramme</option>
                                     </select>
-                                    <select name="lUnitHidden" class="lUnitHidden" <?php echo $LUnitHidden ?>>
+                                    <select name="lUnitHidden" class="lUnitHidden  md-button-v" <?php echo $LUnitHidden ?>>
                                         <option>Litre</option>
                                         <option>Centilitre</option>
                                         <option>Millilitre</option>
                                     </select>
-                                    Quantité : <input class="form-inline" placeholder="Quantité" name="quantity"
+                                    Quantité : <input class="form-inline  md-button-v" placeholder="Quantité" name="quantity"
                                                       type="text">
                                 </div>
                             </div>
@@ -160,8 +165,30 @@
 
 
         <?php
-        include ('include/groups.php');
+        //Columns must be a factor of 12 (1,2,3,4,6,12)
+        $numOfCols = 6;
+        $numOfSMCols = 1;
+        $rowCount = 0;
+        $bootstrapColMDWidth = 12 / $numOfCols;
+        $bootstrapColSMWidth = 12 / $numOfSMCols;
         ?>
+        <div class="row">
+            <?php
+            foreach ($groups as $group) {
+                ?>
+                <div class="col-md-<?php echo $bootstrapColMDWidth; ?> col-xs-12 col-sm-<?php echo $bootstrapColSMWidth; ?>">
+                    <div class="well" data-id="<?php echo $group['g_id'] ?>">
+                        <img src="<?php echo base_url(); ?>assets/images/<?php echo $group['image'] ?>" alt=""
+                             class="img-responsive">
+                        <h4 class="brief text-center"><?php echo $group['g_name'] ?></h4>
+                    </div>
+                </div>
+                <?php
+                $rowCount++;
+                if ($rowCount % $numOfCols == 0) echo '</div><div class="row">';
+            }
+            ?>
+        </div>
 
         <input type="submit" name="buttonSubmit" value="Confirmer" class="btn btn-success"/>
     </div>

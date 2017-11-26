@@ -1,4 +1,12 @@
 <?php $this->load->view('admin/partials/admin_header.php'); ?>
+<style>
+    .profile_details:nth-child(2n) {
+        clear: none;
+    }
+    .profile_details:nth-child(3n) {
+        clear: none;
+    }
+</style>
 <!-- page content -->
 <div class="right_col" role="main">
     <div class="productsList">
@@ -12,7 +20,7 @@
         <h4 style="display: inline;">Nombre de produit à ajouter : </h4> <input type="text" name="productSize"/>
         <div class="btn btn-info productSize">Ajouter</div>
         <div class="row productsListContent">
-            <div class="col-md-6 col-sm-6 col-xs-6 productItem" data-id="1">
+            <div class="col-md-6 col-sm-12 col-xs-12 productItem" data-id="1">
                 <div class="x_panel">
                     <div class="x_title">
                         <h2>Produit</h2>
@@ -75,7 +83,7 @@
             </div>
         </div>
 
-        <div class="col-md-6 col-sm-6 col-xs-6 productItem productModel" hidden>
+        <div class="col-md-6 col-sm-12 col-xs-12 productItem productModel" hidden>
             <div class="x_panel">
                 <div class="x_title">
                     <h2>Produit</h2>

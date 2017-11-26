@@ -36,7 +36,10 @@ class Meal extends CI_Controller {
         $data['meal'] = $this->model_meal->get($meal_id);
         $data['products'] = $this->model_meal->getProducts($meal_id);
         $data['report'] = $this->model_report->reportById($meal_id);
-        //log_message('error', 'Some variable did not contain a value.');
+        $start = date('Y-m-d', strtotime('-1 month'));
+        $end = date('Y-m-d');
+        $evolution = $this->model_report->evolutionRange($meal_id, $start, $end);
+        $data['report']['rds']=count($this->rds($evolution));
         $this->load->view('admin/meal/report',$data);
     }
 
@@ -45,19 +48,19 @@ class Meal extends CI_Controller {
 
         $evolution = $this->model_report->evolution($meal_id);
 
-        $cas = array_column($evolution, 'ca');
+        $rds = array_column($evolution, 'rd');
 
         function date_sort($a, $b)
         {
             return strtotime($a) - strtotime($b);
         }
 
-        usort($cas, "date_sort");
+        usort($rds, "date_sort");
 
 
         $this->output
             ->set_content_type("application/json")
-            ->set_output(json_encode(array('status' => true, 'evolution' => $evolution,'cas'=>$cas)));
+            ->set_output(json_encode(array('status' => true, 'evolution' => $evolution,'rds'=> $rds)));
     }
     public function apiEvolutionRange(){
 
@@ -66,19 +69,26 @@ class Meal extends CI_Controller {
         $endDate = $this->input->post('endDate');
         $evolution = $this->model_report->evolutionRange($meal_id, $startDate,$endDate);
 
-        $cas = array_column($evolution, 'ca');
+
+
+
+        $this->output
+            ->set_content_type("application/json")
+            ->set_output(json_encode(array('status' => true, 'evolution' => $evolution,'rds'=>$this->rds($evolution))));
+    }
+
+    // sort attribut createdAt
+    private function rds($evolution){
+        $rds = array_column($evolution, 'report_date');
 
         function date_sort($a, $b)
         {
             return strtotime($a) - strtotime($b);
         }
 
-        usort($cas, "date_sort");
+        usort($rds, "date_sort");
 
-
-        $this->output
-            ->set_content_type("application/json")
-            ->set_output(json_encode(array('status' => true, 'evolution' => $evolution,'cas'=>$cas)));
+        return $rds;
     }
     public function mypdfTest()
     {
@@ -148,6 +158,7 @@ class Meal extends CI_Controller {
         if (!$this->input->post('groupName')) {
             $data['message'] = '';
             $data['groups'] = $this->model_group->getAll();
+            $data['productsToOrder'] = $this->model_product->getToOrder();
             $this->parser->parse('admin/meal/view_group', $data);
         }else{
 
@@ -298,10 +309,10 @@ class Meal extends CI_Controller {
     {
         try {
             $destination="uploads/articlePrg/";
-            $this->uploadFile($destination);
+            $aa=$this->uploadFile($destination);
 
             $zip = new ZipArchive;
-            $res = $zip->open($file_path);
+            $res = $zip->open($aa);
             $file_name='';
             if ($res === TRUE) {
                 $zip->extractTo($destination);
@@ -354,19 +365,31 @@ class Meal extends CI_Controller {
     }
     public function apiLoadMeals()
     {
-        $mealsList=$this->input->post('mealsList');
-        $type = $this->input->post('type');
-        if ($type === "save") {
-            $response = $this->model_meal->addMeals($mealsList);
-            $this->output
-                ->set_content_type("application/json")
-                ->set_output(json_encode(array('status' => $response['status'], 'mealsExist' => $response['mealsExist'])));
+        $type='';
+        try {
+            $mealsList      = $this->input->post('mealsList');
+            $type           = $this->input->post('type');
 
-        } else if ($type === "update") {
-            $response = $this->model_meal->updateMeals($mealsList);
+            if ($type === "save") {
+                $response = $this->model_meal->addMeals($mealsList);
+                $this->output
+                    ->set_content_type("application/json")
+                    ->set_output(json_encode(array('flag' => 'ok', 'status' => $response['status'], 'mealsExist' => $response['mealsExist'])));
+
+            } else if ($type === "update") {
+                $response = $this->model_meal->updateMeals($mealsList);
+                $this->output
+                    ->set_content_type("application/json")
+                    ->set_output(json_encode(array('status' => $response['status'], 'redirect' => base_url('admin/meal/index'), 'res' => $response)));
+            }else{
+                $this->output
+                    ->set_content_type("application/json")
+                    ->set_output(json_encode(array('status' => 'error')));
+            }
+        } catch (Exception $e) {
             $this->output
                 ->set_content_type("application/json")
-                ->set_output(json_encode(array('status' => $response['status'],'redirect'=>base_url('admin/meal/index'),'res'=>$response)));
+                ->set_output(json_encode(array('status' => 'error')));
         }
 
     }

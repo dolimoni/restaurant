@@ -14,37 +14,37 @@
 
         <!-- page content -->
         <div class="right_col" role="main">
-            <pre>
-                <?php print_r($report); ?>
-            </pre>
+           <!-- <pre>
+                <?php /*print_r($report); */?>
+            </pre>-->
             <!-- top tiles -->
             <div class="row tile_count">
-                <div class="col-md-3 col-sm-4 col-xs-6 tile_stats_count">
+                <div class="col-md-3 col-sm-4 col-xs-12 tile_stats_count">
                     <span class="count_top"><i class="fa fa-user"></i> Total de vente</span>
-                    <div class="count"><?php echo number_format((float)$report['s_amount'], 2, '.', '') ;?>DH</div>
-                    <span class="count_bottom"><i class="green">4% </i> From last Week</span>
+                    <div class="count report_amount"><?php echo number_format((float)$report['amount']* $report['s_quantity'], 2, '.', '') ;?>DH</div>
+                   <!-- <span class="count_bottom"><i class="green">4% </i> From last Week</span>-->
                 </div>
-                <div class="col-md-3 col-sm-4 col-xs-6 tile_stats_count">
+                <div class="col-md-3 col-sm-4 col-xs-12 tile_stats_count">
                     <span class="count_top"><i class="fa fa-user"></i>Coût de fabrication</span>
-                    <div class="count"><?php echo number_format((float)($report['s_cost'] ), 2, '.', ''); ?>DH</div>
-                    <span class="count_bottom"><i class="green"><i
-                                class="fa fa-sort-asc"></i>34% </i> From last Week</span>
+                    <div class="count red report_cost"><?php echo number_format((float)($report['s_cost'] ), 2, '.', ''); ?>DH</div>
+                   <!-- <span class="count_bottom"><i class="green"><i
+                                class="fa fa-sort-asc"></i>34% </i> From last Week</span>-->
                 </div>
-                <div class="col-md-3 col-sm-4 col-xs-6 tile_stats_count">
-                    <span class="count_top"><i class="fa fa-user"></i> Profit</span>
-                    <div class="count green"><?php echo number_format((float)($report['s_amount']-$report['s_cost']), 2, '.', ''); ?>DH</div>
-                    <span class="count_bottom"><i class="red"><i
-                                class="fa fa-sort-desc"></i>12% </i> From last Week</span>
+                <div class="col-md-3 col-sm-4 col-xs-12 tile_stats_count">
+                    <span class="count_top"><i class="fa fa-user"></i> Bénéfices</span>
+                    <div class="count green report_profit"><?php echo number_format((float)($report['amount'] * $report['s_quantity']- $report['s_cost']), 2, '.', ''); ?>DH</div>
+                  <!--  <span class="count_bottom"><i class="red"><i
+                                class="fa fa-sort-desc"></i>12% </i> From last Week</span>-->
                 </div>
-                <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+                <div class="col-md-2 col-sm-4 col-xs-12 tile_stats_count">
                     <span class="count_top"><i class="fa fa-clock-o"></i> Quantitées vendu</span>
-                    <div class="count"><?php echo number_format((float)$report['s_quantity'], 0, '.', ''); ?></div>
-                    <span class="count_bottom"><i class="green"><i
-                                    class="fa fa-sort-asc"></i>3% </i> From last Week</span>
+                    <div class="count report_quantity"><?php echo number_format((float)$report['s_quantity'], 0, '.', ''); ?></div>
+                    <!--<span class="count_bottom"><i class="green"><i
+                                    class="fa fa-sort-asc"></i>3% </i> From last Week</span>-->
                 </div>
-                <div class="col-md-1 col-sm-4 col-xs-6 tile_stats_count">
+                <div class="col-md-1 col-sm-4 col-xs-12 tile_stats_count">
                     <span class="count_top">Produits</span>
-                    <div class="count"><?php echo count($report['mealConsumptionRate']);?></div>
+                    <div class="count report_products"><?php echo count($report['mealConsumptionRate']);?></div>
                 </div>
 
                 <!--<div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
@@ -85,54 +85,6 @@
                             <div id="chart_plot_01" class="demo-placeholder" hidden></div>
                             <div id="chartContainer1" style="height: 370px; width: 100%;" hidden></div>
                         </div>
-                        <!--<div class="col-md-3 col-sm-3 col-xs-12 bg-white">
-                            <div class="x_title">
-                                <h2>Top Campaign Performance</h2>
-                                <div class="clearfix"></div>
-                            </div>
-
-                            <div class="col-md-12 col-sm-12 col-xs-6">
-                                <div>
-                                    <p>Facebook Campaign</p>
-                                    <div class="">
-                                        <div class="progress progress_sm" style="width: 76%;">
-                                            <div class="progress-bar bg-green" role="progressbar"
-                                                 data-transitiongoal="80"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div>
-                                    <p>Twitter Campaign</p>
-                                    <div class="">
-                                        <div class="progress progress_sm" style="width: 76%;">
-                                            <div class="progress-bar bg-green" role="progressbar"
-                                                 data-transitiongoal="60"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-12 col-sm-12 col-xs-6">
-                                <div>
-                                    <p>Conventional Media</p>
-                                    <div class="">
-                                        <div class="progress progress_sm" style="width: 76%;">
-                                            <div class="progress-bar bg-green" role="progressbar"
-                                                 data-transitiongoal="40"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div>
-                                    <p>Bill boards</p>
-                                    <div class="">
-                                        <div class="progress progress_sm" style="width: 76%;">
-                                            <div class="progress-bar bg-green" role="progressbar"
-                                                 data-transitiongoal="50"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>-->
 
                         <div class="clearfix"></div>
                     </div>
@@ -170,7 +122,7 @@
                             <h4>Quantité des produits utitlisés</h4>
                             <?php foreach ($report['mealConsumptionRate'] as $mealConsumptionRate) { ?>
 
-                            <div class="widget_summary">
+                            <div class="widget_summary product-quantity" id="quantity_<?php echo $mealConsumptionRate['id'] ?>" >
                                 <div class="w_left w_25">
                                     <?php echo $mealConsumptionRate['name'];?>
                                 </div>
@@ -188,7 +140,12 @@
                                         if($mealConsumptionRate['unit']==='pcs'){
                                             $l_quantity= number_format((float)$l_quantity, 0, '.', '');
                                         }
-                                        echo $l_quantity.' '. $mealConsumptionRate['unit'];
+                                        echo $l_quantity.' ';
+                                        ?>
+                                    </span>
+                                    <span>
+                                        <?php
+                                            echo $mealConsumptionRate['unit'];
                                         ?>
                                     </span>
                                 </div>
@@ -381,7 +338,8 @@
 <script>
     var rangeLink = "<?php echo base_url('admin/report/apiRange'); ?>";
 </script>
-<script src="<?php echo base_url('assets/build2/js/custom.js'); ?>"></script>
+
+<script src="<?php echo base_url('assets/build2/js/dateRangePicker.js'); ?>"></script>
 
 <script src="<?php echo base_url('assets/vendors/Flot/jquery.flot.js');?>"></script>
 <script src="<?php echo base_url('assets/vendors/Flot/jquery.flot.pie.js');?>"></script>
@@ -396,11 +354,14 @@
         echo "var mealConsumptionRate = " . $js_array . ";\n";
         ?>
 
+
+
         var myDataPoints=[];
           $.each(mealConsumptionRate, function (key, mealConsumptionRateProduct) {
                 var point={
                     y: mealConsumptionRateProduct['avg_unit_price']* mealConsumptionRateProduct['sum_quantity'],
-                    label: mealConsumptionRateProduct['name']
+                    label: mealConsumptionRateProduct['name'],
+                    unit: 'DH'
                 };
               myDataPoints.push(point);
             });
@@ -412,7 +373,7 @@
                 //innerRadius: 60,
                 indexLabelFontSize: 17,
                 indexLabel: "{label} - #percent%",
-                toolTipContent: "<b>{label}:</b> {y} (#percent%)",
+                toolTipContent: "<b>{label}:</b> {y}{unit} (#percent%)",
                 dataPoints: myDataPoints
             }]
         });
@@ -434,7 +395,7 @@
 
 
 <script>
-    var daysInReport=<?php echo $report['days']; ?>;
+    var daysInReport=<?php echo $report['rds']; ?>;
     $.ajax({
         url: "<?php echo base_url('admin/meal/apiEvolution'); ?>",
         type: "POST",
@@ -442,6 +403,7 @@
         data: {'id':<?php echo $report['meal'];?>},
         success: function (data) {
             if (data.status === true) {
+
                 if(daysInReport===1){
                     $("#chart_plot_01").hide();
                     $("#chartContainer1").fadeIn();
@@ -465,29 +427,28 @@
         var quantity = [];
         var profit = [];
 
-        var amountData = {y: parseInt(<?php echo number_format((float)$report['s_amount'], 2, '.', '');?>), label: "<?php echo $report['name'];?>"};
-        var quantityData = {y: parseInt(<?php echo number_format((float)$report['s_amount'], 0, '.', '');?>), label: "<?php echo $report['name'];?>"};
-        var profitData = {y: parseInt(<?php echo number_format((float)$report['s_profit'], 2, '.', '');?>), label: "<?php echo $report['name'];?>"};
+        var amountData = {y: parseFloat(<?php echo number_format((float)$report['amount'] * $report['s_quantity'], 2, '.', '');?>), label: "<?php echo $report['name'];?>"};
+        var quantityData = {y: parseFloat(<?php echo number_format((float)$report['amount'], 0, '.', '');?>), label: "<?php echo $report['name'];?>"};
+        var profitData = {y: parseFloat(<?php echo number_format((float)$report['amount']* $report['s_quantity']- $report['s_cost'], 2, '.', '');?>), label: "<?php echo $report['name'];?>"};
 
-        console.log(data[0]['s_amount']);
-        console.log(data[0]['s_quantity']);
-        console.log(data[0]['profit']);
+
         if(data){
              amountData = {
-                 y: parseInt(data[0]['s_amount']),
+                 y: parseFloat(data[0]['amount'])* parseFloat(data[0]['s_quantity']),
                  label: "'"+ data[0]['name']+"'"
              };
             quantityData = {
-                 y: parseInt(data[0]['s_quantity']),
+                 y: parseFloat(data[0]['s_quantity']),
                  label: "'"+ data[0]['name']+"'"
              };
             profitData = {
-                 y: parseInt(data[0]['profit']* data[0]['s_quantity']),
+                 y: parseFloat(data[0]['amount'] * data[0]['s_quantity'] - data[0]['s_cost']),
                  label: "'"+ data[0]['name']+"'"
              };
 
+
+
         }
-        console.log(amountData);
         amount.push(amountData);
         quantity.push(quantityData);
         profit.push(profitData);
@@ -521,7 +482,6 @@
                 }]
         });
         chart.render();
-
         function toolTipFormatter(e) {
             var str = "";
             var total = 0;
@@ -622,14 +582,14 @@
 
 
         $.each(data, function (key, entry) {
-            var d = new Date(entry['ca']);
+            var d = new Date(entry['rd']);
 
             if (!!d.valueOf()) { // Valid date
                 console.log(entry['profit']);
-                console.log(entry['s_quantity']);
-                chartSellsArray.push([gd(d.getFullYear(), d.getMonth()+1, d.getDate()), entry['s_amount']]);
-                chartProfitsArray.push([gd(d.getFullYear(), d.getMonth()+1, d.getDate()), entry['profit']* entry['s_quantity']]);
-                chartCostsArray.push([gd(d.getFullYear(), d.getMonth()+1, d.getDate()), entry['s_amount'] - entry['profit']* entry['s_quantity']]);
+                console.log(entry);
+                chartSellsArray.push([gd(d.getFullYear(), d.getMonth()+1, d.getDate()), parseFloat(entry['amount'] * entry['s_quantity'])]);
+                chartProfitsArray.push([gd(d.getFullYear(), d.getMonth()+1, d.getDate()), (parseFloat(entry['amount'] * entry['s_quantity'] - entry['s_cost'])) ]);
+                chartCostsArray.push([gd(d.getFullYear(), d.getMonth()+1, d.getDate()), entry['s_cost']]);
             }
         });
         chartSells['data']= chartSellsArray;
@@ -650,8 +610,6 @@
             ]
         }];
 
-        console.log(arr_data1);
-        console.log(DATA);
 
         $.plot($("#chart_plot_01"), arr_data1, chart_plot_01_settings);
 
@@ -671,15 +629,73 @@
             data: myData,
             success: function (data) {
                 if (data.status === true) {
-                    if (data.evolution.length===1) {
+                    /*****************************CHANGE GRAPH****************************************************/
+                    //empty quantity graph
+                    $('.product-quantity .progress-bar').css({
+                        'display': 'none',
+                    });
+                    $('.product-quantity .w_right span:nth-child(1)').html(0);
+                    //price graph
+                    var myDataPoints = [];
+                    var mealConsumptionRateRange = data.evolution.mealConsumptionRateRange;
+                    $.each(mealConsumptionRateRange, function (key, mealConsumptionRateProduct) {
+                        if (mealConsumptionRateProduct['avg_unit_price']) {
+                            var point = {
+                                y: mealConsumptionRateProduct['avg_unit_price'] * mealConsumptionRateProduct['sum_quantity'],
+                                label: mealConsumptionRateProduct['name'],
+                                unit: 'DH'
+                            };
+                            myDataPoints.push(point);
+
+                            //change quantity graph
+                            $('#quantity_' + mealConsumptionRateProduct['id'] + ' .progress-bar').attr('style', 'width: ' + Math.round(mealConsumptionRateProduct['sum_quantity'] / mealConsumptionRateRange['totalQuantity'] * 100) + '%')
+                            $('#quantity_' + mealConsumptionRateProduct['id'] + ' .w_right span:nth-child(1)').html(mealConsumptionRateProduct['sum_quantity']);
+                        }
+                    });
+
+                    var chart = new CanvasJS.Chart("chartContainer", {
+                        animationEnabled: true,
+                        data: [{
+                            type: "doughnut",
+                            startAngle: 60,
+                            //innerRadius: 60,
+                            indexLabelFontSize: 17,
+                            indexLabel: "{label} - #percent%",
+                            toolTipContent: "<b>{label}:</b> {y} (#percent%)",
+                            dataPoints: myDataPoints
+                        }]
+                    });
+                    chart.render();
+                    /*********************************************************************************/
+                    var cost =0;
+                    if (data.rds.length===1) {
                         $("#chart_plot_01").hide();
                         $("#chartContainer1").fadeIn();
                         oneDayChart(data.evolution);
+                        cost = parseFloat(data.evolution[0]['s_cost']).toFixed(2)
                     } else {
                         $("#chartContainer1").hide();
                         $("#chart_plot_01").fadeIn();
                         flot_chart(data.evolution);
+                          $.each(data.evolution, function (key, meal) {
+                                if(meal['id']){
+                                    cost+=parseFloat(meal['s_cost']);
+                                }
+                            });
                     }
+
+                    var productsCount = -2;
+                    $.each(data.evolution.mealConsumptionRateRange, function (key, products) {
+                        productsCount++;
+                    });
+                    var reportData = {
+                        'amount': parseFloat(data.evolution[0]['amount'] * data.evolution[0]['s_quantity']).toFixed(2),
+                        'cost': parseFloat(cost).toFixed(2),
+                        'profit': parseFloat(data.evolution[0]['amount'] * data.evolution[0]['s_quantity'] - data.evolution[0]['s_cost']).toFixed(2),
+                        'quantity': parseInt(data.evolution[0]['s_quantity']),
+                        'products': productsCount,// mealConsumptionRateRange contains products and other variabls
+                    };
+                    changeReportData(reportData);
                 }
                 else {
                     console.log('Error');
@@ -690,11 +706,18 @@
         });
     };
 
+    function changeReportData(data) {
+        $('.report_amount').html(data['amount']+'DH');
+        $('.report_cost').html(data['cost']+'DH');
+        $('.report_profit').html(data['profit']+'DH');
+        $('.report_quantity').html(data['quantity']);
+        $('.report_products').html(data['products']);
+    }
     var optionSet1 = {
         startDate: moment().subtract(29, 'days'),
         endDate: moment(),
-        minDate: '01/01/2012',
-        maxDate: '12/31/2015',
+        minDate: '01/01/2017',
+        maxDate: '12/31/2027',
         dateLimit: {
             days: 60
         },

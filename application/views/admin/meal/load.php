@@ -102,7 +102,7 @@
                             var row = '<tr>' +
                                 '<td data-type="code">' + meal.code + '</td>' +
                                 '<td data-type="name">' + meal.name + '</td>' +
-                                '<td data-type="price">' + meal.price + '</td>' +
+                                '<td data-type="price">' + parseFloat(meal.price / 100).toFixed(2) + '</td>' +
                                 '<td data-type="group">' +group+ '</td>' +
                                 '</tr>';
                             $("#tbodyid").append(row);
@@ -172,7 +172,7 @@
             url: event.data.url,
             type: "POST",
             dataType: "json",
-            data: {"mealsList": mealsList,"type":event.data.type},
+            data: {type: event.data.type, test: 'khalid',mealsList: mealsList},
             success: function (data) {
                 $('#loading').hide();
                 if(data.status=="success"){

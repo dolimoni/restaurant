@@ -51,7 +51,7 @@
             </tbody>
         </table>
         <div class="row productsListContent">
-            <div class="col-md-offset-3 col-md-6 col-sm-6 col-xs-6 productItem" data-id="1">
+            <div class="col-md-offset-3 col-md-6 col-sm-12 col-xs-12 productItem" data-id="1">
                 <div class="x_panel">
                     <div class="x_title">
                         <h2>Produit</h2>

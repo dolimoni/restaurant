@@ -8,7 +8,7 @@ $bootstrapColWidth = 12 / $numOfCols;
     <?php
     foreach ($groups as $group) {
         ?>
-        <div class="col-md-<?php echo $bootstrapColWidth; ?>">
+        <div class="col-md-<?php echo $bootstrapColWidth; ?> col-xs-12 col-sm-12">
             <div class="well" data-id="<?php echo $group['g_id'] ?>">
                 <img src="<?php echo base_url(); ?>assets/images/<?php echo $group['image'] ?>" alt=""
                      class="img-responsive">

@@ -115,10 +115,10 @@
                             <!-- end of skills -->
 
                         </div>
-                        <div class="col-md-9 col-sm-9 col-xs-12">
+                        <div class="col-md-9 col-sm-12 col-xs-12">
 
                             <div class="profile_title">
-                                <div class="col-md-12">
+                                <div class="col-md-12 col-sm-12 col-xs-12">
                                     <div class="x_panel">
                                         <div class="x_title">
                                             <h2>Statistiques des commandes</h2>
@@ -158,28 +158,45 @@
                             <?php include('include/quotationModal.php'); ?>
                             <?php include('include/quotationEditModal.php'); ?>
                             <div class="" role="tabpanel" data-example-id="togglable-tabs">
-                                <ul id="myTab" class="nav nav-tabs bar_tabs" role="tablist">
-                                    <li role="presentation" class="active"><a href="#tab_content0" id="home1-tab"
+
+                                <ul id="myTab" class="nav nav-tabs bar_tabs sm-hidden" role="tablist">
+                                    <li role="presentation" class="active"><a href="#tab_products" id="home1-tab"
                                                                               role="tab"
                                                                               data-toggle="tab" aria-expanded="true">Produits</a>
                                     </li>
-                                    <li role="presentation"><a href="#tab_content1" id="home-tab"
+                                    <li role="presentation"><a href="#tab_productsToOrder" id="home-tab"
                                                                               role="tab"
                                                                               data-toggle="tab" aria-expanded="false">Produits à commander</a>
                                     </li>
-                                    <li role="presentation" class=""><a href="#tab_content2" role="tab" id="profile-tab"
+                                    <li role="presentation" class=""><a href="#tab_orders" role="tab" id="profile-tab"
                                                                         data-toggle="tab" aria-expanded="false">Historique des commandes</a>
                                     </li>
-                                    <li role="presentation" class=""><a href="#tab_content3" role="tab"
+                                    <li role="presentation" class=""><a href="#tab_quotations" role="tab"
                                                                         id="profile-tab2"
                                                                         data-toggle="tab"
                                                                         aria-expanded="false">Devis</a>
                                     </li>
                                 </ul>
-                                <div id="myTabContent" class="tab-content">
+                                <div class="col-md-3 col-sm-12 col-xs-12 md-hidden">
+                                    <!-- required for floating -->
+                                    <!-- Nav tabs -->
+                                    <ul class="nav nav-tabs tabs-left">
+                                        <li class=""><a href="#tab_products" data-toggle="tab" aria-expanded="true">Produits</a>
+                                        </li>
+                                        <li class="active"><a href="#tab_productsToOrder" data-toggle="tab" aria-expanded="true">Produits
+                                                à commander</a>
+                                        </li>
+                                        <li class=""><a href="#tab_orders" data-toggle="tab" aria-expanded="false">Historique
+                                                des commandes</a>
+                                        </li>
+                                        <li><a href="#tab_quotations" data-toggle="tab">Devis</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div id="myTabContent" class="tab-content col-md-12 col-sm-12 col-xs-12">
 
         <!--------------------------------------------Products Tab------------------------------------------------------>
-                                    <div role="tabpanel" class="tab-pane fade active in" id="tab_content0"
+                                    <div role="tabpanel" class="tab-pane fade active in" id="tab_products"
                                          aria-labelledby="home-tab">
                                         <table id="datatable-responsive1" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
                                             <thead>
@@ -229,7 +246,7 @@
 
         <!--------------------------------------------Products to order Tab------------------------------------------------------>
 
-                                    <div role="tabpanel" class="tab-pane fade" id="tab_content1"
+                                    <div role="tabpanel" class="tab-pane fade" id="tab_productsToOrder"
                                          aria-labelledby="home-tab">
 
                                         <table class="data table table-striped no-margin">
@@ -269,53 +286,58 @@
         <!--------------------------------------------End Products to Tab------------------------------------------------------>
 
         <!--------------------------------------------Orders History Tab------------------------------------------------------>
-                                    <div role="tabpanel" class="tab-pane fade" id="tab_content2"
+                                    <div role="tabpanel" class="tab-pane fade" id="tab_orders"
                                          aria-labelledby="profile-tab">
 
                                         <!-- start user projects -->
-                                        <table id="datatable-responsive5" class="data table table-striped no-margin">
-                                            <thead>
-                                            <tr>
-                                                <th>#</th>
-                                                <th>Montant</th>
-                                                <th>Date</th>
-                                                <th>Status</th>
-                                                <th>Actions</th>
-                                            </tr>
-                                            </thead>
-                                            <tfoot>
-                                            <tr>
-                                                <th>#</th>
-                                                <th>Montant</th>
-                                                <th>Date</th>
-                                                <th>Status</th>
-                                                <th>Actions</th>
-                                            </tr>
-                                            </tfoot>
-                                            <tbody>
-                                            <?php foreach ($orders as $order) {
-                                                $orderStatus = "En attente";
-                                                if ($order['status'] === "canceled") {
-                                                    $orderStatus = "Annulée";
-                                                } else if ($order['status'] === "received") {
-                                                    $orderStatus = "Reçue";
-                                                }
-                                            ?>
-                                            <tr>
-                                                <td><?php echo $order['id']; ?></td>
-                                                <td><?php echo $order['ttc']; ?></td>
-                                                <td><?php echo $order['created_at']; ?></td>
-                                                <td><?php echo $orderStatus; ?></td>
-                                                <td class="vertical-align-mid">
-                                                    <a class="btn btn-primary btn-xs editOrderModal" data-toggle="modal"
-                                                       data-target="#editOrderModal"
-                                                       data-id="<?php echo $order['id']; ?>">Modifier</a>
-                                                    <a data-id="<?php echo $order['id']; ?>" class="btn btn-danger btn-xs deleteOrder">Supprimer</a>
-                                                </td>
-                                            </tr>
-                                            <?php } ?>
-                                            </tbody>
-                                        </table>
+                                        <div class="table-responsive">
+                                            <table id="datatable-responsive5"
+                                                   class="data table table-striped no-margin ">
+                                                <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>Montant</th>
+                                                    <th>Date</th>
+                                                    <th>Status</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                                </thead>
+                                                <tfoot>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>Montant</th>
+                                                    <th>Date</th>
+                                                    <th>Status</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                                </tfoot>
+                                                <tbody>
+                                                <?php foreach ($orders as $order) {
+                                                    $orderStatus = "En attente";
+                                                    if ($order['status'] === "canceled") {
+                                                        $orderStatus = "Annulée";
+                                                    } else if ($order['status'] === "received") {
+                                                        $orderStatus = "Reçue";
+                                                    }
+                                                    ?>
+                                                    <tr>
+                                                        <td><?php echo $order['id']; ?></td>
+                                                        <td><?php echo $order['ttc']; ?></td>
+                                                        <td><?php echo $order['created_at']; ?></td>
+                                                        <td><?php echo $orderStatus; ?></td>
+                                                        <td class="vertical-align-mid">
+                                                            <a class="btn btn-primary btn-xs editOrderModal"
+                                                               data-toggle="modal"
+                                                               data-target="#editOrderModal"
+                                                               data-id="<?php echo $order['id']; ?>">Modifier</a>
+                                                            <a data-id="<?php echo $order['id']; ?>"
+                                                               class="btn btn-danger btn-xs deleteOrder">Supprimer</a>
+                                                        </td>
+                                                    </tr>
+                                                <?php } ?>
+                                                </tbody>
+                                            </table>
+                                        </div>
                                         <br/>
                                         <div class="row">
                                             <input type="button" class="btn btn-info" value="Nouvelle commade"
@@ -330,7 +352,7 @@
         <!--------------------------------------------End Orders History Tab------------------------------------------------------>
 
         <!--------------------------------------------Quotation Tab------------------------------------------------------>
-                                    <div role="tabpanel" class="tab-pane fade" id="tab_content3"
+                                    <div role="tabpanel" class="tab-pane fade" id="tab_quotations"
                                          aria-labelledby="profile-tab">
                                         <table id="datatable-responsive4" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
                                             <thead>
@@ -2691,6 +2713,13 @@
             if ($('#echart_pie').length) {
 
                 var echartPie = echarts.init(document.getElementById('echart_pie'), theme);
+
+                $(window).on('resize', function () {
+                    if (echartPie != null && echartPie != undefined) {
+                        echartPie.resize();
+                    }
+                });
+
                 var myData= [];
 
                 <?php
@@ -2738,14 +2767,14 @@
                                     }
                                 }
                             },
-                            restore: {
+                           /* restore: {
                                 show: true,
                                 title: "Restore"
                             },
                             saveAsImage: {
                                 show: true,
                                 title: "Save Image"
-                            }
+                            }*/
                         }
                     },
                     calculable: true,

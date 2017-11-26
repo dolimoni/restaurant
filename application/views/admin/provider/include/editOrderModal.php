@@ -32,12 +32,12 @@
                         <?php foreach ($products as $key => $product) { ?>
                         <div class="row product" data-index="<?php echo $key; ?>" data-id="<?php echo $product['id'];?>">
 
-                            <label class="col-sm-2 control-label">Produit</label>
-                            <div class="col-sm-4">
+                            <label class="col-md-2 col-sm-2 col-xs-12 control-label">Produit</label>
+                            <div class="col-md-4 col-sm-4 col-xs-12">
                                <input name="product" value="<?php echo $product['name']." (". $product['unit_price'].") DH"; ?>" disabled data-id="<?php echo $product['id']; ?>" data-price="<?php echo $product['unit_price']; ?>" data-name="<?php echo $product['name'];?>">
                             </div>
-                            <label class="col-sm-2 control-label">Quantité</label>
-                            <div class="col-sm-4">
+                            <label class="col-md-2 col-sm-2 col-xs-12 control-label">Quantité</label>
+                            <div class="col-md-4 col-sm-4 col-xs-12">
                                 <input type="text" name="quantity" /><span class="productCost"> 0DH</span>
                             </div>
 

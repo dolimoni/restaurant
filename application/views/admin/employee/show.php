@@ -125,7 +125,7 @@
                                </div>
                            </div>
                        </div>
-                        <div class="row">
+                        <div class="row table-responsive">
                             <table id="datatable-salary"
                                    class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0"
                                    width="100%">

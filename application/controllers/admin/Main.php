@@ -1,5 +1,12 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 
+/*
+ * Before uploade :
+ *
+ * change readSalesCSV destination in -f ftp
+ *
+ */
+
 class Main extends CI_Controller
 {
 

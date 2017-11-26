@@ -46,7 +46,7 @@
 
                         <div class="clearfix"></div>
                     </div>
-                    <div class="x_content">
+                    <div class="x_content table-responsive">
                         <table class="table table-striped">
                             <tr>
                                 <th>
@@ -81,15 +81,17 @@
                                 $t_quantity+= $article['s_quantity'];
                                 $t_amount+= $article['s_amount'];
                                 $t_profits+= $article['s_amount'] - $article['s_cost'];
-                                $t_costs+= $article['s_amount'] - $article['s_cost'];
+                                $t_costs+= $article['s_cost'];
                             ?>
                                 <tr data-id="">
                                     <td data-type="name"> <?php echo $article['name']; ?></td>
                                     <td data-type="description">Test</td>
                                     <td data-type="quantity"><?php echo $article['s_quantity']; ?></td>
-                                    <td data-type="amount"><?php echo $article['s_amount']; ?> DH</td>
-                                    <td data-type="benefit" style="background: #6cc; color: white;"><?php echo $article['s_amount']-$article['s_cost']; ?> DH</td>
-                                    <td data-type="cost" class="danger"><?php echo $article['s_cost']; ?> DH</td>
+                                    <td data-type="amount">
+                                        <?php echo number_format((float)$article['s_amount'], 2, '.', ''); ?>DH
+                                    </td>
+                                    <td data-type="benefit" style="background: #6cc; color: white;"><?php echo number_format((float)($article['s_amount']- $article['s_cost']), 2, '.', ''); ?> DH</td>
+                                    <td data-type="cost" class="danger"><?php echo number_format((float)$article['s_cost'], 2, '.', ''); ?> DH</td>
                                     <td>
                                         <!--<button class="btn btn-danger btn-xs action" data-type="delete"
                                                 data-toggle="modal" data-target="#delete"><span
@@ -105,9 +107,9 @@
                                 <td>-</td>
                                 <td>-</td>
                                 <td><?php echo $t_quantity; ?></td>
-                                <td>TOTALE : <?php echo $t_amount; ?>DH</td>
-                                <td style="background: #6cc;color: white;">TOTALE : <?php echo $t_profits; ?>DH</td>
-                                <td class="danger" >TOTALE : <?php echo $t_costs; ?>DH</td>
+                                <td>TOTALE : <?php echo number_format((float)$t_amount, 2, '.', ''); ?>DH</td>
+                                <td style="background: #6cc;color: white;">TOTALE : <?php echo number_format((float)$t_profits, 2, '.', ''); ?>DH</td>
+                                <td class="danger" >TOTALE : <?php echo number_format((float)$t_costs, 2, '.', ''); ?>DH</td>
                                 <td>
                                 </td>
                             </tr>
@@ -138,69 +140,7 @@
     var rangeLink = "<?php echo base_url('admin/report/apiRange'); ?>";
     var mealReportLink = "<?php echo base_url('admin/meal/report/'); ?>";
 </script>
-<script src="<?php echo base_url('assets/build2/js/custom.js'); ?>"></script>
-
-<script>
-    $('button[data-type="validate"]').on('click', function () {
-        var id = $(this).closest('tr').attr('data-id');
-        var tr = $(this).closest('tr');
-        console.log();
-        if (tr.hasClass('validate')) {
-            tr.removeClass('validate');
-        } else {
-            tr.addClass('validate');
-        }
-
-    });
-    $('button[name="validate"]').on('click', function () {
-        var mealsList = [];
-        $('tr.validate').each(function (i, obj) {
-            var tr = $(this);
-            var id = tr.find('td[data-type="id"]').text();
-            var externalCode = tr.find('td[data-type="externalCode"]').text();
-            var description = tr.find('td[data-type="description"]').text();
-            var qunatity = tr.find('td[data-type="quantity"]').text();
-            var amount = tr.find('td[data-type="amount"]').text();
-            var name = tr.find('td[data-type="name"]').text();
-            var product = {
-                'id': id,
-                'externalCode': externalCode,
-                'description': description,
-                'quantity': qunatity,
-                'amount': amount,
-                'name': name
-            };
-            mealsList.push(product);
-        });
-
-        var myData = {'mealsList': mealsList};
-        $.ajax({
-            url: "<?php echo base_url(); ?>admin/meal/apiConsumption",
-            type: "POST",
-            dataType: "json",
-            data: myData,
-            success: function (data) {
-                if (data.status === true) {
-                    swal({
-                        title: "Success",
-                        text: "L'opératon a été effectuée avec success",
-                        type: "success",
-                        timer: 1500,
-                        showConfirmButton: false
-                    });
-                }
-                else {
-                    console.log('Error');
-                }
-            },
-            error: function (data) {
-            }
-        });
-
-
-    });
-
-</script>
+<script src="<?php echo base_url('assets/build2/js/dateRangePicker.js'); ?>"></script>
 
 
 <script type="text/javascript">
@@ -222,6 +162,7 @@
                     var amount = [];
                     var quantity = [];
                     var profit = [];
+                    console.log('--->!',data);
                     $.each(data.articles, function (key, article) {
                         var amountData = {y: parseInt(article['s_amount']), label: article['name']};
                         var quantityData = {y: parseInt(article['s_quantity']), label: article['name']};

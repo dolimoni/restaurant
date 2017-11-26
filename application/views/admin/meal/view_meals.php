@@ -24,7 +24,7 @@
                 foreach ($groups as $group) {
                     ?>
                 <a href="<?php echo base_url('admin/meal/groupMeals/' . $group['g_id']); ?>">
-                    <div class="col-md-<?php echo $bootstrapColWidth; ?>">
+                    <div class="col-md-<?php echo $bootstrapColWidth; ?> col-xs-12 col-sm-12">
                         <div class="well" data-id="<?php echo $group['id'] ?>">
                             <img src="<?php echo base_url(); ?>assets/images/<?php echo $group['image'] ?>" alt=""
                                  class="img-responsive">
@@ -60,7 +60,7 @@
                             </ul>
                             <div class="clearfix"></div>
                         </div>
-                        <div class="x_content">
+                        <div class="x_content table-responsive">
                             <table id="datatable-responsivee"
                                    class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0"
                                    width="100%">

@@ -3,45 +3,63 @@
 <div class="right_col" role="main">
     <div class="productsList">
         <div class="page-title">
+
             <div class="title_left">
                 <h3>Modifier l'article : <?php echo $meal['name']; ?></h3>
             </div>
         </div>
-       <!-- <pre>
-           <?php /*print_r($meal); */?>
-        </pre>-->
+
 
         <div class="clearfix"></div>
         <hr>
         <div class="row tile_count">
-            <div class="col-md-3 col-sm-4 col-xs-6 tile_stats_count">
+            <div class="col-md-3 col-sm-6 col-xs-12 tile_stats_count">
                 <span class="count_top"><i class="fa fa-line-chart"></i> Nombre de produits</span>
                 <div class="count productsCount"><?php echo $meal['products_count']; ?></div>
                 <!--<span class="count_bottom"><i class="green">4% </i> From last Week</span>-->
             </div>
-            <div class="col-md-3 col-sm-4 col-xs-6 tile_stats_count">
+            <div class="col-md-3 col-sm-6 col-xs-12 tile_stats_count">
                 <span class="count_top"><i class="fa fa-line-chart"></i> Coût</span>
-                <div class="count cost"> <?php echo $meal['cost']; ?>DH</div>
+                <div class="count cost">
+                    <?php
+                        if($meal['cost']===''){
+                            $meal['cost']=0;
+                        }
+                        echo $meal['cost'];
+                    ?>
+                    DH</div>
                 <!--<span class="count_bottom"><i class="green"><i class="fa fa-sort-asc"></i>3% </i> From last Week</span>-->
             </div>
-            <div class="col-md-3 col-sm-4 col-xs-6 tile_stats_count">
+            <div class="col-md-3 col-sm-6 col-xs-12 tile_stats_count">
                 <span class="count_top"><i class="fa fa-line-chart"></i> Prix de vente</span>
                 <div class="count sellPrice green"><?php echo $meal['sellPrice'];?>DH</div>
                 <!--<span class="count_bottom"><i class="green"><i class="fa fa-sort-asc"></i>69% </i></span>-->
             </div>
-            <div class="col-md-3 col-sm-4 col-xs-6 tile_stats_count">
+            <div class="col-md-3 col-sm-6 col-xs-12 tile_stats_count">
                 <span class="count_top"><i class="fa fa-line-chart"></i> Bénifices</span>
-                <div class="count gain"> <?php echo $meal['profit']; ?>DH</div>
-                <span class="count_bottom"><i class="red"><i class="fa fa-sort-desc"></i>12% </i> par rapport au dernier prix</span>
+                <div class="count gain">
+
+                    <?php
+                    if ($meal['profit'] === '') {
+                        $meal['profit'] = 0;
+                    }
+                    echo $meal['profit'];
+                    ?>
+                    DH</div>
+                <!--<span class="count_bottom"><i class="red"><i class="fa fa-sort-desc"></i>12% </i> par rapport au dernier prix</span>-->
             </div>
         </div>
         <div class="article-title text-center">
-            <h4 style="display: inline;">Nom de l'article : </h4> <input type="text" class="mealName" name="name" value="<?php echo $meal['name'];?>"/>
-            <h4 style="display: inline;">Prix de vente : </h4> <input value="<?php echo $meal['sellPrice']; ?>" type="text" class="sellPriceProduct" name="sellPrice"/>
+            <div class="col-md-offset-1 col-md-5 col-sm-6 col-xs-12">
+                 <h4 style="display: inline;">Nom de l'article : </h4> <input type="text" class="mealName" name="name" value="<?php echo $meal['name'];?>"/>
+            </div>
+            <div class="col-md-offset-1 col-md-5 col-sm-6 col-xs-12">
+                <h4 style="display: inline;">Prix de vente : </h4> <input value="<?php echo $meal['sellPrice']; ?>" type="text" class="sellPriceProduct" name="sellPrice"/>
+            </div>
         </div>
         <div class="row mealComposition">
             <?php foreach ($productsComposition as $key => $pc) { ?>
-            <div class="col-md-6 col-sm-6 col-xs-6 product" data-id="<?php echo $key+1; ?>" >
+            <div class="col-md-6  col-sm-6 col-xs-12 product" data-id="<?php echo $key+1; ?>" >
                                 <div class="x_panel">
                                    <div class="x_title">
                                        <h2>Produit</h2>
@@ -52,35 +70,59 @@
                                        <div class="clearfix"></div>
                                    </div>
                                    <div class="x_content oldContent" style="margin-top:30px;">
-                                       <select name="product" class="productSelect" >
-                                           <?php foreach ($products as $product) {
-                                           $selected= $product['id'] == $pc['product'] ? 'selected':'';
+                                       <div class="row">
+
+                                         <div class="col-md-3 col-sm-12 col-xs-12">
+                                             <select name="product" class="productSelect md-button-v">
+                                                 <?php foreach ($products as $product) {
+                                                     $selected = $product['id'] == $pc['product'] ? 'selected' : '';
+                                                     ?>
+                                                     <option <?php echo $selected; ?>
+                                                             data-unit="<?php echo $product['unit']; ?>"
+                                                             value="<?php echo $product['id']; ?>"
+                                                             data-price="<?php echo $product['unit_price']; ?>"><?php echo $product['name']; ?></option>
+                                                 <?php } ?>
+                                             </select>
+
+                                         </div>
+                                           <?php
+                                           $KgUnitHidden = 'hidden';
+                                           $LUnitHidden = 'hidden';
+                                           if ($pc['unit'] === "kg") {
+                                               $KgUnitHidden = '';
+                                           }
+                                           if ($pc['unit'] === "L") {
+                                               $LUnitHidden = '';
+                                           }
                                            ?>
-                                           <option <?php echo $selected; ?> data-unit="<?php echo $product['unit']; ?>" value="<?php echo $product['id']; ?>" data-price="<?php echo $product['unit_price']; ?>"><?php echo $product['name']; ?></option>
-                                           <?php } ?>
-                                       </select>
-                                       <?php
-                                       $KgUnitHidden = 'hidden';
-                                       $LUnitHidden = 'hidden';
-                                       if ($pc['unit'] === "kg") {
-                                           $KgUnitHidden = '';
-                                       }
-                                       if ($pc['unit'] === "L") {
-                                           $LUnitHidden = '';
-                                       }
-                                       ?>
-                                       <select name="kgUnitHidden" class="kgUnitHidden" <?php echo $KgUnitHidden ?>>
-                                           <option <?php if($pc['mp_unit']=='Kilogramme') echo "selected"; ?> value="1" name="Kilogramme">Kilogramme</option>
-                                           <option <?php if($pc['mp_unit'] == 'Gramme' ) echo "selected"; ?> value="0.001" name="Gramme">Gramme</option>
-                                           <option <?php if($pc['mp_unit'] == 'Kilogramme' ) echo "selected"; ?> value="0.000001" name="Milligramme">Milligramme</option>
-                                       </select>
-                                       <select name="lUnitHidden" class="lUnitHidden" <?php echo $LUnitHidden ?>>
-                                           <option>Litre</option>
-                                           <option>Centilitre</option>
-                                           <option>Millilitre</option>
-                                       </select>
-                                       Quantité : <input class="form-inline" placeholder="Quantité" name="quantity" value="<?php echo $pc['mp_quantity'];?>"
-                                                         type="text">
+                                           <div class="col-md-3 col-sm-12 col-xs-12">
+                                               <select name="kgUnitHidden"
+                                                       class="kgUnitHidden small-button md-button-v" <?php echo $KgUnitHidden ?>>
+                                                   <option <?php if ($pc['mp_unit'] == 'Kilogramme') echo "selected"; ?>
+                                                           value="1" name="Kilogramme">Kilogramme
+                                                   </option>
+                                                   <option <?php if ($pc['mp_unit'] == 'Gramme') echo "selected"; ?>
+                                                           value="0.001" name="Gramme">Gramme
+                                                   </option>
+                                                   <option <?php if ($pc['mp_unit'] == 'Kilogramme') echo "selected"; ?>
+                                                           value="0.000001" name="Milligramme">Milligramme
+                                                   </option>
+                                               </select>
+                                               <select name="lUnitHidden"
+                                                       class="lUnitHidden  md-button-v" <?php echo $LUnitHidden ?>>
+                                                   <option>Litre</option>
+                                                   <option>Centilitre</option>
+                                                   <option>Millilitre</option>
+                                               </select>
+                                           </div>
+                                           <div class="col-md-6 col-sm-12 col-xs-12">
+                                              <span class="sm-hidden">Quantité : </span> <input class="form-inline md-button-v" placeholder="Quantité"
+                                                                 name="quantity"
+                                                                 value="<?php echo $pc['mp_quantity']; ?>"
+                                                                 type="text">
+                                           </div>
+
+                                       </div>
                                    </div>
                                </div>
 
@@ -92,7 +134,7 @@
             <span class="fa fa-plus"></span> Nouveau produit
         </button>
 
-        <div class="col-md-6 col-sm-6 col-xs-6 product productModel" hidden>
+        <div class="col-md-6  col-sm-6 col-xs-12 product productModel" hidden>
                             <div class="x_panel">
                                 <div class="x_title">
                                     <h2>Produit</h2>
@@ -103,34 +145,47 @@
                                     <div class="clearfix"></div>
                                 </div>
                                 <div class="x_content" style="margin-top:30px;" id="newContent">
+                                    <div class="row">
 
-                                    <select name="product" class="productSelectNew">
-                                       <?php foreach ($products as $product) {?>
-                                        <option value="<?php echo $product['id'];?>" data-unit="<?php echo $product['unit']; ?>" data-price="<?php echo $product['unit_price']; ?>"><?php echo $product['name']; ?></option>
-                                        <?php } ?>
-                                    </select>
-                                    <?php
-                                    $KgUnitHidden = 'hidden';
-                                    $LUnitHidden = 'hidden';
-                                    if ($products[0]['unit'] === "kg") {
-                                        $KgUnitHidden = '';
-                                    }
-                                    if ($products[0]['unit'] === "L") {
-                                        $LUnitHidden = '';
-                                    }
-                                    ?>
-                                    <select name="kgUnitHidden" class="kgUnitHidden" <?php echo $KgUnitHidden ?>>
-                                        <option value="1" name="Kilogramme">Kilogramme</option>
-                                        <option value="0.001" name="Gramme">Gramme</option>
-                                        <option value="0.000001" name="Milligramme">Milligramme</option>
-                                    </select>
-                                    <select name="lUnitHidden" class="lUnitHidden" <?php echo $LUnitHidden ?>>
-                                        <option>Litre</option>
-                                        <option>Centilitre</option>
-                                        <option>Millilitre</option>
-                                    </select>
-                                    Quantité : <input class="form-inline" placeholder="Quantité" name="quantity"
-                                                      type="text">
+
+                                       <div class="col-md-3 col-sm-12 col-xs-12">
+                                           <select name="product" class="productSelectNew md-button-v">
+                                               <?php foreach ($products as $product) { ?>
+                                                   <option value="<?php echo $product['id']; ?>"
+                                                           data-unit="<?php echo $product['unit']; ?>"
+                                                           data-price="<?php echo $product['unit_price']; ?>"><?php echo $product['name']; ?></option>
+                                               <?php } ?>
+                                           </select>
+                                       </div>
+                                        <?php
+                                        $KgUnitHidden = 'hidden';
+                                        $LUnitHidden = 'hidden';
+                                        if ($products[0]['unit'] === "kg") {
+                                            $KgUnitHidden = '';
+                                        }
+                                        if ($products[0]['unit'] === "L") {
+                                            $LUnitHidden = '';
+                                        }
+                                        ?>
+                                        <div class="col-md-3 col-sm-12 col-xs-12 md-button-v">
+                                            <select name="kgUnitHidden"
+                                                    class="kgUnitHidden" <?php echo $KgUnitHidden ?>>
+                                                <option value="1" name="Kilogramme">Kilogramme</option>
+                                                <option value="0.001" name="Gramme">Gramme</option>
+                                                <option value="0.000001" name="Milligramme">Milligramme</option>
+                                            </select>
+                                            <select name="lUnitHidden  md-button-v" class="lUnitHidden" <?php echo $LUnitHidden ?>>
+                                                <option>Litre</option>
+                                                <option>Centilitre</option>
+                                                <option>Millilitre</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3 col-sm-12 col-xs-12">
+                                            Quantité : <input class="form-inline md-button-v" placeholder="Quantité" name="quantity"
+                                                              type="text">
+                                        </div>
+
+                                    </div>
                                 </div>
                             </div>
 
@@ -147,10 +202,10 @@
 
         <input type="submit" name="buttonSubmit" value="Modifier" class="btn btn-success"/>
     </div>
-</div> <!-- /.col-right --> 
+</div> <!-- /.col-right -->
 <!-- /page content -->
 
-<?php $this->load->view('admin/partials/admin_footer'); ?>
+    <?php $this->load->view('admin/partials/admin_footer'); ?>
 
 
 
