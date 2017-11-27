@@ -107,7 +107,65 @@ class model_report extends CI_Model
         }
     }
 
+    public function global_report(){
+        $global=array();
 
+
+        //all sales amount
+        $this->db->select('*');
+        $this->db->select('sum(c.quantity) as s_quantity');
+        $this->db->select('sum(c.amount) as s_amount');
+        $this->db->select('sum(c.amount)*sum(c.quantity) as turnover');
+        $this->db->from('consumption c');
+        $consumption = $this->db->get()->row_array();
+
+        //costs
+        $this->db->select('*');
+        $this->db->select('sum(cp.unit_price) as s_price');
+        $this->db->select('sum(cp.quantity) as s_quantity');
+        $this->db->select('sum(cp.quantity)*sum(cp.unit_price) as s_cost');
+        $this->db->from('consumption_product cp');
+        $consumption_product = $this->db->get()->row_array();
+
+        //Sales history
+        $this->db->select('report_date');
+        $this->db->select('sum(c.total) as s_amount');
+        $this->db->from('consumption c');
+        $this->db->group_by('report_date');
+        $this->db->limit(20);
+        $sales_history = $this->db->get()->result_array();
+
+
+        //Sales history by month
+        $this->db->select('report_date');
+        $this->db->select('sum(c.total) as s_amount');
+        $this->db->from('consumption c');
+        $this->db->group_by('MONTH(report_date)');
+        $this->db->order_by('report_date', 'DESC');
+        $this->db->limit(10);
+        $sales_history_month = $this->db->get()->result_array();
+
+        //products costs
+        $this->db->select('p.name');
+        $this->db->select('sum(total) as s_cost');
+        $this->db->select('count(cp.product) as s_meal');
+        $this->db->from('consumption_product cp');
+        $this->db->join('product p','p.id=cp.product');
+        $this->db->group_by('product');
+        $this->db->order_by('s_cost','DESC');
+        $this->db->limit(5);
+        $products_cost = $this->db->get()->result_array();
+
+
+        $global['consumption']= $consumption;
+        $global['cp']= $consumption_product;
+        $global['sales_history']= $sales_history;
+        $global['products_cost']= $products_cost;
+        $global['sales_history_month']= $sales_history_month;
+
+
+        return $global;
+    }
 
     public function reportById($meal_id)
     {

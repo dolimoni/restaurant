@@ -158,6 +158,7 @@
 <script>
 
     $(document).ready(function () {
+        var report_date='';
         $('#addSalesFileForm').on('submit', function (e) {
             e.preventDefault();
             var formData = new FormData(this);
@@ -171,7 +172,7 @@
                 processData: false,
                 success: function (data) {
                     $('#loading').hide();
-                    console.log(data);
+
                     if (data.status == "success") {
                         swal({
                             title: "Success",
@@ -186,6 +187,7 @@
                         var invalid= 0;
                         var validAmountTotal=0;
                         var validQuantityTotal=0;
+                        report_date=data.response.sales['dateTime'];
 
                         $.each(data.response.sales.rows, function (key, row) {
                             var rowContent = '<tr data-id="'+key+'">' +
@@ -282,6 +284,72 @@
 
         });
 
+        $('button[name="validate"]').on('click', function () {
+            var mealsList = [];
+            $('tr.validate').each(function (i, obj) {
+                var tr = $(this);
+                var id = tr.find('td[data-type="id"]').text();
+                var externalCode = tr.find('td[data-type="externalCode"]').text();
+                var description = tr.find('td[data-type="description"]').text();
+                var qunatity = tr.find('td[data-type="quantity"]').text();
+                var amount = tr.find('td[data-type="amount"]').text();
+                var name = tr.find('td[data-type="name"]').text();
+                var meal = {
+                    'id': id,
+                    'externalCode': externalCode,
+                    'description': description,
+                    'quantity': qunatity,
+                    'amount': amount,
+                    'name': name,
+                    'date': report_date.split('T')
+                };
+                if (id > 0) {
+                    mealsList.push(meal);
+                }
+            });
+
+            var myData = {'mealsList': mealsList};
+            $.ajax({
+                url: "<?php echo base_url(); ?>admin/meal/apiConsumption",
+                type: "POST",
+                dataType: "json",
+                data: myData,
+                success: function (data) {
+                    if (data.status === 'success') {
+                        swal({
+                            title: "Success",
+                            text: "L'opératon a été effectuée avec success",
+                            type: "success",
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+                    }
+                    else {
+                        var content = '';
+                        $.each(data.productsList, function (key, product) {
+                            content += product['name'] + ",";
+                        });
+                        swal({
+                            title: "La quantité de certain produits est insuffisante",
+                            type: "error",
+                            showCloseButton: true,
+                            html: true
+                        });
+                    }
+                },
+                error: function (data) {
+                    swal({
+                        title: "Erreur",
+                        text: "Une erreur s\'est produite",
+                        type: "error",
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                }
+            });
+
+        });
+
         $('.profile_details').on('click', function () {
             var id = $(this).attr('data-id');
             console.log(id);
@@ -345,70 +413,6 @@ $(document).on('click', '.validationCorrectionButtonAll', function () {
 
 });
 
-$('button[name="validate"]').on('click', function () {
-    var mealsList = [];
-    $('tr.validate').each(function (i, obj) {
-        var tr = $(this);
-        var id = tr.find('td[data-type="id"]').text();
-        var externalCode = tr.find('td[data-type="externalCode"]').text();
-        var description = tr.find('td[data-type="description"]').text();
-        var qunatity = tr.find('td[data-type="quantity"]').text();
-        var amount = tr.find('td[data-type="amount"]').text();
-        var name = tr.find('td[data-type="name"]').text();
-        var meal={
-            'id':id,
-            'externalCode': externalCode,
-            'description':description,
-            'quantity':qunatity,
-            'amount':amount,
-            'name':name
-        };
-        if(id>0){
-            mealsList.push(meal);
-        }
-    });
-
-    var myData={'mealsList': mealsList};
-    $.ajax({
-        url: "<?php echo base_url(); ?>admin/meal/apiConsumption",
-        type: "POST",
-        dataType: "json",
-        data: myData,
-        success: function (data) {
-            if (data.status === 'success') {
-                swal({
-                    title: "Success",
-                    text: "L'opératon a été effectuée avec success",
-                    type: "success",
-                    timer: 1500,
-                    showConfirmButton: false
-                });
-            }
-            else {
-                var content='';
-                  $.each(data.productsList, function (key, product) {
-                        content+=product['name']+",";
-                    });
-                swal({
-                    title: "La quantité de certain produits est insuffisante",
-                    type: "error",
-                    showCloseButton: true,
-                    html: true
-                });
-            }
-        },
-        error: function (data) {
-            swal({
-                title: "Erreur",
-                text: "Une erreur s\'est produite",
-                type: "error",
-                timer: 1500,
-                showConfirmButton: false
-            });
-        }
-    });
-
-});
 </script>
 
 <script>

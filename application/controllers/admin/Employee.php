@@ -140,12 +140,22 @@ class Employee extends CI_Controller {
         }
     }
 
-	public function delete($cid)
-	{	
-        $this->model_employee->delete($cid);
-        $this->session->set_flashdata('message','Employee Successfully deleted.');
-        redirect(base_url('admin/employee'));
-	}
+
+    public function apiDeleteEmployee()
+    {
+        try {
+            $employee_id = $this->input->post('employee_id');
+            $this->model_employee->deleteEmployee($employee_id);
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'success')));
+        } catch (Exception $e) {
+
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'error')));
+        }
+    }
 
     private function uploadFile()
     {

@@ -66,7 +66,11 @@ class Main extends CI_Controller
                     break;
                 }
                 if($row===5){
-                    $dateTime= $data[2];
+                    if(isset($data[2])){
+                        $dateTime = $data[2];
+                    }else{
+                        $dateTime=date('Y-m-d').'T10';
+                    }
                 }
                 $index++;
             }

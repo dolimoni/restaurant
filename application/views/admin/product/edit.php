@@ -174,6 +174,7 @@
                             timer: 1500,
                             showConfirmButton: false
                         });
+                        window.location.href = data.redirect;
                     }
                 },
                 error: function (data) {

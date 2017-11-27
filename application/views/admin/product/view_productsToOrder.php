@@ -53,9 +53,9 @@
                                 <td><?php echo $product['unit']; ?></td>
                                 <td><?php echo $product['unit_price']; ?></td>
                                 <td>
-                                    <a href=" <?php echo base_url('admin/product/edit/'. $product['id']); ?>" class="btn btn-primary btn-xs">Edit</a>
+                                    <a href=" <?php echo base_url('admin/product/edit/'. $product['id']); ?>" class="btn btn-primary btn-xs">Modifier</a>
                                     <a class="btn btn-danger btn-xs deleteProduct"
-                                       data-id="<?php echo $product['id']; ?>">Delete</a>
+                                       data-id="<?php echo $product['id']; ?>">Supprimer</a>
                                 </td>
                             </tr>
                             <?php } ?>

@@ -27,7 +27,6 @@ class Meal extends CI_Controller {
         $meal_id = $this->uri->segment(4);
         $data['meal'] = $this->model_meal->get($meal_id);
         $data['products'] = $this->model_meal->getProducts($meal_id);
-
         $this->parser->parse('admin/meal/view_meal', $data);
     }
     public function report()
@@ -435,6 +434,10 @@ class Meal extends CI_Controller {
 
 
         return $meals;
+    }
+    public function clean(){
+        $this->load->model('model_util');
+        $this->model_util->clean();
     }
     private function ParseGroup($url)
     {

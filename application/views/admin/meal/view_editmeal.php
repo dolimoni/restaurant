@@ -334,6 +334,7 @@
                                 timer: 1500,
                                 showConfirmButton: false
                             });
+                            document.location.href = data.redirect;
                         }
                         else {
                             /*$('#show_id').html("<div style='border:1px solid red;font-size: 11px;margin:0 auto !important;'>" + response.error + "</div>");*/
@@ -363,6 +364,15 @@
                 swal({
                     title: "Attention",
                     text: "Quel est le prix de votre article ?",
+                    type: "warning",
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+                validate = false;
+            } else if (meal['sellPrice'] < meal['cost']) {
+                swal({
+                    title: "Attention",
+                    text: "Le prix est inférieur au coût",
                     type: "warning",
                     timer: 2000,
                     showConfirmButton: false

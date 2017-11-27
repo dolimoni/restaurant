@@ -1,4 +1,9 @@
 <?php $this->load->view('admin/partials/admin_header.php'); ?>
+<style>
+    .profile_details:nth-child(3n) {
+        clear: none;
+    }
+</style>
 <!-- page content -->
 <div class="right_col" role="main">
     <div class="productsList">
@@ -94,7 +99,7 @@
             <?php foreach ($employees as $employee) { ?>
                 <div class="col-md-4 col-sm-4 col-xs-12 profile_details" data-id="<?php echo $employee['id']; ?>">
                     <div class="well profile_view">
-                        <div class="col-sm-12">
+                        <div class="col-sm-12 profile_details-link">
                             <h4 class="brief"><i> <?php echo $employee['workType']; ?> </i></h4>
                             <div class="left col-xs-7">
                                 <h2><?php echo $employee['name']; ?> <?php echo $employee['prenom']; ?></h2>
@@ -112,8 +117,8 @@
                                 </ul>
                             </div>
                         </div>
-                        <div class="col-xs-12 bottom text-center">
-                            <div class="col-xs-12 col-sm-6 emphasis">
+                        <div class="col-xs-12 bottom text-left">
+                           <!-- <div class="col-xs-12 col-sm-6 emphasis">
                                 <p class="ratings">
                                     <a>4.0</a>
                                     <a href="#"><span class="fa fa-star"></span></a>
@@ -122,10 +127,11 @@
                                     <a href="#"><span class="fa fa-star"></span></a>
                                     <a href="#"><span class="fa fa-star-o"></span></a>
                                 </p>
-                            </div>
+                            </div>-->
                             <div class="col-xs-12 col-sm-6 emphasis">
-                                <button type="button" class="btn btn-primary btn-xs">
-                                    <i class="fa fa-user"> </i> Regarder profile
+                                <button data-id="<?php echo $employee['id']; ?>" type="button"
+                                        class="btn btn-danger btn-xs deleteEmployee">
+                                    <i class="fa fa-trash"> </i> Supprimer
                                 </button>
                             </div>
                         </div>
@@ -158,6 +164,7 @@
         $('#addEmployeeForm').on('submit', function (e) {
             e.preventDefault();
             var formData = new FormData(this);
+            $('#loading').show();
             $.ajax({
                 type: 'POST',
                 url: "<?php echo base_url('admin/employee/add'); ?>",
@@ -166,6 +173,7 @@
                 contentType: false,
                 processData: false,
                 success: function (data) {
+                    $('#loading').hide();
                     swal({
                         title: "Success",
                         text: "L'employée a été bien ajouté",
@@ -173,8 +181,10 @@
                         timer: 1500,
                         showConfirmButton: false
                     });
+                    location.reload();
                 },
                 error: function (data) {
+                    $('#loading').hide();
                     console.log("error");
                     console.log(data);
                 }
@@ -184,10 +194,74 @@
 
 
 
-        $('.profile_details').on('click', function () {
+        $('.profile_details-link').on('click', function () {
             var id = $(this).attr('data-id');
             document.location.href = "<?php echo base_url(); ?>admin/employee/show/" + id;
         });
     });
 
 </script>
+
+
+<script>
+    $(document).ready(function () {
+        $('button.deleteEmployee').on('click', deleteEmployee);
+
+
+        function deleteEmployee() {
+            var employee_id = $(this).attr('data-id');
+            $(this).closest('tr').hide();
+            swal({
+                    title: "Attention ! ",
+                    text: "Vous voulez vraiment supprimer cet employée ?",
+                    type: "warning",
+                    showConfirmButton: true,
+                    showCancelButton: true,
+                    cancelButtonText: 'Non',
+                    confirmButtonText: 'Oui'
+                },
+                function () {
+                    $.ajax({
+                        url: "<?php echo base_url('admin/employee/apiDeleteEmployee'); ?>",
+                        type: "POST",
+                        dataType: "json",
+                        data: {'employee_id': employee_id},
+                        success: function (data) {
+                            if (data.status === 'success') {
+                                swal({
+                                    title: "Success",
+                                    text: "L'employée a été bien supprimé",
+                                    type: "success",
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                });
+                                location.reload();
+                            }
+                            else {
+                                swal({
+                                    title: "Erreur",
+                                    text: "Une erreur s'est produite",
+                                    type: "error",
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                });
+                            }
+                        },
+                        error: function (data) {
+                            swal({
+                                title: "Erreur",
+                                text: "Une erreur s'est produite",
+                                type: "error",
+                                timer: 1500,
+                                showConfirmButton: false
+                            });
+                        }
+                    });
+
+                });
+
+
+        }
+    });
+</script>
+

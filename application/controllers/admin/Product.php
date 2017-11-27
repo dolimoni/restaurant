@@ -84,7 +84,7 @@ class Product extends CI_Controller {
             }
             $this->output
                 ->set_content_type("application/json")
-                ->set_output(json_encode(array('status' => 'success')));
+                ->set_output(json_encode(array('status' => 'success', 'redirect' => base_url('admin/product/index'))));
         } catch (Exception $e) {
             $this->load->view('admin/product/edit', $data);
             $this->output

@@ -124,6 +124,7 @@
                       <a><i class="fa fa-bar-chart-o"></i> Rapports <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
                       <li><a href="<?= base_url('admin/report/index'); ?>">Rapport des article</a></li>
+                      <li><a href="<?= base_url('admin/report/statistic'); ?>">Statistiques</a></li>
                     </ul>
                   </li>
                   <li>

@@ -22,6 +22,12 @@ class Report extends CI_Controller
         $data['articles']=$this->model_report->report();
         $this->load->view('admin/report/article', $data);
     }
+    public function statistic()
+    {
+        $data['articles']=$this->model_report->report();
+        $data['report'] = $this->model_report->global_report();
+        $this->load->view('admin/report/view_statistic', $data);
+    }
     public function apiReport()
     {
         $params=$this->input->post('params');

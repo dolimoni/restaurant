@@ -56,11 +56,11 @@
                                 <td><?php echo $product['unit']; ?></td>
                                 <td><?php echo $product['unit_price']; ?></td>
                                 <td>
-                                    <a href=" <?php echo base_url('admin/product/edit/'. $product['product']); ?>" class="btn btn-primary btn-xs">Edit</a>
+                                    <a href=" <?php echo base_url('admin/product/edit/'. $product['product']); ?>" class="btn btn-primary btn-xs">Modifier</a>
                                     <?php if($product['min_quantity'] > $product['quantity'] && $product['provider']>0 ){?>
                                     <a href=" <?php echo base_url('admin/provider/show/'. $product['provider']); ?>" class="btn btn-primary btn-xs">Commander</a>
                                     <?php } ?>
-                                    <a  class="btn btn-danger btn-xs deleteProduct" data-id="<?php echo $product['product']; ?>">Delete</a>
+                                    <a  class="btn btn-danger btn-xs deleteProduct" data-id="<?php echo $product['product']; ?>">Supprimer</a>
                                 </td>
                             </tr>
                             <?php } ?>

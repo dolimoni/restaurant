@@ -40,6 +40,9 @@
                     <button type="submit" class="btn btn-warning" >
                         <span class="fa fa-print"></span> Imprimer
                     </button>
+                    <a href="<?php echo base_url('admin/meal/groupMeals/' . $meal['group']); ?>" class="btn btn-info" >
+                        Articles du groupe
+                    </a>
                     <?php echo form_close(); ?>
                 </div>
             </div> <!-- /col -->

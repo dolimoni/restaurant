@@ -380,6 +380,15 @@
                     showConfirmButton: false
                 });
                 validate=false;
+            }else if(meal['sellPrice']< meal['cost']){
+                swal({
+                    title: "Attention",
+                    text: "Le prix est inférieur au coût",
+                    type: "warning",
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+                validate=false;
             }else if(meal['group']===0){
                 swal({
                     title: "Attention",

@@ -20,5 +20,14 @@ class model_util extends CI_Model {
         return $date1->format('Y-m-d');
     }
 
+    public function clean(){
+        $this->db->where('name','');
+        $this->db->where('num !=',1);
+        $this->db->delete('group');
+    }
+
+
+
+
 
 }

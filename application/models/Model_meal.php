@@ -1,5 +1,13 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
+/*
+ * NOTICE :
+ *
+ * Verifier la quantité inséré pour dans la table consumption_prodct : faut il multiplié par le quantité de meal aussi ou non
+ *
+ */
+
+
 class model_meal extends CI_Model {
 
 
@@ -49,7 +57,7 @@ class model_meal extends CI_Model {
 	        if(!$meal){
                 $data = array(
                     'name' => $mealItem['name'],
-                    'group' => 1,
+                    'group' => $mealItem['group'],
                     'externalCode' => $mealItem['code'],
                     'sellPrice' => $mealItem['sellPrice'],
                     'products_count' => 0,
@@ -231,8 +239,9 @@ class model_meal extends CI_Model {
             $todayConsumption=$this->model_report->reportMealDate($meal['id'], $meal['date']);
             $data = array(
                 'meal' => $meal['id'],
-                'amount' => $meal['amount'] / $meal['quantity'],
+                'amount' => $meal['amount']/$meal['quantity'],
                 'quantity' => $meal['quantity'],
+                'total'=> $meal['amount'],
                 'report_date'=>$meal['date']
             );
             $consumption_id=0;
@@ -275,8 +284,9 @@ class model_meal extends CI_Model {
                           'consumption'=> $consumption_id,
                           'meal'=> $meal['id'],
                           'product'=> $m_product['p_id'],
-                          'quantity'=> $m_product['mp_quantity'] * $m_product['unitConvert'] * $meal['quantity'],
+                          'quantity'=> $m_product['mp_quantity'] * $m_product['unitConvert'] /** $meal['quantity']*/,
                           'unit_price'=> $m_product['unit_price'],
+                          'total'=> $m_product['unit_price']* $m_product['mp_quantity'] * $m_product['unitConvert'] /** $meal['quantity']*/,
                         );
                         if (!isset($todayConsumption) ) {
                             $this->db->insert('consumption_product', $consumption_product);
@@ -350,7 +360,7 @@ class model_meal extends CI_Model {
         $meals = $this->db->get()->result_array();
         //$products = $this->db->get('meal_product')->result_array();
 
-        $this->db->select('*,mp.quantity as mp_quantity');
+        $this->db->select('*,mp.quantity as mp_quantity,mp.unit as mp_unit');
         $this->db->from('meal_product mp');
         $this->db->join('product p', 'mp.product = p.id');
         $this->db->join('quantity q', 'q.product = p.id');

@@ -95,15 +95,17 @@
                         $.each(data.response.meals, function (key, meal) {
 
                             var group= meal.group;
+                            var group_id= 1;
                             if(findGroup(meal.group)[0]){
-                                group=findGroup(meal.group)[0]['name']
+                                group=findGroup(meal.group)[0]['name'];
+                                group_id=findGroup(meal.group)[0]['id'];
                             }
 
                             var row = '<tr>' +
                                 '<td data-type="code">' + meal.code + '</td>' +
                                 '<td data-type="name">' + meal.name + '</td>' +
                                 '<td data-type="price">' + parseFloat(meal.price / 100).toFixed(2) + '</td>' +
-                                '<td data-type="group">' +group+ '</td>' +
+                                '<td data-type="group" data-group="'+ group_id+'">' +group+ '</td>' +
                                 '</tr>';
                             $("#tbodyid").append(row);
                         });
@@ -163,7 +165,7 @@
             code = $(this).find('td[data-type="code"]').text();
             name = $(this).find('td[data-type="name"]').text();
             price = $(this).find('td[data-type="price"]').text();
-            group = $(this).find('td[data-type="group"]').text();
+            group = $(this).find('td[data-type="group"]').attr('data-group');
             var meal={'code':code,'name':name,'sellPrice':price,'group':group};
             mealsList.push(meal);
         });
