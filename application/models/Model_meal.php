@@ -226,7 +226,7 @@ class model_meal extends CI_Model {
         return $result->row_array();
     }
 
-    public function consumption($mealList){
+    public function consumption($mealList,$lost=false){
         $this->load->model('model_product');
         $this->load->model('model_report');
         $response = array();
@@ -236,20 +236,34 @@ class model_meal extends CI_Model {
 
         foreach ($mealList as $meal) {
 
+            // vente d'un article par date
             $todayConsumption=$this->model_report->reportMealDate($meal['id'], $meal['date']);
+            $consumption_type="sale";
+            if($lost){
+                $consumption_type = "lost";
+            }
             $data = array(
                 'meal' => $meal['id'],
                 'amount' => $meal['amount']/$meal['quantity'],
                 'quantity' => $meal['quantity'],
                 'total'=> $meal['amount'],
-                'report_date'=>$meal['date']
+                'report_date'=>$meal['date'],
+                'type'=> $consumption_type,
             );
             $consumption_id=0;
             $quantityStep = $meal['quantity'];
+
+            // si la vente de date existe
             if($todayConsumption){
+                //$meal['quantity'] : quantité envoyé par le rapport de vente,
+                // la quantité de vente augement a chaque interval de temps
+                //$todayConsumption['quantity'] : quantité de la base de donnée
+
+                //$quantityStep va être utilisé pour reduire la quantité des produits du stock
                 $quantityStep = abs($meal['quantity'] - $todayConsumption['quantity']);
                 $this->db->where('id', $todayConsumption['id']);
                 $this->db->update('consumption', $data);
+            // si la vente du jour n'existe pas on va la créer simplement
             }else{
                 $this->db->insert('consumption', $data);
                 $consumption_id = $this->db->insert_id();
@@ -280,6 +294,10 @@ class model_meal extends CI_Model {
                         if($consumption_id===0){
                             $consumption_id=$todayConsumption['id'];
                         }
+                        $consumption_type = "sale";
+                        if ($lost) {
+                            $consumption_type = "lost";
+                        }
                         $consumption_product=array(
                           'consumption'=> $consumption_id,
                           'meal'=> $meal['id'],
@@ -287,10 +305,12 @@ class model_meal extends CI_Model {
                           'quantity'=> $m_product['mp_quantity'] * $m_product['unitConvert'] /** $meal['quantity']*/,
                           'unit_price'=> $m_product['unit_price'],
                           'total'=> $m_product['unit_price']* $m_product['mp_quantity'] * $m_product['unitConvert'] /** $meal['quantity']*/,
+                            'type'=> $consumption_type
                         );
                         if (!isset($todayConsumption) ) {
                             $this->db->insert('consumption_product', $consumption_product);
                         }
+
                         if($meal['quantity'] >= $todayConsumption['quantity']){
 
                             $this->model_product->updateQuantity($m_product['product'], $m_product['mp_quantity'] * $m_product['unitConvert'] * $quantityStep);

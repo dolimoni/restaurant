@@ -299,6 +299,21 @@ class Meal extends CI_Controller {
        }
     }
 
+    public function apiAddLostQuantity()
+    {
+       try {
+           $mealsList = $this->input->post('mealsList');
+           $response = $this->model_meal->consumption($mealsList,true);
+           $this->output
+               ->set_content_type("application/json")
+               ->set_output(json_encode(array('status' => 'success')));
+       } catch (Exception $e) {
+           $this->output
+               ->set_content_type("application/json")
+               ->set_output(json_encode(array('status' => 'error')));
+       }
+    }
+
     public function loadFile()
     {
         //$data['meals'] = $this->Parse('uploads/a.prg');

@@ -26,6 +26,7 @@ class model_report extends CI_Model
             $this->db->select('sum(c.quantity)*c.amount as s_amount');
             $this->db->select('sum(c.quantity)*profit as s_profit');
             $this->db->from('meal m');
+            $this->db->where('c.type', 'sale');
             $this->db->join('consumption c', 'm.id = c.meal');
             $this->db->group_by('c.meal');
             $meals = $this->db->get()->result_array();
@@ -36,6 +37,7 @@ class model_report extends CI_Model
             $this->db->from('meal m');
             $this->db->join('consumption c', 'm.id = c.meal');
             $this->db->join('consumption_product cp', 'c.id = cp.consumption','left');
+            $this->db->where('c.type', 'sale');
             $this->db->group_by('c.meal');
             $products = $this->db->get()->result_array();
 
@@ -61,6 +63,7 @@ class model_report extends CI_Model
             $this->db->select('sum(c.quantity)*profit as s_profit');
             $this->db->from('meal m');
             $this->db->join('consumption c', 'm.id = c.meal');
+            $this->db->where('c.type', 'sale');
             if ($params['sort']) {
 
             }
@@ -76,6 +79,7 @@ class model_report extends CI_Model
             $this->db->from('meal m');
             $this->db->join('consumption c', 'm.id = c.meal');
             $this->db->join('consumption_product cp', 'c.id = cp.consumption', 'left');
+            $this->db->where('c.type', 'sale');
             $this->db->group_by('c.meal');
             $products = $this->db->get()->result_array();
             if ($params['max']) {
@@ -117,6 +121,7 @@ class model_report extends CI_Model
         $this->db->select('sum(c.amount) as s_amount');
         $this->db->select('sum(c.amount)*sum(c.quantity) as turnover');
         $this->db->from('consumption c');
+        $this->db->where('c.type','sale');
         $consumption = $this->db->get()->row_array();
 
         //costs
@@ -125,12 +130,14 @@ class model_report extends CI_Model
         $this->db->select('sum(cp.quantity) as s_quantity');
         $this->db->select('sum(cp.quantity)*sum(cp.unit_price) as s_cost');
         $this->db->from('consumption_product cp');
+        $this->db->where('cp.type', 'sale');
         $consumption_product = $this->db->get()->row_array();
 
         //Sales history
         $this->db->select('report_date');
         $this->db->select('sum(c.total) as s_amount');
         $this->db->from('consumption c');
+        $this->db->where('c.type', 'sale');
         $this->db->group_by('report_date');
         $this->db->limit(20);
         $sales_history = $this->db->get()->result_array();
@@ -140,6 +147,7 @@ class model_report extends CI_Model
         $this->db->select('report_date');
         $this->db->select('sum(c.total) as s_amount');
         $this->db->from('consumption c');
+        $this->db->where('c.type', 'sale');
         $this->db->group_by('MONTH(report_date)');
         $this->db->order_by('report_date', 'DESC');
         $this->db->limit(10);
@@ -150,6 +158,7 @@ class model_report extends CI_Model
         $this->db->select('sum(total) as s_cost');
         $this->db->select('count(cp.product) as s_meal');
         $this->db->from('consumption_product cp');
+        $this->db->where('cp.type', 'sale');
         $this->db->join('product p','p.id=cp.product');
         $this->db->group_by('product');
         $this->db->order_by('s_cost','DESC');
@@ -175,6 +184,7 @@ class model_report extends CI_Model
         $this->db->from('meal m');
         $this->db->join('consumption c', 'm.id = c.meal');
         $this->db->where('m.id', $meal_id);
+        $this->db->where('c.type', 'sale');
         $this->db->group_by('c.meal');
         $report = $this->db->get()->row_array();
 
@@ -183,6 +193,7 @@ class model_report extends CI_Model
         $this->db->from('consumption c');
         $this->db->join('consumption_product cp', 'c.id = cp.consumption', 'left');
         $this->db->where('c.meal', $meal_id);
+        $this->db->where('cp.type', 'sale');
         $s_cost = $this->db->get()->row()->s_cost;
 
         $report['s_cost']=$s_cost;
@@ -213,6 +224,7 @@ class model_report extends CI_Model
         $this->db->from('meal m');
         $this->db->join('consumption c', 'm.id = c.meal');
         $this->db->where('m.id', $meal_id);
+        $this->db->where('c.type', 'sale');
         $this->db->order_by('c.report_date', 'ASC');
         $this->db->group_by('rd');
         $evolution =  $this->db->get()->result_array();
@@ -238,6 +250,7 @@ class model_report extends CI_Model
         $this->db->from('consumption c');
         $this->db->join('consumption_product cp', 'c.id = cp.consumption', 'left');
         $this->db->where('c.meal', $meal_id);
+        $this->db->where('cp.type', 'sale');
         $s_cost = $this->db->get()->row()->s_cost;
         $evolution['s_cost'] = $s_cost;
 
@@ -253,6 +266,7 @@ class model_report extends CI_Model
         $this->db->join('consumption c', 'm.id = c.meal');
         $this->db->join('consumption_product cp', 'c.id = cp.consumption', 'left');
         $this->db->where('c.meal', $meal_id);
+        $this->db->where('c.type', 'sale');
         $this->db->order_by('c.report_date', 'ASC');
         $this->db->group_by('rd');
         $products = $this->db->get()->result_array();
@@ -267,6 +281,7 @@ class model_report extends CI_Model
         $this->db->join('consumption c', 'm.id = c.meal');
         $this->db->join('consumption_product cp', 'c.id = cp.consumption', 'left');
         $this->db->where('c.meal', $meal_id);
+        $this->db->where('c.type', 'sale');
         $this->db->where('DATE(c.report_date) >=', $startDate);
         $this->db->where('DATE(c.report_date) <=', $endDate);
         $this->db->order_by('c.report_date', 'ASC');
@@ -283,6 +298,7 @@ class model_report extends CI_Model
         $this->db->from('meal m');
         $this->db->join('consumption c', 'm.id = c.meal');
         $this->db->where('m.id', $meal_id);
+        $this->db->where('c.type', 'sale');
         $this->db->where('DATE(c.report_date) >=', $startDate);
         $this->db->where('DATE(c.report_date) <=', $endDate);
         //$this->db->order_by('c.createdAt', 'ASC');
@@ -312,6 +328,7 @@ class model_report extends CI_Model
         $this->db->from('consumption c');
         $this->db->join('consumption_product cp', 'c.id = cp.consumption', 'left');
         $this->db->where('c.meal', $meal_id);
+        $this->db->where('c.type', 'sale');
         $s_cost = $this->db->get()->row()->s_cost;
 
         $evolution['s_cost'] = $s_cost;
@@ -326,6 +343,7 @@ class model_report extends CI_Model
         $this->db->from('meal m');
         $this->db->join('consumption c', 'm.id = c.meal');
         $this->db->where('m.id', $meal_id);
+        $this->db->where('c.type', 'sale');
         $this->db->where('report_date =', $date);
         return $this->db->get()->row_array();
     }
@@ -340,6 +358,7 @@ class model_report extends CI_Model
         $this->db->join('consumption c', 'm.id = c.meal');
         $this->db->where('c.report_date >=', $startDate);
         $this->db->where('c.report_date <=', $endDate);
+        $this->db->where('c.type', 'sale');
         $this->db->group_by('c.meal');
         $meals = $this->db->get()->result_array();
 
@@ -351,6 +370,7 @@ class model_report extends CI_Model
         $this->db->join('consumption_product cp', 'c.id = cp.consumption', 'left');
         $this->db->where('c.report_date >=', $startDate);
         $this->db->where('c.report_date <=', $endDate);
+        $this->db->where('c.type', 'sale');
         $this->db->group_by('c.meal');
         $products = $this->db->get()->result_array();
 
@@ -377,6 +397,7 @@ class model_report extends CI_Model
         $this->db->group_by('cp.product');
         $this->db->group_by('cp.meal');
         $this->db->where('cp.meal', $meal_id);
+        $this->db->where('cp.type', 'sale');
         $mealConsumptionRate = $this->db->get()->result_array();
         $mealConsumptionTotal = 0; // total price
         $mealConsumptionTotalQuantity = 0; // total quantity
@@ -402,6 +423,7 @@ class model_report extends CI_Model
         $this->db->where('cp.meal', $meal_id);
         $this->db->where('c.report_date >=', $startDate);
         $this->db->where('c.report_date <=', $endDate);
+        $this->db->where('c.type', 'sale');
         $mealConsumptionRate = $this->db->get()->result_array();
         $mealConsumptionTotal = 0;
         $mealConsumptionTotalQuantity = 0;

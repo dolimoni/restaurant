@@ -184,150 +184,22 @@
                             <div id="chartContainer" style="height:238px; width: 100%;"></div>
                         </div>
                     </div>
-                </div><!--<div class="col-md-6 col-sm-6 col-xs-12">
-                    <div class="x_panel tile fixed_height_320 overflow_hidden">
-                        <div class="x_title">
-                            <h2>Consomation des produits</h2>
-                            <ul class="nav navbar-right panel_toolbox">
-                                <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
-                                </li>
-                                <li class="dropdown">
-                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
-                                       aria-expanded="false"><i class="fa fa-wrench"></i></a>
-                                    <ul class="dropdown-menu" role="menu">
-                                        <li><a href="#">Settings 1</a>
-                                        </li>
-                                        <li><a href="#">Settings 2</a>
-                                        </li>
-                                    </ul>
-                                </li>
-                                <li><a class="close-link"><i class="fa fa-close"></i></a>
-                                </li>
-                            </ul>
-                            <div class="clearfix"></div>
-                        </div>
-                        <div class="x_content">
-                            <table style="width:100%">
-                                <tr>
-                                    <th>
-                                        <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7">
-                                            <p class="">Device</p>
-                                        </div>
-                                        <div class="col-lg-5 col-md-5 col-sm-5 col-xs-5">
-                                            <p class="">Progress</p>
-                                        </div>
-                                    </th>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <table class="tile_info">
-                                            <tr>
-                                                <td>
-                                                    <p><i class="fa fa-square blue"></i>Produit 1 </p>
-                                                </td>
-                                                <td>35%</td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <p><i class="fa fa-square green"></i>Produit 2 </p>
-                                                </td>
-                                                <td>5%</td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <p><i class="fa fa-square purple"></i>Produit 3 </p>
-                                                </td>
-                                                <td>20%</td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <p><i class="fa fa-square aero"></i>Produit 4 </p>
-                                                </td>
-                                                <td>15%</td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <p><i class="fa fa-square red"></i>Produit 5 </p>
-                                                </td>
-                                                <td>30%</td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                    </div>
-                </div>-->
-
-
-                <!--<div class="col-md-4 col-sm-4 col-xs-12">
-                    <div class="x_panel tile fixed_height_320">
-                        <div class="x_title">
-                            <h2>Quick Settings</h2>
-                            <ul class="nav navbar-right panel_toolbox">
-                                <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
-                                </li>
-                                <li class="dropdown">
-                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
-                                       aria-expanded="false"><i class="fa fa-wrench"></i></a>
-                                    <ul class="dropdown-menu" role="menu">
-                                        <li><a href="#">Settings 1</a>
-                                        </li>
-                                        <li><a href="#">Settings 2</a>
-                                        </li>
-                                    </ul>
-                                </li>
-                                <li><a class="close-link"><i class="fa fa-close"></i></a>
-                                </li>
-                            </ul>
-                            <div class="clearfix"></div>
-                        </div>
-                        <div class="x_content">
-                            <div class="dashboard-widget-content">
-                                <ul class="quick-list">
-                                    <li><i class="fa fa-calendar-o"></i><a href="#">Settings</a>
-                                    </li>
-                                    <li><i class="fa fa-bars"></i><a href="#">Subscription</a>
-                                    </li>
-                                    <li><i class="fa fa-bar-chart"></i><a href="#">Auto Renewal</a></li>
-                                    <li><i class="fa fa-line-chart"></i><a href="#">Achievements</a>
-                                    </li>
-                                    <li><i class="fa fa-bar-chart"></i><a href="#">Auto Renewal</a></li>
-                                    <li><i class="fa fa-line-chart"></i><a href="#">Achievements</a>
-                                    </li>
-                                    <li><i class="fa fa-area-chart"></i><a href="#">Logout</a>
-                                    </li>
-                                </ul>
-
-                                <div class="sidebar-widget">
-                                    <h4>Profile Completion</h4>
-                                    <canvas width="150" height="80" id="chart_gauge_01" class=""
-                                            style="width: 160px; height: 100px;"></canvas>
-                                    <div class="goal-wrapper">
-                                        <span id="gauge-text" class="gauge-value pull-left">0</span>
-                                        <span class="gauge-value pull-left">%</span>
-                                        <span id="goal-text" class="goal-value pull-right">100%</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>-->
+                </div>
+                <div class="col-md-6 col-sm-6 col-xs-12">
+                    <h4 style="display: inline;">Déclarer une perte : </h4> <input type="number"name="lostQuantity"/>
+                    <button class="btn btn-info lostQuantityButton">Confirmer</button>
+                </div>
 
             </div>
 
 
         </div>
-        <!-- /page content -->
-
-        <!-- footer content -->
-        <footer>
+       <!-- <footer>
             <div class="pull-right">
                 Gentelella - Bootstrap Admin Template by <a href="https://colorlib.com">Colorlib</a>
             </div>
             <div class="clearfix"></div>
-        </footer>
-        <!-- /footer content -->
+        </footer>-->
     </div>
 </div>
 <?php $this->load->view('admin/partials/admin_footer'); ?>
@@ -421,6 +293,61 @@
         error: function (data) {
         }
     });
+
+
+    // add lost quantity
+
+    $('.lostQuantityButton').on('click', lostQuantityEvent);
+    function lostQuantityEvent() {
+        lostQuantity = $('input[name="lostQuantity"]').val();
+        if (lostQuantity >0){
+            var mealsList=[];
+            var meal={
+                'id':<?php echo $report['meal'];?>,
+                'amount':0,
+                'amount':0,
+                'quantity': lostQuantity,
+                'total':0,
+                'date':0
+            }
+            mealsList.push(meal);
+            $.ajax({
+                url: "<?php echo base_url('admin/meal/apiAddLostQuantity'); ?>",
+                type: "POST",
+                dataType: "json",
+                data: {'mealsList':mealsList},
+                success: function (data) {
+                    if (data.status === 'success') {
+                        swal({
+                            title: "Success",
+                            text: "l'opération a été bien effectuée",
+                            type: "success",
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+                    }
+                    else {
+                        swal({
+                            title: "Erreur",
+                            text: "Une erreur s'est produite",
+                            type: "error",
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+                    }
+                },
+                error: function (data) {
+                    swal({
+                        title: "Erreur",
+                        text: "Une erreur s'est produite",
+                        type: "error",
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                }
+            });
+        }
+    }
 
     function oneDayChart(data){
         var amount = [];
