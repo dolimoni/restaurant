@@ -61,8 +61,12 @@ class model_product extends CI_Model {
             $this->updateQuantity($product['id'], $product['quantity'],'up');
         }else{
 
-            $this->updateLocalQuantity($product['id'], $product['quantity'], 'up');
-            $this->updateQuantity($product['id'], $product['quantity'], 'up');
+            $this->updateLocalQuantity($product['id'], $product['quantity'], 'up');//product table
+            $this->updateQuantity($product['id'], $product['quantity'], 'up');//quantity table
+        }
+        if ($product['lostQuantity'] > 0) {
+            $this->updateLocalQuantity($product['id'], $product['lostQuantity']);//product table
+            $this->updateQuantity($product['id'], $product['lostQuantity']);// quantity table
         }
     }
 

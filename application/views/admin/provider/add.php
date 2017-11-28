@@ -98,7 +98,7 @@
                            <div class="col-sm-12 showProvider" data-id="<?php echo $provider['id']; ?>">
                                <h4 class="brief"><i> <?php echo $provider['title']; ?> </i></h4>
                                <div class="left col-xs-7">
-                                   <h2><?php echo $provider['prenom']; ?><?php echo $provider['name']; ?></h2>
+                                   <h2><?php echo $provider['prenom']; ?> <?php echo $provider['name']; ?></h2>
                                    <p><?php echo $provider['title']; ?></p>
                                </div>
                                <div class="right col-xs-5 text-center">

@@ -113,6 +113,12 @@
                                     Consomation par jour : <input value="<?php echo $product['daily_quantity']; ?>" class="form-control" placeholder="Quantité"
                                                                   name="daily_quantity"
                                                                   type="text">
+
+
+                                <div class="form-group">
+                                    Perte : <input  class="form-control" placeholder="Quantité"
+                                                                  name="lostQuantity"
+                                                                  type="number">
                                 </div>
                                 <br/>
                                 <!-- <input type="submit" name="buttonSubmit" value="Confirmer" class="btn btn-success" />
@@ -146,6 +152,8 @@
             var unit_price = $('input[name="unit_price"]').val();
             var daily_quantity = $('input[name="daily_quantity"]').val();
             var min_quantity = $('input[name="min_quantity"]').val();
+            var lostQuantity = $('input[name="lostQuantity"]').val();
+            if(lostQuantity=="")lostQuantity= 0;
             var provider = $('select[name=provider]').val();
             var product = {
                 'id':id,
@@ -156,10 +164,10 @@
                 'provider': provider,
                 'min_quantity': min_quantity,
                 'daily_quantity': daily_quantity,
+                'lostQuantity': lostQuantity,
                 'status': 'active'
             };
 
-            console.log(product);
             $.ajax({
                 url: "<?php echo base_url('admin/product/apiEdit'); ?>",
                 type: "POST",
@@ -178,7 +186,7 @@
                     }
                 },
                 error: function (data) {
-                    // do something
+
                 }
             });
         });
