@@ -1,6 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class Product extends CI_Controller {
+class Product extends BaseController {
 
 	public function __construct()
 	{
@@ -18,11 +18,13 @@ class Product extends CI_Controller {
 	{
         $data['products'] = $this->model_product->getAll();
         $data['providers'] = $this->model_provider->getAll();
+        $data['params'] = $this->getParams();
         $this->parser->parse('admin/product/view_products', $data);
     }
     public function toOrder()
 	{
         $data['products'] = $this->model_product->getToOrder();
+        $data['params'] = $this->getParams();
         $this->parser->parse('admin/product/view_productsToOrder', $data);
     }
 
@@ -32,6 +34,7 @@ class Product extends CI_Controller {
            if (!$this->input->post('productsList')) {
                $data['products'] = $this->model_product->getAll();
                $data['providers'] = $this->model_provider->getAll();
+               $data['params'] = $this->getParams();
                $this->load->view('admin/product/add', $data);
            } else {
                $productsList = $this->input->post('productsList');

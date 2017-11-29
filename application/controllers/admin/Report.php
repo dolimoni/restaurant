@@ -1,6 +1,6 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 
-class Report extends CI_Controller
+class Report extends BaseController
 {
 
     public function __construct()
@@ -20,12 +20,14 @@ class Report extends CI_Controller
     public function index()
     {
         $data['articles']=$this->model_report->report();
+        $data['params'] = $this->getParams();
         $this->load->view('admin/report/article', $data);
     }
     public function statistic()
     {
         $data['articles']=$this->model_report->report();
         $data['report'] = $this->model_report->global_report();
+        $data['params'] = $this->getParams();
         $this->load->view('admin/report/view_statistic', $data);
     }
     public function apiReport()

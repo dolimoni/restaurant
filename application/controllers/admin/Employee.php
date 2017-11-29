@@ -1,6 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class Employee extends CI_Controller {
+class Employee extends BaseController {
 
 	public function __construct()
 	{
@@ -28,6 +28,7 @@ class Employee extends CI_Controller {
         if (!$this->input->post('addEmployee')) {
             $data['message'] = '';
             $data['employees'] = $this->model_employee->getAll();
+            $data['params'] = $this->getParams();
             $this->parser->parse('admin/employee/add', $data);
         } else {
             $name = $this->input->post('name');

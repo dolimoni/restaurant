@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Café Fiori</title>
+    <title><?php echo $params['name']; ?></title>
 
 
   <!-- Global site tag (gtag.js) - Google Analytics -->
@@ -74,7 +74,7 @@
         <div class="col-md-3 left_col">
           <div class="left_col scroll-view">
             <div class="navbar nav_title" style="border: 0;">
-             <a href="<?= base_url('admin/dashboard'); ?>" class="site_title"><i class="fa fa-paw"></i> <span>Café Fiori</span></a>
+             <a href="<?= base_url('admin/dashboard'); ?>" class="site_title"><i class="fa fa-paw"></i> <span><?php echo $params['name']; ?></span></a>
             </div>
 
             <div class="clearfix"></div>
@@ -143,7 +143,7 @@
                   <li>
                       <a><i class="fa fa-dollar"></i> Budget <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
-                      <li><a href="<?= base_url('admin/budget/regular'); ?>">Dépenses régulières</a></li>
+                      <li><a href="<?= base_url('admin/budget/regular'); ?>">Alertes</a></li>
                       <li><a href="<?= base_url('admin/budget/reparation'); ?>">Mes réparations</a></li>
                       <li><a href="<?= base_url('admin/budget/purchase'); ?>">Mes achats</a></li>
                     </ul>

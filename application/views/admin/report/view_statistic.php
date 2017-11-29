@@ -9,9 +9,9 @@
 <!-- page content -->
 <div class="right_col" role="main">
     <div class="">
-            <pre>
-                <?php print_r($report); ?>
-            </pre>
+           <!-- <pre>
+                <?php /*print_r($report); */?>
+            </pre>-->
         <div class="page-title">
           <!--  <div class="title_left">
                 <h3>Articles</h3>

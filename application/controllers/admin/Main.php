@@ -7,7 +7,7 @@
  *
  */
 
-class Main extends CI_Controller
+class Main extends BaseController
 {
 
     public function __construct()
@@ -32,6 +32,8 @@ class Main extends CI_Controller
     {
 
         //$data = $this->readSalesCSV('uploads/XAFUL.CSV');
+
+        $data['params'] = $this->getParams();
 
         $this->load->view('admin/uniwell/index');
     }

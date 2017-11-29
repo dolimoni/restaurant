@@ -1,6 +1,6 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 
-class Provider extends CI_Controller
+class Provider extends BaseController
 {
 
     public function __construct()
@@ -27,6 +27,7 @@ class Provider extends CI_Controller
         if (!$this->input->post('addProvider')) {
             $data['message'] = '';
             $data['providers'] = $this->model_provider->getAll();
+            $data['params'] = $this->getParams();
             $this->parser->parse('admin/provider/add', $data);
         } else {
             $title = $this->input->post('title');

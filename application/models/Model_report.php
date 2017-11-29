@@ -119,7 +119,7 @@ class model_report extends CI_Model
         $this->db->select('*');
         $this->db->select('sum(c.quantity) as s_quantity');
         $this->db->select('sum(c.amount) as s_amount');
-        $this->db->select('sum(c.amount)*sum(c.quantity) as turnover');
+        $this->db->select('sum(c.total) as turnover');
         $this->db->from('consumption c');
         $this->db->where('c.type','sale');
         $consumption = $this->db->get()->row_array();
@@ -128,7 +128,7 @@ class model_report extends CI_Model
         $this->db->select('*');
         $this->db->select('sum(cp.unit_price) as s_price');
         $this->db->select('sum(cp.quantity) as s_quantity');
-        $this->db->select('sum(cp.quantity)*sum(cp.unit_price) as s_cost');
+        $this->db->select('sum(cp.total) as s_cost');
         $this->db->from('consumption_product cp');
         $this->db->where('cp.type', 'sale');
         $consumption_product = $this->db->get()->row_array();

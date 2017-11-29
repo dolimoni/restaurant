@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Dashboard extends CI_Controller {
+class Dashboard extends BaseController {
 
 	public function __construct()
 	{
@@ -21,6 +21,7 @@ class Dashboard extends CI_Controller {
         $data['alertes']=$this->model_budget->getActiveAlerts();
         $data['groups'] = $this->model_group->getAll();
         $data['productsToOrder'] = $this->model_product->getToOrder();
+        $data['params']=$this->getParams();
 
         $this->parser->parse('admin/meal/view_group', $data);
 	}

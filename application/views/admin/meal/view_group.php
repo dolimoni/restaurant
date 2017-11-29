@@ -17,10 +17,10 @@
                    <a class="btn btn-primary" data-toggle="collapse" href="#collapseExample" aria-expanded="false"
                       aria-controls="collapseExample">Nouvelle famille</a>
 
-                   <button type="submit" class="btn btn-warning" name="Fichier"
-                           onclick="window.location.href='<?php echo base_url('admin/meal/loadFileGroup/'); ?>'">
+                   <!--<button type="submit" class="btn btn-warning" name="Fichier"
+                           onclick="window.location.href='<?php /*echo base_url('admin/meal/loadFileGroup/'); */?>'">
                        <span class="fa fa-print"></span> Importer
-                   </button>
+                   </button>-->
                </div>
 
                <div class="col-md-3">

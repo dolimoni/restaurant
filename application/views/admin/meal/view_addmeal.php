@@ -85,9 +85,9 @@
                                            <option value="0.000001" name="Milligramme">Milligramme</option>
                                        </select>
                                        <select name="lUnitHidden" class="lUnitHidden  md-button-v" <?php echo $LUnitHidden ?>>
-                                               <option>Litre</option>
-                                               <option>Centilitre</option>
-                                               <option>Millilitre</option>
+                                               <option value="1" name="Kilogramme">Litre</option>
+                                               <option value="0.001" name="Centilitre">Centilitre</option>
+                                               <option value="0.000001" name="Millilitre">Millilitre</option>
                                        </select>
                                        Quantité :
                                        <input class="form-inline  md-button-v" placeholder="Quantité" name="quantity"
@@ -142,9 +142,9 @@
                                         <option value="0.000001" name="Milligramme">Milligramme</option>
                                     </select>
                                     <select name="lUnitHidden" class="lUnitHidden  md-button-v" <?php echo $LUnitHidden ?>>
-                                        <option>Litre</option>
-                                        <option>Centilitre</option>
-                                        <option>Millilitre</option>
+                                        <option value="1" name="Kilogramme">Litre</option>
+                                        <option value="0.001" name="Centilitre">Centilitre</option>
+                                        <option value="0.000001" name="Millilitre">Millilitre</option>
                                     </select>
                                     Quantité : <input class="form-inline  md-button-v" placeholder="Quantité" name="quantity"
                                                       type="text">
@@ -262,7 +262,7 @@
                     unit_price *= unitConvert;
                 }
                 if (unit === 'L') {
-                    unitConvert = parseFloat(l_panel.find('select[name="lgUnitHidden"] option:selected').val());
+                    unitConvert = parseFloat(l_panel.find('select[name="lUnitHidden"] option:selected').val());
                     unitConvertName = parseFloat(l_panel.find('select[name="lUnitHidden"] option:selected').text());
                     unit_price *= unitConvert;
                 }
@@ -314,7 +314,7 @@
                     unit_price *= unitConvert;
                 }
                 if (unit === 'L') {
-                    unitConvert = parseFloat(l_panel.find('select[name="lgUnitHidden"] option:selected').val());
+                    unitConvert = parseFloat(l_panel.find('select[name="lUnitHidden"] option:selected').val());
                     unitConvertName = l_panel.find('select[name="lUnitHidden"] option:selected').text();
                     unit_price *= unitConvert;
                 }

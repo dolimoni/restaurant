@@ -1,6 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class Budget extends CI_Controller {
+class Budget extends BaseController {
 
 	public function __construct()
 	{
@@ -24,16 +24,19 @@ class Budget extends CI_Controller {
         $this->load->model('model_params');
         $data['regularCosts'] = $this->model_budget->getRegularCosts();
         $data['params'] = $this->model_params->config();
+        $data['params'] = $this->getParams();
         $this->load->view('admin/budget/view_regular', $data);
     }
     public function reparation()
     {
         $data['reparations']= $this->model_budget->getReparations();
+        $data['params'] = $this->getParams();
         $this->load->view('admin/budget/reparation',$data);
     }
     public function purchase()
     {
         $data['purchases']= $this->model_budget->getPurchases();
+        $data['params'] = $this->getParams();
         $this->load->view('admin/budget/purchase',$data);
     }
 

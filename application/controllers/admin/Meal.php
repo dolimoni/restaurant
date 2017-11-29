@@ -1,6 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class Meal extends CI_Controller {
+class Meal extends BaseController {
 
 	public function __construct()
 	{
@@ -20,6 +20,7 @@ class Meal extends CI_Controller {
 	{	
         $data['meals'] = $this->model_meal->getAll();
         $data['groups'] = $this->model_group->getAll();
+        $data['params'] = $this->getParams();
         $this->parser->parse('admin/meal/view_meals', $data);
     }
     public function view()

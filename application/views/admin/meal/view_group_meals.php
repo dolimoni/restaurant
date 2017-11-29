@@ -184,6 +184,7 @@
                             timer: 1500,
                             showConfirmButton: false
                         });
+                        location.reload();
                     }
                 },
                 error: function (data) {
@@ -229,7 +230,7 @@
 
         function deleteMeal() {
             var meal_id = $(this).attr('data-id');
-            $(this).closest('tr').hide();
+            //$(this).closest('tr').hide();
             swal({
                     title: "Attention ! ",
                     text: "Vous voulez vraiment supprimer cet article ?",
@@ -254,6 +255,7 @@
                                     timer: 1500,
                                     showConfirmButton: false
                                 });
+                                location.reload();
                             }
                             else {
                                 swal({
