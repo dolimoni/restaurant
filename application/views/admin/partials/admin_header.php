@@ -10,7 +10,20 @@
     <title>Café Fiori</title>
 
 
-    <!-- Bootstrap -->
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-110319921-1"></script>
+  <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+          dataLayer.push(arguments);
+      }
+      gtag('js', new Date());
+
+      gtag('config', 'UA-110319921-1');
+  </script>
+
+
+      <!-- Bootstrap -->
     <link href="<?php echo base_url("assets/vendors/bootstrap/dist/css/bootstrap.min.css"); ?>" rel="stylesheet">
 	<!--date picker -->
 	<link href="<?php echo base_url("assets/datepicker3.css"); ?>" rel="stylesheet">
@@ -204,6 +217,24 @@
                   <ul class="dropdown-menu dropdown-usermenu pull-right">
                     
                     <li><a href="<?php echo base_url() . 'admin/dashboard/logout'; ?>"><i class="fa fa-sign-out pull-right"></i> Log Out</a></li>
+                  </ul>
+                </li>
+                  <?php
+                      $activeAlert="passive-alert";
+                      $alertes_count=0;
+                      if (isset($alertes) and count($alertes)>0) {
+                          $alertes_count= count($alertes) ;
+                          $activeAlert="active-alert";
+                      }
+                  ?>
+                  <li class="<?php echo $activeAlert ?>">
+                  <a id="alerte" href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                      <i class="fa fa-bell"></i>(<?php echo $alertes_count; ?>)
+                    <span class=" fa fa-angle-down"></span>
+                  </a>
+                  <ul class="dropdown-menu dropdown-usermenu pull-right">
+
+                    <li><a href="<?php echo base_url() . 'admin/budget/regular'; ?>"><i class="fa fa-sign-out pull-right"></i>Afficher les alertes</a></li>
                   </ul>
                 </li>
               </ul>

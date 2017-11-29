@@ -99,10 +99,10 @@ class Provider extends CI_Controller
                 $mail = $this->input->post('mail');
                 if ($_FILES['image']['name']) {
                     $image = $_FILES['image']['name'];
+                    $file_name = $this->uploadFile();
                 } else {
                     $image = "profile-default-male.png";
                 }
-                $file_name = $this->uploadFile();
                 if ($_FILES['image']['name']) {
                     $image = $file_name;
                 } else {

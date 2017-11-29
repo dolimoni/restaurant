@@ -289,7 +289,7 @@ class model_meal extends CI_Model {
                 //$m_product['unitConvert']: conversion du Kg vers gr ou mg ..
 
                 // update reduce the amount of a product's stock after consumption the meal
-                if($m_product['totalQuantity']> $m_product['mp_quantity']* $m_product['unitConvert'] * $meal['quantity'] ){
+                if($m_product['totalQuantity']> $m_product['mp_quantity']* $m_product['unitConvert'] * $meal['quantity'] or true ){
                     if($response['status'] === "success"){
                         if($consumption_id===0){
                             $consumption_id=$todayConsumption['id'];
@@ -302,9 +302,9 @@ class model_meal extends CI_Model {
                           'consumption'=> $consumption_id,
                           'meal'=> $meal['id'],
                           'product'=> $m_product['p_id'],
-                          'quantity'=> $m_product['mp_quantity'] * $m_product['unitConvert'] /** $meal['quantity']*/,
+                          'quantity'=> $m_product['mp_quantity'] * $m_product['unitConvert'] * $meal['quantity'],
                           'unit_price'=> $m_product['unit_price'],
-                          'total'=> $m_product['unit_price']* $m_product['mp_quantity'] * $m_product['unitConvert'] /** $meal['quantity']*/,
+                          'total'=> $m_product['unit_price']* $m_product['mp_quantity'] * $m_product['unitConvert'] * $meal['quantity'],
                             'type'=> $consumption_type
                         );
                         if (!isset($todayConsumption) ) {

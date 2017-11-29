@@ -183,6 +183,7 @@
                             timer: 1500,
                             showConfirmButton: false
                         });
+                        location.reload();
                     } else {
                         swal({
                             title: "Erreur",
@@ -248,6 +249,7 @@
                                     timer: 1500,
                                     showConfirmButton: false
                                 });
+                                location.reload();
                             }
                             else {
                                 swal({

@@ -16,8 +16,12 @@ class Dashboard extends CI_Controller {
 
 	public function index()
 	{
+	    //get alertes
+        $this->load->model('model_budget');
+        $data['alertes']=$this->model_budget->getActiveAlerts();
         $data['groups'] = $this->model_group->getAll();
         $data['productsToOrder'] = $this->model_product->getToOrder();
+
         $this->parser->parse('admin/meal/view_group', $data);
 	}
 

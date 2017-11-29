@@ -8,6 +8,7 @@
 <div class="right_col" role="main">
     <div class="productsList">
         <div class="page-title">
+
             <div class="title_left">
                 <h3>Liste des employés</h3>
             </div>
@@ -99,14 +100,14 @@
             <?php foreach ($employees as $employee) { ?>
                 <div class="col-md-4 col-sm-4 col-xs-12 profile_details" data-id="<?php echo $employee['id']; ?>">
                     <div class="well profile_view">
-                        <div class="col-sm-12 profile_details-link">
+                        <div class="col-sm-12 profile_details-link" data-id="<?php echo $employee['id']; ?>">
                             <h4 class="brief"><i> <?php echo $employee['workType']; ?> </i></h4>
                             <div class="left col-xs-7">
                                 <h2><?php echo $employee['name']; ?> <?php echo $employee['prenom']; ?></h2>
                                 <p><?php echo $employee['workType']; ?></p>
                             </div>
                             <div class="right col-xs-5 text-center">
-                                <img src="<?php echo base_url(); ?>assets/images/itsMe.jpg" alt=""
+                                <img src="<?php echo base_url('assets/images/'. $employee['image']); ?>" alt=""
                                      class="img-circle img-responsive">
                             </div>
                             <div class="left col-xs-12">
@@ -185,8 +186,13 @@
                 },
                 error: function (data) {
                     $('#loading').hide();
-                    console.log("error");
-                    console.log(data);
+                    swal({
+                        title: "Erreur",
+                        text: "Une erreur s'est produite",
+                        type: "error",
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
                 }
             });
 

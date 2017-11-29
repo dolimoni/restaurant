@@ -40,8 +40,8 @@ class Employee extends CI_Controller {
             $image = "profile-default-male.png";
             if ($_FILES['image']['name']) {
                 $image = $_FILES['image']['name'];
+                $this->uploadFile();
             }
-            $this->uploadFile();
             $worker = array('name' => $name, 'prenom' => $prenom, 'cin' => $cin, 'address' => $address, 'phone' => $phone, 'salary' => $salary, 'workType' => $workType, 'image' => $image);
             $this->model_employee->add($worker);
             $this->output
