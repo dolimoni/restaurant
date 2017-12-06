@@ -6,12 +6,13 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="icon" type="image/png" href="<?php echo base_url('assets/images/favicon.png'); ?>"/>
 
     <title><?php echo $params['name']; ?></title>
 
 
   <!-- Global site tag (gtag.js) - Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-110319921-1"></script>
+ <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=UA-110319921-1"></script>
   <script>
       window.dataLayer = window.dataLayer || [];
       function gtag() {
@@ -20,7 +21,7 @@
       gtag('js', new Date());
 
       gtag('config', 'UA-110319921-1');
-  </script>
+  </script>-->
 
 
       <!-- Bootstrap -->
@@ -74,7 +75,7 @@
         <div class="col-md-3 left_col">
           <div class="left_col scroll-view">
             <div class="navbar nav_title" style="border: 0;">
-             <a href="<?= base_url('admin/dashboard'); ?>" class="site_title"><i class="fa fa-paw"></i> <span><?php echo $params['name']; ?></span></a>
+             <a href="<?= base_url('admin/dashboard'); ?>" class="site_title"><i class="fa fa-coffee"></i> <span><?php echo $params['name']; ?></span></a>
             </div>
 
             <div class="clearfix"></div>
@@ -186,13 +187,14 @@
               <a data-toggle="tooltip" data-placement="top" title="Settings">
                 <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
               </a>
-              <a data-toggle="tooltip" data-placement="top" title="FullScreen">
+              <a data-toggle="tooltip" data-placement="top" title="FullScreen" id="fullScreen">
                 <span class="glyphicon glyphicon-fullscreen" aria-hidden="true"></span>
               </a>
               <a data-toggle="tooltip" data-placement="top" title="Lock">
                 <span class="glyphicon glyphicon-eye-close" aria-hidden="true"></span>
               </a>
-              <a data-toggle="tooltip" data-placement="top" title="Logout">
+              <a data-toggle="tooltip" data-placement="top" title="Logout"
+                 href="<?php echo base_url() . 'admin/dashboard/logout'; ?>">
                 <span class="glyphicon glyphicon-off" aria-hidden="true"></span>
               </a>
             </div>

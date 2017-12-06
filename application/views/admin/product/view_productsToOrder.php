@@ -44,12 +44,12 @@
                             </tr>
                             
                             <?php foreach ($products as $product) {
-                                $status= $product['min_quantity'] > $product['quantity']?'danger':'success';
+                                $status= $product['min_quantity'] > $product['totalQuantity']?'danger':'success';
                             ?>
                             <tr class="<?php echo $status; ?>">
                                 <td><?php echo $product['id'];?></td>
                                 <td><?php echo $product['name']; ?></td>
-                                <td><?php echo $product['quantity']; ?></td>
+                                <td><?php echo $product['totalQuantity']; ?></td>
                                 <td><?php echo $product['unit']; ?></td>
                                 <td><?php echo $product['unit_price']; ?></td>
                                 <td>

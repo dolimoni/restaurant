@@ -127,6 +127,7 @@
                         timer: 1500,
                         showConfirmButton: false
                     });
+                    location.reload();
                 },
                 error: function (data) {
                     console.log("error");

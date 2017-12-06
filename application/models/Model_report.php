@@ -54,7 +54,7 @@ class model_report extends CI_Model
                 $meals[$key]['s_cost'] = $val2['s_cost'];
             }
             return $meals;
-        } else {//customr report
+        } else {//custom report
 
 
             $this->db->select('*');
@@ -166,11 +166,21 @@ class model_report extends CI_Model
         $products_cost = $this->db->get()->result_array();
 
 
+
+        $this->db->select('sum(price) as price');
+        $purchase = $this->db->get('purchase')->row_array();
+
+        $this->db->select('sum(price) as price');
+        $repair = $this->db->get('reparation')->row_array();
+
+
         $global['consumption']= $consumption;
         $global['cp']= $consumption_product;
         $global['sales_history']= $sales_history;
         $global['products_cost']= $products_cost;
         $global['sales_history_month']= $sales_history_month;
+        $global['purchase']= $purchase;
+        $global['repair']= $repair;
 
 
         return $global;

@@ -17,37 +17,106 @@
         </div>
         <div class="clearfix"></div>
         <hr>
-        <h4 style="display: inline;">Nombre de produit à ajouter : </h4> <input type="text" name="productSize"/>
-        <div class="btn btn-info productSize">Ajouter</div>
-        <div class="row productsListContent">
-            <div class="col-md-6 col-sm-12 col-xs-12 productItem" data-id="1">
+        <form id="addProductsForm" method="post">
+        <h4 style="display: inline;">Nombre de produit à ajouter : </h4> <input type="number" name="productSize"/>
+            <div type="submit" class="btn btn-info productSize">Ajouter</div>
+        </form>
+        <form id="addProduct" method="post">
+            <div class="row productsListContent">
+                <div class="col-md-6 col-sm-12 col-xs-12 productItem" data-id="1">
+                    <div class="x_panel">
+                        <div class="x_title">
+                            <h2>Produit</h2>
+                            <ul class="nav navbar-right panel_toolbox">
+                                <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
+                                <!--<li><a class="close-link"><i class="fa fa-close"></i></a></li>-->
+                            </ul>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+                            <label><?php /*echo $message;*/ ?></label>
+                                <fieldset>
+                                    <div class="form-group">
+                                        Nom<span class="required">*</span> : <input class="form-control"
+                                                                                    placeholder="Produit" name="name"
+                                                                                    id="username" type="text" required>
+                                    </div>
+                                    <div class="form-group">
+                                        Quantité<span class="required">*</span> : <input class="form-control"
+                                                                                         placeholder="Quantité"
+                                                                                         name="quantity"
+                                                                                         type="number">
+                                    </div>
+                                    <div class="form-group">
+                                        Unité de mesure :
+                                        <select class="form-control" name="unit">
+                                            <option name="unit" value="kg">Kg</option>
+                                            <option name="unit" value="pcs">Pcs</option>
+                                            <option name="unit" value="L">Litre</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        Fournisseur :
+                                        <select class="form-control" name="provider">
+                                            <option value="0">Aucun</option>
+                                            <?php foreach ($providers as $provide) { ?>
+                                                <option
+                                                        value="<?php echo $provide['id']; ?>"><?php echo $provide['name']; ?></option>
+                                            <?php } ?>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        Prix unitaire<span class="required">*</span> : <input class="form-control"
+                                                                                              placeholder="Prix unitaire"
+                                                                                              name="unit_price">
+                                    </div>
+
+                                    <div class="form-group">
+                                        Quantité minimum du stock : <input class="form-control"
+                                                                           placeholder="Quantité minimum du stock"
+                                                                           name="min_quantity" >
+                                    </div>
+                                    <div class="form-group">
+                                        Consomation par jour : <input class="form-control" placeholder="Quantité"
+                                                                      name="daily_quantity"
+                                                                      type="number">
+                                    </div>
+                                    <br/>
+                                    <!-- <input type="submit" name="buttonSubmit" value="Confirmer" class="btn btn-success" />
+                                     <div value="Nouveau produit" class="btn btn-info newProduct" >Nouveau produit</div>-->
+                                </fieldset>
+                        </div> <!-- /content -->
+                    </div><!-- /x-panel -->
+                </div>
+            </div>
+
+            <div class="col-md-6 col-sm-12 col-xs-12 productItem productModel" hidden>
                 <div class="x_panel">
                     <div class="x_title">
                         <h2>Produit</h2>
                         <ul class="nav navbar-right panel_toolbox">
                             <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
-                            <li><a class="close-link"><i class="fa fa-close"></i></a></li>
+                            <!-- <li><a class="close-link"><i class="fa fa-close"></i></a></li>-->
                         </ul>
                         <div class="clearfix"></div>
                     </div>
                     <div class="x_content">
                         <label><?php /*echo $message;*/ ?></label>
-                        <form method="post">
                             <fieldset>
                                 <div class="form-group">
-                                    Nom : <input class="form-control" placeholder="Produit" name="name"
+                                    Produit : <input class="form-control" placeholder="Produit" name="name"
                                                      id="username" type="text">
                                 </div>
                                 <div class="form-group">
                                     Quantité : <input class="form-control" placeholder="Quantité" name="quantity"
-                                                      type="text">
+                                                      type="number">
                                 </div>
                                 <div class="form-group">
                                     Unité de mesure :
                                     <select class="form-control" name="unit">
                                         <option name="unit" value="kg">Kg</option>
                                         <option name="unit" value="pcs">Pcs</option>
-                                        <option name="unit" value="L">Litre</option>
+                                        <option name="unit" value="l">Litre</option>
                                     </select>
                                 </div>
                                 <div class="form-group">
@@ -55,95 +124,34 @@
                                     <select class="form-control" name="provider">
                                         <option value="0">Aucun</option>
                                         <?php foreach ($providers as $provide) { ?>
-                                        <option name="unit" value="<?php echo $provide['name']; ?>"><?php echo $provide['name'];?></option>
+                                            <option name="unit"
+                                                    value="<?php echo $provide['name']; ?>"><?php echo $provide['name']; ?></option>
                                         <?php } ?>
                                     </select>
                                 </div>
                                 <div class="form-group">
                                     Prix unitaire : <input class="form-control" placeholder="Prix unitaire"
-                                                           name="unit_price" type="text">
-                                </div>
-
-                                <div class="form-group">
-                                    Quantité minimum du stock : <input class="form-control" placeholder="Quantité minimum du stock"
-                                                           name="min_quantity" type="text">
+                                                           name="unit_price">
                                 </div>
                                 <div class="form-group">
-                                    Consomation par jour : <input class="form-control" placeholder="Quantité"
-                                                                  name="daily_quantity"
-                                                                  type="text">
-                                </div>
-                                <br/>
-                                <!-- <input type="submit" name="buttonSubmit" value="Confirmer" class="btn btn-success" />
-                                 <div value="Nouveau produit" class="btn btn-info newProduct" >Nouveau produit</div>-->
+                                    Quantité minimum du stock : <input class="form-control"
+                                                                       placeholder="Quantité minimum du stock"
+                                                                       name="min_quantity" type="number">
+                                    <div class="form-group">
+                                        Consomation par jour : <input class="form-control" placeholder="Quantité"
+                                                                      name="daily_quantity"
+                                                                      type="number">
+                                    </div>
+                                    <br/>
+                                    <!-- <input type="submit" name="buttonSubmit" value="Confirmer" class="btn btn-success" />
+                                     <div value="Nouveau produit" class="btn btn-info newProduct" >Nouveau produit</div>-->
                             </fieldset>
-                        </form>
                     </div> <!-- /content -->
                 </div><!-- /x-panel -->
             </div>
-        </div>
 
-        <div class="col-md-6 col-sm-12 col-xs-12 productItem productModel" hidden>
-            <div class="x_panel">
-                <div class="x_title">
-                    <h2>Produit</h2>
-                    <ul class="nav navbar-right panel_toolbox">
-                        <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
-                        <li><a class="close-link"><i class="fa fa-close"></i></a></li>
-                    </ul>
-                    <div class="clearfix"></div>
-                </div>
-                <div class="x_content">
-                    <label><?php /*echo $message;*/ ?></label>
-                    <form method="post">
-                        <fieldset>
-                            <div class="form-group">
-                                Produit : <input class="form-control" placeholder="Produit" name="name"
-                                                 id="username" type="text">
-                            </div>
-                            <div class="form-group">
-                                Quantité : <input class="form-control" placeholder="Quantité" name="quantity"
-                                                  type="text">
-                            </div>
-                            <div class="form-group">
-                                Unité de mesure :
-                                <select class="form-control" name="unit">
-                                    <option name="unit" value="kg">Kg</option>
-                                    <option name="unit" value="pcs">Pcs</option>
-                                    <option name="unit" value="l">Litre</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                Fournisseur :
-                                <select class="form-control" name="provider">
-                                    <option value="0">Aucun</option>
-                                    <?php foreach ($providers as $provide) { ?>
-                                        <option name="unit"
-                                                value="<?php echo $provide['name']; ?>"><?php echo $provide['name']; ?></option>
-                                    <?php } ?>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                Prix unitaire : <input class="form-control" placeholder="Prix unitaire"
-                                                       name="unit_price" type="text">
-                            </div>
-                            <div class="form-group">
-                                Quantité minimum du stock : <input class="form-control"
-                                                                   placeholder="Quantité minimum du stock"
-                                                                   name="min_quantity" type="text">
-                            <div class="form-group">
-                                Consomation par jour : <input class="form-control" placeholder="Quantité" name="daily_quantity"
-                                                  type="text">
-                            </div>
-                            <br/>
-                            <!-- <input type="submit" name="buttonSubmit" value="Confirmer" class="btn btn-success" />
-                             <div value="Nouveau produit" class="btn btn-info newProduct" >Nouveau produit</div>-->
-                        </fieldset>
-                    </form>
-                </div> <!-- /content -->
-            </div><!-- /x-panel -->
-        </div>
-        <input type="submit" name="buttonSubmit" value="Confirmer" class="btn btn-success"/>
+            <input type="submit" name="buttonSubmit" value="Confirmer" class="btn btn-success"/>
+        </form>
     </div>
 
 </div> <!-- /.col-right -->
@@ -168,8 +176,8 @@
 
             // container.append(productContainer[0]);
         });*/
-        $('input[name="buttonSubmit"]').on('click', function () {
-
+        $('#addProduct').submit( function (e) {
+            e.preventDefault();  //prevent form from submitting
             for (var i = 1; i <= productsCount; i++) {
 
                 var row = $('.productItem[data-id=' + i + ']');
@@ -182,46 +190,61 @@
                 var min_quantity = row.find('input[name="min_quantity"]').val();
                 var provider = $('select[name=provider]').val();
                 var product1 = {'name': name, 'quantity': quantity, 'unit': unit, 'unit_price': unit_price,'provider': provider, 'min_quantity': min_quantity, 'daily_quantity': daily_quantity,'status':'active'};
-                productsList.push(product1);
+               if(name!=="" && quantity>0 && unit_price>0){
+                   productsList.push(product1);
+               }
             }
-            console.log(productsList);
-            $.ajax({
-                url: "<?php echo base_url(); ?>admin/product/add",
-                type: "POST",
-                dataType: "json",
-                data: {"productsList": productsList},
-                success: function (data) {
-                    if(data.status="success"){
-                        swal({
-                            title: "Success",
-                            text: "Success",
-                            type: "success",
-                            timer: 1500,
-                            showConfirmButton: false
-                        });
 
-                        window.location.href = data.redirect;
-                    }else {
-                        swal({
-                            title: "Oups !",
-                            text: "Une erreur s'est produite",
-                            type: "error",
-                            timer: 1500,
-                            showConfirmButton: false
-                        });
+           if(productsList.length>0){
+               $.ajax({
+                   url: "<?php echo base_url(); ?>admin/product/add",
+                   type: "POST",
+                   dataType: "json",
+                   data: {"productsList": productsList},
+                   success: function (data) {
+                       if (data.status = "success") {
+                           swal({
+                               title: "Success",
+                               text: "Success",
+                               type: "success",
+                               timer: 1500,
+                               showConfirmButton: false
+                           });
 
-                    }
-                },
-                error: function (data) {
-                    // do something
-                }
-            });
+                           //window.location.href = data.redirect;
+                       } else {
+                           swal({
+                               title: "Oups !",
+                               text: "Une erreur s'est produite",
+                               type: "error",
+                               timer: 1500,
+                               showConfirmButton: false
+                           });
+
+                       }
+                   },
+                   error: function (data) {
+                       // do something
+                   }
+               });
+           }
+
+           else{
+               swal({
+                   title: "Attention",
+                   text: "Merci de remplir les champs obligatoires",
+                   type: "info",
+                   timer: 1500,
+                   showConfirmButton: false
+               });
+           }
             productsList = [];
         });
 
 
-        $('.productSize').on('click', addProducts);
-        function addProducts() {
+        $('#addProductsForm').submit(addProducts);
+        function addProducts(e) {
+            e.preventDefault();
             productSize = $('input[name="productSize"]').val();
             if(productSize==="")
                 productSize=1;

@@ -14,7 +14,7 @@
 
         <!-- page content -->
         <div class="right_col" role="main">
-           <!-- <pre>
+            <!--<pre>
                 <?php /*print_r($report); */?>
             </pre>-->
             <!-- top tiles -->
@@ -185,10 +185,10 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6 col-sm-6 col-xs-12">
+                <!--<div class="col-md-6 col-sm-6 col-xs-12">
                     <h4 style="display: inline;">Déclarer une perte : </h4> <input type="number"name="lostQuantity"/>
                     <button class="btn btn-info lostQuantityButton">Confirmer</button>
-                </div>
+                </div>-->
 
             </div>
 
@@ -211,7 +211,7 @@
     var rangeLink = "<?php echo base_url('admin/report/apiRange'); ?>";
 </script>
 
-<script src="<?php echo base_url('assets/build2/js/dateRangePicker.js'); ?>"></script>
+<script src="<?php echo base_url('assets/vendors/bootstrap-daterangepicker/daterangepicker.js'); ?>"></script>
 
 <script src="<?php echo base_url('assets/vendors/Flot/jquery.flot.js');?>"></script>
 <script src="<?php echo base_url('assets/vendors/Flot/jquery.flot.pie.js');?>"></script>
@@ -257,6 +257,9 @@
 
 
 <script src="<?php echo base_url('assets/vendors/flot.orderbars/js/jquery.flot.orderBars.js');?>"></script>
+
+
+<script src="<?php echo base_url('assets/build2/js/custom.js');?>"></script>
 <script src="<?php echo base_url('assets/vendors/flot-spline/js/jquery.flot.spline.min.js');?>"></script>
 <script src="<?php echo base_url('assets/vendors/flot.curvedlines/curvedLines.js');?>"></script>
 

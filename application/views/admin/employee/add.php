@@ -146,18 +146,6 @@
 
 <?php $this->load->view('admin/partials/admin_footer'); ?>
 
-<?php if ($this->session->flashdata('message') != NULL) : ?>
-    <script>
-        swal({
-            title: "Success",
-            text: "<?php echo $this->session->flashdata('message'); ?>",
-            type: "success",
-            timer: 1500,
-            showConfirmButton: false
-        });
-    </script>
-
-<?php endif ?>
 
 <script>
 

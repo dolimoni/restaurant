@@ -117,18 +117,26 @@ class Budget extends BaseController {
     public function apiReportAlert(){
         try {
             $alert = $this->input->post('alert');
-            if($alert['reminderDate']<date('Y-m-d')){
-                $alert['reminderDate']= date('Y-m-d');
+            if($alert['delay']==="dai"){
+                $alert['delay']="day";
             }
-            $reminderDate = date('Y-m-d', strtotime($alert['reminderDate'] . ' +1 '. $alert['delay']));
+            $newReminderDate= $alert['reminderDate'];
+            if($alert['reminderDate']<date('Y-m-d')){
+                $newReminderDate= date('Y-m-d');
+            }
+            $reminderDate = date('Y-m-d', strtotime($newReminderDate . ' +1 '. $alert['delay']));
 
 
             $data=array(
               'reminderDate'=> $reminderDate,
                'status'=>'passive'
             );
+            if($alert['delay'] === "no"){
+                $data['status']="done";
+            }
             if(isset($alert['paiementDate']) and $alert['updatePaiementDate']){
                 $data['paiementDate']= date('Y-m-d', strtotime($alert['paiementDate'] . ' +1 ' . $alert['delay']));
+                $data['reminderDate'] = date('Y-m-d', strtotime($alert['reminderDate'] . ' +1 ' . $alert['delay']));
             }
             $this->model_budget->updateAlertDates($alert['id'],$data);
 

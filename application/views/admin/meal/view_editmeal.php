@@ -3,7 +3,9 @@
 <div class="right_col" role="main">
     <div class="productsList">
         <div class="page-title">
-
+           <!-- <pre>
+                <?php /*print_r($productsComposition); */?>
+            </pre>-->
             <div class="title_left">
                 <h3>Modifier l'article : <?php echo $meal['name']; ?></h3>
             </div>
@@ -15,7 +17,7 @@
         <div class="row tile_count">
             <div class="col-md-3 col-sm-6 col-xs-12 tile_stats_count">
                 <span class="count_top"><i class="fa fa-line-chart"></i> Nombre de produits</span>
-                <div class="count productsCount"><?php echo $meal['products_count']; ?></div>
+                <div class="count productsCount"><?php echo count($productsComposition); ?></div>
                 <!--<span class="count_bottom"><i class="green">4% </i> From last Week</span>-->
             </div>
             <div class="col-md-3 col-sm-6 col-xs-12 tile_stats_count">
@@ -94,25 +96,33 @@
                                            if ($pc['unit'] === "L") {
                                                $LUnitHidden = '';
                                            }
+                                           $mp_unit=strtoupper($pc['mp_unit']);
+                                           $mp_unit= preg_replace('/\s+/', '', $mp_unit);
                                            ?>
                                            <div class="col-md-3 col-sm-12 col-xs-12">
                                                <select name="kgUnitHidden"
                                                        class="kgUnitHidden small-button md-button-v" <?php echo $KgUnitHidden ?>>
-                                                   <option <?php if ($pc['mp_unit'] == 'Kilogramme') echo "selected"; ?>
+                                                   <option <?php if ($mp_unit === 'KILOGRAMME'){echo "selected";} ?>
                                                            value="1" name="Kilogramme">Kilogramme
                                                    </option>
-                                                   <option <?php if ($pc['mp_unit'] == 'Gramme') echo "selected"; ?>
+                                                   <option <?php if ($mp_unit === 'GRAMME'){ echo "selected";} ?>
                                                            value="0.001" name="Gramme">Gramme
                                                    </option>
-                                                   <option <?php if ($pc['mp_unit'] == 'Kilogramme') echo "selected"; ?>
+                                                   <option <?php if ($mp_unit === 'MILLIGRAMME') echo "selected"; ?>
                                                            value="0.000001" name="Milligramme">Milligramme
                                                    </option>
                                                </select>
                                                <select name="lUnitHidden"
                                                        class="lUnitHidden  md-button-v" <?php echo $LUnitHidden ?>>
-                                                   <option>Litre</option>
-                                                   <option>Centilitre</option>
-                                                   <option>Millilitre</option>
+                                                   <option <?php if ($mp_unit === 'LITRE') echo "selected"; ?>
+                                                           value="1" name="Litre">Litre
+                                                   </option>
+                                                   <option <?php if ($mp_unit === 'CENTILITRE') echo "selected"; ?>
+                                                           value="0.001" name="Centilitre">Centilitre
+                                                   </option>
+                                                   <option <?php if ($mp_unit === 'MILLILITRE') echo "selected"; ?>
+                                                           value="0.000001" name="Millilitre">Millilitre
+                                                   </option>
                                                </select>
                                            </div>
                                            <div class="col-md-6 col-sm-12 col-xs-12">
@@ -174,14 +184,14 @@
                                                 <option value="0.001" name="Gramme">Gramme</option>
                                                 <option value="0.000001" name="Milligramme">Milligramme</option>
                                             </select>
-                                            <select name="lUnitHidden  md-button-v" class="lUnitHidden" <?php echo $LUnitHidden ?>>
-                                                <option>Litre</option>
-                                                <option>Centilitre</option>
-                                                <option>Millilitre</option>
+                                            <select name="lUnitHidden" class="lUnitHidden md-button-v" <?php echo $LUnitHidden ?>>
+                                                <option value="1" name="Litre">Litre</option>
+                                                <option value="0.001" name="Centilitre">Centilitre</option>
+                                                <option value="0.000001" name="Millilitre">Millilitre</option>
                                             </select>
                                         </div>
-                                        <div class="col-md-3 col-sm-12 col-xs-12">
-                                            Quantité : <input class="form-inline md-button-v" placeholder="Quantité" name="quantity"
+                                        <div class="col-md-6 col-sm-12 col-xs-12">
+                                            <span class="sm-hidden">Quantité : </span><input class="form-inline md-button-v" placeholder="Quantité" name="quantity"
                                                               type="text">
                                         </div>
 
@@ -215,7 +225,7 @@
 
         var gainRate=1;
         var group=0;
-        var productsCount=<?php echo $meal['products_count']; ?>;
+        var productsCount=<?php echo count($productsComposition); ?>;
 
         $('.sellPrice').html(<?php echo $meal['sellPrice']; ?> + 'DH');
         sellPrice='<?php echo $meal['sellPrice']; ?>';
@@ -246,7 +256,8 @@
                     unit_price *= unitConvert;
                 }
                 if (unit === 'L') {
-                    unitConvert = parseFloat(l_panel.find('select[name="lgUnitHidden"] option:selected').val());
+
+                    unitConvert = parseFloat(l_panel.find('select[name="lUnitHidden"] option:selected').val());
                     unitConvertName = l_panel.find('select[name="lUnitHidden"] option:selected').text();
                     unit_price *= unitConvert;
                 }
@@ -277,7 +288,7 @@
         }
 
         $('input[name="buttonSubmit"]').on('click', function () {
-
+            $('#loading').show();
             var productsList=[];
             var prixTotal=0;
             var name=$('input.mealName').val();
@@ -299,8 +310,8 @@
                     unit_price *= unitConvert;
                 }
                 if (unit === 'L') {
-                    unitConvert = parseFloat(l_panel.find('select[name="lgUnitHidden"] option:selected').val());
-                    unitConvertName = parseFloat(l_panel.find('select[name="lUnitHidden"] option:selected').text());
+                    unitConvert = l_panel.find('select[name="lUnitHidden"] option:selected').val();
+                    unitConvertName = l_panel.find('select[name="lUnitHidden"] option:selected').text();
                     unit_price *= unitConvert;
                 }
 
@@ -318,7 +329,7 @@
             var profit = prixTotal * gainRate - prixTotal;
 
             var meal={'name':name,'id':<?php echo $meal['id']; ?>,'group':group,'productsList': productsList, 'cost': prixTotal,'sellPrice': sellPrice,'profit': profit};
-            console.log(meal);
+
             if(validate(meal)){
                 $.ajax({
                     url: "<?php echo base_url(); ?>admin/meal/editApi",
@@ -326,6 +337,7 @@
                     dataType: "json",
                     data: {'meal': meal},
                     success: function (data) {
+                        $('#loading').hide();
                         if (data.status === 'success') {
                             swal({
                                 title: "Success",
@@ -342,7 +354,7 @@
 
                     },
                     error: function (data) {
-                        // do something
+                        $('#loading').hide();
                     }
                 });
             }

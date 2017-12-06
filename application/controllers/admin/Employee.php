@@ -25,7 +25,7 @@ class Employee extends BaseController {
 
         //$this->model_employee->automaticSalary();
 
-        if (!$this->input->post('addEmployee')) {
+        if (!$this->input->post('name')) {
             $data['message'] = '';
             $data['employees'] = $this->model_employee->getAll();
             $data['params'] = $this->getParams();
@@ -47,7 +47,7 @@ class Employee extends BaseController {
             $this->model_employee->add($worker);
             $this->output
                 ->set_content_type("application/json")
-                ->set_output(json_encode(array('status' => true)));
+                ->set_output(json_encode(array('status' => true,'worker'=> $worker)));
 
         }
 
@@ -93,7 +93,24 @@ class Employee extends BaseController {
         $data['employee'] = $this->model_employee->get($id);
         $data['events'] = $this->model_employee->getEvents($id);
         $data['salaries'] = $this->model_employee->getSalaries($id);
+        $data['params'] = $this->getParams();
         $this->load->view('admin/employee/show', $data);
+    }
+
+    public function apiUpdateEmployee()
+    {
+        try {
+            $employee = $this->input->post('employee');
+            $id = $this->input->post('id');
+            $this->model_employee->updateEmployee($id,$employee);
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'success')));
+        } catch (Exception $e) {
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'error')));
+        }
     }
 
     public function apiUpdateEvent()

@@ -49,12 +49,13 @@ class model_budget extends CI_Model {
             'status'=>'active'
         );
         $this->db->where('reminderDate <=',$today);
+        $this->db->where('status !=','done');
         $this->db->update('regularcost',$data);
     }
 
     public function updateAlertDates($id,$data){
         $this->db->where('id',$id);
-        $this->db->where('status','active');
+        //$this->db->where('status','active');
         $this->db->update('regularcost', $data);
     }
 

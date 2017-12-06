@@ -17,6 +17,7 @@ class model_product extends CI_Model {
 		$this->db->update('quantity',$data);
 	}
 
+
 	public function getQuantity($quantity_id)
 	{
         $this->db->where("id", $quantity_id);
@@ -57,6 +58,11 @@ class model_product extends CI_Model {
                 'quantity' => $product['quantity'],
                 'unit_price' => $product['unit_price']
             );
+            $stock = $this->getActiveStock($product['id']);
+            if ($stock['quantity'] <= 0) {
+                $dataQuantity['status'] = 'active';
+                $this->updateActiveQuantity($stock['id'], array('status' => 'sold_out'));
+            }
             $this->db->insert('quantity', $dataQuantity);
             $this->updateQuantity($product['id'], $product['quantity'],'up');
         }else{
@@ -87,7 +93,11 @@ class model_product extends CI_Model {
             $this->db->insert('quantity', $dataQuantity);
         }
     }
-
+    public function getActiveStock($id){
+        $this->db->where('product', $id);
+        $this->db->where('status', 'active');
+        return $this->db->get('quantity')->row_array();
+    }
     public function addProducts($productsList)
     {
         foreach ($productsList as $product) {
@@ -98,7 +108,8 @@ class model_product extends CI_Model {
                 'unit' => $product['unit'],
                 'status' => $product['status'],
                 'min_quantity' => $product['min_quantity'],
-                'daily_quantity' => $product['daily_quantity']
+                'daily_quantity' => $product['daily_quantity'],
+                'provider'=> $product['provider']
             );
             $this->db->insert('product', $data);
             $productItem= $insert_id = $this->db->insert_id();
@@ -139,16 +150,24 @@ class model_product extends CI_Model {
 	{
         $response = array();
         $response['status']="success";
+        $response['quantities']=array();
 
         //produit local de la base de donnée
         $l_product = $this->getById($product);
 
         //liste des quantités du produits
-        $quantities = $this->getQuantities($product);
+
+        $sql = "SELECT * FROM quantity
+               where product = ? and status!='sold_out'
+               order by FIELD(status,'active','stock') ASC";
+        $dbResult = $this->db->query($sql, $product);
+        $quantities = $dbResult->result_array();
+
         $l_quantity = 0;
 
         foreach ($quantities as $quantityItem) {
             //quantité restante de la quantité en cours, la quantité en cours est le premier element du tableau $quantities
+
             $l_quantity = $quantityItem['quantity'] - $quantity;
 
             if ($direction === "up") {
@@ -157,6 +176,8 @@ class model_product extends CI_Model {
 
             //Si la quantité courante est suffisante on se contente de la mettre a jour et on arrête la boucle
             //Si on arrive a la 2eme eteration, on change le status de la quantité depuis stock à active
+
+
             if ($l_quantity > 0) {
                 $data = array(
                     'quantity' => $l_quantity,
@@ -165,14 +186,43 @@ class model_product extends CI_Model {
                 $this->db->where('product', $quantityItem['product']);
                 $this->db->where('id', $quantityItem['id']);
                 $this->db->update('quantity', $data);
+
+                $usedQuantity['quantity']= $quantity;
+                $usedQuantity['unit_price']= $quantityItem['unit_price'];
+                $usedQuantity['total']= $quantity * $quantityItem['unit_price'];
+
+                $response['quantities'][]= $usedQuantity;
                 break;
             } else {
                 // Si la quantité en cours n'est pas suffisante, on la met a 0 et on change son status.
-                $data = array(
-                    'quantity' => 0,
-                    'status' => 'sold_out'
-                );
-                $quantity -= $quantityItem['quantity'];
+
+
+                $data = array();
+
+
+
+
+
+                // seul la dernière quantité qui peut toujours avoir le status active et la quantité peut
+                // etre < 0
+                if($direction === "down" and $quantityItem===end($quantities)){
+                    $data['status']='active';
+                    $data['quantity']= $l_quantity;
+                    $usedQuantity['quantity'] = $quantity;
+                }else if($direction === "down" and $quantityItem !== end($quantities)){
+                    $data['status'] = 'sold_out';
+                    $data['quantity'] = 0;
+                    $usedQuantity['quantity'] = $quantityItem['quantity'];
+                }else if($direction === "up"){
+                    $data['status'] = 'active';
+                    $data['quantity'] = $l_quantity;
+                }
+
+                $usedQuantity['unit_price'] = $quantityItem['unit_price'];
+                $usedQuantity['total'] = $l_quantity * $quantityItem['unit_price'];
+                $response['quantities'][] = $usedQuantity;
+
+                $quantity -= $quantityItem['quantity']; // IMPORTANT
                 $this->db->where('product', $quantityItem['product']);
                 $this->db->where('id', $quantityItem['id']);
                 $this->db->update('quantity', $data);
@@ -189,24 +239,61 @@ class model_product extends CI_Model {
         }
     }
 
-	public function getAll()
+	public function getAll($meals=false)
 	{
 	    $this->db->select('*,q.id as q_id,p.id as id');
 	    $this->db->from('product p');
 	    $this->db->join('quantity q','q.product=p.id');
 	    $this->db->where("q.status","active");
 	    $this->db->where("p.status","active");
-		$result = $this->db->get();
-		return $result->result_array();
+		$result = $this->db->get()->result_array();
+
+		if($meals){
+            foreach ($result as $key => $item) {
+                $this->db->select('mp.*,m.name,mp.unit as mp_unit');
+                $this->db->from('meal_product mp');
+                $this->db->join('product p', 'mp.product=p.id');
+                $this->db->join('meal m', 'mp.meal=m.id');
+                $this->db->where("p.id", $item['id']);
+                $this->db->where("mp.status",'current');
+                $this->db->group_by("mp.meal");
+                $meals = $this->db->get()->result_array();
+                $result[$key]['meals']= $meals;
+		    }
+        }
+        return $result;
 	}
 
-	public function getQuantities($product)
+	public function getAllQuantities($product)
 	{
 	    $this->db->where("product",$product);
-	    $this->db->order_by("status","ASC");
 		$result = $this->db->get('quantity');
 		return $result->result_array();
 	}
+	public function getQuantities($product)
+	{
+	    $this->db->where("product",$product);
+	    $this->db->where("status = 'stock' or status = 'active'");
+	    $this->db->order_by("status,id","ASC");
+		$result = $this->db->get('quantity');
+		return $result->result_array();
+	}
+
+	public function getQuantitiesToShow($product)
+	{
+	    $sql= "SELECT * FROM quantity 
+               WHERE ((quantity<0 and status='sold_out') or (quantity>0 and status!='sold_out') or status='active')
+               and product = ?
+               order by FIELD(status,'active','stock','sold_out') ASC";
+        $dbResult = $this->db->query($sql, $product);
+
+       /* $this->db->where("product",$product);
+	    $this->db->where("(quantity<0 and status='sold_out') or (quantity>0 and status!='sold_out')");
+	    $this->db->order_by("FIELD(id,3,1,20)");
+		$result = $this->db->get('quantity');*/
+		return $dbResult->result_array();
+	}
+
 	public function getToOrder()
 	{
         $this->db->select('*,q.id as q_id,p.id as id');
@@ -214,7 +301,7 @@ class model_product extends CI_Model {
         $this->db->join('quantity q', 'p.id=q.product');
         $this->db->where('q.status', 'active');
         $this->db->where('p.status', 'active');
-        $this->db->where('p.min_quantity > q.quantity');
+        $this->db->where('p.min_quantity > p.totalQuantity');
 		$result = $this->db->get();
 		return $result->result_array();
 	}
@@ -225,7 +312,7 @@ class model_product extends CI_Model {
         $this->db->join('quantity q', 'p.id=q.product');
         $this->db->where('q.status', 'active');
         $this->db->where('p.status', 'active');
-        $this->db->where('min_quantity > q.quantity');
+        $this->db->where('min_quantity > p.totalQuantity');
         $this->db->where('provider',$id);
 		$result = $this->db->get();
 		return $result->result_array();
@@ -262,14 +349,30 @@ class model_product extends CI_Model {
 	}
 
 
-	public function delete($id)
+	public function canBeDeleted($id)
 	{
+
+		$this->db->where('product', $id);
+		$this->db->where('status', 'current');
+		$result = $this->db->get('meal_product')->result_array();
+		return count($result)===0;
+	}
+
+    public function delete($id)
+    {
         $data = array(
             'status' => "deleted",
         );
-		$this->db->where('id', $id);
-		$this->db->update('product',$data);
-	}
+        $this->db->where('id', $id);
+        $this->db->update('product',$data);
+    }
+
+    public function update($id,$data)
+    {
+
+        $this->db->where('id', $id);
+        $this->db->update('product',$data);
+    }
 
 	public function defaultProduct(){
 	    $product=array('name'=>'produit1');

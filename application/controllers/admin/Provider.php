@@ -335,6 +335,7 @@ class Provider extends BaseController
     {
 
         $this->load->library('pdf');
+        $data['params'] = $this->getParams();
         $pdf = $this->pdf->load();
         $html = $this->load->view('admin/provider/pdf/order', $data, true);
         $pdf->WriteHTML($html);

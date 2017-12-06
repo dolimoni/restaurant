@@ -28,6 +28,7 @@ class Meal extends BaseController {
         $meal_id = $this->uri->segment(4);
         $data['meal'] = $this->model_meal->get($meal_id);
         $data['products'] = $this->model_meal->getProducts($meal_id);
+        $data['params'] = $this->getParams();
         $this->parser->parse('admin/meal/view_meal', $data);
     }
     public function report()
@@ -40,6 +41,7 @@ class Meal extends BaseController {
         $end = date('Y-m-d');
         $evolution = $this->model_report->evolutionRange($meal_id, $start, $end);
         $data['report']['rds']=count($this->rds($evolution));
+        $data['params'] = $this->getParams();
         $this->load->view('admin/meal/report',$data);
     }
 
@@ -106,6 +108,7 @@ class Meal extends BaseController {
 
         $data['meal'] = $this->model_meal->get($id);
         $data['products'] = $this->model_meal->getProducts($id);
+        $data['params'] = $this->getParams();
 
         $this->load->library('pdf');
         $pdf = $this->pdf->load();
@@ -123,6 +126,7 @@ class Meal extends BaseController {
             $data['message'] = '';
             $data['products'] = $this->model_product->getAll();
             $data['groups'] = $this->model_group->getAll();
+            $data['params'] = $this->getParams();
             $this->parser->parse('admin/meal/view_addmeal', $data);
         }else{
             $meal = $this->input->post('meal');
@@ -142,6 +146,7 @@ class Meal extends BaseController {
         $data['message'] = '';
         $data['products'] = $this->model_product->getAll();
         $data['groups'] = $this->model_group->getAll();
+        $data['params'] = $this->getParams();
         $this->parser->parse('admin/meal/view_editmeal', $data);
 	}
 	public function editApi()
@@ -159,6 +164,7 @@ class Meal extends BaseController {
             $data['message'] = '';
             $data['groups'] = $this->model_group->getAll();
             $data['productsToOrder'] = $this->model_product->getToOrder();
+            $data['params'] = $this->getParams();
             $this->parser->parse('admin/meal/view_group', $data);
         }else{
 
@@ -224,6 +230,7 @@ class Meal extends BaseController {
 
         $group_id = $this->uri->segment(4);
         $data['meals']=$this->model_meal->getByGroup($group_id);
+        $data['params'] = $this->getParams();
         $this->load->view('admin/meal/view_group_meals',$data);
 
 	}
@@ -318,6 +325,7 @@ class Meal extends BaseController {
     public function loadFile()
     {
         //$data['meals'] = $this->Parse('uploads/a.prg');
+        $data['params'] = $this->getParams();
         $this->load->view('admin/meal/load');
     }
     public function apiLoadFile()
@@ -344,6 +352,7 @@ class Meal extends BaseController {
             foreach ($groups as $group) {
                 $data['groups'][]=$this->model_group->getByNum($group['num']);
             }
+            $this->clean();
             $this->output
                 ->set_content_type("application/json")
                 ->set_output(json_encode(array('status' => 'success', 'response' => $data)));
@@ -357,6 +366,7 @@ class Meal extends BaseController {
     public function loadFileGroup()
     {
         $data['meals'] = $this->ParseGroup('uploads/a.prg');
+        $data['params'] = $this->getParams();
         $this->load->view('admin/meal/loadGroup',$data);
     }
     public function apiLoadFileGroup()
@@ -389,7 +399,7 @@ class Meal extends BaseController {
                 $response = $this->model_meal->addMeals($mealsList);
                 $this->output
                     ->set_content_type("application/json")
-                    ->set_output(json_encode(array('flag' => 'ok', 'status' => $response['status'], 'mealsExist' => $response['mealsExist'])));
+                    ->set_output(json_encode(array('flag' => 'ok', 'status' => $response['status'], 'redirect' => base_url('admin/meal/index'), 'mealsExist' => $response['mealsExist'])));
 
             } else if ($type === "update") {
                 $response = $this->model_meal->updateMeals($mealsList);

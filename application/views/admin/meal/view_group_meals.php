@@ -3,8 +3,8 @@
     <div class="right_col" role="main">
         <div class="">
             <div class="page-title">
-              <!--  <pre>
-                    <?php/* print_r($meals);*/?>
+                <!--<pre>
+                    <?php /*print_r($meals);*/?>
                 </pre>-->
                 <div class="title_left">
                     <h3>Liste des articles articles</h3>
@@ -43,7 +43,7 @@
                             </ul>
                             <div class="clearfix"></div>
                         </div>
-                        <div class="x_content">
+                        <div class="x_content table-responsive">
                             <table id="datatable-responsive1"
                                    class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0"
                                    width="100%">
@@ -80,18 +80,18 @@
                                         <td><?php echo $meal['products_count']; ?></td>
                                         <td>
                                             <a href=" <?php echo base_url(); ?>admin/meal/edit/<?php echo $meal['m_id']; ?>"
-                                               class="btn btn-primary btn-xs"><i class="fa fa-pencil"></i></a>
+                                               class="btn btn-primary btn-xs "><i class="fa fa-pencil"></i></a>
 
                                             <a href=" <?php echo base_url(); ?>admin/meal/view/<?php echo $meal['m_id']; ?>"
-                                               class="btn btn-primary btn-xs"><i class="fa fa-eye"></i></a>
+                                               class="btn btn-primary btn-xs "><i class="fa fa-eye"></i></a>
 
                                             <a href=" <?php echo base_url(); ?>admin/meal/report/<?php echo $meal['m_id']; ?>"
-                                               class="btn btn-success btn-xs"><i class="fa fa-line-chart"></i></a>
+                                               class="btn btn-success btn-xs "><i class="fa fa-line-chart"></i></a>
 
-                                            <div class="btn btn-primary btn-xs open"><i class="fa fa-plus-square"></i>
+                                            <div class="btn btn-primary btn-xs  open"><i class="fa fa-plus-square"></i>
                                             </div>
 
-                                            <a data-id="<?php echo $meal['m_id']; ?>" class="btn btn-danger btn-xs deleteMeal"><i class="fa fa-trash"></i></a>
+                                            <a data-id="<?php echo $meal['m_id']; ?>" class="btn btn-danger btn-xs  deleteMeal"><i class="fa fa-trash"></i></a>
 
                                         </td>
                                     </tr>
@@ -125,7 +125,7 @@
                                                         <td><?php echo $product['name']; ?></td>
                                                         <td><?php echo $product['unit_price']; ?></td>
                                                         <td><?php echo $product['mp_quantity'] . ' ' . $product['mp_unit']; ?></td>
-                                                        <td><?php echo $product['mp_quantity'] * $product['unit_price']; ?></td>
+                                                        <td><?php echo $product['mp_quantity'] * $product['unit_price']* $product['unitConvert']; ?></td>
                                                         <td><?php echo $product['consumptionRate'] * 100; ?>%</td>
                                                        <!-- <td>
                                                             <a href=" <?php /*echo base_url(); */?>admin/employee/edit/{id}"

@@ -137,6 +137,7 @@ class Main extends BaseController
                 }
             }
             echo "count:".count($mealsList);
+            $this->clean();
             $this->model_meal->consumption($mealsList);
 
         } catch (Exception $e) {
@@ -182,6 +183,12 @@ class Main extends BaseController
         }
         $save_path = base_url() . $file_path;
         return $file_path;
+    }
+
+    public function clean()
+    {
+        $this->load->model('model_util');
+        $this->model_util->clean();
     }
 
 

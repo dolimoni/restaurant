@@ -76,7 +76,7 @@
         <div class="">
             <div class="page-title">
                 <div class="text-center">
-                    <h1>Ruban d'or</h1>
+                    <h1><?php echo $params['name']; ?></h1>
                 </div>
             </div>
             <div class="clearfix"></div>
@@ -171,7 +171,7 @@
 
 
 <div style="position:absolute;bottom:50px;">
-    <i>Ruban d'or</i>
+    <i><?php echo $params['name']; ?></i>
 </div>
 <div style="position: absolute;bottom: 50px;right: 120px;">
     <b>Casablanca, le <?php echo date('d m Y') ?></b>

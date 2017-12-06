@@ -11,7 +11,7 @@
     <div class="">
            <!-- <pre>
                 <?php /*print_r($report); */?>
-            </pre>-->
+            </pre>
         <div class="page-title">
           <!--  <div class="title_left">
                 <h3>Articles</h3>
@@ -29,13 +29,13 @@
             </div>
             <div class="col-md-3 col-sm-6 col-xs-12 tile_stats_count">
                 <span class="count_top"><i class="fa fa-user"></i> Dépenses</span>
-                <div class="count red report_profit"><?php echo number_format((float)($report['cp']['s_cost']), 2, '.', ''); ?>
+                <div class="count red report_profit"><?php echo number_format((float)($report['cp']['s_cost']+$report['purchase']['price']+ $report['repair']['price']), 2, '.', ''); ?>
                     DH
                 </div>
             </div>
             <div class="col-md-3 col-sm-6 col-xs-12 tile_stats_count">
                 <span class="count_top">Bénéfices</span>
-                <div class="count green report_products"><?php echo number_format((float)($report['consumption']['turnover']- $report['cp']['s_cost']), 2, '.', ''); ?></div>
+                <div class="count green report_products"><?php echo number_format((float)($report['consumption']['turnover']- $report['cp']['s_cost']- $report['purchase']['price']- $report['repair']['price']), 2, '.', ''); ?></div>
             </div>
             <div class="col-md-3 col-sm-6 col-xs-12 tile_stats_count">
                 <span class="count_top"><i class="fa fa-user"></i>Nombre de vente</span>
@@ -95,8 +95,8 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-md-6" id="chartContainer" style="height: 300px; width:50%"></div>
-            <div class="col-md-6" style="height: 300px;">
+            <div class="col-md-6 col-sm-6 col-xs-12" id="chartContainer" style="height: 300px;"></div>
+            <div class="col-md-6 col-sm-6 col-xs-12" style="height: 300px;">
                 <div id="graph_bar_group2" style="background:#fff; height:300px;"></div>
             </div>
         </div>
@@ -258,6 +258,10 @@
                 console.log(new Date(sale['report_date']).getTime());
                 chart_plot_05_data.push([new Date(sale['report_date']), sale['s_amount']]);
             });
+            timeformat = "%d-%m-%y";
+            if($(document).width()<= 450){
+                timeformat = "%m-%y";
+            }
             var chart_plot_05_settings = {
                 grid: {
                     show: true,
@@ -271,7 +275,7 @@
                     clickable: true,
                     hoverable: true,
                     autoHighlight: true,
-                    mouseActiveRadius: 100
+                    mouseActiveRadius: 100,
                 },
                 series: {
                     lines: {
@@ -315,8 +319,8 @@
                 },
                 xaxis: {
                     mode: "time",
-                    minTickSize: [1, "day"],
-                    timeformat: "%d/%m/%y",
+                    minTickSize: [2, "day"],
+                    timeformat: timeformat,
                     min: chart_plot_05_data[0][0],
                     max: chart_plot_05_data[20]
                 }
@@ -369,4 +373,4 @@
 
     });
 </script>
-<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+<script src="<?php echo base_url('assets/build/js/canvasjs.min.js'); ?>"></script>

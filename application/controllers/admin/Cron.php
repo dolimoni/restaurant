@@ -41,15 +41,21 @@ class Cron extends CI_Controller {
         $alertes_count= count($alertes);
 
         $config = $this->model_params->config(); // getting user configuration
+
+        $date = date('H:i:s');
+        $isTime= $config['sms_time'] >= "10:00:00";
+
         /*
+         * Conditions for sending sms :
+         *
          * $config['sms_status'] : valeur active si quota est >0
          * $config['sms_AlerteStatus_today'] : passive si on a envoyé les alertes d'aujourd'hui
          * $alertes_count doit être > 0 pour envoyer un message d'alerte
          */
-        if($config['sms_status']==="active" and $config['sms_AlerteStatus_today']==="active" and $alertes_count>0){
+        if($config['sms_status']==="active" and $config['sms_AlerteStatus_today']==="active" and $alertes_count>0 and $isTime){
             // send sms
             $this->load->library('Clickatell');
-            $sms_content='Vous avez '. $alertes_count .' alertes aujourd\'hui';
+            $sms_content='Besys : Vous avez '. $alertes_count .' alertes aujourd\'hui';
             $this->clickatell->send_message($config['sms_destination'], $sms_content);
 
             //
@@ -64,6 +70,48 @@ class Cron extends CI_Controller {
 
             $this->model_params->update($data);
 
+        }
+    }
+
+    public function dayInitConfig(){
+        // Sms Configuration
+        $this->load->model('model_params');// contains alertes
+
+        $data = array(
+            'sms_AlerteStatus_today' => 'active',
+        );
+        $this->model_params->update($data);
+
+    }
+
+    public function monthInitConfig(){
+        // Sms Configuration
+        $this->load->model('model_params');// contains alertes
+        $config = $this->model_params->config(); // getting user configuration
+
+        $data = array(
+            'sms_available' => $config['quota'],
+            'sms_status' => 'active',
+            'sms_AlerteStatus_today' => 'active',
+        );
+        $this->model_params->update($data);
+
+    }
+
+    public function control()
+    {
+
+        // quantité de la table product doit être toujours egal a la somme des quantités de la table quantity
+        $this->load->model('model_product');
+        $products = $this->model_product->getAll(false);
+        foreach ($products as $product) {
+            $quantities = $this->model_product->getAllQuantities($product['id']);
+            $totalQuantity = array_sum(array_column($quantities, 'quantity'));
+            $data=array(
+                'totalQuantity'=> $totalQuantity
+            );
+
+            $this->model_product->update($product['id'],$data);
         }
     }
 

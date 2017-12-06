@@ -41,6 +41,7 @@
                             <br>
                             <label for="name">Périodicité :</label>
                             <select name="periodicity" class="form-control">
+                                <option value="none">Simple alerte</option>
                                 <option value="daily">Quotidienne</option>
                                 <option value="weekly">Hebdomadaire</option>
                                 <option value="monthly">Mensuelle</option>
@@ -102,6 +103,7 @@
                             <br>
                             <label for="name">Périodicité :</label>
                             <select name="periodicityEdit" class="form-control">
+                                <option value="none">Simple alerte</option>
                                 <option value="daily">Quotidienne</option>
                                 <option value="weekly">Hebdomadaire</option>
                                 <option value="monthly">Mensuelle</option>
@@ -191,23 +193,23 @@
                             <td data-reminderDate="<?php echo $rdt; ?>"> <?php echo $rdt; ?> </td>
                             <td width="20%">
                                 <div >
-                                    <button class="btn btn-success btn-xs action validateAlert" data-type="edit"><span
+                                    <button class="btn btn-success btn-xs action validateAlert small-button" data-type="edit"><span
                                                 class="glyphicon glyphicon-ok"></span></button>
-                                    <button class="btn btn-info btn-xs action editAlert" data-type="edit"><span
+                                    <button class="btn btn-info btn-xs action editAlert small-button" data-type="edit"><span
                                                 class="glyphicon glyphicon-edit"></span></button>
-                                    <button class="btn btn-danger btn-xs action deleteAlert" data-type="delete"><span
+                                    <button class="btn btn-danger btn-xs action deleteAlert small-button" data-type="delete"><span
                                                 class="fa fa-trash"></span></button>
                                 </div>
                                 <!-- <button class="btn btn-info btn-xs action validationButton" data-type="mute"><span
                                              class="glyphicon fa fa-bell-slash-o"></span></button>-->
                                <div >
-                                   <button class="btn btn-warning btn-xs action dayResport" data-type="day"><span
+                                   <button class="btn btn-warning btn-xs action dayResport small-button" data-type="day"><span
                                                class="glyphicon "></span>+1J
                                    </button>
-                                   <button class="btn btn-warning btn-xs action weekResport" data-type="week"><span
+                                   <button class="btn btn-warning btn-xs action weekResport small-button" data-type="week"><span
                                                class="glyphicon"></span>+1S
                                    </button>
-                                   <button class="btn btn-warning btn-xs action monthResport" data-type="month"><span
+                                   <button class="btn btn-warning btn-xs action monthResport small-button" data-type="month"><span
                                                class="glyphicon"></span>+1M
                                    </button>
                                </div>
@@ -549,6 +551,7 @@
             var delay = $(this).closest('tr').find('td[data-periodicity]').attr('data-periodicity');
             var reminderDate = $(this).closest('tr').attr('data-reminder');
             var paiementDate = $(this).closest('tr').attr('data-paiementDate');
+            console.log(delay);
             var alert = {
                 'id': alert_id,
                 'delay': delay.slice(0,-2),

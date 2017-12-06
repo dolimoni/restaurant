@@ -654,6 +654,7 @@
                         timer: 1500,
                         showConfirmButton: false
                     });
+                    location.reload();
                 }
                 else {
                     console.log('Error');
@@ -813,6 +814,7 @@
                         $('#loading').hide();
                         console.log('ok');
                         window.open("<?=base_url()?>" + data.filepath);
+                        location.reload();
                     }
                     else {
                         $('#loading').hide();
@@ -892,9 +894,10 @@
                 success: function (data) {
                     $('#loading').hide();
                     if (data.status === true) {
-                        if(data.filepath);
-                        window.open("<?=base_url()?>" + data.filepath);
+                       /* if(data.filepath);
+                        window.open("<?=base_url()?>" + data.filepath);*/
                         $(".orderActualStatus").attr("data-status", data.orderStatus    );
+                        location.reload();
                     }
                     else {
                         $('#loading').hide();
@@ -1071,6 +1074,7 @@
                             timer: 1500,
                             showConfirmButton: false
                         });
+                        location.reload();
                     }
                     else {
                         $('#loading').hide();
@@ -1136,6 +1140,7 @@
                                 timer: 1500,
                                 showConfirmButton: false
                             });
+                            location.reload();
                         }
                         else {
                             swal({
@@ -1214,6 +1219,7 @@
                                     timer: 1500,
                                     showConfirmButton: false
                                 });
+                                location.reload();
                             }
                             else {
                                 swal({

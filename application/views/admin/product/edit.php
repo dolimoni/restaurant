@@ -12,7 +12,7 @@
         </div>
         <div class="clearfix"></div>
         <hr>
-        <table id="datatable-responsive" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+        <table id="datatable-quantity" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
             <thead>
             <tr>
                 <th>Quantité</th>
@@ -63,7 +63,7 @@
                     </div>
                     <div class="x_content">
                         <label><?php /*echo $message;*/ ?></label>
-                        <form method="post">
+                        <form method="post" id="editProductForm">
                             <fieldset>
                                 <input name="id" type="hidden" value="<?php echo $product['id']; ?>"/>
                                 <div class="form-group">
@@ -123,27 +123,61 @@
                                 <br/>
                                 <!-- <input type="submit" name="buttonSubmit" value="Confirmer" class="btn btn-success" />
                                  <div value="Nouveau produit" class="btn btn-info newProduct" >Nouveau produit</div>-->
+                                    <div class="text-center">
+                                        <input type="submit" name="buttonSubmit" value="Confirmer"
+                                               class="btn btn-success "/>
+                                    </div>
                             </fieldset>
                         </form>
                     </div> <!-- /content -->
                 </div><!-- /x-panel -->
             </div>
         </div>
-        <div class="text-center">
-            <input type="submit" name="buttonSubmit" value="Confirmer" class="btn btn-success "/>
-        </div>
+
     </div>
 
 </div> <!-- /.col-right -->
 <!-- /page content -->
 
 <?php $this->load->view('admin/partials/admin_footer'); ?>
+<script src="<?php echo base_url("assets/vendors/datatables.net/js/jquery.dataTables.min.js"); ?>"></script>
+
+
+<script>
+    $(document).ready(function () {
+        var handleDataTableButtons = function () {
+            if ($("#datatable-quantity").length) {
+                $("#datatable-quantity").DataTable({
+
+                    responsive: true,
+                    "lengthMenu": [[5, 10, 50, -1], [5, 10, 50, "Tout"]],
+                    "language": {
+                        "url": "<?php echo base_url("assets/vendors/datatables.net/French.json"); ?>"
+                    }
+
+                });
+            }
+        };
+
+        TableManageButtons = function () {
+            "use strict";
+            return {
+
+                init: function () {
+                    handleDataTableButtons();
+                }
+            };
+        }();
+
+        TableManageButtons.init();
+    });
+</script>
 
 <script>
 
     $(document).ready(function () {
-        $('input[name="buttonSubmit"]').on('click', function () {
-
+        $('#editProductForm').submit(function (e) {
+            e.preventDefault();
 
             var id = $('input[name="id"]').val();
             var name = $('input[name="name"]').val();
@@ -201,7 +235,7 @@
     $(document).ready(function () {
         $('button.activate').on('click', activateEvent);
 
-        function activateEvent() {
+        function activateEvent(event) {
             var id = $(this).attr('data-id');
             $.ajax({
                     url: "<?php echo base_url('admin/product/apiActivateQuantity'); ?>",
@@ -217,6 +251,7 @@
                                 timer: 1500,
                                 showConfirmButton: false
                             });
+                            location.reload();
                         }
                         else {
                             swal({

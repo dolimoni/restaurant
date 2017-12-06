@@ -16,7 +16,7 @@ class Product extends BaseController {
 	}
 	public function index()
 	{
-        $data['products'] = $this->model_product->getAll();
+        $data['products'] = $this->model_product->getAll(true);//true: get Meals
         $data['providers'] = $this->model_provider->getAll();
         $data['params'] = $this->getParams();
         $this->parser->parse('admin/product/view_products', $data);
@@ -70,7 +70,8 @@ class Product extends BaseController {
         $id = $this->uri->segment(4);
         $data['providers'] = $this->model_provider->getAll();
 		$data['product'] = $this->model_product->getById($id);
-		$data['quantities'] = $this->model_product->getQuantities($id);
+		$data['quantities'] = $this->model_product->getQuantitiesToShow($id);
+        $data['params'] = $this->getParams();
 		$this->load->view('admin/product/edit',$data);
 	}
 	public function apiEdit()
@@ -135,6 +136,9 @@ class Product extends BaseController {
             $data = array(
                 'status'=>'stock'
             );
+            if($activeQuantity['quantity']<=0){
+                $data['status']="sold_out";
+            }
 
 
             // update actual active quantity to be a stock quantity
@@ -160,13 +164,20 @@ class Product extends BaseController {
 
 	public function apiDelete()
 	{
-        $id = $this->input->post('id');
-        $this->model_product->delete($id);
 
         try {
+            $status="success";
+            $message="success";
+            $id = $this->input->post('id');
+            if($this->model_product->canBeDeleted($id)){
+                $this->model_product->delete($id);
+            }else{
+                $status = "warning";
+                $message= "Ce produit est utilisé dans certain articles";
+            }
             $this->output
                 ->set_content_type("application/json")
-                ->set_output(json_encode(array('status' => 'success')));
+                ->set_output(json_encode(array('status' => $status,'message'=>$message)));
         } catch (Exception $e) {
             $this->output
                 ->set_content_type("application/json")

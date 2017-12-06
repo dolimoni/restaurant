@@ -91,7 +91,7 @@
 
 
 <div style="position:absolute;bottom:50px;">
-    <i>Nom du restaurant</i>
+    <i><?php echo $params['name']; ?></i>
 </div>
 <div style="position: absolute;bottom: 50px;right: 120px;">
     <b>Casablanca, le <?php echo date('d m Y')?></b>

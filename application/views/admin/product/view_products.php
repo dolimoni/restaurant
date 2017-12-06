@@ -47,7 +47,7 @@
                             </tr>
                             
                             <?php foreach ($products as $product) {
-                                $status= $product['min_quantity'] > $product['quantity']?'danger':'success';
+                                $status= $product['min_quantity'] > $product['totalQuantity']?'danger':'success';
                             ?>
                             <tr class="<?php echo $status; ?>">
                                 <td><?php echo $product['product'];?></td>
@@ -57,12 +57,55 @@
                                 <td><?php echo $product['unit_price']; ?></td>
                                 <td>
                                     <a href=" <?php echo base_url('admin/product/edit/'. $product['product']); ?>" class="btn btn-primary btn-xs">Modifier</a>
-                                    <?php if($product['min_quantity'] > $product['quantity'] && $product['provider']>0 ){?>
+                                    <?php if($product['min_quantity'] > $product['totalQuantity'] && $product['provider']>0 ){?>
                                     <a href=" <?php echo base_url('admin/provider/show/'. $product['provider']); ?>" class="btn btn-primary btn-xs">Commander</a>
                                     <?php } ?>
+                                    <div class="btn btn-info btn-xs open">Articles</div>
                                     <a  class="btn btn-danger btn-xs deleteProduct" data-id="<?php echo $product['product']; ?>">Supprimer</a>
                                 </td>
                             </tr>
+                                <tr class="productsRow">
+                                    <td colspan="6">
+                                        <table class="table">
+                                            <thead>
+                                            <tr class="info">
+                                                <th>Id</th>
+                                                <th>Nom</th>
+                                                <th>Quantité</th>
+                                                <th>Prix total</th>
+                                                <th>Taux de consomation</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                            </thead>
+                                            <tfoot>
+                                            <tr class="info">
+                                                <th>Id</th>
+                                                <th>Nom</th>
+                                                <th>Quantité</th>
+                                                <th>Prix total</th>
+                                                <th>Taux de consomation</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                            </tfoot>
+                                            <tbody>
+                                            <?php foreach ($product['meals'] as $meal) { ?>
+                                                <tr class="success">
+                                                    <td><?php echo $meal['name']; ?></td>
+                                                    <td>Test</td>
+                                                    <td><?php echo $meal['quantity'].' '. $meal['mp_unit']; ?></td>
+                                                    <td><?php echo $meal['quantity'] * $product['unit_price'] * $meal['unitConvert']; ?></td>
+                                                    <td><?php echo $meal['consumptionRate'] * 100; ?>%</td>
+
+                                                     <td>
+                                                         <a href=" <?php echo base_url('admin/meal/edit/' . $meal['meal']); ?>"
+                                                            class="btn btn-primary btn-xs">Modifier</a>
+                                                     </td>
+                                                </tr>
+                                            <?php } ?>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
                             <?php } ?>
                         </table>
                     </div> <!-- /content --> 
@@ -79,7 +122,9 @@
 
 <script>
     $(document).ready(function () {
-
+        $(".open").click(function () {
+            $(this).closest("tr").next().toggle();
+        });
         $(".deleteProduct").on('click', deleteProductEvent);
 
         function deleteProductEvent(){
@@ -119,12 +164,34 @@
                             timer: 1500,
                             showConfirmButton: false
                         });
+                        location.reload();
                     }
-                    else {
-                        console.log('Error');
+                    else if(data.status === "warning") {
+                        swal({
+                            title: "Attention!",
+                            text: data.message,
+                            type: "warning",
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+                    }else{
+                        swal({
+                            title: "Erreur",
+                            text: "Une erreur s'est produite",
+                            type: "error",
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
                     }
                 },
                 error: function (data) {
+                    swal({
+                        title: "Erreur",
+                        text: "Une erreur s'est produite",
+                        type: "error",
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
                 }
             });
         }

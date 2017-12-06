@@ -57,6 +57,12 @@ class model_employee extends CI_Model {
         $this->automaticSalary($event);
 	}
 
+	public function updateEmployee($id, $employee)
+	{
+		$this->db->where('id', $id);
+		$this->db->update('employee', $employee);
+	}
+
 	public function createEvent($event)
 	{
 		$data = array(

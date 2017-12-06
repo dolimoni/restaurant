@@ -1,5 +1,5 @@
 <?php $this->load->view('admin/partials/admin_header.php'); ?>
-<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.2.5/fullcalendar.min.css">
+
 
 <style>
     .fc-day-grid-event > .fc-content {
@@ -58,17 +58,28 @@
                                <input type="hidden" value="1" id="provider_id"
                                       data-id="<?php echo $employee['id']; ?>"/>
                                <ul class="list-unstyled user_data">
-                                   <li><i class="fa fa-map-marker user-profile-icon"></i><span class="provider-address"><?php echo $employee['address']; ?></span>
+                                   <li><i class="fa fa-map-marker user-profile-icon"></i><span class="provider-address"> <?php echo $employee['address']; ?></span>
                                    </li>
 
                                    <li>
-                                       <i class="fa fa-briefcase user-profile-icon"> <?php echo $employee['workType']; ?></i>
+                                       <i class="fa fa-briefcase user-profile-icon provider-workType"> <?php echo $employee['workType']; ?></i>
                                    </li>
 
                                    <li>
-                                       <i class="fa fa-phone provider-phone"><?php echo $employee['phone']; ?></i>
+                                       <i class="fa fa-phone provider-phone"> <?php echo $employee['phone']; ?></i>
+                                   </li>
+                                   <li>
+                                       <b><i class="fa fa-dollar provider-salary"> <?php echo $employee['salary']; ?></i></b>
                                    </li>
                                </ul>
+
+                               <a class="btn btn-success editProfile">
+                                   <i class="fa fa-edit m-right-xs"></i>Modifier
+                               </a>
+
+                               <a class="btn btn-success saveProfile" style="display: none;">
+                                   Enregistrer
+                               </a>
 
                               <!-- <a class="btn btn-success"><i class="fa fa-edit m-right-xs"></i>Edit Profile</a>-->
                                <br/>
@@ -358,19 +369,98 @@
                 data: data,
                 success: function (data) {
                     if (data.status === 'success') {
-
+                        location.reload();
                     }
                     else {
-                        console.log('Error');
+                        location.reload();
                     }
                 },
                 error: function (data) {
+                    location.reload();
                 }
             });
         }
     });
 </script>
 
+
+<script>
+    $(document).ready(function () {
+        $('.editProfile').on('click', editProfileEvent);
+        function editProfileEvent() {
+            $(window).scrollTop($('.provider-firstName').offset().top);
+            $('.saveProfile').show();
+
+            editProviderData(true);
+            $('.provider-firstName').focus();
+
+        }
+
+        $('.saveProfile').on('click', saveProfileEvent);
+        function saveProfileEvent() {
+            var employee = {
+                'name': $.trim($('.provider-firstName').text()),
+                'prenom': $.trim($('.provider-lastName').text()),
+                'address': $.trim($('.provider-address').text()),
+                'phone': $.trim($('.provider-phone').text()),
+                'salary': $.trim($('.provider-salary').text()),
+                'workType': $.trim($('.provider-workType').text()),
+            };
+            var id = $('#provider_id').attr('data-id');
+            console.log(employee);
+            $('#loading').show();
+            $.ajax({
+                url: "<?php echo base_url('admin/employee/apiUpdateEmployee'); ?>",
+                type: "POST",
+                dataType: "json",
+                data: {'employee': employee,'id':id},
+                success: function (data) {
+                    if (data.status === 'success') {
+                        $('#loading').hide();
+                        $('.saveProfile').hide();
+                        editProviderData(false);
+                        swal({
+                            title: "Success",
+                            text: "L'opératon a été effectuée avec success",
+                            type: "success",
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+                    }
+                    else {
+                        $('#loading').hide();
+                        swal({
+                            title: "Erreur",
+                            text: "Erreur",
+                            type: "error",
+                            timer: 1500
+                        });
+                    }
+
+                },
+                error: function (data) {
+                    $('#loading').hide();
+                    swal({
+                        title: "Erreur",
+                        text: "Erreur",
+                        type: "error",
+                        timer: 1500
+                    });
+                }
+            });
+        }
+
+
+        function editProviderData(edit) {
+            $('.provider-firstName').attr('contenteditable', edit);
+            $('.provider-lastName').attr('contenteditable', edit);
+            $('.provider-salary').attr('contenteditable', edit);
+            $('.provider-address').attr('contenteditable', edit);
+            $('.provider-phone').attr('contenteditable', edit);
+            $('.provider-workType').attr('contenteditable', edit);
+        }
+    });
+</script>
 
 
 
