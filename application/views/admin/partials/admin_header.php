@@ -120,6 +120,13 @@
                       <li><a href="<?= base_url('admin/provider/index'); ?>">Liste des fournisseurs</a></li>
                     </ul>
                   </li>
+                  <li><a><i class="fa fa-shopping-cart"></i> Départements <span
+                                  class="fa fa-chevron-down"></span></a>
+                      <ul class="nav child_menu">
+                          <li><a href="<?= base_url('admin/department'); ?>">Mes département</a></li>
+                          <li><a href="<?= base_url('admin/department/addProducts'); ?>">Stock produits</a></li>
+                      </ul>
+                  </li>
                   <li>
                   <a>
                       <i class="fa fa-male"></i>Gestion du personnel <span class="fa fa-chevron-down"></span></a>

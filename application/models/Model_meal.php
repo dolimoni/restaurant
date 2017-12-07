@@ -374,6 +374,13 @@ class model_meal extends CI_Model {
 		return $meals;
 	}
 
+	//getting meals without products
+	public function getAllMeals()
+	{
+        $meals = $this->db->get('meal')->result_array();
+		return $meals;
+	}
+
 	public function get($u_id)
 	{
 		$this->db->where('id', $u_id);
