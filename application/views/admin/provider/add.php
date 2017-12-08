@@ -139,26 +139,78 @@
                    if ($rowCount % $numOfCols == 0) echo '</div><div class="row">';
                } ?>
            </div> <!-- /row -->
+
+           <div class="col-xs-12">
+               <div class="x_panel">
+                   <div class="x_title">
+                       <h2>Comparaison des prix</h2>
+                       <ul class="nav navbar-right panel_toolbox">
+                           <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
+                           <li><a class="close-link"><i class="fa fa-close"></i></a></li>
+                       </ul>
+                       <div class="clearfix"></div>
+                   </div>
+                   <div class="x_content table-responsive">
+                       <table id="datatable-price" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+                           <thead>
+                           <tr>
+                               <th>Produit</th>
+                               <th>Prix</th>
+                               <th>Fournisseur</th>
+                           </tr>
+                           </thead>
+                           <tfoot>
+                           <tr>
+                               <th>Produit</th>
+                               <th>Prix</th>
+                               <th>Fournisseur</th>
+                           </tr>
+                           </tfoot>
+                           <tbody>
+                           <?php foreach ($products as $product) { ?>
+                               <tr>
+                                   <td><?php echo $product['name']; ?></td>
+                                   <td><?php echo $product['unit_price']; ?></td>
+                                   <td><?php echo $product['provider']; ?></td>
+                               </tr>
+                           <?php } ?>
+                           </tbody>
+                       </table>
+
+                   </div> <!-- /content -->
+               </div><!-- /x-panel -->
+           </div>
        </div>
     </div>
 </div>
 
 
 <?php $this->load->view('admin/partials/admin_footer'); ?>
+<script src="<?php echo base_url("assets/vendors/datatables.net/js/jquery.dataTables.min.js"); ?>"></script>
+<script>
+    $(document).ready(function () {
+        var handleDataTableButtons = function () {
+            if ($("#datatable-price").length) {
+                $("#datatable-price").DataTable({
+                    aaSorting: [[0, 'desc']],
+                    responsive: true,
+                });
+            }
+        };
 
-<?php if ($this->session->flashdata('message') != NULL) : ?>
-    <script>
-        swal({
-            title: "Success",
-            text: "<?php echo $this->session->flashdata('message'); ?>",
-            type: "success",
-            timer: 1500,
-            showConfirmButton: false
-        });
-    </script>
+        TableManageButtons = function () {
+            "use strict";
+            return {
 
-<?php endif ?>
+                init: function () {
+                    handleDataTableButtons();
+                }
+            };
+        }();
 
+        TableManageButtons.init();
+    });
+</script>
 <script>
 
     $(document).ready(function () {
