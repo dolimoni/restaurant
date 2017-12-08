@@ -27,6 +27,7 @@ class Provider extends BaseController
         if (!$this->input->post('addProvider')) {
             $data['message'] = '';
             $data['providers'] = $this->model_provider->getAll();
+            $data['products'] = $this->model_provider->getAllProducts();
             $data['params'] = $this->getParams();
             $this->parser->parse('admin/provider/add', $data);
         } else {

@@ -115,6 +115,20 @@ class model_provider extends CI_Model {
 		$result = $this->db->get('provider');
 		return $result->result_array();
 	}
+
+	public function getAllProducts()
+	{
+	    $this->db->select('p.name,pv.name as provider,q.unit_price');
+	    $this->db->from('product p');
+	    $this->db->join('quantity q','p.id=q.product');
+	    $this->db->join('provider pv','pv.id=p.provider');
+	    $this->db->where('q.status','active');
+	    $this->db->where('p.status','active');
+	    $this->db->where('provider>0');
+	    $this->db->order_by('name');
+		$result = $this->db->get();
+		return $result->result_array();
+	}
 	public function getAllActive()
 	{
         $this->db->where('status', "active");
