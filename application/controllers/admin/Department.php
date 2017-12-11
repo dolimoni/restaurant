@@ -11,6 +11,7 @@ class Department extends BaseController {
 
         $this->load->model('department/model_department');
         $this->load->model('model_meal');
+        $this->load->model('model_product');
 
 	}
 
@@ -26,14 +27,22 @@ class Department extends BaseController {
         $id = $this->uri->segment(4);
         $data['department'] = $this->model_department->getDepartment($id);
         $data['magazins'] = $this->model_department->getMagazinsWithMeals($id);
+        $data['meals'] = $this->model_meal->getAll();
         $data['products'] = $this->model_department->getProducts($id);
         $data['params'] = $this->getParams();
         $this->parser->parse('admin/department/view_department', $data);
 	}
 
+	public function stockMeal()
+	{
+        $department = $this->uri->segment(4);
+        $data['meals'] = $this->model_meal->getAllMeals();
+        $data['params'] = $this->getParams();
+        $this->parser->parse('admin/department/view_stockMeal', $data);
+	}
+
 	public function addProducts()
 	{
-        $this->load->model('model_product');
         $data['departments'] = $this->model_department->getAll();
         $data['products'] = $this->model_product->getAll();
         $data['params'] = $this->getParams();
@@ -98,6 +107,21 @@ class Department extends BaseController {
         $this->output
             ->set_content_type("application/json")
             ->set_output(json_encode(array('status' => 'success')));
+
+    }
+
+    public function apiDeleteMealFromMagazin(){
+        try {
+            $id = $this->input->post('meal_id');
+            $this->model_department->deleteMealFromMagazin($id);
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'success')));
+        } catch (Exception $e) {
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'error')));
+        }
 
     }
 

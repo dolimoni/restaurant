@@ -358,6 +358,17 @@ class model_report extends CI_Model
         return $this->db->get()->row_array();
     }
 
+    public function reportPreparedMealDate($meal_id, $date)
+    {
+        $this->db->select('*');
+        $this->db->from('meal m');
+        $this->db->join('consumption c', 'm.id = c.meal');
+        $this->db->where('m.id', $meal_id);
+        $this->db->where('c.type', 'prepared');
+        $this->db->where('report_date =', $date);
+        return $this->db->get()->row_array();
+    }
+
     public function reportRange($startDate, $endDate)
     {
 

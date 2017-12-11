@@ -8,9 +8,6 @@
 <div class="right_col" role="main">
     <div class="productsList">
         <div class="page-title">
-            <pre>
-                <?php print_r($departments); ?>
-            </pre>
             <div class="title_left">
                 <h3>Liste des départements</h3>
             </div>

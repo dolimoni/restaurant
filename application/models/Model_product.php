@@ -29,6 +29,18 @@ class model_product extends CI_Model {
         $this->db->where("status", 'active');
 		return $this->db->get('quantity')->row_array();
 	}
+
+	public function getQuantitiesByDepartement($id)
+	{
+	    $this->db->select('sp.quantity, d.name');
+	    $this->db->from('stock_product sp');
+	    $this->db->join('department d','d.id=sp.department');
+        $this->db->where("product",$id);
+        $this->db->order_by("sp.id","DESC");
+		$department =  $this->db->get()->result_array();
+
+		return $department;
+	}
 	public function add($product)
 	{
 		$data = array(

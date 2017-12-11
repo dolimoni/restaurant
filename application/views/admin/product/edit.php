@@ -5,6 +5,9 @@
 <!-- page content -->
 <div class="right_col" role="main">
     <div class="productsList">
+      <!--  <pre>
+            <?php /*print_r($departments); */?>
+        </pre>-->
         <div class="page-title">
             <div class="title_left">
                 <h3>Modifier le produit</h3>
@@ -12,44 +15,98 @@
         </div>
         <div class="clearfix"></div>
         <hr>
-        <table id="datatable-quantity" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
-            <thead>
-            <tr>
-                <th>Quantité</th>
-                <th>Prix</th>
-                <th>Status</th>
-                <th>Activer</th>
-            </tr>
-            </thead>
-            <tfoot>
-            <tr>
-                <th>Quantité</th>
-                <th>Prix</th>
-                <th>Status</th>
-                <th>Activer</th>
-            </tr>
-            </tfoot>
-            <tbody>
-            <?php foreach ($quantities as $quantity) {
-                    $validate="";
-                   /* if($quantity['status'] === "active"){
-                        $validate="validate";
-                    }*/
-            ?>
-                <tr class="<?php echo $validate; ?>">
-                    <td><?php echo $quantity['quantity']?></td>
-                    <td><?php echo $quantity['unit_price']?></td>
-                    <td><?php echo $quantity['status']?></td>
-                    <td width="10%">
-                       <?php if($quantity['status']!=="active"){ ?>
-                           <button data-id="<?php echo $quantity['id'] ?>" class="btn btn-default btn-xs action activate"><span
-                                       class="glyphicon glyphicon-ok"></span></button>
-                       <?php } ?>
-                    </td>
-                </tr>
-            <?php } ?>
-            </tbody>
-        </table>
+
+
+
+
+        <div class="col-xs-12 " >
+            <div class="x_panel">
+                <div class="x_title">
+                    <h2>Détails des quantités</h2>
+                    <ul class="nav navbar-right panel_toolbox">
+                        <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
+                        <li><a class="close-link"><i class="fa fa-close"></i></a></li>
+                    </ul>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    <h4>Quantité/Prix</h4>
+                    <table id="datatable-quantity" class="table table-striped table-bordered dt-responsive nowrap"
+                           cellspacing="0" width="100%" >
+                        <thead>
+                        <tr>
+                            <th>Quantité</th>
+                            <th>Prix</th>
+                            <th>Status</th>
+                            <th>Activer</th>
+                        </tr>
+                        </thead>
+                        <tfoot>
+                        <tr>
+                            <th>Quantité</th>
+                            <th>Prix</th>
+                            <th>Status</th>
+                            <th>Activer</th>
+                        </tr>
+                        </tfoot>
+                        <tbody>
+                        <?php foreach ($quantities as $quantity) {
+                            $validate = "";
+                            /* if($quantity['status'] === "active"){
+                                 $validate="validate";
+                             }*/
+                            ?>
+                            <tr class="<?php echo $validate; ?>">
+                                <td><?php echo $quantity['quantity'] ?></td>
+                                <td><?php echo $quantity['unit_price'] ?></td>
+                                <td><?php echo $quantity['status'] ?></td>
+                                <td width="10%">
+                                    <?php if ($quantity['status'] !== "active") { ?>
+                                        <button data-id="<?php echo $quantity['id'] ?>"
+                                                class="btn btn-default btn-xs action activate"><span
+                                                    class="glyphicon glyphicon-ok"></span></button>
+                                    <?php } ?>
+                                </td>
+                            </tr>
+                        <?php } ?>
+                        </tbody>
+                    </table>
+                    <h4>Quantité/Département</h4>
+                    <div class="row"></div>
+                    <div class="row"></div>
+                    <table id="datatable-department" class="table table-striped table-bordered dt-responsive nowrap"
+                           cellspacing="0" width="100%">
+                        <thead>
+                        <tr>
+                            <th>Département</th>
+                            <th>Quantité</th>
+                        </tr>
+                        </thead>
+                        <tfoot>
+                        <tr>
+                            <th>Département</th>
+                            <th>Quantité</th>
+                        </tr>
+                        </tfoot>
+                        <tbody>
+                        <?php foreach ($departments as $department) {
+                            ?>
+                            <tr>
+                                <td><?php echo $department['name'] ?></td>
+                                <td><?php echo $department['quantity'] ?></td>
+                            </tr>
+                        <?php } ?>
+                       <!-- <tr>
+                            <td>Économat</td>
+                            <td><?php /*echo array_sum(array_column($quantities, 'quantity')) - array_sum(array_column($departments, 'quantity')); */?></td>
+                        </tr>-->
+                        </tbody>
+                    </table>
+
+                </div> <!-- /content -->
+            </div><!-- /x-panel -->
+        </div>
+
         <div class="row productsListContent">
             <div class="col-md-offset-3 col-md-6 col-sm-12 col-xs-12 productItem" data-id="1">
                 <div class="x_panel">
@@ -153,7 +210,30 @@
                     "lengthMenu": [[5, 10, 50, -1], [5, 10, 50, "Tout"]],
                     "language": {
                         "url": "<?php echo base_url("assets/vendors/datatables.net/French.json"); ?>"
-                    }
+                    },
+                   /* "bPaginate": false,*/
+                    "bLengthChange": false,
+                    "bFilter": true,
+                    "bInfo": false,
+                    "bAutoWidth": false,
+                    "searching":false
+
+                });
+            }
+            if ($("#datatable-department").length) {
+                $("#datatable-department").DataTable({
+
+                    responsive: true,
+                    "lengthMenu": [[5, 10, 50, -1], [5, 10, 50, "Tout"]],
+                    "language": {
+                        "url": "<?php echo base_url("assets/vendors/datatables.net/French.json"); ?>"
+                    },
+                    "bPaginate": false,
+                    "bLengthChange": false,
+                    "bFilter": true,
+                    "bInfo": false,
+                    "bAutoWidth": false,
+                    "searching": false
 
                 });
             }

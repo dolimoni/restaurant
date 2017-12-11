@@ -2,10 +2,10 @@
 <!-- page content -->
 <div class="right_col" role="main">
     <div class="productsList">
-        <div class="page-title">
            <!-- <pre>
-                <?php /*print_r($productsComposition); */?>
+                <?php /*print_r($magazin); */?>
             </pre>-->
+        <div class="page-title">
             <div class="">
                 <h3>Modifier le magazin :</h3>
             </div>
@@ -23,21 +23,34 @@
         <div class="row mealComposition">
             <?php foreach ($magazin['mealsList'] as $key => $mealItem) { ?>
             <div class="col-md-6  col-sm-6 col-xs-12 product" data-id="<?php echo $key+1; ?>" >
-                                <div class="x_panel">
+                                <div class="x_panel testt">
                                    <div class="x_title">
-                                       <h2>Article</h2>
+                                       <h2><?php echo $mealItem['name']; ?></h2>
                                        <ul class="nav navbar-right panel_toolbox">
                                            <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
-                                           <li><a class="close-link"><i class="fa fa-close"></i></a></li>
+                                           <li><a class="close-linkk"><i class="fa fa-close" data-id="<?php echo $mealItem['sm_id']; ?>"></i></a></li>
                                        </ul>
                                        <div class="clearfix"></div>
                                    </div>
                                    <div class="x_content oldContent" style="margin-top:30px;">
+
+                                       <div class="row tile_count" style="margin-bottom:10px;">
+                                           <div class="col-md-offset-3 col-md-3 col-sm-6 col-xs-12 tile_stats_count">
+                                               <span class="count_top"><i class=""></i>Quantité stock</span>
+                                               <div class="count"><?php echo $mealItem['quantityInMagazin']; ?></div>
+                                               <!--<span class="count_bottom"><i class="green">4% </i> From last Week</span>-->
+                                           </div>
+                                           <div class="col-md-4 col-sm-6 col-xs-12 tile_stats_count">
+                                               <span class="count_top"><i class=""></i>Quantité vente</span>
+                                               <div class="count"><?php echo $mealItem['quantityToSale']; ?></div>
+                                               <!--<span class="count_bottom"><i class="green">4% </i> From last Week</span>-->
+                                           </div>
+                                       </div>
                                        <div class="row">
 
-                                         <div class="col-md-4 col-sm-12 col-xs-12">
+                                         <div class="col-md-offset-3 col-md-4 col-sm-12 col-xs-12" style="margin-bottom:10px;">
                                              <select name="product" class="productSelect md-button-v"
-                                                     style="max-width:150px;">
+                                                     style="max-width:200px;">
                                                  <?php foreach ($meals as $meal) {
                                                      $selected = $meal['id'] == $mealItem['meal'] ? 'selected' : '';
                                                      ?>
@@ -49,18 +62,28 @@
 
                                          </div>
 
-                                           <div class="col-md-6 col-sm-12 col-xs-12">
-                                              <span class="sm-hidden">Stock : </span> <input class="form-inline md-button-v" placeholder="Stock"
-                                                                 name="quantityInMagazin"
-                                                                 value="<?php echo $mealItem['quantityInMagazin']; ?>"
-                                                                 type="text">
+                                       </div>
+                                           <div class="row">
+                                               <div class="col-md-6 col-sm-12 col-xs-12">
+                                                   <span class="sm-hidden">Stock : </span> <input
+                                                           class="form-inline md-button-v" placeholder="Stock"
+                                                           name="quantityInMagazin"
+                                                           type="text">
+                                               </div>
+                                               <div class="col-xs-6">
+                                                   Nouvelle quantité : <input type="checkbox" name="MagazinQuantityType"/>
+                                               </div>
                                            </div>
+                                            <div class="row">
                                            <div class="col-md-6 col-sm-12 col-xs-12">
-                                              <span class="sm-hidden">Vente : </span> <input class="form-inline md-button-v" placeholder="Vente"
-                                                                 name="quantityToSale"
-                                                                 value="<?php echo $mealItem['quantityToSale']; ?>"
-                                                                 type="text">
+                                               <span class="sm-hidden">Vente : </span> <input
+                                                       class="form-inline md-button-v" placeholder="Vente"
+                                                       name="quantityToSale"
+                                                       type="text">
                                            </div>
+                                                <div class="col-xs-6">
+                                                    Nouvelle quantité : <input type="checkbox" name="saleQuantityType"/>
+                                                </div>
 
                                        </div>
                                    </div>
@@ -85,10 +108,11 @@
                                     <div class="clearfix"></div>
                                 </div>
                                 <div class="x_content" style="margin-top:30px;" id="newContent">
+
                                     <div class="row">
 
 
-                                       <div class="col-md-4 col-sm-12 col-xs-12">
+                                       <div class="col-md-4 col-sm-12 col-xs-12" style="margin-bottom:10px;">
                                            <select name="product" class="productSelectNew md-button-v" style="max-width:150px;">
                                                <?php foreach ($meals as $meal) { ?>
                                                    <option value="<?php echo $meal['id']; ?>"
@@ -96,11 +120,23 @@
                                                <?php } ?>
                                            </select>
                                        </div>
-                                        <div class="col-md-6 col-sm-12 col-xs-12">
-                                            <span class="sm-hidden">Quantité : </span><input class="form-inline md-button-v" placeholder="Quantité" name="quantity"
-                                                              type="text">
-                                        </div>
+                                    </div>
 
+                                    <div class="row">
+                                        <div class="col-md-6 col-sm-12 col-xs-12">
+                                            <span class="sm-hidden">Stock : </span> <input
+                                                    class="form-inline md-button-v" placeholder="Stock"
+                                                    name="quantityInMagazin"
+                                                    type="text">
+                                        </div>
+                                        <div class="col-md-6 col-sm-12 col-xs-12">
+                                            <span class="sm-hidden">Vente : </span> <input
+                                                    class="form-inline md-button-v" placeholder="Vente"
+                                                    name="quantityToSale"
+                                                    type="text">
+                                        </div>
+                                        <input type="checkbox" name="saleQuantityType" hidden/>
+                                        <input type="checkbox" name="MagazinQuantityType" hidden/>
                                     </div>
                                 </div>
                             </div>
@@ -138,11 +174,17 @@
 
                 var quantityInMagazin = parseFloat(row.find('input[name="quantityInMagazin"]').val().replace(',', '.'));
                 var quantityToSale = parseFloat(row.find('input[name="quantityToSale"]').val().replace(',', '.'));
+                var quantity= quantityInMagazin+ quantityToSale;
                 var id= row.find('select').find('option:selected').val();
 
-                if (/*quantity > 0*/ true){
-                    var meal= {
-                        'id': id, 'quantityInMagazin': quantityInMagazin,'quantityToSale': quantityToSale
+                if (quantityInMagazin || quantityToSale){
+                    var meal = {
+                        'id': id,
+                        'quantityInMagazin': quantityInMagazin,
+                        'quantityToSale': quantityToSale,
+                        //'quantity': quantity,
+                        'magazinQuantityType': row.find("input[name='MagazinQuantityType']").is(':checked'),
+                        'saleQuantityType': row.find("input[name='saleQuantityType']").is(':checked'),
                     };
                     mealsList.push(meal);
                 }
@@ -199,3 +241,71 @@
     });
 
 </script>
+
+<!--Delete Meal from magazin-->
+<script>
+    $(document).ready(function () {
+        $('.fa-close').on('click', deleteMealEvent);
+
+
+        function deleteMealEvent(event) {
+            var meal_id = $(this).attr('data-id');
+            var vm = $(this);
+            swal({
+                    title: "Attention ! ",
+                    text: "Vous voulez vraiment supprimer cet article ?",
+                    type: "warning",
+                    showConfirmButton: true,
+                    showCancelButton: true,
+                    cancelButtonText: 'Non',
+                    confirmButtonText: 'Oui'
+                },
+                function () {
+                console.log(meal_id);
+                    var a = vm.closest(".x_panel");
+                    console.log(a);
+                    a.remove();
+                    $.ajax({
+                        url: "<?php echo base_url('admin/department/apiDeleteMealFromMagazin'); ?>",
+                        type: "POST",
+                        dataType: "json",
+                        data: {'meal_id': meal_id},
+                        success: function (data) {
+                            if (data.status === 'success') {
+                                swal({
+                                    title: "Success",
+                                    text: "L'article a été bien supprimé",
+                                    type: "success",
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                });
+                                location.reload();
+                            }
+                            else {
+                                swal({
+                                    title: "Erreur",
+                                    text: "Une erreur s'est produite",
+                                    type: "error",
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                });
+                            }
+                        },
+                        error: function (data) {
+                            swal({
+                                title: "Erreur",
+                                text: "Une erreur s'est produite",
+                                type: "error",
+                                timer: 1500,
+                                showConfirmButton: false
+                            });
+                        }
+                    });
+
+                });
+
+
+        }
+    });
+</script>
+

@@ -71,6 +71,7 @@ class Product extends BaseController {
         $data['providers'] = $this->model_provider->getAll();
 		$data['product'] = $this->model_product->getById($id);
 		$data['quantities'] = $this->model_product->getQuantitiesToShow($id);
+		$data['departments'] = $this->model_product->getQuantitiesByDepartement($id);
         $data['params'] = $this->getParams();
 		$this->load->view('admin/product/edit',$data);
 	}

@@ -61,15 +61,15 @@
                                         <select name="kgUnitHidden"
                                                 class="kgUnitHidden  md-button-v" <?php echo $KgUnitHidden ?>>
                                             <option value="1" name="Kilogramme">Kilogramme</option>
-                                            <option value="0.001" name="Gramme">Gramme</option>
-                                            <option value="0.000001" name="Milligramme">Milligramme</option>
+                                            <!--<option value="0.001" name="Gramme">Gramme</option>
+                                            <option value="0.000001" name="Milligramme">Milligramme</option>-->
                                         </select>
-                                        <select name="lUnitHidden"
-                                                class="lUnitHidden  md-button-v" <?php echo $LUnitHidden ?>>
+                                       <!-- <select name="lUnitHidden"
+                                                class="lUnitHidden  md-button-v" <?php /*echo $LUnitHidden */?>>
                                             <option value="1" name="Kilogramme">Litre</option>
                                             <option value="0.001" name="Centilitre">Centilitre</option>
                                             <option value="0.000001" name="Millilitre">Millilitre</option>
-                                        </select>
+                                        </select>-->
                                         Quantité :
                                         <input class="form-inline  md-button-v" placeholder="Quantité" name="quantity"
                                                type="text"><!--<span class="ProductUnit"> Kg</span>
@@ -144,6 +144,47 @@
         </div>
 
         <input type="submit" name="buttonSubmit" value="Confirmer" class="btn btn-success"/>
+
+
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="x_panel">
+                    <div class="x_title">
+                        <h2>Liste de vos produits en stock</h2>
+                        <ul class="nav navbar-right panel_toolbox">
+                            <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
+                            <li><a class="close-link"><i class="fa fa-close"></i></a></li>
+                        </ul>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content table-responsive">
+                        <table class="table table-striped">
+                            <tr>
+                                <th>
+                                    Id
+                                </th>
+                                <th>
+                                    Nom
+                                </th>
+                                <th>
+                                    Quantité
+                                </th>
+                            </tr>
+
+                            <?php foreach ($products as $product) {
+                                $status = $product['min_quantity'] > $product['totalQuantity'] ? 'danger' : 'success';
+                                ?>
+                                <tr class="<?php echo $status; ?>">
+                                    <td><?php echo $product['product']; ?></td>
+                                    <td><?php echo $product['name']; ?></td>
+                                    <td><?php echo $product['totalQuantity'].' '.$product['unit']; ?></td>
+                                </tr>
+                            <?php } ?>
+                        </table>
+                    </div> <!-- /content -->
+                </div><!-- /x-panel -->
+            </div> <!-- /col -->
+        </div>
     </div>
 </div> <!-- /.col-right -->
 <!-- /page content -->
