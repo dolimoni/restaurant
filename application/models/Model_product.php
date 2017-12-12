@@ -39,6 +39,46 @@ class model_product extends CI_Model {
             );
 		$this->db->insert('product', $data);
 	}
+
+	public function addComposition($compostion)
+	{
+		$data = array(
+			   'name' => $compostion['name'],
+               'unit' => $compostion['unit'],
+               'type'=>'composition'
+            );
+		$this->db->insert('product', $data);
+        $product_id = $this->db->insert_id();
+
+        $dataQuantity = array(
+            'product' => $product_id,
+            'quantity' => $compostion['quantity'],
+            'unit_price' => $compostion['cost'],
+            'status' => 'active'
+        );
+
+        $this->addQuantity($dataQuantity);
+
+        foreach ($compostion['productsList'] as $product) {
+            // donnée du produit
+
+            $dataCreate = array(
+                'product' => $product['id'],
+                'quantity' => $product['quantity'],
+                'unit' => $product['unit'],
+                'unitConvert' => $product['unitConvert'],
+                'owner' => $product_id,
+                'status' => 'current'
+            );
+
+            $this->db->insert('product_composition', $dataCreate);
+
+            $this->updateQuantity($product['id'], $product['quantity']* $product['unitConvert']* $compostion['quantity']);
+            $this->updateLocalQuantity($product['id'], $product['quantity']* $product['unitConvert']* $compostion['quantity']);
+        }
+
+
+	}
     public function edit($product,$newQuantity=false)
     {
         $dataProduct = array(
@@ -246,6 +286,36 @@ class model_product extends CI_Model {
 	    $this->db->join('quantity q','q.product=p.id');
 	    $this->db->where("q.status","active");
 	    $this->db->where("p.status","active");
+	    $this->db->where("p.type","product");
+		$result = $this->db->get()->result_array();
+
+		if($meals){
+            foreach ($result as $key => $item) {
+                $this->db->select('mp.*,m.name,mp.unit as mp_unit');
+                $this->db->from('meal_product mp');
+                $this->db->join('product p', 'mp.product=p.id');
+                $this->db->join('meal m', 'mp.meal=m.id');
+                $this->db->where("p.id", $item['id']);
+                $this->db->where("mp.status",'current');
+                $this->db->group_by("mp.meal");
+                $meals = $this->db->get()->result_array();
+                $result[$key]['meals']= $meals;
+		    }
+        }
+        return $result;
+	}
+
+	public function getComposition($meals=false)
+	{
+	    $this->db->select('p.id,p.min_quantity,p.totalQuantity,q.product,p.name,p.unit,q.quantity,q.unit_price');
+	    $this->db->select('sum(pc.quantity*pc.unitConvert*q.unit_price) as price');
+	    $this->db->from('product p');
+        $this->db->join('product_composition pc', 'pc.owner=p.id');
+        $this->db->join('quantity q', 'pc.owner=q.product');
+	    $this->db->where("q.status","active");
+	    $this->db->where("p.status","active");
+	    $this->db->where("type","composition");
+	    $this->db->group_by("p.id");
 		$result = $this->db->get()->result_array();
 
 		if($meals){

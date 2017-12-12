@@ -4,7 +4,7 @@
     <div class="">
         <div class="page-title">
             <pre>
-                <?php/* print_r($products);*/?>
+                <?php print_r($productsComposition); ?>
             </pre>
             <div class="title_left">
                 <h3>Produits</h3>
@@ -27,7 +27,7 @@
                         <table class="table table-striped">
                             <tr>
                                 <th>
-                                    Id
+                                    Produit
                                 </th>
                                 <th>
                                     Nom
@@ -106,6 +106,48 @@
                                         </table>
                                     </td>
                                 </tr>
+                            <?php } ?>
+
+
+                            <tr>
+                                <th>
+                                    Composition
+                                </th>
+                                <th>
+                                    Nom
+                                </th>
+                                <th>
+                                    Quantité
+                                </th>
+                                <th>
+                                    Unité
+                                </th>
+                                <th>
+                                    Prix unitaire
+                                </th>
+                                <th colspan="2">
+                                    Actions
+                                </th>
+                            </tr>
+
+                            <?php foreach ($productsComposition as $composition) {
+                                $status= $composition['min_quantity'] > $composition['totalQuantity']?'danger':'warning';
+                            ?>
+                            <tr class="<?php echo $status; ?>">
+                                <td><?php echo $composition['product'];?></td>
+                                <td><?php echo $composition['name']; ?></td>
+                                <td><?php echo $composition['quantity']; ?></td>
+                                <td><?php echo $composition['unit']; ?></td>
+                                <td><?php echo $composition['unit_price']; ?></td>
+                                <td>
+                                    <a href=" <?php echo base_url('admin/product/edit/'. $composition['product']); ?>" class="btn btn-primary btn-xs">Modifier</a>
+                                    <?php if($composition['min_quantity'] > $composition['totalQuantity'] && $composition['provider']>0 ){?>
+                                    <a href=" <?php echo base_url('admin/provider/show/'. $composition['provider']); ?>" class="btn btn-primary btn-xs">Commander</a>
+                                    <?php } ?>
+                                    <div class="btn btn-info btn-xs open">Articles</div>
+                                    <a  class="btn btn-danger btn-xs deleteProduct" data-id="<?php echo $composition['product']; ?>">Supprimer</a>
+                                </td>
+                            </tr>
                             <?php } ?>
                         </table>
                     </div> <!-- /content --> 

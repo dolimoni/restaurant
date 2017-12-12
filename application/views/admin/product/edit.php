@@ -12,7 +12,7 @@
         </div>
         <div class="clearfix"></div>
         <hr>
-        <table id="datatable-quantity" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+        <table id="datatable-quantityy" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
             <thead>
             <tr>
                 <th>Quantité</th>
