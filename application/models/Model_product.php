@@ -43,7 +43,6 @@ class model_product extends CI_Model {
 	public function addComposition($compostion,$newQuantity=false)
 	{
 	    // update product if exist
-        
 	    if(isset($compostion['id'])){
             $dataProduct = array(
                 'name' => $compostion['name'],

@@ -620,5 +620,3 @@ class model_report extends CI_Model
         return $this->db->update('report', $data);
     }
 }
-
-}
