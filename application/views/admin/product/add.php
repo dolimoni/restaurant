@@ -243,6 +243,7 @@
 
 
         $('#addProductsForm').submit(addProducts);
+        $('.productSize').on('click',addProducts);
         function addProducts(e) {
             e.preventDefault();
             productSize = $('input[name="productSize"]').val();

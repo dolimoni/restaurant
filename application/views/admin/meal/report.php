@@ -1,4 +1,10 @@
 <?php $this->load->view('admin/partials/admin_header.php'); ?>
+<style>
+    .scroll{
+        overflow-y: scroll;
+        height:260px;
+    }
+</style>
 <?php
     if(!isset($report['s_cost'])){
         header('Location:'.base_url('admin/report/index'));
@@ -118,7 +124,7 @@
                             </ul>
                             <div class="clearfix"></div>
                         </div>
-                        <div class="x_content">
+                        <div class="x_content scroll">
                             <h4>Quantité des produits utitlisés</h4>
                             <?php foreach ($report['mealConsumptionRate'] as $mealConsumptionRate) { ?>
 

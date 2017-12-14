@@ -107,6 +107,45 @@
             </div><!-- /x-panel -->
         </div>
 
+        <table id="datatable-quantityy" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+            <thead>
+            <tr>
+                <th>Quantité</th>
+                <th>Prix</th>
+                <th>Status</th>
+                <th>Activer</th>
+            </tr>
+            </thead>
+            <tfoot>
+            <tr>
+                <th>Quantité</th>
+                <th>Prix</th>
+                <th>Status</th>
+                <th>Activer</th>
+            </tr>
+            </tfoot>
+            <tbody>
+            <?php foreach ($quantities as $quantity) {
+                    $validate="";
+                   /* if($quantity['status'] === "active"){
+                        $validate="validate";
+                    }*/
+            ?>
+                <tr class="<?php echo $validate; ?>">
+                    <td><?php echo $quantity['quantity']?></td>
+                    <td><?php echo $quantity['unit_price']?></td>
+                    <td><?php echo $quantity['status']?></td>
+                    <td width="10%">
+                       <?php if($quantity['status']!=="active"){ ?>
+                           <button data-id="<?php echo $quantity['id'] ?>" class="btn btn-default btn-xs action activate"><span
+                                       class="glyphicon glyphicon-ok"></span></button>
+                       <?php } ?>
+                    </td>
+                </tr>
+            <?php } ?>
+            </tbody>
+        </table>
+>>>>>>> master
         <div class="row productsListContent">
             <div class="col-md-offset-3 col-md-6 col-sm-12 col-xs-12 productItem" data-id="1">
                 <div class="x_panel">

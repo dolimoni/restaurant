@@ -16,7 +16,8 @@ class Product extends BaseController {
 	}
 	public function index()
 	{
-        $data['products'] = $this->model_product->getAll(true);//true: get Meals
+        $data['products'] = $this->model_product->getAll(true,false);//param1: get Meals,param2:get compositions
+        $data['productsComposition'] = $this->model_product->getCompositions();//true: get Meals
         $data['providers'] = $this->model_provider->getAll();
         $data['params'] = $this->getParams();
         $this->parser->parse('admin/product/view_products', $data);
@@ -48,6 +49,69 @@ class Product extends BaseController {
                ->set_content_type("application/json")
                ->set_output(json_encode(array('status' => 'error', 'redirect' => base_url('admin/product/index'))));
        }
+    }
+
+
+    public function addComposition()
+    {
+       try {
+           if (!$this->input->post('composition')) {
+               $data['products'] = $this->model_product->getAll(false,true);
+               $data['params'] = $this->getParams();
+               $this->load->view('admin/product/view_addComposition', $data);
+           } else {
+               $composition = $this->input->post('composition');
+               $this->model_product->addComposition($composition);
+               $this->output
+                   ->set_content_type("application/json")
+                   ->set_output(json_encode(array('status' => 'success', 'redirect' => base_url('admin/product/index'))));
+           }
+       } catch (Exception $e) {
+           $this->output
+               ->set_content_type("application/json")
+               ->set_output(json_encode(array('status' => 'error', 'redirect' => base_url('admin/product/index'))));
+       }
+    }
+
+
+    public function editComposition()
+    {
+       try {
+
+           $id = $this->uri->segment(4);
+           $data['composition'] = $this->model_product->getComposition($id);
+           $data['quantities'] = $this->model_product->getQuantitiesToShow($id);
+           $data['products'] = $this->model_product->getAll(false,true);
+           $data['params'] = $this->getParams();
+           $this->load->view('admin/product/view_editComposition', $data);
+
+       } catch (Exception $e) {
+           $this->output
+               ->set_content_type("application/json")
+               ->set_output(json_encode(array('status' => 'error', 'redirect' => base_url('admin/product/index'))));
+       }
+    }
+
+    public function apiEditComposition(){
+        try {
+            $composition = $this->input->post('composition');
+            $db_product = $this->model_product->getById($composition['id']);
+            $data = array();
+
+            if ($db_product['unit_price'] !== $composition['cost'] and $composition['quantity']>0) {
+                $this->model_product->addComposition($composition,true);
+            } else {
+                $this->model_product->addComposition($composition);
+            }
+
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'success', 'redirect' => base_url('admin/product/index'))));
+        } catch (Exception $e) {
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'error')));
+        }
     }
 
     public function apiGetByProvider(){

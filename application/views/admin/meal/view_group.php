@@ -12,25 +12,25 @@
         <hr>
         <div class="article-title">
 
-           <div class="row">
-               <div class="col-md-9">
-                   <a class="btn btn-primary" data-toggle="collapse" href="#collapseExample" aria-expanded="false"
-                      aria-controls="collapseExample">Nouvelle famille</a>
+            <div class="row">
+                <div class="col-md-9">
+                    <a class="btn btn-primary" data-toggle="collapse" href="#collapseExample" aria-expanded="false"
+                       aria-controls="collapseExample">Nouvelle famille</a>
 
-                   <!--<button type="submit" class="btn btn-warning" name="Fichier"
-                           onclick="window.location.href='<?php /*echo base_url('admin/meal/loadFileGroup/'); */?>'">
+                    <!--<button type="submit" class="btn btn-warning" name="Fichier"
+                           onclick="window.location.href='<?php /*echo base_url('admin/meal/loadFileGroup/'); */ ?>'">
                        <span class="fa fa-print"></span> Importer
                    </button>-->
-               </div>
+                </div>
 
-               <div class="col-md-3">
-                   <?php if (count($productsToOrder)) { ?>
-                       <a href="<?= base_url('admin/product/toOrder'); ?>">
-                           <h3 class="soldOut" style="color:#d9534f;">Stock Insuffisant</h3>
-                       </a>
-                   <?php } ?>
-               </div>
-           </div>
+                <div class="col-md-3">
+                    <?php if (count($productsToOrder)) { ?>
+                        <a href="<?= base_url('admin/product/toOrder'); ?>">
+                            <h3 class="soldOut" style="color:#d9534f;">Stock Insuffisant</h3>
+                        </a>
+                    <?php } ?>
+                </div>
+            </div>
         </div>
 
         <div class="collapse" id="collapseExample">
@@ -41,7 +41,8 @@
                         <div class="col-xs-6">
                             <br>
                             <label for="name">Nom :</label>
-                            <input type="text" step="any" class="form-control" name="groupName" placeholder="Nom de la famille"
+                            <input type="text" step="any" class="form-control" name="groupName"
+                                   placeholder="Nom de la famille"
                                    required>
                         </div>
 
@@ -50,7 +51,8 @@
                             <label for="image">Image :</label>
                             <input type="file" class="form-control" name="image" size="10485760">
                         </div>
-                    </div><br/>
+                    </div>
+                    <br/>
 
                     <div class="text-right">
                         <input class="btn btn-success" type="submit" name="addGroup" value="Confirmer"/>
@@ -62,7 +64,7 @@
         </div>
 
 
-        <div class="collapse" id="editGroup" >
+        <div class="collapse" id="editGroup">
             <form id="editGroupForm" enctype="multipart/form-data">
                 <fieldset>
                     <div class="row">
@@ -70,7 +72,8 @@
                         <div class="col-xs-6">
                             <br>
                             <label for="name">Nom :</label>
-                            <input type="text" step="any" class="form-control" name="groupNameEdit" placeholder="Nom de la famille"
+                            <input type="text" step="any" class="form-control" name="groupNameEdit"
+                                   placeholder="Nom de la famille"
                                    required>
                         </div>
 
@@ -79,7 +82,8 @@
                             <label for="image">Image :</label>
                             <input type="file" class="form-control" name="image" size="10485760">
                         </div>
-                    </div><br/>
+                    </div>
+                    <br/>
 
                     <div class="text-right">
                         <input class="btn btn-success" type="submit" name="editGroupForm" value="Modifier"/>
@@ -101,20 +105,25 @@
                                 <div class="left col-xs-7">
                                     <p><strong>Nombre d'article: </strong><?php echo $group['groupCount'] ?> </p>
                                     <ul class="list-unstyled">
-                                        <li><i class="fa"></i>Prix moyen: <?php echo round($group['avg_price']) ?>DH</li>
+                                        <li><i class="fa"></i>Prix moyen: <?php echo round($group['avg_price']) ?>DH
+                                        </li>
                                     </ul>
                                 </div>
                                 <div class="right col-xs-5 text-center">
-                                    <img src="<?php echo base_url(); ?>assets/images/<?php echo $group['image'] ?>" alt=""
+                                    <img src="<?php echo base_url(); ?>assets/images/<?php echo $group['image'] ?>"
+                                         alt=""
                                          class="img-circle img-responsive">
                                 </div>
                             </div>
-                          </a>
+                        </a>
                         <div class="col-xs-12 bottom">
-                            <button aria-expanded="false" data-id="<?php echo $group['g_id'] ?>" data-name="<?php echo $group['g_name'] ?>" type="button" class="btn btn-info btn-xs editGroup">
-                                <i class="fa fa-edit" > </i> Modifier
+                            <button aria-expanded="false" data-id="<?php echo $group['g_id'] ?>"
+                                    data-name="<?php echo $group['g_name'] ?>" type="button"
+                                    class="btn btn-info btn-xs editGroup">
+                                <i class="fa fa-edit"> </i> Modifier
                             </button>
-                            <button data-id="<?php echo $group['g_id'] ?>" type="button" class="btn btn-danger btn-xs deleteGroup">
+                            <button data-id="<?php echo $group['g_id'] ?>" type="button"
+                                    class="btn btn-danger btn-xs deleteGroup">
                                 <i class="fa fa-trash"> </i> Supprimer
                             </button>
                         </div>
@@ -128,7 +137,6 @@
 
 
 <?php $this->load->view('admin/partials/admin_footer'); ?>
-
 
 
 <script>
@@ -201,14 +209,24 @@
                        });
                        location.reload();
                    }else{
+                    if (data.status === "success") {
                         swal({
-                             title: "Erreur",
-                             text: "Une erreur s'est produit",
-                             type: "error",
-                             timer: 1500,
-                             showConfirmButton: false
-                         });
-                   }
+                            title: "Success",
+                            text: "La modification a été bien effectuée",
+                            type: "success",
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+                        location.reload();
+                    } else {
+                        swal({
+                            title: "Erreur",
+                            text: "Une erreur s'est produit",
+                            type: "error",
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+                    }
                 },
                 error: function (data) {
                     swal({
@@ -222,14 +240,15 @@
             });
 
         });
-        
-        
+
+
         /*Edit group*/
-        
+
         $(".editGroup").on('click', editGroupEvent);
-        var l_id=-1;
+        var l_id = -1;
+
         function editGroupEvent() {
-            if($(this).attr('data-id')===l_id || l_id===-1){
+            if ($(this).attr('data-id') === l_id || l_id === -1) {
                 $('#editGroup').toggle('slow');
             }
             l_id = $(this).attr('data-id');
