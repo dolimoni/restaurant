@@ -551,4 +551,74 @@ class model_report extends CI_Model
         return $meals;
     }
 
+    public function getAllReports() {
+        $reports = $this->db->get('report')->result_array();
+        return $reports;
+    }
+
+    public function editReport() {
+        $data = array(
+            'title'     => $this->input->post('title'),
+            'message'   => $this->input->post('message'),
+            'send_to'   => $this->input->post('emails'),
+            'user_id'   => $this->session->userdata('id')
+        );
+
+        $this->db->where('id', $this->input->post('id_report'));
+        
+        return $this->db->update('report', $data);
+    }
+
+    public function addReport() {
+        $data = array(
+            'title'     => $this->input->post('title'),
+            'message'   => $this->input->post('message'),
+            'send_to'   => $this->input->post('emails'),
+            'user_id'   => $this->session->userdata('id')
+        );
+
+        return $this->db->insert('report', $data);
+    }
+
+    public function getReport($id) {
+        $this->db->select('*, report.id as id_report, report.createdAt as createdAt_report');
+        $this->db->join('users', 'report.user_id = users.id');
+        $this->db->where('report.id', $id);
+        $result = $this->db->get('report');
+        return $result->row_array();
+    }
+
+    public function deleteReport($id) {
+        $this->db->where('id', $id); 
+        return $this->db->delete('report');
+    }
+
+
+    public function getUsersSearch($q) {
+        $this->db->select('email');
+        $this->db->from('users');
+        $this->db->like('email', $q);
+        $this->db->or_like('first_name', $q);
+        $this->db->or_like('last_name', $q);
+        $this->db->limit(10);
+
+        $users = $this->db->get()->result_array();
+        
+        $userSearch = new ArrayObject();
+        foreach ($users as $key => $user) {
+           $userSearch->append($user['email']);
+        }
+        return $userSearch;
+    }
+
+    public function updateSentMail($id) {
+        $data = array(
+                       'sent' => 1
+                    );
+
+        $this->db->where('id', $id);
+        return $this->db->update('report', $data);
+    }
+}
+
 }
