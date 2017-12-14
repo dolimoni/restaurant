@@ -4,7 +4,7 @@
     <div class="">
         <div class="page-title">
             <pre>
-                <?php print_r($productsComposition); ?>
+                <?php /*print_r($productsComposition);*/ ?>
             </pre>
             <div class="title_left">
                 <h3>Produits</h3>
@@ -136,11 +136,11 @@
                             <tr class="<?php echo $status; ?>">
                                 <td><?php echo $composition['product'];?></td>
                                 <td><?php echo $composition['name']; ?></td>
-                                <td><?php echo $composition['quantity']; ?></td>
+                                <td><?php echo $composition['totalQuantity']; ?></td>
                                 <td><?php echo $composition['unit']; ?></td>
                                 <td><?php echo $composition['unit_price']; ?></td>
                                 <td>
-                                    <a href=" <?php echo base_url('admin/product/edit/'. $composition['product']); ?>" class="btn btn-primary btn-xs">Modifier</a>
+                                    <a href=" <?php echo base_url('admin/product/editComposition/'. $composition['product']); ?>" class="btn btn-primary btn-xs">Modifier</a>
                                     <?php if($composition['min_quantity'] > $composition['totalQuantity'] && $composition['provider']>0 ){?>
                                     <a href=" <?php echo base_url('admin/provider/show/'. $composition['provider']); ?>" class="btn btn-primary btn-xs">Commander</a>
                                     <?php } ?>

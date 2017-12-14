@@ -40,42 +40,80 @@ class model_product extends CI_Model {
 		$this->db->insert('product', $data);
 	}
 
-	public function addComposition($compostion)
+	public function addComposition($compostion,$newQuantity=false)
 	{
-		$data = array(
-			   'name' => $compostion['name'],
-               'unit' => $compostion['unit'],
-               'type'=>'composition'
+	    // update product if exist
+        
+	    if(isset($compostion['id'])){
+            $dataProduct = array(
+                'name' => $compostion['name'],
+                'unit' => $compostion['unit'],
             );
-		$this->db->insert('product', $data);
-        $product_id = $this->db->insert_id();
+            $this->db->where('id', $compostion['id']);
+            $this->db->update('product', $dataProduct);
 
-        $dataQuantity = array(
-            'product' => $product_id,
-            'quantity' => $compostion['quantity'],
-            'unit_price' => $compostion['cost'],
-            'status' => 'active'
-        );
+            // if this is a new quantity => price1!=price2
+            if ($newQuantity) {
+                $dataQuantity = array(
+                    'product' => $compostion['id'],
+                    'quantity' => $compostion['quantity'],
+                    'unit_price' => $compostion['unit_price']
+                );
+                $this->accumulateQuantity($dataQuantity);
+            }
+        }
 
-        $this->addQuantity($dataQuantity);
 
+	    // if update !
+	    if(isset($compostion['id'])){
+
+	        // delete existing product and they will be changed by new products
+	        $this->db->where('owner', $compostion['id']);
+	        $this->db->delete('product_composition');
+        }else{
+	        // if this new a new create product
+            $data = array(
+                'name' => $compostion['name'],
+                'totalQuantity' => $compostion['cost'],
+                'unit' => $compostion['unit'],
+                'type' => 'composition'
+            );
+            $this->db->insert('product', $data);
+            $product_id = $this->db->insert_id();
+            $compostion['id'] = $product_id;
+            $dataQuantity = array(
+                'product' => $compostion['id'],
+                'quantity' => $compostion['quantity'],
+                'unit_price' => $compostion['cost'],
+                'status' => 'active'
+            );
+            $this->addQuantity($dataQuantity);
+        }
+
+
+        // create and update products quantity
         foreach ($compostion['productsList'] as $product) {
-            // donnée du produit
 
             $dataCreate = array(
                 'product' => $product['id'],
                 'quantity' => $product['quantity'],
                 'unit' => $product['unit'],
                 'unitConvert' => $product['unitConvert'],
-                'owner' => $product_id,
+                'owner' => $compostion['id'],
                 'status' => 'current'
             );
 
             $this->db->insert('product_composition', $dataCreate);
 
-            $this->updateQuantity($product['id'], $product['quantity']* $product['unitConvert']* $compostion['quantity']);
             $this->updateLocalQuantity($product['id'], $product['quantity']* $product['unitConvert']* $compostion['quantity']);
+            $this->updateQuantity($product['id'], $product['quantity']* $product['unitConvert']* $compostion['quantity']);
+
         }
+
+        if(!$newQuantity){
+            $this->updateLocalQuantity($compostion['id'], $compostion['quantity'], 'up');
+        }
+        $this->updateQuantity($compostion['id'], $compostion['quantity'], 'up');
 
 
 	}
@@ -279,14 +317,16 @@ class model_product extends CI_Model {
         }
     }
 
-	public function getAll($meals=false)
+	public function getAll($meals=false,$composition=false)
 	{
 	    $this->db->select('*,q.id as q_id,p.id as id');
 	    $this->db->from('product p');
 	    $this->db->join('quantity q','q.product=p.id');
 	    $this->db->where("q.status","active");
 	    $this->db->where("p.status","active");
-	    $this->db->where("p.type","product");
+        if ($composition === false) {
+            $this->db->where("p.type", "product");
+        }
 		$result = $this->db->get()->result_array();
 
 		if($meals){
@@ -305,7 +345,7 @@ class model_product extends CI_Model {
         return $result;
 	}
 
-	public function getComposition($meals=false)
+	public function getCompositions($meals=false)
 	{
 	    $this->db->select('p.id,p.min_quantity,p.totalQuantity,q.product,p.name,p.unit,q.quantity,q.unit_price');
 	    $this->db->select('sum(pc.quantity*pc.unitConvert*q.unit_price) as price');
@@ -331,6 +371,30 @@ class model_product extends CI_Model {
                 $result[$key]['meals']= $meals;
 		    }
         }
+        return $result;
+	}
+
+	public function getComposition($id)
+	{
+	    $this->db->select('p.id,p.name,p.unit,q.quantity,q.unit_price');
+	    $this->db->from('product p');
+	    $this->db->join('quantity q','q.product=p.id');
+	    $this->db->where("p.status","active");
+	    $this->db->where("q.status","active");
+	    $this->db->where("type","composition");
+	    $this->db->where("p.id",$id);
+		$result['composition'] = $this->db->get()->row_array();
+
+		$this->db->select('p.id,pc.owner,pc.product,pc.quantity,pc.unitConvert,pc.unit unitConvertName,p.name,p.unit');
+	    $this->db->from('product_composition pc');
+        $this->db->join('product p', 'pc.product=p.id');
+        $this->db->join('quantity q', 'pc.owner=q.product');
+	    $this->db->where("p.status","active");
+	    $this->db->where("q.status","active");
+	    //$this->db->where("p.type","composition");
+	    $this->db->where("pc.owner",$id);
+		$result['products'] = $this->db->get()->result_array();
+
         return $result;
 	}
 
@@ -453,5 +517,20 @@ class model_product extends CI_Model {
 	        'name'=>'NULL', 'id' => 'NULL'
         );
 	    return $product;
+    }
+
+    private function accumulateQuantity($quantityData){
+
+        $this->db->where('product', $quantityData['product']);
+        $this->db->where('unit_price', $quantityData['unit_price']);
+        $db_quantity = $this->db->get('quantity')->row_array();
+        if($db_quantity){
+            $quantityData['quantity']+= $db_quantity['quantity'];
+            $this->db->where('product', $quantityData['product']);
+            $this->db->where('unit_price', $quantityData['unit_price']);
+            $this->db->update('quantity', $quantityData);
+        }else{
+            $this->db->insert('quantity', $quantityData);
+        }
     }
 }

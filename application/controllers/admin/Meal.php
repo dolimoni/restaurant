@@ -124,7 +124,8 @@ class Meal extends BaseController {
 
         if (!$this->input->post('meal')) {
             $data['message'] = '';
-            $data['products'] = $this->model_product->getAll();
+            $data['products'] = $this->model_product->getAll(false,true);
+            $data['compositions'] = $this->model_product->getCompositions();
             $data['groups'] = $this->model_group->getAll();
             $data['params'] = $this->getParams();
             $this->parser->parse('admin/meal/view_addmeal', $data);
@@ -144,7 +145,7 @@ class Meal extends BaseController {
         $data['meal'] = $this->model_meal->get($meal_id);
         $data['productsComposition'] = $this->model_meal->getProducts($meal_id);
         $data['message'] = '';
-        $data['products'] = $this->model_product->getAll();
+        $data['products'] = $this->model_product->getAll(false,true);
         $data['groups'] = $this->model_group->getAll();
         $data['params'] = $this->getParams();
         $this->parser->parse('admin/meal/view_editmeal', $data);
