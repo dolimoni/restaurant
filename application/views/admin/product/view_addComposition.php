@@ -199,8 +199,8 @@
         $(document).on('change', '.productSelect,.productSelectNew,.kgUnitHidden,.lUnitHidden', calulPrixTotal);
 
         function calulPrixTotal() {
-            console.log("here");
             var panel = $(this).closest('.product');
+            updateOptions(false);
             changeUnit(panel.find('select[name="product"] option:selected').attr('data-unit'), panel);
         };
 
@@ -315,6 +315,40 @@
             productModel.attr('data-id', productsCount);
             $('.mealComposition').append(productModel);
             $('.productsCount').html(productsCount);
+            updateOptions(true);
+        }
+
+        function updateOptions(newProductt) {
+
+            var selectedProducts = [];
+            for (var i = 1; i <= productsCount; i++) {
+                var row = $('.product[data-id=' + i + ']');
+                var l_panel = row.closest('.product');
+                var optionValue = l_panel.find('select[name="product"] option:selected').val();
+                var unit = l_panel.find('select[name="product"] option:selected').attr('data-unit');
+                var price = l_panel.find('select[name="product"] option:selected').attr('data-price');
+                var option = {
+                    'unit': unit,
+                    'price': price,
+                    'value': optionValue,
+                }
+                selectedProducts.push(option);
+            }
+            for (var i = 1; i <= productsCount; i++) {
+                var row = $('.product[data-id=' + i + ']');
+                var l_panel = row.closest('.product');
+                l_panel.find('select[name="product"] option').removeAttr('hidden');
+                for (var j = 0; j < selectedProducts.length; j++) {
+                    var val = selectedProducts[j]['value'];
+                    var actualVal = l_panel.find('select[name="product"] option:selected').val();
+                    if (productsCount === i && newProductt) {
+                        l_panel.find('select[name="product"] option[value=' + val + ']').attr('hidden', 'hidden');
+                        l_panel.find('select[name="product"] option').not('[hidden]').first().attr('selected', 'selected');
+                    } else {
+                        l_panel.find('select[name="product"] option[value=' + val + ']').attr('hidden', 'hidden');
+                    }
+                }
+            }
         }
     });
 
