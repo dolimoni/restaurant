@@ -110,6 +110,47 @@ class Department extends BaseController {
 
     }
 
+    public function apiEditDepartment()
+    {
+        try {
+            $name = $this->input->post('departmentNameEdit');
+            $id = $this->input->post('id');
+            $image = $_FILES['image']['name'];
+            $department = array('name' => $name);
+            if ($image !== "") {
+                $department['image'] = $image;
+                $this->uploadFile();
+            }
+            $this->model_department->editDepartment($id, $department);
+
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'success')));
+        } catch (Exception $e) {
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'error')));
+        }
+
+    }
+
+
+    public function apiDeleteDepartment()
+    {
+        try {
+            $department_id = $this->input->post('department_id');
+            $this->model_department->deleteDepartment($department_id);
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'success')));
+        } catch (Exception $e) {
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'error','code'=> $e->getCode())));
+        }
+
+    }
+
     public function apiDeleteMealFromMagazin(){
         try {
             $id = $this->input->post('meal_id');

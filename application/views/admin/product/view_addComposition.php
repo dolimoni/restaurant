@@ -318,7 +318,7 @@
             updateOptions(true);
         }
 
-        function updateOptions(newProductt) {
+        function updateOptions(newProduct) {
 
             var selectedProducts = [];
             for (var i = 1; i <= productsCount; i++) {
@@ -341,7 +341,7 @@
                 for (var j = 0; j < selectedProducts.length; j++) {
                     var val = selectedProducts[j]['value'];
                     var actualVal = l_panel.find('select[name="product"] option:selected').val();
-                    if (productsCount === i && newProductt) {
+                    if (productsCount === i && newProduct) {
                         l_panel.find('select[name="product"] option[value=' + val + ']').attr('hidden', 'hidden');
                         l_panel.find('select[name="product"] option').not('[hidden]').first().attr('selected', 'selected');
                     } else {

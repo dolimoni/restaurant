@@ -32,7 +32,7 @@
     <link href="<?php echo base_url("assets/vendors/font-awesome/css/font-awesome.min.css"); ?>" rel="stylesheet">
     <!-- NProgress -->
     <link href="<?php echo base_url("assets/vendors/nprogress/nprogress.css"); ?>" rel="stylesheet">
-    <!-- sweet-alert --> 
+    <!-- sweet-alert -->
     <link href="<?php echo base_url("assets/vendors/sweetalert/sweetalert.css"); ?>" rel="stylesheet">
 
 
@@ -43,7 +43,7 @@
     <link href="<?php echo base_url("assets/build/css/custom.min.css"); ?>" rel="stylesheet">
     <link href="<?php echo base_url("assets/build2/css/custom.min.css"); ?>" rel="stylesheet">
 
-    <link href="<?php echo base_url("assets/css/main.css"); ?>" rel="stylesheet">
+    <link href="<?php echo base_url("assets/css/mainStyle.css"); ?>" rel="stylesheet">
       <style>
           #loading {
               width: 100%;

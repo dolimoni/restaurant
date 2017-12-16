@@ -119,6 +119,7 @@ class model_department extends CI_Model {
         foreach ($magazin['mealsList'] as $mealItem) {
 
             $this->db->where('meal', $mealItem['id']);
+            $this->db->where('magazin', $magazin['id']);
             $sm = $this->db->get('stock_meal');
 
             // metrre a jour l'article s'il existe déjà dans le magazin
@@ -127,6 +128,7 @@ class model_department extends CI_Model {
                 $quantityInMagazin = '';
                 $quantityToSale = '';
 
+                // si new qunaity
                 if ($mealItem['magazinQuantityType']=="true") {
                     $quantityInMagazin = $mealItem['quantityInMagazin'];
                 } else {
@@ -168,7 +170,7 @@ class model_department extends CI_Model {
                 $this->db->insert('stock_meal', $dataMeal);
 
                 //Update stock only
-                $this->consumption($mealItem2, $mealItem['quantityInMagazin'] + $mealItem['quantityToSale'], $magazin['department']);
+                $this->consumption($mealItem, $mealItem['quantityInMagazin'] + $mealItem['quantityToSale'], $magazin['department']);
             }
         }
 
@@ -313,9 +315,20 @@ class model_department extends CI_Model {
         return $response;
     }
 
+    public function editDepartment($id, $department){
+        $this->db->where('id',$id);
+        $this->db->update('department', $department);
+    }
+
     public function deleteMealFromMagazin($id){
         $this->db->where('id',$id);
         $this->db->delete('stock_meal');
+    }
+
+    public function deleteDepartment($provider_id)
+    {
+        $this->db->where('id', $department_id);
+        $this->db->delete('department');
     }
 
 }

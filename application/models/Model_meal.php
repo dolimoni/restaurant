@@ -11,6 +11,33 @@
 
 class model_meal extends CI_Model {
 
+    private $params;
+
+
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this->load->model('model_params');
+        $this->params = $this->model_params->config(); // getting user configuration
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getParams()
+    {
+        return $this->params;
+    }
+
+    /**
+     * @param mixed $params
+     */
+    public function setParams($params)
+    {
+        $this->params = $params;
+    }
+
 
 
 	public function add($meal)
@@ -271,70 +298,72 @@ class model_meal extends CI_Model {
             }
 
 
-            $this->db->select('*,mp.quantity as mp_quantity,p.id as p_id');
-            $this->db->from('meal_product mp');
-            $this->db->join('product p', 'mp.product = p.id');
-            $this->db->join('quantity q', 'q.product = p.id');
-            $this->db->where('q.status', 'active');
-            $this->db->where('mp.status', 'current');
-            $this->db->where('mp.meal', $meal['id']);
+            $this->params['department'] === "false";
+            if($this->params['department']==="false"){
+                $this->db->select('*,mp.quantity as mp_quantity,p.id as p_id');
+                $this->db->from('meal_product mp');
+                $this->db->join('product p', 'mp.product = p.id');
+                $this->db->join('quantity q', 'q.product = p.id');
+                $this->db->where('q.status', 'active');
+                $this->db->where('mp.status', 'current');
+                $this->db->where('mp.meal', $meal['id']);
 
-            //list of products that make up a meal
-            $m_products = $this->db->get()->result_array();
+                //list of products that make up a meal
+                $m_products = $this->db->get()->result_array();
 
-            foreach ($m_products as $m_product){
+                foreach ($m_products as $m_product) {
 
-                //$m_products['product'] : produit's id
-                //$m_products['quantity'] : the amount of the product in the meal
-                //$meal['quantity'] : quantity of the meal
-                //$m_product['unitConvert']: conversion du Kg vers gr ou mg ..
+                    //$m_products['product'] : produit's id
+                    //$m_products['quantity'] : the amount of the product in the meal
+                    //$meal['quantity'] : quantity of the meal
+                    //$m_product['unitConvert']: conversion du Kg vers gr ou mg ..
 
-                // update reduce the amount of a product's stock after consumption the meal
-                if($m_product['totalQuantity']> $m_product['mp_quantity']* $m_product['unitConvert'] * $meal['quantity'] or true ){
-                    if($response['status'] === "success"){
-                        if($consumption_id===0){
-                            $consumption_id=$todayConsumption['id'];
-                        }
-                        $consumption_type = "sale";
-                        if ($lost) {
-                            $consumption_type = "lost";
-                        }
+                    // update reduce the amount of a product's stock after consumption the meal
+                    if ($m_product['totalQuantity'] > $m_product['mp_quantity'] * $m_product['unitConvert'] * $meal['quantity'] or true) {
+                        if ($response['status'] === "success") {
+                            if ($consumption_id === 0) {
+                                $consumption_id = $todayConsumption['id'];
+                            }
+                            $consumption_type = "sale";
+                            if ($lost) {
+                                $consumption_type = "lost";
+                            }
 
 
+                            $l_reponse = '';
+                            if ($meal['quantity'] >= $todayConsumption['quantity']) {
 
-                        $l_reponse='';
-                        if($meal['quantity'] >= $todayConsumption['quantity']){
+                                $this->model_product->updateQuantity($m_product['product'], $m_product['mp_quantity'] * $m_product['unitConvert'] * $quantityStep);
+                                $l_reponse = $this->model_product->updateLocalQuantity($m_product['product'], $m_product['mp_quantity'] * $m_product['unitConvert'] * $quantityStep);
+                            } else {
+                                $this->model_product->updateQuantity($m_product['product'], $m_product['mp_quantity'] * $m_product['unitConvert'] * $quantityStep, 'up');
+                                $l_reponse = $this->model_product->updateLocalQuantity($m_product['product'], $m_product['mp_quantity'] * $m_product['unitConvert'] * $quantityStep, 'up');
+                            }
+                            foreach ($l_reponse['quantities'] as $quantity) {
+                                // il faut modifier ces donnée pour prendre en considération l'utilisation de plusieurs quantités
+                                // l'ajout de consommation des produits doit etre fait apres la reduction de quantités produits
+                                // on renvoie la liste des  produit utilisé et on les insère dans la table consomation produit
+                                $consumption_product = array(
+                                    'consumption' => $consumption_id,
+                                    'meal' => $meal['id'],
+                                    'product' => $m_product['p_id'],
+                                    'quantity' => abs($quantity['quantity']),
+                                    'unit_price' => $quantity['unit_price'],
+                                    'total' => abs($quantity['quantity']) * $quantity['unit_price'],
+                                    'type' => $consumption_type
+                                );
 
-                            $this->model_product->updateQuantity($m_product['product'], $m_product['mp_quantity'] * $m_product['unitConvert'] * $quantityStep);
-                            $l_reponse=$this->model_product->updateLocalQuantity($m_product['product'], $m_product['mp_quantity'] * $m_product['unitConvert'] * $quantityStep);
-                        }else{
-                            $this->model_product->updateQuantity($m_product['product'], $m_product['mp_quantity'] * $m_product['unitConvert'] * $quantityStep,'up');
-                            $l_reponse=$this->model_product->updateLocalQuantity($m_product['product'], $m_product['mp_quantity'] * $m_product['unitConvert'] * $quantityStep,'up');
-                        }
-                        foreach ($l_reponse['quantities'] as $quantity) {
-                            // il faut modifier ces donnée pour prendre en considération l'utilisation de plusieurs quantités
-                            // l'ajout de consommation des produits doit etre fait apres la reduction de quantités produits
-                            // on renvoie la liste des  produit utilisé et on les insère dans la table consomation produit
-                            $consumption_product = array(
-                                'consumption' => $consumption_id,
-                                'meal' => $meal['id'],
-                                'product' => $m_product['p_id'],
-                                'quantity' => abs($quantity['quantity']),
-                                'unit_price' => $quantity['unit_price'],
-                                'total' => abs($quantity['quantity'])*$quantity['unit_price'],
-                                'type' => $consumption_type
-                            );
-
-                            if (!isset($todayConsumption)) {
-                                $this->db->insert('consumption_product', $consumption_product);
+                                if (!isset($todayConsumption)) {
+                                    $this->db->insert('consumption_product', $consumption_product);
+                                }
                             }
                         }
+                    } else {
+                        $response['status'] = "error";
+                        $productsErrorList[] = $m_product;
                     }
-                }else{
-                    $response['status']="error";
-                    $productsErrorList[]= $m_product;
+                    $response['productsList'] = $productsErrorList;
                 }
-                $response['productsList'] = $productsErrorList;
             }
 
         }

@@ -3,6 +3,9 @@
 <!-- page content -->
 <div class="right_col" role="main">
     <div class="productsList">
+
+        <div class="bg"></div>
+       <!-- <img src="<?php /*echo base_url('assets/images/' . $department['image']); */?>" />-->
         <div class="page-title">
             <!--<pre>
                 <?php /*print_r($products); */?>
@@ -10,13 +13,17 @@
             <div class="title_left">
                 <h3>Département <?php echo $department['name']; ?></h3>
             </div>
+            <div class="col-md-4">
+
+
+            </div>
         </div>
         <div class="clearfix"></div>
         <hr>
         <div class="row">
             <a class="col-md-2 btn btn-primary" data-toggle="collapse" href="#collapseExample" aria-expanded="false"
                aria-controls="collapseExample">Ajouter un magazin</a>
-            <div class="collapse" id="collapseExample">
+            <div class="col-md-4 collapse" id="collapseExample">
                 <form id="addEmployeeForm" enctype="multipart/form-data">
                     <fieldset>
                         <div class="row">
@@ -34,12 +41,12 @@
                 </form>
                 <br>
             </div>
-        </div>
-        <div class="row">
-            <button type="submit" class="btn btn-success" name="new"
-                    onclick="window.location.href='<?php echo base_url('admin/department/stockMeal/'. $department['id']); ?>'">
-                <span></span> Ajouter des articles
-            </button>
+            <div class="col-md-3 hidden">
+                <button type="submit" class="btn btn-success" name="new"
+                        onclick="window.location.href='<?php echo base_url('admin/department/stockMeal/' . $department['id']); ?>'">
+                    <span></span> Ajouter des articles
+                </button>
+            </div>
         </div>
 
 

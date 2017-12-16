@@ -1,4 +1,10 @@
 <?php $this->load->view('admin/partials/admin_header.php'); ?>
+
+<style>
+    .row.quantity{
+        margin:10px 0px;
+    }
+</style>
 <!-- page content -->
 <div class="right_col" role="main">
     <div class="productsList">
@@ -10,6 +16,7 @@
                 <h3>Modifier le magazin :</h3>
             </div>
         </div>
+
 
 
         <div class="row">
@@ -63,10 +70,10 @@
                                          </div>
 
                                        </div>
-                                           <div class="row">
+                                           <div class="row quantity">
                                                <div class="col-md-6 col-sm-12 col-xs-12">
                                                    <span class="sm-hidden">Stock : </span> <input
-                                                           class="form-inline md-button-v" placeholder="Stock"
+                                                           class="form-inline md-button-v" placeholder=""
                                                            name="quantityInMagazin"
                                                            type="text">
                                                </div>
@@ -74,10 +81,10 @@
                                                    Nouvelle quantité : <input type="checkbox" name="MagazinQuantityType"/>
                                                </div>
                                            </div>
-                                            <div class="row">
+                                            <div class="row quantity">
                                            <div class="col-md-6 col-sm-12 col-xs-12">
                                                <span class="sm-hidden">Vente : </span> <input
-                                                       class="form-inline md-button-v" placeholder="Vente"
+                                                       class="form-inline md-button-v" placeholder=""
                                                        name="quantityToSale"
                                                        type="text">
                                            </div>
@@ -107,12 +114,12 @@
                                     </ul>
                                     <div class="clearfix"></div>
                                 </div>
-                                <div class="x_content" style="margin-top:30px;" id="newContent">
+                                <div class="x_content" style="margin-top:23px;" id="newContent">
 
                                     <div class="row">
 
 
-                                       <div class="col-md-4 col-sm-12 col-xs-12" style="margin-bottom:10px;">
+                                       <div class="col-md-offset-4 col-md-4 col-sm-12 col-xs-12" style="margin-bottom:10px;">
                                            <select name="product" class="productSelectNew md-button-v" style="max-width:150px;">
                                                <?php foreach ($meals as $meal) { ?>
                                                    <option value="<?php echo $meal['id']; ?>"
@@ -125,13 +132,13 @@
                                     <div class="row">
                                         <div class="col-md-6 col-sm-12 col-xs-12">
                                             <span class="sm-hidden">Stock : </span> <input
-                                                    class="form-inline md-button-v" placeholder="Stock"
+                                                    class="form-inline md-button-v" placeholder=""
                                                     name="quantityInMagazin"
                                                     type="text">
                                         </div>
                                         <div class="col-md-6 col-sm-12 col-xs-12">
                                             <span class="sm-hidden">Vente : </span> <input
-                                                    class="form-inline md-button-v" placeholder="Vente"
+                                                    class="form-inline md-button-v" placeholder=""
                                                     name="quantityToSale"
                                                     type="text">
                                         </div>
@@ -145,6 +152,7 @@
 
 
         <input type="submit" name="buttonSubmit" value="Enregister" class="btn btn-success"/>
+
     </div>
 </div> <!-- /.col-right -->
 <!-- /page content -->
@@ -161,6 +169,12 @@
         var group=0;
         var productsCount=<?php echo count($magazin['mealsList']) ?>;
 
+        $(document).on('change', '.productSelect,.productSelectNew', calulPrixTotal);
+
+        function calulPrixTotal() {
+            var panel = $(this).closest('.product');
+            updateOptions(false);
+        };
 
         $('input[name="buttonSubmit"]').on('click', function () {
             $('#loading').show();
@@ -209,7 +223,7 @@
                                 timer: 1500,
                                 showConfirmButton: false
                             });
-                            document.location.href = data.redirect;
+                            //document.location.href = data.redirect;
                         }
                         else {
                             /*$('#show_id').html("<div style='border:1px solid red;font-size: 11px;margin:0 auto !important;'>" + response.error + "</div>");*/
@@ -236,7 +250,46 @@
             productModel.attr('data-id',productsCount);
             $('.mealComposition').append(productModel);
             $('.productsCount').html(productsCount);
+            if(productsCount>1){
+                updateOptions(true);
+            }
         }
+
+        function updateOptions(newProduct) {
+
+            var selectedProducts = [];
+            for (var i = 1; i <= productsCount; i++) {
+                var row = $('.product[data-id=' + i + ']');
+                var l_panel = row.closest('.product');
+                var optionValue = l_panel.find('select[name="product"] option:selected').val();
+                var unit = l_panel.find('select[name="product"] option:selected').attr('data-unit');
+                var price = l_panel.find('select[name="product"] option:selected').attr('data-price');
+                var option = {
+                    'unit': unit,
+                    'price': price,
+                    'value': optionValue,
+                }
+                selectedProducts.push(option);
+            }
+            for (var i = 1; i <= productsCount; i++) {
+                var row = $('.product[data-id=' + i + ']');
+                var l_panel = row.closest('.product');
+                l_panel.find('select[name="product"] option').removeAttr('hidden');
+                for (var j = 0; j < selectedProducts.length; j++) {
+                    var val = selectedProducts[j]['value'];
+                    var actualVal = l_panel.find('select[name="product"] option:selected').val();
+                    if (productsCount === i && newProduct) {
+                        l_panel.find('select[name="product"] option[value=' + val + ']').attr('hidden', 'hidden');
+                        l_panel.find('select[name="product"] option').not('[hidden]').first().attr('selected', 'selected');
+                    } else {
+                        l_panel.find('select[name="product"] option[value=' + val + ']').attr('hidden', 'hidden');
+                    }
+                }
+            }
+        }
+
+        updateOptions(false);
+
 
     });
 
@@ -279,7 +332,7 @@
                                     timer: 1500,
                                     showConfirmButton: false
                                 });
-                                location.reload();
+                               // location.reload();
                             }
                             else {
                                 swal({
