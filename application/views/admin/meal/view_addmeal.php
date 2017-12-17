@@ -197,18 +197,7 @@
 
 <?php $this->load->view('admin/partials/admin_footer'); ?>
 
-<?php if($this->session->flashdata('message') != NULL) : ?>
-<script>
-    swal({
-      title: "Success",
-      text: "<?php echo $this->session->flashdata('message'); ?>",
-      type: "success",
-      timer: 1500,
-      showConfirmButton: false
-    });
-</script>
 
-<?php endif ?>
 
 <script>
 
@@ -240,6 +229,8 @@
             var unit = panel.find('select[name="product"] option:selected').attr('data-unit');
             var price = parseFloat(panel.find('select[name="product"] option:selected').attr('data-price'));
             var productQuantity = parseFloat(panel.find('input[name="quantity"]').val());
+
+            updateOptions(false);
 
            // panel.find('.ProductUnit').html(unit);
             panel.find('.productCost').html(price*productQuantity);
@@ -445,6 +436,41 @@
             productModel.attr('data-id', productsCount);
             $('.mealComposition').append(productModel);
             $('.productsCount').html(productsCount);
+            updateOptions(true);
+        }
+        function updateOptions(newProduct){
+
+            var selectedProducts = [];
+            for (var i = 1; i <= productsCount; i++) {
+                var row = $('.product[data-id=' + i + ']');
+                var l_panel = row.closest('.product');
+                var optionValue = l_panel.find('select[name="product"] option:selected').val();
+                var unit = l_panel.find('select[name="product"] option:selected').attr('data-unit');
+                var price = l_panel.find('select[name="product"] option:selected').attr('data-price');
+                var option={
+                    'unit':unit,
+                    'price': price,
+                    'value': optionValue,
+                }
+                selectedProducts.push(option);
+            }
+            for (var i = 1; i <= productsCount; i++) {
+                var row = $('.product[data-id=' + i + ']');
+                var l_panel = row.closest('.product');
+                l_panel.find('select[name="product"] option').removeAttr('hidden');
+                for (var j = 0; j < selectedProducts.length; j++) {
+                    var val= selectedProducts[j]['value'];
+                    var actualVal= l_panel.find('select[name="product"] option:selected').val();
+                    console.log(selectedProducts.length);
+                    console.log(j+1);
+                    if(productsCount===i && newProduct){
+                        l_panel.find('select[name="product"] option[value=' + val + ']').attr('hidden','hidden');
+                        l_panel.find('select[name="product"] option').not('[hidden]').first().attr('selected', 'selected');
+                    }else{
+                        l_panel.find('select[name="product"] option[value=' + val + ']').attr('hidden', 'hidden');
+                    }
+                }
+            }
         }
     });
 
