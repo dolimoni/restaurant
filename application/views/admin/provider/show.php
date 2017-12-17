@@ -171,11 +171,11 @@
                                     <li role="presentation" class=""><a href="#tab_orders" role="tab" id="profile-tab"
                                                                         data-toggle="tab" aria-expanded="false">Historique des commandes</a>
                                     </li>
-                                    <li role="presentation" class=""><a href="#tab_quotations" role="tab"
+                                    <!--<li role="presentation" class=""><a href="#tab_quotations" role="tab"
                                                                         id="profile-tab2"
                                                                         data-toggle="tab"
                                                                         aria-expanded="false">Devis</a>
-                                    </li>
+                                    </li>-->
                                 </ul>
                                 <div class="col-md-3 col-sm-12 col-xs-12 md-hidden">
                                     <!-- required for floating -->
@@ -189,8 +189,8 @@
                                         <li class=""><a href="#tab_orders" data-toggle="tab" aria-expanded="false">Historique
                                                 des commandes</a>
                                         </li>
-                                        <li><a href="#tab_quotations" data-toggle="tab">Devis</a>
-                                        </li>
+                                        <!--<li><a href="#tab_quotations" data-toggle="tab">Devis</a>
+                                        </li>-->
                                     </ul>
                                 </div>
                                 <div id="myTabContent" class="tab-content col-md-12 col-sm-12 col-xs-12">
@@ -204,7 +204,7 @@
                                                 <th>#</th>
                                                 <th>Produit</th>
                                                 <th class="hidden-phone">Prix</th>
-                                                <th >Actions</th>
+                                                <!--<th >Actions</th>-->
                                             </tr>
                                             </thead>
                                             <tfoot>
@@ -212,7 +212,7 @@
                                                 <th>#</th>
                                                 <th>Produit</th>
                                                 <th>Prix</th>
-                                                <th>Action</th>
+                                                <!--<th>Action</th>-->
                                             </tr>
                                             </tfoot>
                                             <tbody>
@@ -221,24 +221,22 @@
                                                     <td> <?php echo $product['id']; ?></td>
                                                     <td> <?php echo $product['name']; ?></td>
                                                     <td> <?php echo $product['unit_price']; ?></td>
-                                                    <td class="vertical-align-mid">
+                                                    <!--<td class="vertical-align-mid">
                                                         <a class="btn btn-primary btn-xs editProductsModal"
                                                            data-toggle="modal"
                                                            data-target="#editProductsModal"
-                                                           data-id="<?php echo $product['id']; ?>">Modifier</a>
-                                                        <!--<a data-id="<?php /*echo $product['id']; */?>"
-                                                           class="btn btn-danger btn-xs deleteProduct">Supprimer</a>-->
-                                                    </td>
+                                                           data-id="<?php /*echo $product['id']; */?>">Modifier</a>
+                                                    </td>-->
                                                 </tr>
                                             <?php } ?>
                                             </tbody>
                                         </table>
-                                        <div>
+                                       <!-- <div>
                                             <br/>
                                             <input type="button" class="btn btn-info" value="Nouveau"
                                                    data-toggle="modal"
                                                    data-target="#addProductsModal"/>
-                                         </div>
+                                         </div>-->
                                         <?php include('include/addProductsModal.php'); ?>
                                         <?php include('include/editProductsModal.php'); ?>
                                    </div>

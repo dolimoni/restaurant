@@ -192,6 +192,22 @@ class Main extends BaseController
     }
 
 
+    public function clear()
+    {
+        $this->load->model('model_util');
+        $this->model_util->clear();
+
+        //get alertes
+        $this->load->model('model_budget');
+        $data['alertes'] = $this->model_budget->getActiveAlerts();
+        $data['groups'] = $this->model_group->getAll();
+        $data['productsToOrder'] = $this->model_product->getToOrder();
+        $data['params'] = $this->getParams();
+
+        $this->parser->parse('admin/meal/view_group', $data);
+    }
+
+
 
 }
 
