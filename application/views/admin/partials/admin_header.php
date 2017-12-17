@@ -12,7 +12,7 @@
 
 
   <!-- Global site tag (gtag.js) - Google Analytics -->
- <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=UA-110319921-1"></script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-110319921-1"></script>
   <script>
       window.dataLayer = window.dataLayer || [];
       function gtag() {
@@ -21,7 +21,7 @@
       gtag('js', new Date());
 
       gtag('config', 'UA-110319921-1');
-  </script>-->
+  </script>
 
 
       <!-- Bootstrap -->
@@ -104,7 +104,7 @@
                   <li><a><i class="fa fa-coffee"></i> Gestion des produits <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
                       <li><a href="<?= base_url('admin/product/add'); ?>">Ajouter des produits</a></li>
-                     <!-- <li><a href="<?/*= base_url('admin/product/addComposition'); */?>">Ajouter un produit composé</a></li>-->
+                      <li><a href="<?= base_url('admin/product/addComposition'); ?>">Ajouter un produit composé</a></li>
                       <li><a href="<?= base_url('admin/product/index'); ?>">Stock des produits</a></li>
                       <li><a href="<?= base_url('admin/product/toOrder'); ?>">Produits à commander</a></li>
                     </ul>

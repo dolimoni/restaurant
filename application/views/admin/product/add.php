@@ -116,7 +116,7 @@
                                     <select class="form-control" name="unit">
                                         <option name="unit" value="kg">Kg</option>
                                         <option name="unit" value="pcs">Pcs</option>
-                                        <option name="unit" value="l">Litre</option>
+                                        <option name="unit" value="L">Litre</option>
                                     </select>
                                 </div>
                                 <div class="form-group">
