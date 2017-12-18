@@ -191,6 +191,18 @@ class Main extends BaseController
         $this->model_util->clean();
     }
 
+    public function clear()
+    {
+        $this->load->model('model_util');
+        $this->model_util->clear();
+    }
+
+    public function populate()
+    {
+        $this->load->model('model_util');
+        $this->model_util->populate();
+    }
+
 
 
 }

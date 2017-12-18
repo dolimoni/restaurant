@@ -269,16 +269,35 @@
                     dataType: "json",
                     data: {'composition': composition},
                     success: function (data) {
-                        if (data.status === true) {
-                            document.location.href = data.redirect;
-                        }
-                        else {
-                            /*$('#show_id').html("<div style='border:1px solid red;font-size: 11px;margin:0 auto !important;'>" + response.error + "</div>");*/
-                        }
+                        if (data.status = "success") {
+                            swal({
+                                title: "Success",
+                                text: "Success",
+                                type: "success",
+                                timer: 1500,
+                                showConfirmButton: false
+                            });
 
+                            window.location.href = data.redirect;
+                        } else {
+                            swal({
+                                title: "Oups !",
+                                text: "Une erreur s'est produite",
+                                type: "error",
+                                timer: 1500,
+                                showConfirmButton: false
+                            });
+
+                        }
                     },
                     error: function (data) {
-                        // do something
+                        swal({
+                            title: "Oups !",
+                            text: "Une erreur s'est produite",
+                            type: "error",
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
                     }
                 });
             }

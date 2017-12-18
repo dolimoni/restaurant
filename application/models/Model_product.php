@@ -73,11 +73,14 @@ class model_product extends CI_Model {
 	        // if this new a new create product
             $data = array(
                 'name' => $compostion['name'],
-                'totalQuantity' => $compostion['cost'],
+                'totalQuantity' => $compostion['quantity'],
                 'unit' => $compostion['unit'],
                 'type' => 'composition'
             );
+
+            
             $this->db->insert('product', $data);
+
             $product_id = $this->db->insert_id();
             $compostion['id'] = $product_id;
             $dataQuantity = array(
