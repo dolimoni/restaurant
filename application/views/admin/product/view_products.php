@@ -3,9 +3,9 @@
 <div class="right_col" role="main">
     <div class="">
         <div class="page-title">
-            <pre>
-                <?php /*print_r($productsComposition);*/ ?>
-            </pre>
+           <!-- <pre>
+                <?php /*print_r($productsComposition); */?>
+            </pre>-->
             <div class="title_left">
                 <h3>Produits</h3>
             </div>
@@ -148,6 +148,48 @@
                                     <a  class="btn btn-danger btn-xs deleteProduct" data-id="<?php echo $composition['product']; ?>">Supprimer</a>
                                 </td>
                             </tr>
+                                <tr class="productsRow">
+                                    <td colspan="6">
+                                        <table class="table">
+                                            <thead>
+                                            <tr class="info">
+                                                <th>Id</th>
+                                                <th>Nom</th>
+                                                <th>Quantité</th>
+                                                <th>Prix total</th>
+                                                <th>Taux de consomation</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                            </thead>
+                                            <tfoot>
+                                            <tr class="info">
+                                                <th>Id</th>
+                                                <th>Nom</th>
+                                                <th>Quantité</th>
+                                                <th>Prix total</th>
+                                                <th>Taux de consomation</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                            </tfoot>
+                                            <tbody>
+                                            <?php foreach ($composition['meals'] as $meal) { ?>
+                                                <tr class="success">
+                                                    <td><?php echo $meal['name']; ?></td>
+                                                    <td>Test</td>
+                                                    <td><?php echo $meal['quantity'] . ' ' . $meal['mp_unit']; ?></td>
+                                                    <td><?php echo $meal['quantity'] * $product['unit_price'] * $meal['unitConvert']; ?></td>
+                                                    <td><?php echo $meal['consumptionRate'] * 100; ?>%</td>
+
+                                                    <td>
+                                                        <a href=" <?php echo base_url('admin/meal/edit/' . $meal['meal']); ?>"
+                                                           class="btn btn-primary btn-xs">Modifier</a>
+                                                    </td>
+                                                </tr>
+                                            <?php } ?>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
                             <?php } ?>
                         </table>
                     </div> <!-- /content --> 

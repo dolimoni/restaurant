@@ -65,7 +65,7 @@
                                 </li>
 
                                 <li >
-                                    <i class="fa fa-external-link user-profile-icon provider-mail"><?php echo $provider['mail']; ?></i>
+                                    <i class="fa fa-envelope user-profile-icon provider-mail"> <?php echo $provider['mail']; ?></i>
                                 </li>
                             </ul>
 
@@ -115,7 +115,7 @@
                             <!-- end of skills -->
 
                         </div>
-                        <div class="col-md-9 col-sm-12 col-xs-12">
+                        <div class="col-md-9 col-sm-9 col-xs-12">
 
                             <div class="profile_title">
                                 <div class="col-md-12 col-sm-12 col-xs-12">
@@ -171,11 +171,11 @@
                                     <li role="presentation" class=""><a href="#tab_orders" role="tab" id="profile-tab"
                                                                         data-toggle="tab" aria-expanded="false">Historique des commandes</a>
                                     </li>
-                                    <li role="presentation" class=""><a href="#tab_quotations" role="tab"
+                                    <!--<li role="presentation" class=""><a href="#tab_quotations" role="tab"
                                                                         id="profile-tab2"
                                                                         data-toggle="tab"
                                                                         aria-expanded="false">Devis</a>
-                                    </li>
+                                    </li>-->
                                 </ul>
                                 <div class="col-md-3 col-sm-12 col-xs-12 md-hidden">
                                     <!-- required for floating -->
@@ -428,18 +428,27 @@
                 $("#datatable-responsive").DataTable({
                     aaSorting: [[0, 'desc']],
                     responsive: true,
+                    "language": {
+                        "url": "<?php echo base_url("assets/vendors/datatables.net/French.json"); ?>"
+                    }
                 });
             }
             if ($("#datatable-responsive4").length) {
                 $("#datatable-responsive4").DataTable({
                     aaSorting: [[0, 'desc']],
                     responsive: true,
+                    "language": {
+                        "url": "<?php echo base_url("assets/vendors/datatables.net/French.json"); ?>"
+                    }
                 });
             }
             if ($("#datatable-responsive5").length) {
                 $("#datatable-responsive5").DataTable({
                     aaSorting: [[0, 'desc']],
                     responsive: true,
+                    "language": {
+                        "url": "<?php echo base_url("assets/vendors/datatables.net/French.json"); ?>"
+                    }
                 });
             }
         };
@@ -1106,7 +1115,7 @@
             $('.provider-title').attr('contenteditable', edit);
             $('.provider-address').attr('contenteditable', edit);
             $('.provider-phone').attr('contenteditable', edit);
-            $('.provider-mail').attr('contenteditable', 'edit');
+            $('.provider-mail').attr('contenteditable', edit);
         }
     });
 </script>

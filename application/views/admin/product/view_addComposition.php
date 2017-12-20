@@ -27,7 +27,7 @@
                         <div class="x_content">
                             <fieldset>
                                 <div class="row">
-                                        <div class="col-md-6">
+                                        <div class="col-md-6 col-xs-12">
                                             <div class="form-group">
                                                 Nom<span class="required">*</span> : <input class="form-control"
                                                                                             placeholder="Produit"
@@ -44,7 +44,7 @@
                                                                                             required>
                                             </div>
                                         </div>
-                                        <div class="col-md-6">
+                                        <div class="col-md-6 col-xs-12">
                                             <div class="form-group">
                                                 Unité de mesure :
                                                 <select class="form-control" name="unit">
@@ -71,7 +71,7 @@
                         <h2>Composition</h2>
                         <ul class="nav navbar-right panel_toolbox">
                             <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
-                            <li><a class="close-link"><i class="fa fa-close"></i></a></li>
+                            <!--<li><a class="close-link"><i class="fa fa-close"></i></a></li>-->
                         </ul>
                         <div class="clearfix"></div>
                     </div>
@@ -137,7 +137,7 @@
                     <h2>Produit</h2>
                     <ul class="nav navbar-right panel_toolbox">
                         <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
-                        <li><a class="close-link"><i class="fa fa-close"></i></a></li>
+                        <!--<li><a class="close-link"><i class="fa fa-close"></i></a></li>-->
                     </ul>
                     <div class="clearfix"></div>
                 </div>
@@ -278,7 +278,7 @@
                                 showConfirmButton: false
                             });
 
-                            window.location.href = data.redirect;
+                            //window.location.href = data.redirect;
                         } else {
                             swal({
                                 title: "Oups !",

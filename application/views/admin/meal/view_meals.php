@@ -1,4 +1,15 @@
 <?php $this->load->view('admin/partials/admin_header.php'); ?>
+<style>
+    .well {
+        max-height: 155px;
+    }
+
+    .well img {
+        max-height: 75px;
+        width: 130px;
+        height: 126px;
+    }
+</style>
     <!-- page content -->
     <div class="right_col" role="main">
         <div class="">
@@ -16,15 +27,17 @@
             <?php
             //Columns must be a factor of 12 (1,2,3,4,6,12)
             $numOfCols = 6;
+            $numOfSMCols = 3;
             $rowCount = 0;
             $bootstrapColWidth = 12 / $numOfCols;
+            $bootstrapColSMWidth = 12 / $numOfSMCols;
             ?>
             <div class="row">
                 <?php
                 foreach ($groups as $group) {
                     ?>
                 <a href="<?php echo base_url('admin/meal/groupMeals/' . $group['g_id']); ?>">
-                    <div class="col-md-<?php echo $bootstrapColWidth; ?> col-xs-12 col-sm-12">
+                    <div class="col-md-<?php echo $bootstrapColWidth; ?> col-xs-12 col-xs-<?php echo $bootstrapColSMWidth; ?>">
                         <div class="well" data-id="<?php echo $group['id'] ?>">
                             <img src="<?php echo base_url(); ?>assets/images/<?php echo $group['image'] ?>" alt=""
                                  class="img-responsive">
@@ -66,41 +79,41 @@
                                    width="100%">
                                 <thead>
                                 <tr>
-                                    <th>Id</th>
+                                    <th class="md-hidden-only">Id</th>
                                     <th>Nom</th>
-                                    <th>Famille</th>
+                                    <th class="sm-hidden">Famille</th>
                                     <th>Coût</th>
                                     <th>Prix de vente</th>
                                     <th>Bénifices</th>
-                                    <th>Nombre de produits</th>
-                                    <th>Action</th>
+                                    <th class="md-hidden-only">Nombre de produits</th>
+                                    <th width="20%">Action</th>
                                 </tr>
                                 </thead>
                                 <tfoot>
                                 <tr>
-                                    <th>Id</th>
+                                    <th class="md-hidden-only">Id</th>
                                     <th>Nom</th>
-                                    <th>Famille</th>
+                                    <th class="sm-hidden">Famille</th>
                                     <th>Coût</th>
                                     <th>Prix de vente</th>
                                     <th>Bénifices</th>
-                                    <th>Nombre de produits</th>
+                                    <th class="md-hidden-only">Nombre de produits</th>
                                     <th>Action</th>
                                 </tr>
                                 </tfoot>
                                 <tbody>
                                 <?php foreach ($meals as $meal) { ?>
                                     <tr>
-                                        <td><?php echo $meal['meal_id']; ?></td>
+                                        <td class="md-hidden-only"><?php echo $meal['meal_id']; ?></td>
                                         <td><?php echo $meal['meal_name']; ?></td>
-                                        <td><?php echo $meal['g_name']; ?></td>
+                                        <td class="sm-hidden"><?php echo $meal['g_name']; ?></td>
                                         <td><?php echo $meal['cost']; ?></td>
                                         <td><?php echo $meal['sellPrice']; ?></td>
                                         <td><?php echo $meal['profit']; ?></td>
-                                        <td><?php echo $meal['products_count']; ?></td>
+                                        <td class="md-hidden-only"><?php echo $meal['products_count']; ?></td>
                                         <td>
                                             <a href=" <?php echo base_url(); ?>admin/meal/edit/<?php echo $meal['meal_id']; ?>"
-                                               class="btn btn-primary btn-xs"><i class="fa fa-pencil"></i></a>
+                                               class="btn btn-primary  btn-xs"><i class="fa fa-pencil"></i></a>
 
                                             <a href=" <?php echo base_url(); ?>admin/meal/view/<?php echo $meal['meal_id']; ?>"
                                                class="btn btn-primary btn-xs"><i class="fa fa-eye"></i></a>

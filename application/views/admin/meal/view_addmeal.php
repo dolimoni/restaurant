@@ -1,4 +1,15 @@
 <?php $this->load->view('admin/partials/admin_header.php'); ?>
+<style>
+    .well {
+        max-height: 155px;
+    }
+
+    .well img {
+        max-height: 75px;
+        width: 130px;
+        height: 126px;
+    }
+</style>
 <!-- page content -->
 <div class="right_col" role="main">
     <div class="productsList">
@@ -49,7 +60,7 @@
                         <h2>Produit</h2>
                         <ul class="nav navbar-right panel_toolbox">
                             <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
-                            <li><a class="close-link"><i class="fa fa-close"></i></a></li>
+                            <!--<li><a class="close-link"><i class="fa fa-close"></i></a></li>-->
                         </ul>
                         <div class="clearfix"></div>
                     </div>
@@ -116,7 +127,7 @@
                     <h2>Produit</h2>
                     <ul class="nav navbar-right panel_toolbox">
                         <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
-                        <li><a class="close-link"><i class="fa fa-close"></i></a></li>
+                       <!-- <li><a class="close-link"><i class="fa fa-close"></i></a></li>-->
                     </ul>
                     <div class="clearfix"></div>
                 </div>
@@ -164,31 +175,50 @@
         </div>
 
 
-        <?php
-        //Columns must be a factor of 12 (1,2,3,4,6,12)
-        $numOfCols = 6;
-        $numOfSMCols = 1;
-        $rowCount = 0;
-        $bootstrapColMDWidth = 12 / $numOfCols;
-        $bootstrapColSMWidth = 12 / $numOfSMCols;
-        ?>
-        <div class="row">
-            <?php
-            foreach ($groups as $group) {
-                ?>
-                <div class="col-md-<?php echo $bootstrapColMDWidth; ?> col-xs-12 col-sm-<?php echo $bootstrapColSMWidth; ?>">
-                    <div class="well" data-id="<?php echo $group['g_id'] ?>">
-                        <img src="<?php echo base_url(); ?>assets/images/<?php echo $group['image'] ?>" alt=""
-                             class="img-responsive">
-                        <h4 class="brief text-center"><?php echo $group['g_name'] ?></h4>
+            <div class="col-md-12 col-sm-12 col-xs-12" >
+                <div class="x_panel">
+                    <div class="x_title">
+                        <h2>Choisissez une famille</h2>
+                        <ul class="nav navbar-right panel_toolbox">
+                            <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
+                            <!--<li><a class="close-link"><i class="fa fa-close"></i></a></li>-->
+                        </ul>
+                        <div class="clearfix"></div>
                     </div>
-                </div>
-                <?php
-                $rowCount++;
-                if ($rowCount % $numOfCols == 0) echo '</div><div class="row">';
-            }
-            ?>
-        </div>
+                    <div class="x_content">
+                        <?php
+                        //Columns must be a factor of 12 (1,2,3,4,6,12)
+                        $numOfCols = 6;
+                        $numOfSMCols = 3;
+                        $rowCount = 0;
+                        $bootstrapColMDWidth = 12 / $numOfCols;
+                        $bootstrapColSMWidth = 12 / $numOfSMCols;
+                        ?>
+                            <div class="row">
+                                <?php
+                                foreach ($groups as $group) {
+                                    ?>
+                                    <div class="col-md-<?php echo $bootstrapColMDWidth; ?> col-xs-12 col-xs-<?php echo $bootstrapColSMWidth; ?>">
+                                        <div class="well selectGroup" data-id="<?php echo $group['g_id'] ?>">
+                                            <img src="<?php echo base_url(); ?>assets/images/<?php echo $group['image'] ?>"
+                                                 alt=""
+                                                 class="img-responsive">
+                                            <h4 class="brief text-center"><?php echo $group['g_name'] ?></h4>
+                                        </div>
+                                    </div>
+                                    <?php
+                                    $rowCount++;
+                                    if ($rowCount % $numOfCols == 0) echo '</div><div class="row">';
+                                }
+                                ?>
+                            </div>
+                    </div> <!-- /content -->
+                </div><!-- /x-panel -->
+            </div>
+
+
+
+
 
         <input type="submit" name="buttonSubmit" value="Confirmer" class="btn btn-success"/>
     </div>
@@ -396,7 +426,7 @@
         var productSize=1;
 
 
-        $('.well').on('click', function () {
+        $('.well.selectGroup').on('click', function () {
             group = $(this).attr('data-id');
             var actualColor = $(this).css('backgroundColor')
             var defaultColor = "rgb(245, 245, 245)";
@@ -410,7 +440,7 @@
                 );
             } else {
 
-                $('.well').css(
+                $('.well.selectGroup').css(
                     {
                         'background': defaultColor,
                         'color': 'rgb(115, 135, 156)',
