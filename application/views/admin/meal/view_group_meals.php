@@ -49,35 +49,35 @@
                                    width="100%">
                                 <thead>
                                 <tr>
-                                    <th>Id</th>
+                                    <th class="md-hidden-only">Id</th>
                                     <th>Nom</th>
                                     <th>Coût</th>
                                     <th>Prix de vente</th>
                                     <th>Bénifices</th>
-                                    <th>Nombre de produits</th>
-                                    <th>Action</th>
+                                    <th class="md-hidden-only">Nombre de produits</th>
+                                    <th width="20%">Action</th>
                                 </tr>
                                 </thead>
                                 <tfoot>
                                 <tr>
-                                    <th>Id</th>
+                                    <th class="md-hidden-only">Id</th>
                                     <th>Nom</th>
                                     <th>Coût</th>
                                     <th>Prix de vente</th>
                                     <th>Bénifices</th>
-                                    <th>Nombre de produits</th>
+                                    <th class="md-hidden-only">Nombre de produits</th>
                                     <th>Action</th>
                                 </tr>
                                 </tfoot>
                                 <tbody>
                                 <?php foreach ($meals as $meal) { ?>
                                     <tr>
-                                        <td><?php echo $meal['m_id']; ?></td>
+                                        <td class="md-hidden-only"><?php echo $meal['m_id']; ?></td>
                                         <td><?php echo $meal['meal_name']; ?></td>
                                         <td><?php echo $meal['cost']; ?></td>
                                         <td><?php echo $meal['sellPrice']; ?></td>
                                         <td><?php echo $meal['profit']; ?></td>
-                                        <td><?php echo $meal['products_count']; ?></td>
+                                        <td class="md-hidden-only"><?php echo $meal['products_count']; ?></td>
                                         <td>
                                             <a href=" <?php echo base_url(); ?>admin/meal/edit/<?php echo $meal['m_id']; ?>"
                                                class="btn btn-primary btn-xs "><i class="fa fa-pencil"></i></a>

@@ -101,12 +101,18 @@
                 <ul class="nav side-menu">
                   <li><a href="<?= base_url('admin/dashboard/index'); ?>"><i class="fa fa-home"></i> Dashboard </a></li>
                   <?php if($this->session->userdata('type') == "admin" ) : ?>
+                  <li><a><i class="fa fa-shopping-cart"></i> Fournisseurs <span
+                                  class="fa fa-chevron-down"></span></a>
+                      <ul class="nav child_menu">
+                          <li><a href="<?= base_url('admin/provider/index'); ?>">Liste des fournisseurs</a></li>
+                      </ul>
+                  </li>
                   <li><a><i class="fa fa-coffee"></i> Gestion des produits <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
                       <li><a href="<?= base_url('admin/product/add'); ?>">Ajouter des produits</a></li>
                       <li><a href="<?= base_url('admin/product/addComposition'); ?>">Ajouter un produit composé</a></li>
                       <li><a href="<?= base_url('admin/product/index'); ?>">Stock des produits</a></li>
-                      <li><a href="<?= base_url('admin/product/toOrder'); ?>">Produits à commander</a></li>
+                       <li><a href="<?= base_url('admin/product/toOrder'); ?>">Produits à commander</a></li>
                     </ul>
                   </li>
                   <li><a><i class="fa fa-cutlery"></i> Gestion des articles <span class="fa fa-chevron-down"></span></a>

@@ -17,7 +17,7 @@ class Product extends BaseController {
 	public function index()
 	{
         $data['products'] = $this->model_product->getAll(true,false);//param1: get Meals,param2:get compositions
-        $data['productsComposition'] = $this->model_product->getCompositions();//true: get Meals
+        $data['productsComposition'] = $this->model_product->getCompositions(true);//true: get Meals
         $data['providers'] = $this->model_provider->getAll();
         $data['params'] = $this->getParams();
         $this->parser->parse('admin/product/view_products', $data);

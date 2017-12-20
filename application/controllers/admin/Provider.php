@@ -156,6 +156,7 @@ class Provider extends BaseController
         $data['quotations'] = $this->model_provider->getQuotations($id);
         $data['orders'] = $this->model_provider->getOrders($id);
         $data['statistics'] = $this->model_provider->getStatistics($id);
+        $data['params'] = $this->getParams();
         $this->load->view('admin/provider/show', $data);
     }
 

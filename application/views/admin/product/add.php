@@ -104,11 +104,11 @@
                         <label><?php /*echo $message;*/ ?></label>
                             <fieldset>
                                 <div class="form-group">
-                                    Produit : <input class="form-control" placeholder="Produit" name="name"
+                                    Nom<span class="required">*</span> : <input class="form-control" placeholder="Produit" name="name"
                                                      id="username" type="text">
                                 </div>
                                 <div class="form-group">
-                                    Quantité : <input class="form-control" placeholder="Quantité" name="quantity"
+                                    Quantité<span class="required">*</span> : <input class="form-control" placeholder="Quantité" name="quantity"
                                                       type="number">
                                 </div>
                                 <div class="form-group">
@@ -130,7 +130,7 @@
                                     </select>
                                 </div>
                                 <div class="form-group">
-                                    Prix unitaire : <input class="form-control" placeholder="Prix unitaire"
+                                    Prix unitaire<span class="required">*</span> : <input class="form-control" placeholder="Prix unitaire"
                                                            name="unit_price">
                                 </div>
                                 <div class="form-group">
@@ -211,7 +211,7 @@
                                showConfirmButton: false
                            });
 
-                           //window.location.href = data.redirect;
+                           window.location.href = data.redirect;
                        } else {
                            swal({
                                title: "Oups !",

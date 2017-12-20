@@ -55,7 +55,11 @@ class model_product extends CI_Model {
 	public function addComposition($compostion,$newQuantity=false)
 	{
 	    // update product if exist
-	    if(isset($compostion['id'])){
+        $newProduct=false;
+        if(isset($compostion['id'])){
+            $newProduct=true;
+        }
+	    if($newProduct){
             $dataProduct = array(
                 'name' => $compostion['name'],
                 'unit' => $compostion['unit'],
@@ -76,7 +80,7 @@ class model_product extends CI_Model {
 
 
 	    // if update !
-	    if(isset($compostion['id'])){
+	    if($newProduct){
 
 	        // delete existing product and they will be changed by new products
 	        $this->db->where('owner', $compostion['id']);
@@ -85,11 +89,13 @@ class model_product extends CI_Model {
 	        // if this new a new create product
             $data = array(
                 'name' => $compostion['name'],
-                'totalQuantity' => $compostion['cost'],
+                'totalQuantity' => $compostion['quantity'],
                 'unit' => $compostion['unit'],
                 'type' => 'composition'
             );
+
             $this->db->insert('product', $data);
+
             $product_id = $this->db->insert_id();
             $compostion['id'] = $product_id;
             $dataQuantity = array(
@@ -121,10 +127,12 @@ class model_product extends CI_Model {
 
         }
 
-        if(!$newQuantity){
-            $this->updateLocalQuantity($compostion['id'], $compostion['quantity'], 'up');
+        if($newProduct){
+            if (!$newQuantity ){
+                $this->updateLocalQuantity($compostion['id'], $compostion['quantity'], 'up');
+            }
+             $this->updateQuantity($compostion['id'], $compostion['quantity'], 'up');
         }
-        $this->updateQuantity($compostion['id'], $compostion['quantity'], 'up');
 
 
 	}
@@ -375,7 +383,7 @@ class model_product extends CI_Model {
                 $this->db->from('meal_product mp');
                 $this->db->join('product p', 'mp.product=p.id');
                 $this->db->join('meal m', 'mp.meal=m.id');
-                $this->db->where("p.id", $item['id']);
+                $this->db->where("mp.product", $item['id']);
                 $this->db->where("mp.status",'current');
                 $this->db->group_by("mp.meal");
                 $meals = $this->db->get()->result_array();
