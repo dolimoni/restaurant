@@ -12,13 +12,60 @@
         </div>
 
 
+        <input type="hidden" name="department" value="<?php echo $department; ?>"/>
         <div class="row mealComposition">
+            <div class="col-md-6  col-sm-6 col-xs-12 product" data-id="1">
+                <div class="x_panel">
+                    <div class="x_title">
+                        <h2>Article</h2>
+                        <ul class="nav navbar-right panel_toolbox">
+                            <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
+                            <li><a class="close-link"><i class="fa fa-close"></i></a></li>
+                        </ul>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content" style="margin-top:30px;" id="newContent">
+                        <div class="row">
 
+
+                            <div class="col-md-6 col-sm-12 col-xs-12">
+                                <select name="product" data-name="meal" class="productSelectNew md-button-v"
+                                        style="max-width:150px;">
+                                    <?php foreach ($meals as $meal) { ?>
+                                        <option value="<?php echo $meal['id']; ?>"
+                                        ><?php echo $meal['name']; ?></option>
+                                    <?php } ?>
+                                </select>
+                            </div>
+                            <div class="col-md-6 col-sm-12 col-xs-12">
+                                <select name="product" data-name="magazin" class="productSelectNew md-button-v"
+                                        style="max-width:150px;">
+                                    <option value="0">Aucun</option>
+                                    <?php foreach ($magazins as $magazin) { ?>
+                                        <option value="<?php echo $magazin['id']; ?>"
+                                        ><?php echo $magazin['name']; ?></option>
+                                    <?php } ?>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6 col-sm-12 col-xs-12">
+                                <input class="form-inline md-button-v"
+                                       placeholder="Vente" name="quantityToSale"
+                                       type="text">
+                            </div>
+                            <div class="col-md-6 col-sm-12 col-xs-12">
+                                <input class="form-inline md-button-v"
+                                       placeholder="Stock" name="quantityInMagazin"
+                                       type="text">
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
         </div> <!-- /row -->
 
-        <button type="submit" class="btn btn-info" name="addMeal">
-            <span class="fa fa-plus"></span> Ajouter un article
-        </button>
 
         <div class="col-md-6  col-sm-6 col-xs-12 product productModel" hidden>
             <div class="x_panel">
@@ -35,28 +82,29 @@
 
 
                         <div class="col-md-6 col-sm-12 col-xs-12">
-                            <select name="product" class="productSelectNew md-button-v" style="max-width:150px;">
+                            <select name="product" data-name="meal" class="productSelectNew md-button-v" style="max-width:150px;">
                                 <?php foreach ($meals as $meal) { ?>
                                     <option value="<?php echo $meal['id']; ?>"
                                     ><?php echo $meal['name']; ?></option>
                                 <?php } ?>
                             </select>
                         </div><div class="col-md-6 col-sm-12 col-xs-12">
-                            <select name="product" class="productSelectNew md-button-v" style="max-width:150px;">
-                                <?php foreach ($meals as $meal) { ?>
-                                    <option value="<?php echo $meal['id']; ?>"
-                                    ><?php echo $meal['name']; ?></option>
+                            <select name="product" data-name="magazin" class="productSelectNew md-button-v" style="max-width:150px;">
+                                <option value="0">Aucun</option>
+                                <?php foreach ($magazins as $magazin) { ?>
+                                    <option value="<?php echo $magazin['id']; ?>"
+                                    ><?php echo $magazin['name']; ?></option>
                                 <?php } ?>
                             </select>
                         </div>
 
                         <div class="col-md-6 col-sm-12 col-xs-12">
-                            <span class="sm-hidden">Quantité : </span><input class="form-inline md-button-v"
-                                                                             placeholder="Quantité" name="quantity"
+                           <input class="form-inline md-button-v"
+                                                                             placeholder="Vente" name="quantityToSale"
                                                                              type="text">
                         </div><div class="col-md-6 col-sm-12 col-xs-12">
-                            <span class="sm-hidden">Quantité : </span><input class="form-inline md-button-v"
-                                                                             placeholder="Quantité" name="quantity"
+                           <input class="form-inline md-button-v"
+                                                                             placeholder="Stock" name="quantityInMagazin"
                                                                              type="text">
                         </div>
 
@@ -67,7 +115,12 @@
         </div>
 
 
-        <input type="submit" name="buttonSubmit" value="Enregister" class="btn btn-success"/>
+        <div class="row">
+            <button type="submit" class="btn btn-info" name="addMeal">
+                <span class="fa fa-plus"></span> Ajouter un article
+            </button>
+            <input type="submit" name="buttonSubmit" value="Enregister" class="btn btn-success"/>
+        </div>
     </div>
 </div> <!-- /.col-right -->
 <!-- /page content -->
@@ -81,7 +134,7 @@
 
         var gainRate = 1;
         var group = 0;
-        var productsCount =0;
+        var productsCount =1;
 
 
         $('input[name="buttonSubmit"]').on('click', function () {
@@ -89,6 +142,7 @@
             var mealsList = [];
             var prixTotal = 0;
             var name = $('input.mealName').val();
+            var department = $('input[name=department]').val();
             for (var i = 1; i <= productsCount; i++) {
 
                 var row = $('.product[data-id=' + i + ']');
@@ -96,23 +150,25 @@
 
                 var quantityInMagazin = parseFloat(row.find('input[name="quantityInMagazin"]').val().replace(',', '.'));
                 var quantityToSale = parseFloat(row.find('input[name="quantityToSale"]').val().replace(',', '.'));
-                var id = row.find('select').find('option:selected').val();
+                var meal = row.find('select[data-name=meal]').find('option:selected').val();
+                var magazin = row.find('select[data-name=magazin]').find('option:selected').val();
 
                 if (/*quantity > 0*/ true) {
                     var meal = {
-                        'id': id, 'quantityInMagazin': quantityInMagazin, 'quantityToSale': quantityToSale
+                        'meal': meal,'magazin':magazin, 'quantityInMagazin': quantityInMagazin, 'quantityToSale': quantityToSale
                     };
                     mealsList.push(meal);
                 }
 
             }
+            console.log(mealsList);
 
             if (true) {
                 $.ajax({
-                    url: "<?php echo base_url('admin/department/apiEditMagazin'); ?>",
+                    url: "<?php echo base_url('admin/department/apiMealsPrepared'); ?>",
                     type: "POST",
                     dataType: "json",
-                    data: {'magazin': 'magazin'},
+                    data: {'mealsList': mealsList,'department':department},
                     success: function (data) {
                         $('#loading').hide();
                         if (data.status === 'success') {

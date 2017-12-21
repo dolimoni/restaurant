@@ -43,7 +43,7 @@
                 </form>
                 <br>
             </div>
-            <div class="col-md-2 col-sm-6 col-xs-12 hidden">
+            <div class="col-md-2 col-sm-6 col-xs-12">
                 <button type="submit" class="btn btn-success" name="new"
                         onclick="window.location.href='<?php echo base_url('admin/department/stockMeal/' . $department['id']); ?>'">
                     <span></span> Ajouter des articles
@@ -99,16 +99,16 @@
                                            <tr class="info">
                                                <th>Id</th>
                                                <th>Nom</th>
-                                               <th>En magazin</th>
-                                               <th>En vente</th>
+                                               <th>Quantity</th>
+                                               <!--<th>En vente</th>-->
                                            </tr>
                                            </thead>
                                            <tfoot>
                                            <tr class="info">
                                                <th>Id</th>
                                                <th>Nom</th>
-                                               <th>En magazin</th>
-                                               <th>En vente</th>
+                                               <th>Quantity</th>
+                                              <!-- <th>En vente</th>-->
                                            </tr>
                                            </tfoot>
                                            <tbody>
@@ -117,7 +117,6 @@
                                                    <td><?php echo $meal['id']; ?></td>
                                                    <td><?php echo $meal['name']; ?></td>
                                                    <th><?php echo $meal['quantityInMagazin']; ?></th>
-                                                   <th><?php echo $meal['quantityToSale']; ?></th>
                                                </tr>
                                            <?php } ?>
                                            </tbody>
@@ -173,6 +172,54 @@
                            <?php } ?>
                            </tbody>
                        </table>
+
+                   </div> <!-- /content -->
+               </div><!-- /x-panel -->
+           </div>
+       </div>
+         <!-- /row -->
+        <div class="row">
+           <div class="col-xs-12">
+               <div class="x_panel">
+                   <div class="x_title">
+                       <h2>Mes articles en vente</h2>
+                       <ul class="nav navbar-right panel_toolbox">
+                           <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
+                           <li><a class="close-link"><i class="fa fa-close"></i></a></li>
+                       </ul>
+                       <div class="clearfix"></div>
+                   </div>
+                   <div class="x_content table-responsive">
+                       <table id="datatable-responsivee"
+                              class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0"
+                              width="100%">
+                           <thead>
+                           <tr>
+                               <th>Nom</th>
+                               <th>Quantité</th>
+                           </tr>
+                           </thead>
+                           <tfoot>
+                           <tr>
+                               <th>Nom</th>
+                               <th>Quantité</th>
+                           </tr>
+                           </tfoot>
+                           <tbody>
+                           <?php foreach ($readyMeals as $readyMeals) { ?>
+                               <tr>
+                                   <td><?php echo $readyMeals['name']; ?></td>
+                                   <td><?php echo $readyMeals['quantityToSale']?></td>
+                               </tr>
+                           <?php } ?>
+                           </tbody>
+                       </table>
+                       <div class="col-md-2 col-sm-6 col-xs-12">
+                           <button type="submit" class="btn btn-warning" name="new"
+                                   onclick="window.location.href='<?php echo base_url('admin/department/mealsHistory/' . $department['id']); ?>'">
+                               <span></span> Historique
+                           </button>
+                       </div>
 
                    </div> <!-- /content -->
                </div><!-- /x-panel -->

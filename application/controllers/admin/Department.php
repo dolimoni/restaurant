@@ -2,6 +2,7 @@
 
 class Department extends BaseController {
 
+    private $department = 0;
 	public function __construct()
 	{
         parent::__construct();
@@ -12,6 +13,7 @@ class Department extends BaseController {
         $this->load->model('department/model_department');
         $this->load->model('model_meal');
         $this->load->model('model_product');
+        $this->department = $this->session->userdata('department');
 
 	}
 
@@ -25,12 +27,12 @@ class Department extends BaseController {
 	public function show()
 	{
         $id = $this->uri->segment(4);
-        $department = $this->session->userdata('department');
-        if($department>0){
-            $id= $department;
+        if($this->department>0){
+            $id= $this->department;
         }
         $data['department'] = $this->model_department->getDepartment($id);
         $data['magazins'] = $this->model_department->getMagazinsWithMeals($id);
+        $data['readyMeals'] = $this->model_department->getReadyMeals($id);
         $data['meals'] = $this->model_meal->getAll();
         $data['products'] = $this->model_department->getProducts($id);
         $data['params'] = $this->getParams();
@@ -55,8 +57,24 @@ class Department extends BaseController {
 	{
         $department = $this->uri->segment(4);
         $data['meals'] = $this->model_meal->getAllMeals();
+        if($this->department!=="0"){
+            $department= $this->department;
+        }
+        $data['magazins'] = $this->model_department->getMagazinByDepartment($department);
+        $data['department'] = $department;
         $data['params'] = $this->getParams();
         $this->parser->parse('admin/department/view_stockMeal', $data);
+	}
+
+	public function mealsHistory()
+	{
+        $department = $this->uri->segment(4);
+        if($this->department!=="0"){
+            $department= $this->department;
+        }
+        $data['mealsHistory'] = $this->model_department->getMealsHistory($department);
+        $data['params'] = $this->getParams();
+        $this->parser->parse('admin/department/view_mealsHistory', $data);
 	}
 
 	public function showProducts()
@@ -88,6 +106,24 @@ class Department extends BaseController {
         try {
             $stock = $this->input->post('stock');
             $this->model_department->addStock($stock);
+
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'success')));
+        } catch (Exception $e) {
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'error')));
+        }
+	}
+
+	public function apiMealsPrepared()
+	{
+
+        try {
+            $mealsList = $this->input->post('mealsList');
+            $department = $this->input->post('department');
+            $this->model_department->mealsPrepared($mealsList, $department);
 
             $this->output
                 ->set_content_type("application/json")

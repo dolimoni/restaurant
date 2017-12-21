@@ -70,7 +70,7 @@
                                          </div>
 
                                        </div>
-                                           <div class="row quantity">
+                                           <!--<div class="row quantity">
                                                <div class="col-md-6 col-sm-12 col-xs-12">
                                                    <span class="sm-hidden">Stock : </span> <input
                                                            class="form-inline md-button-v" placeholder=""
@@ -80,7 +80,10 @@
                                                <div class="col-xs-6">
                                                    Nouvelle quantité : <input type="checkbox" name="MagazinQuantityType"/>
                                                </div>
-                                           </div>
+                                           </div>-->
+                                       <input type="hidden" name="quantityInMagazinNow"
+                                              value="<?php echo $mealItem['quantityInMagazin']; ?>"
+
                                             <div class="row quantity">
                                            <div class="col-md-6 col-sm-12 col-xs-12">
                                                <span class="sm-hidden">Vente : </span> <input
@@ -91,6 +94,8 @@
                                                 <div class="col-xs-6">
                                                     Nouvelle quantité : <input type="checkbox" name="saleQuantityType"/>
                                                 </div>
+                                                <input type="hidden" name="quantityInMagazinNow"
+                                                       value="<?php echo $mealItem['quantityInMagazin']; ?>"
 
                                        </div>
                                    </div>
@@ -167,6 +172,7 @@
 
         var gainRate=1;
         var group=0;
+        var quantityOverFlow=true;
         var productsCount=<?php echo count($magazin['mealsList']) ?>;
 
         $(document).on('change', '.productSelect,.productSelectNew', calulPrixTotal);
@@ -186,11 +192,30 @@
                 var row = $('.product[data-id=' + i + ']');
                 var l_panel = row.closest('.product');
 
-                var quantityInMagazin = parseFloat(row.find('input[name="quantityInMagazin"]').val().replace(',', '.'));
+                var quantityInMagazinInput= row.find('input[name="quantityInMagazin"]');
+                var quantityInMagazin = 0;
+                if(quantityInMagazinInput.val()){
+                    console.log(quantityInMagazinInput);
+                    quantityInMagazin = parseFloat(quantityInMagazinInput.val().replace(',', '.'));
+                }
+
                 var quantityToSale = parseFloat(row.find('input[name="quantityToSale"]').val().replace(',', '.'));
+                var quantityInMagazinNow = parseFloat(row.find('input[name="quantityInMagazinNow"]').val());
                 var quantity= quantityInMagazin+ quantityToSale;
                 var id= row.find('select').find('option:selected').val();
+                var mealName= row.find('select').find('option:selected').text();
 
+                if(quantityInMagazinNow< quantityToSale){
+                    quantityOverFlow=true;
+                    swal({
+                        title: "Attention",
+                        text: "Quantité de stock insuffisant pour l'article : "+ mealName,
+                        type: "warning",
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                    break;
+                }
                 if (quantityInMagazin || quantityToSale){
                     var meal = {
                         'id': id,
@@ -206,7 +231,7 @@
             }
 
             var magazin={'name':name,'id':<?php echo $magazin['id']; ?>,'department':<?php echo $magazin['department']; ?>,'mealsList': mealsList};
-            console.log(magazin);
+            //console.log(magazin);
             if(true){
                 $.ajax({
                     url: "<?php echo base_url('admin/department/apiEditMagazin'); ?>",
@@ -234,9 +259,20 @@
                         $('#loading').hide();
                     }
                 });
+            }else{
+                $('#loading').hide();
             }
 
         });
+
+        function validate(magazin) {
+            var validate = true;
+            if (quantityOverFlow) {
+                validate = false;
+            }
+            return validate;
+        }
+
 
         var productSize=1;
 
