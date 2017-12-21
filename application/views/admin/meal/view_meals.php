@@ -27,7 +27,7 @@
             <?php
             //Columns must be a factor of 12 (1,2,3,4,6,12)
             $numOfCols = 6;
-            $numOfSMCols = 3;
+            $numOfSMCols = 2;
             $rowCount = 0;
             $bootstrapColWidth = 12 / $numOfCols;
             $bootstrapColSMWidth = 12 / $numOfSMCols;
@@ -37,7 +37,7 @@
                 foreach ($groups as $group) {
                     ?>
                 <a href="<?php echo base_url('admin/meal/groupMeals/' . $group['g_id']); ?>">
-                    <div class="col-md-<?php echo $bootstrapColWidth; ?> col-xs-12 col-xs-<?php echo $bootstrapColSMWidth; ?>">
+                    <div class="col-md-<?php echo $bootstrapColWidth; ?> col-sm-4 col-xs-<?php echo $bootstrapColSMWidth; ?>">
                         <div class="well" data-id="<?php echo $group['id'] ?>">
                             <img src="<?php echo base_url(); ?>assets/images/<?php echo $group['image'] ?>" alt=""
                                  class="img-responsive">

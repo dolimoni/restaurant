@@ -97,7 +97,7 @@
 
             <?php foreach ($groups as $group) { ?>
 
-                <div class="col-md-4 col-sm-4 col-xs-12">
+                <div class="col-md-4 col-sm-6 col-xs-12">
                     <div class="well profile_view" style="min-height:170px;">
                         <a href="<?php echo base_url('admin/meal/groupMeals/' . $group['g_id']); ?>">
                             <div class="col-sm-12">
