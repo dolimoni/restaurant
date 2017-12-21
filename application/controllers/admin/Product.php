@@ -151,6 +151,11 @@ class Product extends BaseController {
             } else {
                 $data['product'] = $this->model_product->edit($product);
             }
+
+            //add stock history
+            $this->load->model('department/model_stock');
+            $products=array('products'=> $product);
+            $this->model_stock->addStockHistory($products,'in');
             $this->output
                 ->set_content_type("application/json")
                 ->set_output(json_encode(array('status' => 'success', 'redirect' => base_url('admin/product/index'))));

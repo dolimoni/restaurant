@@ -35,6 +35,20 @@ class model_stock extends CI_Model {
             }
 
         }
+        $this->addStockHistory($stock['productsList'],'out', $stock['department']);
+    }
+
+    public function addStockHistory($productsList,$type,$department=null){
+        foreach ($productsList as $product) {
+
+            $data = array(
+                'product' => $product['id'],
+                'quantity' => $product['quantity'],
+                'department' => $department,
+                'type' => $type,
+            );
+            $this->db->insert('stock_history', $data);
+        }
     }
     public function updateQuantity($product, $quantity, $direction = "down")
     {
@@ -59,6 +73,15 @@ class model_stock extends CI_Model {
         $this->db->where('product', $product['id']);
         $this->db->where('department', $product['department']);
         $this->db->update('stock_product', $data);
+    }
+
+    public function getProductsHistory(){
+        $this->db->select('sh.id,p.name,d.name as d_name,p.name as p_name,sh.type,sh.quantity,p.min_quantity,p.totalQuantity,Date(sh.created_at) as date');
+        $this->db->from('stock_history sh');
+        $this->db->join('product p','p.id=sh.product');
+        $this->db->join('department d','d.id=sh.department','left');
+        $result = $this->db->get();
+        return $result->result_array();
     }
 
 }

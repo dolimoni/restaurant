@@ -99,8 +99,9 @@
             <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
               <div class="menu_section">
                 <ul class="nav side-menu">
-                  <li><a href="<?= base_url('admin/dashboard/index'); ?>"><i class="fa fa-home"></i> Dashboard </a></li>
                   <?php if($this->session->userdata('type') == "admin" ) : ?>
+                      <li><a href="<?= base_url('admin/dashboard/index'); ?>"><i class="fa fa-home"></i> Dashboard </a>
+                      </li>
                   <li><a><i class="fa fa-shopping-cart"></i> Fournisseurs <span
                                   class="fa fa-chevron-down"></span></a>
                       <ul class="nav child_menu">
@@ -127,7 +128,8 @@
                       <li><a href="<?= base_url('admin/provider/index'); ?>">Liste des fournisseurs</a></li>
                     </ul>
                   </li>
-                  <li><a><i class="fa fa-shopping-cart"></i> Départements <span
+                  <li><a>
+                  <i class="fa fa-users"></i> Départements <span
                                   class="fa fa-chevron-down"></span></a>
                       <ul class="nav child_menu">
                           <li><a href="<?= base_url('admin/department'); ?>">Mes département</a></li>
@@ -165,32 +167,43 @@
                   </li>
 
                   <li><a href="<?= base_url('admin/Main/index'); ?>"><i class="fa fa-refresh"></i> Synchorinisation System </a></li>
-                  <!--<li><a href="<?/*= base_url('admin/Cron/index'); */?>"><i class="fa fa-refresh"></i> Synchronisation des produits </a></li>-->
 
-                   <!-- <li>
-                        <a><i class="fa fa-desktop"></i>Manufacturers &amp; Model <span class="fa fa-chevron-down"></span></a>
-
-                        <ul class="nav child_menu">
-                          <li><a href="<?php /*echo base_url() . 'admin/manufacturers';*/?>">Add Manufacturer</a></li>
-                          <li><a href="<?php /*echo base_url() . 'admin/car_model';*/?>">Add Model</a></li>
-                        </ul>
-                    </li>-->
                     <?php endif; ?>
-                  <li><!--<a><i class="fa fa-table"></i> Voitures <span class="fa fa-chevron-down"></span></a>
-                    <ul class="nav child_menu">
-                      <li><a href="<?/*= base_url('admin/vehicles/newCar'); */?>">Ajouter une voiture</a></li>
-                      <li><a>Mes modèles</a>
-                          <ul class="nav child_menu">
-                              <?php /*foreach ($manufacturers as $manufacturer) : */?>
-                                  <li>
-                                      <a href="<?/*= base_url('admin/vehicles'); */?>?manufacturer=<?php /*echo $manufacturer['id']; */?>"><?php /*echo $manufacturer['manufacturer_name']; */?> (5)</a>
-                                  </li>
-                              <?php /*endforeach; */?>
-                          </ul>
-                      </li>
-                      <li><a href="<?/*= base_url('admin/vehicles/soldlist'); */?>">Voitures louées</a></li>
-                    </ul>
-                  --></li>
+
+                    <?php if ($this->session->userdata('type') == "thrifty") : ?>
+
+                        <li>
+                            <a href="<?= base_url('admin/department/showProducts'); ?>"><i class="fa fa-home"></i>Mon stock</a>
+                        </li>
+                        <li>
+                            <a href="<?= base_url('admin/department/addProducts'); ?>"><i class="fa fa-arrow-circle-o-right"></i>Sortir des produits</a>
+                        </li><li>
+                            <a href="<?= base_url('admin/department/historyProducts'); ?>"><i class="fa fa-history"></i>Historique</a>
+                        </li>
+
+                    <?php endif; ?>
+
+
+                    <?php if ($this->session->userdata('type') == "department") : ?>
+
+                        <li>
+                            <a href="<?= base_url('admin/department/show'); ?>"><i class="fa fa-user"></i>Mon département</a>
+                        </li>
+
+                        <li>
+                            <a href="<?= base_url('admin/department/showDepartmentStock'); ?>"><i class="fa fa-coffee"></i>Stock des produits</a>
+                        </li>
+
+                        <li>
+                            <a href="<?= base_url('admin/department/meals'); ?>"><i
+                                        class="fa fa-file-text-o"></i>Mes fiches techniques</a>
+                        </li>
+
+                    <?php endif; ?>
+
+
+                  <li>
+                 </li>
                 </ul>
               </div>
             </div>

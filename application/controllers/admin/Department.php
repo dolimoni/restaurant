@@ -5,7 +5,7 @@ class Department extends BaseController {
 	public function __construct()
 	{
         parent::__construct();
-        if (!$this->session->userdata('isLogin') || ($this->session->userdata('type') != "admin")) {
+        if (!$this->session->userdata('isLogin')) {
             redirect('login');
         }
 
@@ -25,6 +25,10 @@ class Department extends BaseController {
 	public function show()
 	{
         $id = $this->uri->segment(4);
+        $department = $this->session->userdata('department');
+        if($department>0){
+            $id= $department;
+        }
         $data['department'] = $this->model_department->getDepartment($id);
         $data['magazins'] = $this->model_department->getMagazinsWithMeals($id);
         $data['meals'] = $this->model_meal->getAll();
@@ -33,12 +37,41 @@ class Department extends BaseController {
         $this->parser->parse('admin/department/view_department', $data);
 	}
 
+    public function showDepartmentStock()
+    {
+        $id= $this->session->userdata('department');
+        $data['products'] = $this->model_department->getProducts($id);
+        $data['params'] = $this->getParams();
+        $this->parser->parse('admin/department/view_showDepartmentProducts', $data);
+    }
+    public function meals()
+    {
+        $data['meals'] = $this->model_meal->getAll();
+        $data['params'] = $this->getParams();
+        $this->parser->parse('admin/department/view_meals', $data);
+    }
+
 	public function stockMeal()
 	{
         $department = $this->uri->segment(4);
         $data['meals'] = $this->model_meal->getAllMeals();
         $data['params'] = $this->getParams();
         $this->parser->parse('admin/department/view_stockMeal', $data);
+	}
+
+	public function showProducts()
+	{
+        $data['departments'] = $this->model_department->getAll();
+        $data['products'] = $this->model_product->getAll();
+        $data['params'] = $this->getParams();
+        $this->parser->parse('admin/department/view_showProducts', $data);
+	}
+	public function historyProducts()
+	{
+	    $this->load->model('department/model_stock');
+        $data['products'] = $this->model_stock->getProductsHistory();
+        $data['params'] = $this->getParams();
+        $this->parser->parse('admin/department/view_historyProducts', $data);
 	}
 
 	public function addProducts()

@@ -54,6 +54,10 @@ class model_util extends CI_Model {
         $this->model_db->troncate('employee');
         $this->model_db->troncate('employee_event');
         $this->model_db->troncate('orderdetails');
+        $this->model_db->troncate('stock_history');
+        $this->model_db->troncate('stock_meal');
+        $this->model_db->troncate('stock_product');
+        $this->model_db->troncate('magazin');
         $this->model_db->troncate('order');
 
 
@@ -61,6 +65,7 @@ class model_util extends CI_Model {
         $this->query($sql);
 
         $this->model_db->troncate('group');
+        $this->model_db->troncate('department');
 
         $sql = "SET FOREIGN_KEY_CHECKS = 1;";
         $this->query($sql);

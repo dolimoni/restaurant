@@ -21,19 +21,21 @@
         <div class="clearfix"></div>
         <hr>
         <div class="row">
-            <a class="col-md-2 btn btn-primary" data-toggle="collapse" href="#collapseExample" aria-expanded="false"
-               aria-controls="collapseExample">Ajouter un magazin</a>
-            <div class="col-md-4 collapse" id="collapseExample">
+            <div class="col-md-3 col-sm-3 col-xs-12">
+                <a class="btn btn-primary" data-toggle="collapse" href="#collapseExample" aria-expanded="false"
+                   aria-controls="collapseExample">Ajouter un magazin</a>
+            </div>
+            <div class="col-md-4 col-sm-6 col-xs-12 collapse" id="collapseExample">
                 <form id="addEmployeeForm" enctype="multipart/form-data">
                     <fieldset>
                         <div class="row">
-                            <div class="col-xs-12 col-sm-12 col-md-6">
+                            <div class="col-xs-8 col-sm-6 col-md-6">
                                 <input type="hidden" name="department" value="<?php  echo $department['id']; ?>"/>
                                 <input type="text" class="form-control" name="name"
                                        placeholder="Nom"
                                        required>
                             </div>
-                            <div class="col-sm-12 col-md-6">
+                            <div class="col-sm-6 col-md-6 col-xs-4">
                                 <input class="btn btn-success" type="submit" name="addEmployee" value="Confirmer"/>
                             </div>
                         </div>
@@ -41,7 +43,7 @@
                 </form>
                 <br>
             </div>
-            <div class="col-md-3 hidden">
+            <div class="col-md-2 col-sm-6 col-xs-12 hidden">
                 <button type="submit" class="btn btn-success" name="new"
                         onclick="window.location.href='<?php echo base_url('admin/department/stockMeal/' . $department['id']); ?>'">
                     <span></span> Ajouter des articles

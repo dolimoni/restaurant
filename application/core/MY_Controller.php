@@ -12,6 +12,7 @@ class BaseController extends CI_Controller
 
         $this->load->model('model_params');
         $this->params = $this->model_params->config(); // getting user configuration
+
     }
 
     /**
