@@ -35,7 +35,7 @@ class Main extends BaseController
 
         $data['params'] = $this->getParams();
 
-        $this->load->view('admin/uniwell/index');
+        $this->load->view('admin/uniwell/index',$data);
     }
 
     private function readSalesCSV($file_name){

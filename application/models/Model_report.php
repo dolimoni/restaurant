@@ -8,18 +8,6 @@ class model_report extends CI_Model
         //regular report: used in table in admin/report/index
         if (!$params) {
 
-            /*
-             *
-             * SELECT c.meal, (c.quantity*c.amount) as apres,(c.quantity*SUM(cp.unit_price*cp.quantity)) as avant FROM consumption c INNER JOIN consumption_product cp ON c.id = cp.consumption GROUP BY c.meal
-             */
-
-           /* $this->db->select('c.meal');
-            $this->db->select('c.quantity*c.amount as apres');
-            $this->db->select('c.quantity*SUM(cp.unit_price*cp.quantity) as avant');
-            $this->db->from('consumption c');
-            $this->db->join('consumption_product cp', 'c.id = cp.consumption');
-            $this->db->group_by('c.meal');*/
-
            //meal consumption
             $this->db->select('*');
             $this->db->select('sum(c.quantity) as s_quantity');
@@ -618,5 +606,42 @@ class model_report extends CI_Model
 
         $this->db->where('id', $id);
         return $this->db->update('report', $data);
+    }
+
+    public function pricesHistory($startDate, $endDate, $product){
+        $this->db->select('avg(q.unit_price)price,pv.name,Date(q.created_at) date');
+        $this->db->from('product p');
+        $this->db->join('quantity q', 'q.product = p.id');
+        $this->db->join('provider pv', 'pv.id = p.provider');
+        $this->db->where('p.status', 'active');
+        $this->db->where('p.name', $product);
+        $this->db->where('DATE(q.created_at) >=', $startDate);
+        $this->db->where('DATE(q.created_at) <=', $endDate);
+        $this->db->group_by('date,pv.name');
+        $this->db->order_by('date');
+        $prices = $this->db->get()->result_array();
+        $dates=array_column($prices,'date');
+        $data=array();
+        $lastPrice=array();
+        foreach ($dates as $key=> $date) {
+            $price=array(
+                'period'=>$date
+            );
+
+            foreach ($prices as $priceItem) {
+                if($priceItem['date']=== $date){
+                    $price[$priceItem['name']]= $priceItem['price'];
+                    $lastPrice[$priceItem['name']]=$priceItem['price'];
+                }else{
+                    if(isset($lastPrice[$priceItem['name']])){
+                        $price[$priceItem['name']] = $lastPrice[$priceItem['name']];
+                    }else{
+                        $price[$priceItem['name']] = 0;
+                    }
+                }
+            }
+            $data[] = $price;
+        }
+        return $data;
     }
 }

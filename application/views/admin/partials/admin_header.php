@@ -43,7 +43,7 @@
     <link href="<?php echo base_url("assets/build/css/custom.min.css"); ?>" rel="stylesheet">
     <link href="<?php echo base_url("assets/build2/css/custom.min.css"); ?>" rel="stylesheet">
 
-    <link href="<?php echo base_url("assets/css/mainStyle.css"); ?>" rel="stylesheet">
+    <link href="<?php echo base_url("assets/css/main.css"); ?>" rel="stylesheet">
       <style>
           #loading {
               width: 100%;
@@ -99,12 +99,13 @@
             <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
               <div class="menu_section">
                 <ul class="nav side-menu">
-                  <li><a href="<?= base_url('admin/dashboard/index'); ?>"><i class="fa fa-home"></i> Dashboard </a></li>
+                  <li><a href="<?= base_url('admin/report/statistic'); ?>"><i class="fa fa-home"></i> Dashboard </a></li>
                   <?php if($this->session->userdata('type') == "admin" ) : ?>
                   <li><a><i class="fa fa-shopping-cart"></i> Fournisseurs <span
                                   class="fa fa-chevron-down"></span></a>
                       <ul class="nav child_menu">
-                          <li><a href="<?= base_url('admin/provider/index'); ?>">Liste des fournisseurs</a></li>
+                          <li><a href="<?= base_url('admin/provider'); ?>">Liste des fournisseurs</a></li>
+                          <li><a href="<?= base_url('admin/provider/compare'); ?>">Comparaison</a></li>
                       </ul>
                   </li>
                   <li><a><i class="fa fa-coffee"></i> Gestion des produits <span class="fa fa-chevron-down"></span></a>

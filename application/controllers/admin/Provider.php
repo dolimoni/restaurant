@@ -159,6 +159,15 @@ class Provider extends BaseController
         $data['params'] = $this->getParams();
         $this->load->view('admin/provider/show', $data);
     }
+    public function compare()
+    {
+        $data['message'] = '';
+        $data['providers'] = $this->model_provider->getAll();
+        $data['products'] = $this->model_provider->getAllProducts();
+        $data['productsPrice'] = $this->model_provider->getBestProductsPrice();
+        $data['params'] = $this->getParams();
+        $this->load->view('admin/provider/compare_view', $data);
+    }
 
     //get quotation by its id
     public function apiGetQuotation()

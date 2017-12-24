@@ -48,6 +48,18 @@ class Report extends BaseController
             ->set_output(json_encode(array('status' => true,'articles'=>$articles)));
     }
 
+    public function apiPriceRange()
+    {
+        $startDate=$this->input->post('startDate');
+        $endDate=$this->input->post('endDate');
+        $product=$this->input->post('product');
+        $prices=$this->model_report->pricesHistory($startDate,$endDate,$product);
+        $providers=$this->model_product->getProviders($product);
+        $this->output
+            ->set_content_type("application/json")
+            ->set_output(json_encode(array('status' => 'success','prices'=> $prices,'providers'=> $providers)));
+    }
+
     public function view()
     {
         $meal_id = $this->uri->segment(4);

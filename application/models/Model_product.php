@@ -515,6 +515,14 @@ class model_product extends CI_Model {
         $this->db->update('product',$data);
     }
 
+    public function getProviders($productName){
+	    $this->db->select('pv.name');
+	    $this->db->from('provider pv');
+	    $this->db->join('product p','p.provider=pv.id');
+	    $this->db->where('p.name',$productName);
+	    return $this->db->get()->result_array();
+    }
+
 	public function defaultProduct(){
 	    $product=array('name'=>'produit1');
 	    return $product;
