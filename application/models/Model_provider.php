@@ -129,6 +129,23 @@ class model_provider extends CI_Model {
 		$result = $this->db->get();
 		return $result->result_array();
 	}
+
+	public function getBestProductsPrice()
+	{
+
+        $query="SELECT p.name,pv.name as provider,unit_price
+                from (
+                   select q.id,min(unit_price) as min_unit_price,p.name
+                   from quantity q inner join product p  on p.id=q.product where q.status='active' and provider>0 and p.status='active' group by p.name
+                ) as temp 
+                inner join quantity q 
+                inner join product p on p.id=q.product and p.name = temp.name and temp.min_unit_price=unit_price 
+                inner join provider pv on pv.id=p.provider
+                where q.status='active' and provider>0 and p.status='active'";
+
+        $dbResult = $this->db->query($query);
+        return $dbResult->result_array();
+	}
 	public function getAllActive()
 	{
         $this->db->where('status', "active");

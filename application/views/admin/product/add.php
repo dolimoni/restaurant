@@ -78,8 +78,7 @@
                                     </div>
                                     <div class="form-group">
                                         Consomation par jour : <input class="form-control" placeholder="Quantité"
-                                                                      name="daily_quantity"
-                                                                      type="number">
+                                                                      name="daily_quantity">
                                     </div>
                                     <br/>
                                     <!-- <input type="submit" name="buttonSubmit" value="Confirmer" class="btn btn-success" />
