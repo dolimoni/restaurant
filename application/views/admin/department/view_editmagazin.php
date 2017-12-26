@@ -251,12 +251,25 @@
                             //document.location.href = data.redirect;
                         }
                         else {
-                            /*$('#show_id').html("<div style='border:1px solid red;font-size: 11px;margin:0 auto !important;'>" + response.error + "</div>");*/
+                            swal({
+                                title: "Erreur",
+                                text: "Une erreur s'est produite",
+                                type: "error",
+                                timer: 1500,
+                                showConfirmButton: false
+                            });
                         }
 
                     },
                     error: function (data) {
                         $('#loading').hide();
+                        swal({
+                            title: "Erreur",
+                            text: "Une erreur s'est produite",
+                            type: "error",
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
                     }
                 });
             }else{

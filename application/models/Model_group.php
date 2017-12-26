@@ -6,7 +6,8 @@ class model_group extends CI_Model {
 	{
 		$data = array(
 			   'name' => $group['name'],
-			   'image' => $group['image']
+			   'image' => $group['image'],
+			   'department' => $group['department'],
         );
 		$this->db->insert('group', $data);
 	}

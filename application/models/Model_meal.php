@@ -254,6 +254,39 @@ class model_meal extends CI_Model {
         return $result->row_array();
     }
 
+    public function getByDepartment($department)
+    {
+
+        $this->db->select('*,meal.id as meal_id, meal.name as meal_name, g.name as g_name');
+        $this->db->from('meal');
+        $this->db->join('group g', 'g.id = meal.group');
+        $this->db->where('g.department', $department);
+        $this->db->order_by('meal_id', 'asc');
+        $meals = $this->db->get()->result_array();
+        //$products = $this->db->get('meal_product')->result_array();
+
+        $this->db->select('*,mp.quantity as mp_quantity,mp.unit as mp_unit');
+        $this->db->from('meal_product mp');
+        $this->db->join('product p', 'mp.product = p.id');
+        $this->db->join('quantity q', 'q.product = p.id');
+        $this->db->where('q.status', 'active');
+        $this->db->where('mp.status', 'current');
+
+        $products = $this->db->get()->result_array();
+
+        foreach ($meals as $key => $meal) {
+            $productsList = array();
+            foreach ($products as $product) {
+                if ($meal['meal_id'] === $product['meal']) {
+                    array_push($productsList, $product);
+                }
+            }
+            $meals[$key]['productsList'] = $productsList;
+        }
+        unset($meal);
+        return $meals;
+    }
+
     public function consumption($mealList,$lost=false){
         $this->load->model('model_product');
         $this->load->model('model_report');
@@ -407,6 +440,15 @@ class model_meal extends CI_Model {
 	public function getAllMeals()
 	{
         $meals = $this->db->get('meal')->result_array();
+		return $meals;
+	}
+	public function getAllMealsByDepartment($department)
+	{
+	    $this->db->select('m.*');
+	    $this->db->from('meal m');
+	    $this->db->join('group g','g.id=m.group');
+	    $this->db->where('g.department',$department);
+        $meals = $this->db->get()->result_array();
 		return $meals;
 	}
 

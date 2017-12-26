@@ -162,16 +162,19 @@ class Meal extends BaseController {
 	{
 
         if (!$this->input->post('groupName')) {
+            $this->load->model('department/model_department');
             $data['message'] = '';
             $data['groups'] = $this->model_group->getAll();
             $data['productsToOrder'] = $this->model_product->getToOrder();
+            $data['departments'] = $this->model_department->getAll();
             $data['params'] = $this->getParams();
             $this->parser->parse('admin/meal/view_group', $data);
         }else{
 
             $name = $this->input->post('groupName');
+            $department = $this->input->post('department');
             $image = $_FILES['image']['name'];
-            $group=array('name'=>$name,'image'=>$image);
+            $group=array('name'=>$name,'image'=>$image,'department'=> $department);
             $this->uploadFile();
             $this->model_group->add($group);
 
@@ -188,8 +191,9 @@ class Meal extends BaseController {
         try {
             $name = $this->input->post('groupNameEdit');
             $id = $this->input->post('id');
+            $department = $this->input->post('department');
             $image = $_FILES['image']['name'];
-            $group = array('name' => $name);
+            $group = array('name' => $name,'department'=>$department);
             if($image!==""){
                 $group['image']=$image;
                 $this->uploadFile();

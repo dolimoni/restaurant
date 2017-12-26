@@ -20,7 +20,7 @@
 
         <!-- page content -->
         <div class="right_col" role="main">
-            <!--<pre>
+           <!-- <pre>
                 <?php /*print_r($report); */?>
             </pre>-->
             <!-- top tiles -->
@@ -42,16 +42,19 @@
                   <!--  <span class="count_bottom"><i class="red"><i
                                 class="fa fa-sort-desc"></i>12% </i> From last Week</span>-->
                 </div>
-                <div class="col-md-2 col-sm-4 col-xs-12 tile_stats_count">
-                    <span class="count_top"><i class="fa fa-clock-o"></i> Quantitées vendu</span>
+                <div class="col-md-3 col-sm-4 col-xs-12 tile_stats_count">
+                    <span class="count_top"><i class="fa fa-clock-o"></i> Ventes</span>
+                    <?php if($params['department']==="false"){ ?>
                     <div class="count report_quantity"><?php echo number_format((float)$report['s_quantity'], 0, '.', ''); ?></div>
-                    <!--<span class="count_bottom"><i class="green"><i
-                                    class="fa fa-sort-asc"></i>3% </i> From last Week</span>-->
+                    <?php } else { ?>
+                    <div class="count report_quantity"><?php echo number_format((float)$report['s_quantity'], 0, '.', ''); ?>
+                        /<?php echo($report['prepared_quantity']); ?></div>
+                    <?php }?>
                 </div>
-                <div class="col-md-1 col-sm-4 col-xs-12 tile_stats_count">
-                    <span class="count_top">Produits</span>
-                    <div class="count report_products"><?php echo count($report['mealConsumptionRate']);?></div>
-                </div>
+               <!-- <div class="col-md-1 col-sm-4 col-xs-12 tile_stats_count">
+                    <span class="count_top">Préparations</span>
+                    <div class="count report_products"></div>
+                </div>-->
 
                 <!--<div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
                     <span class="count_top"><i class="fa fa-user"></i> Total Connections</span>
@@ -629,7 +632,7 @@
                         'cost': parseFloat(cost).toFixed(2),
                         'profit': parseFloat(data.evolution[0]['amount'] * data.evolution[0]['s_quantity'] - data.evolution[0]['s_cost']).toFixed(2),
                         'quantity': parseInt(data.evolution[0]['s_quantity']),
-                        'products': productsCount,// mealConsumptionRateRange contains products and other variabls
+                        'prepared': parseInt(data.evolution[0]['prepared_quantity']),//productsCount,// mealConsumptionRateRange contains products and other variabls
                     };
                     changeReportData(reportData);
                 }
@@ -646,8 +649,14 @@
         $('.report_amount').html(data['amount']+'DH');
         $('.report_cost').html(data['cost']+'DH');
         $('.report_profit').html(data['profit']+'DH');
+
+        <?php if($params['department'] === "false"){ ?>
         $('.report_quantity').html(data['quantity']);
-        $('.report_products').html(data['products']);
+        <?php }else { ?>
+        $('.report_quantity').html(data['quantity'] + '/' + data['prepared']);
+        <?php } ?>
+
+        //$('.report_products').html(data['prepared']);
     }
     var optionSet1 = {
         startDate: moment().subtract(29, 'days'),

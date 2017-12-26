@@ -33,7 +33,7 @@ class Department extends BaseController {
         $data['department'] = $this->model_department->getDepartment($id);
         $data['magazins'] = $this->model_department->getMagazinsWithMeals($id);
         $data['readyMeals'] = $this->model_department->getReadyMeals($id);
-        $data['meals'] = $this->model_meal->getAll();
+        $data['meals'] = $this->model_meal->getByDepartment($id);
         $data['products'] = $this->model_department->getProducts($id);
         $data['params'] = $this->getParams();
         $this->parser->parse('admin/department/view_department', $data);
@@ -56,7 +56,7 @@ class Department extends BaseController {
 	public function stockMeal()
 	{
         $department = $this->uri->segment(4);
-        $data['meals'] = $this->model_meal->getAllMeals();
+        $data['meals'] = $this->model_meal->getAllMealsByDepartment($department);
         if($this->department!=="0"){
             $department= $this->department;
         }
@@ -127,7 +127,7 @@ class Department extends BaseController {
 
             $this->output
                 ->set_content_type("application/json")
-                ->set_output(json_encode(array('status' => 'success')));
+                ->set_output(json_encode(array('status' => 'success', 'redirect' => base_url('admin/department/show/' . $department))));
         } catch (Exception $e) {
             $this->output
                 ->set_content_type("application/json")
@@ -140,7 +140,7 @@ class Department extends BaseController {
         $department = $this->uri->segment(4);
         $magazin = $this->uri->segment(5);
         $data['magazin'] = $this->model_department->getMagazinWithMeals($department,$magazin);
-        $data['meals'] = $this->model_meal->getAllMeals($department,$magazin);
+        $data['meals'] = $this->model_meal->getAllMealsByDepartment($department);
         $data['params'] = $this->getParams();
         $this->parser->parse('admin/department/view_editMagazin', $data);
 	}

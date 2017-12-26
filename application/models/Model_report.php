@@ -13,6 +13,7 @@ class model_report extends CI_Model
             $this->db->select('sum(c.quantity) as s_quantity');
             $this->db->select('sum(c.quantity)*c.amount as s_amount');
             $this->db->select('sum(c.quantity)*profit as s_profit');
+            $this->db->select('sum(c.prepared_quantity) as prepared_quantity');
             $this->db->from('meal m');
             $this->db->where('c.type', 'sale');
             $this->db->join('consumption c', 'm.id = c.meal');
@@ -179,6 +180,7 @@ class model_report extends CI_Model
         $this->db->select('*');
         $this->db->select('sum(c.quantity) as s_quantity');
         $this->db->select('COUNT(DISTINCT DATE_FORMAT(c.createdAt, \'%Y-%m-%d\')) as days');
+        $this->db->select('sum(c.prepared_quantity) as prepared_quantity');
         $this->db->from('meal m');
         $this->db->join('consumption c', 'm.id = c.meal');
         $this->db->where('m.id', $meal_id);

@@ -3,7 +3,7 @@
 class model_stock extends CI_Model {
 
     public function getProductById($product){
-        $this->db->where('product',$product['id']);
+        $this->db->where('product',$product['product']);
         $this->db->where('department',$product['department']);
         $result = $this->db->get('stock_product');
         return $result->row_array();
@@ -70,7 +70,7 @@ class model_stock extends CI_Model {
             'quantity' => $l_quantity,
         );
 
-        $this->db->where('product', $product['id']);
+        $this->db->where('product', $product['product']);
         $this->db->where('department', $product['department']);
         $this->db->update('stock_product', $data);
     }

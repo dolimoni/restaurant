@@ -1,4 +1,13 @@
 <?php $this->load->view('admin/partials/admin_header.php'); ?>
+
+<style>
+    .fullWidth{
+        width:100%;
+    }
+    input.fullWidth{
+        margin:15px 0px;
+    }
+</style>
 <!-- page content -->
 <div class="right_col" role="main">
     <div class="productsList">
@@ -29,8 +38,7 @@
 
 
                             <div class="col-md-6 col-sm-12 col-xs-12">
-                                <select name="product" data-name="meal" class="productSelectNew md-button-v"
-                                        style="max-width:150px;">
+                                <select name="product" data-name="meal" class="productSelectNew md-button-v fullWidth">
                                     <?php foreach ($meals as $meal) { ?>
                                         <option value="<?php echo $meal['id']; ?>"
                                         ><?php echo $meal['name']; ?></option>
@@ -38,8 +46,7 @@
                                 </select>
                             </div>
                             <div class="col-md-6 col-sm-12 col-xs-12">
-                                <select name="product" data-name="magazin" class="productSelectNew md-button-v"
-                                        style="max-width:150px;">
+                                <select name="product" data-name="magazin" class="productSelectNew md-button-v fullWidth">
                                     <option value="0">Aucun</option>
                                     <?php foreach ($magazins as $magazin) { ?>
                                         <option value="<?php echo $magazin['id']; ?>"
@@ -49,12 +56,12 @@
                             </div>
 
                             <div class="col-md-6 col-sm-12 col-xs-12">
-                                <input class="form-inline md-button-v"
+                                <input class="form-inline md-button-v fullWidth"
                                        placeholder="Vente" name="quantityToSale"
                                        type="text">
                             </div>
                             <div class="col-md-6 col-sm-12 col-xs-12">
-                                <input class="form-inline md-button-v"
+                                <input class="form-inline md-button-v fullWidth"
                                        placeholder="Stock" name="quantityInMagazin"
                                        type="text">
                             </div>
@@ -82,14 +89,14 @@
 
 
                         <div class="col-md-6 col-sm-12 col-xs-12">
-                            <select name="product" data-name="meal" class="productSelectNew md-button-v" style="max-width:150px;">
+                            <select name="product" data-name="meal" class="productSelectNew md-button-v fullWidth">
                                 <?php foreach ($meals as $meal) { ?>
                                     <option value="<?php echo $meal['id']; ?>"
                                     ><?php echo $meal['name']; ?></option>
                                 <?php } ?>
                             </select>
                         </div><div class="col-md-6 col-sm-12 col-xs-12">
-                            <select name="product" data-name="magazin" class="productSelectNew md-button-v" style="max-width:150px;">
+                            <select name="product" data-name="magazin" class="productSelectNew md-button-v fullWidth">
                                 <option value="0">Aucun</option>
                                 <?php foreach ($magazins as $magazin) { ?>
                                     <option value="<?php echo $magazin['id']; ?>"
@@ -99,11 +106,11 @@
                         </div>
 
                         <div class="col-md-6 col-sm-12 col-xs-12">
-                           <input class="form-inline md-button-v"
+                           <input class="form-inline md-button-v fullWidth"
                                                                              placeholder="Vente" name="quantityToSale"
                                                                              type="text">
                         </div><div class="col-md-6 col-sm-12 col-xs-12">
-                           <input class="form-inline md-button-v"
+                           <input class="form-inline md-button-v fullWidth"
                                                                              placeholder="Stock" name="quantityInMagazin"
                                                                              type="text">
                         </div>
@@ -135,8 +142,7 @@
         var gainRate = 1;
         var group = 0;
         var productsCount =1;
-
-
+        updateOptions(false);
         $('input[name="buttonSubmit"]').on('click', function () {
             $('#loading').show();
             var mealsList = [];
@@ -179,15 +185,29 @@
                                 timer: 1500,
                                 showConfirmButton: false
                             });
+
                             document.location.href = data.redirect;
                         }
                         else {
-                            /*$('#show_id').html("<div style='border:1px solid red;font-size: 11px;margin:0 auto !important;'>" + response.error + "</div>");*/
+                            swal({
+                                title: "Erreur",
+                                text: "Une erreur s'est produite",
+                                type: "error",
+                                timer: 1500,
+                                showConfirmButton: false
+                            });
                         }
 
                     },
                     error: function (data) {
                         $('#loading').hide();
+                        swal({
+                            title: "Erreur",
+                            text: "Une erreur s'est produite",
+                            type: "error",
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
                     }
                 });
             }
@@ -205,6 +225,42 @@
             productModel.attr('data-id', productsCount);
             $('.mealComposition').append(productModel);
             $('.productsCount').html(productsCount);
+            updateOptions(true);
+        }
+
+        function updateOptions(newProduct) {
+
+            var selectedProducts = [];
+            for (var i = 1; i <= productsCount; i++) {
+                var row = $('.product[data-id=' + i + ']');
+                var l_panel = row.closest('.product');
+                var optionValue = l_panel.find('select[name="product"] option:selected').val();
+                var unit = l_panel.find('select[name="product"] option:selected').attr('data-unit');
+                var price = l_panel.find('select[name="product"] option:selected').attr('data-price');
+                var option = {
+                    'unit': unit,
+                    'price': price,
+                    'value': optionValue,
+                }
+                selectedProducts.push(option);
+            }
+            for (var i = 1; i <= productsCount; i++) {
+                var row = $('.product[data-id=' + i + ']');
+                var l_panel = row.closest('.product');
+                l_panel.find('select[name="product"] option').removeAttr('hidden');
+                for (var j = 0; j < selectedProducts.length; j++) {
+                    var val = selectedProducts[j]['value'];
+                    var actualVal = l_panel.find('select[name="product"] option:selected').val();
+                    console.log(selectedProducts.length);
+                    console.log(j + 1);
+                    if (productsCount === i && newProduct) {
+                        l_panel.find('select[name="product"] option[value=' + val + ']').attr('hidden', 'hidden');
+                        l_panel.find('select[name="product"] option').not('[hidden]').first().attr('selected', 'selected');
+                    } else {
+                        l_panel.find('select[name="product"] option[value=' + val + ']').attr('hidden', 'hidden');
+                    }
+                }
+            }
         }
 
     });

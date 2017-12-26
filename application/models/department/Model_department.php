@@ -57,12 +57,13 @@ class model_department extends CI_Model {
     public function mealsPrepared($mealsList,$department)
     {
         $this->createDefaultMagazin($department);
-        foreach ($mealsList as $meal) {
+        foreach ($mealsList as $key=> $meal) {
             $this->db->where('meal', $meal['meal']);
             $this->db->where('department', $department);
             $this->db->where('magazin', $meal['magazin']);
             $this->db->where('Date(created_at)', date('Y-m-d'));
             $db_meal = $this->db->get('stock_meal')->row_array();
+
             if ($db_meal) {
                 $dataMeal = array(
                     'quantityInMagazin' => $db_meal['quantityInMagazin']+$meal['quantityInMagazin'],
@@ -84,8 +85,12 @@ class model_department extends CI_Model {
             }
             //Update stock only
             $meal['id']= $meal['meal'];
+            $mealsList[$key]['id']= $meal['meal'];
             $this->consumption($meal, $meal['quantityInMagazin'] + $meal['quantityToSale'], $department);
         }
+
+        //Normal procedure
+        $this->consumptionMeal($mealsList);
     }
     public function createDefaultMagazin($department){
         $this->db->where('name','default');
@@ -133,6 +138,8 @@ class model_department extends CI_Model {
         $this->db->join('meal m','m.id=sm.meal');
         $this->db->where('department', $department);
         $this->db->where('type', 'magazin');
+        $this->db->where('quantityInMagazin>',0 );
+        $this->db->where('Date(sm.created_at)', Date('Y-m-d'));
 
         $mealsInMagazin = $this->db->get()->result_array();
 
@@ -152,6 +159,8 @@ class model_department extends CI_Model {
 
     //getting meal in stock for spécific magazin
     public function getMagazinWithMeals($department,$magazin){
+
+        $this->updateLastStockQuantity($department, $magazin);
         $this->db->select('');
         $this->db->from('magazin');
         $this->db->where('department', $department);
@@ -165,12 +174,45 @@ class model_department extends CI_Model {
         $this->db->where('department', $department);
         $this->db->where('magazin', $magazin);
         $this->db->where('type', 'magazin');
+        $this->db->where('quantityInMagazin>', 0);
+        $this->db->where('Date(sm.created_at)', Date('Y-m-d'));
 
         $mealsInMagazin = $this->db->get()->result_array();
 
         $magazinData['mealsList']= $mealsInMagazin;
 
         return $magazinData;
+    }
+
+    public function updateLastStockQuantity($department, $magazin){
+        $this->db->select('*');
+        $this->db->select('sum(quantityInMagazin) as lastStockQuantity');
+        $this->db->from('stock_meal');
+        $this->db->where('department', $department);
+        $this->db->where('magazin', $magazin);
+        $this->db->where('Date(created_at)<', Date('Y-m-d'));
+        $stocks=$this->db->get()->result_array();
+
+        $this->db->select('id');
+        $this->db->from('stock_meal');
+        $this->db->where('department', $department);
+        $this->db->where('magazin', $magazin);
+        $this->db->where('Date(created_at)', Date('Y-m-d'));
+        $todayStock = $this->db->get()->result_array();
+        if(!$todayStock){
+            foreach ($stocks as $stock) {
+                $data = array(
+                    'meal' => $stock['meal'],
+                    'department' => $department,
+                    'magazin' => $magazin,
+                    'quantityInMagazin' => $stock['lastStockQuantity'],
+                    'quantityToSale' => 0,
+                    'lastStockQuantity' => $stock['lastStockQuantity'],
+                );
+                $this->db->insert('stock_meal', $data);
+            }
+
+        }
     }
 
 
@@ -224,8 +266,18 @@ class model_department extends CI_Model {
                 }*/
 
                 /*******************New conception***************************/
-                $quantityInMagazin = $meal['quantityInMagazin'] - $mealItem['quantityToSale'];
-                $quantityToSale = $meal['quantityToSale'] + $mealItem['quantityToSale'];
+                //if($meal['quantityInMagazin']>0) : l'article est affiché dans le magzin
+                // la quantité mise en vente sera retranché de la quantité en stock
+
+                // if not: l'article n'est pas affiché ds le magazin, c'est comme si on va créer un article ds le magazin
+                // on va recevoir la quantité de stock, et la quantité mise pour la vente
+                if($meal['quantityInMagazin']>0){
+                    $quantityInMagazin = $meal['quantityInMagazin'] - $mealItem['quantityToSale'];
+                    $quantityToSale = $meal['quantityToSale'] + $mealItem['quantityToSale'];
+                }else{
+                    $quantityInMagazin = $mealItem['quantityInMagazin'];
+                    $quantityToSale = $meal['quantityToSale'] + $mealItem['quantityToSale'];
+                }
                 /************************************************************/
 
                 unset($mealItem['magazinQuantityType']);
@@ -239,6 +291,17 @@ class model_department extends CI_Model {
                 $this->db->where('magazin', $magazin['id']);
                 $mealItem2= $mealItem;
                 unset($mealItem['id']);
+                // delete meal from magazin if quantity is 0
+                if ($quantityInMagazin > 0) {
+                   /* $this->db->where('Date(created_at)', Date('Y-m-d'));
+                    $this->db->update('stock_meal', $mealItem);*/
+                } else {
+                    /*$this->db->where('meal', $mealItem2['id']);
+                    $this->db->where('department', $magazin['department']);
+                    $this->db->where('magazin', $magazin['id']);
+                    $this->db->delete('stock_meal');*/
+                }
+                $this->db->where('Date(created_at)', Date('Y-m-d'));
                 $this->db->update('stock_meal', $mealItem);
 
             } else {
