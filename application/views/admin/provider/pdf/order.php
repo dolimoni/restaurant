@@ -70,8 +70,7 @@
 
 <body style="background: none; width: 80%; margin: auto;color:#768399;">
 <div class="container body">
-
-    <!-- page content -->
+  <!-- page content -->
     <div role="main">
         <div class="">
             <div class="page-title">
@@ -95,7 +94,7 @@
                             <div>Nom : <span><?php echo $order['provider']['firstName'] . ' ' . $order['provider']['lastName']; ?></span></div>
                             <div>Entreprise : <span>-</span></div>
                             <div>Adresse : <span><?php echo $order['provider']['address'];?></span></div>
-                            <div>Téléphone : <span><?php echo $order['provider']['phone'];?></span></div>
+                            <div>Téléphone : <span>"<?php echo $order['provider']['phone'];?>"</span></div>
                         </div>
                         <div style="margin-top: -80px;margin-left: 500px;" >
                             <div>Nom : <span>Ruban d'or</span></div>
@@ -142,7 +141,7 @@
                         </tr>
                         <tr>
                             <td colspan="4" class="text-right">TVA</td>
-                            <td ><?php echo $order['tva']*100; ?>%</td>
+                            <td ><?php echo $order['tva']; ?>%</td>
                         </tr>
                         <tr>
                             <td colspan="4" class="text-right">FRAIS LIVRAISON</td>
@@ -154,7 +153,7 @@
                         </tr>
                         <tr>
                             <td colspan="4" class="text-right">TOTAL</td>
-                            <td ><?php echo $order['underTotal']*(1+$order['tva']); ?>DH</td>
+                            <td ><?php echo $order['underTotal']*(1+ $order['tva']/100); ?>DH</td>
                         </tr>
                         </tbody>
                     </table>

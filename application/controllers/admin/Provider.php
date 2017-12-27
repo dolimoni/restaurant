@@ -99,6 +99,7 @@ class Provider extends BaseController
                 $address = $this->input->post('address');
                 $phone = $this->input->post('phone');
                 $mail = $this->input->post('mail');
+                $tva = $this->input->post('tva');
                 if ($_FILES['image']['name']) {
                     $image = $_FILES['image']['name'];
                     $file_name = $this->uploadFile();
@@ -110,7 +111,7 @@ class Provider extends BaseController
                 } else {
                     $image = "profile-default-male.png";
                 }
-                $provider = array('title' => $title, 'name' => $name, 'prenom' => $prenom, 'address' => $address, 'phone' => $phone, 'mail' => $mail, 'image' => $image);
+                $provider = array('title' => $title, 'name' => $name, 'prenom' => $prenom, 'address' => $address, 'phone' => $phone,'tva'=>$tva, 'mail' => $mail, 'image' => $image);
                 $this->model_provider->add($provider);
                 $this->output
                     ->set_content_type("application/json")
@@ -397,7 +398,9 @@ class Provider extends BaseController
     {
         try {
             $provider = $this->input->post('provider');
-            $this->model_provider->update($provider);
+            $id= $provider['id'];
+            unset($provider['id']);
+            $this->model_provider->update($id,$provider);
             $this->output
                 ->set_content_type("application/json")
                 ->set_output(json_encode(array('status' => 'success')));
@@ -407,6 +410,37 @@ class Provider extends BaseController
                 ->set_output(json_encode(array('status' => 'error')));
         }
     }
+
+    public function apiEditMainProvider()
+    {
+        try {
+            $name = $this->input->post('name');
+            $title = $this->input->post('title');
+            $prenom = $this->input->post('prenom');
+            $address = $this->input->post('address');
+            $phone = $this->input->post('phone');
+            $mail = $this->input->post('mail');
+            $tva = $this->input->post('tva');
+            $id = $this->input->post('id');
+            $image = $_FILES['image']['name'];
+            $provider = array('title'=>$title,'name' => $name,"prenom"=>$prenom,"address"=>$address,"phone"=>$phone,"mail"=>$mail,"tva"=>$tva);
+            if ($image !== "") {
+                $provider['image'] = $image;
+                $this->uploadFile();
+            }
+
+            $this->model_provider->update($id,$provider);
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'success')));
+        } catch (Exception $e) {
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'error')));
+        }
+    }
+
+
 
     public function apiDeleteProvider()
     {
