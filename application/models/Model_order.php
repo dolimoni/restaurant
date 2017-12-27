@@ -31,7 +31,7 @@ class model_order extends CI_Model {
         $data = array(
             'provider' => $order['provider']['id'],
             'tva' => $order['tva'],
-            'ttc' => $order['underTotal']*(1+$order['tva']),
+            'ttc' => $order['underTotal']*(1+$order['tva']/100),
         );
 
         $this->db->insert('order', $data);
@@ -53,20 +53,35 @@ class model_order extends CI_Model {
         $data = array(
             'status' => $order['status'],
             'tva' => $order['tva'],
-            'ttc' => $order['underTotal'] * (1 + $order['tva']),
+            'ttc' => $order['underTotal'] * (1 + $order['tva']/100),
         );
 
         $this->db->where("id",$order['id']);
         $this->db->update("order",$data);
         if(isset($order['productsList'])){
             foreach ($order['productsList'] as $product) {
-                $data = array(
-                    'quantity' => $product['quantity'],
-                    'od_price' => $product['unit_price'],
-                );
                 $this->db->where('order_id', $order['id']);
                 $this->db->where('product', $product['id']);
-                $this->db->update('orderdetails', $data);
+                $r = $this->db->get('orderdetails');
+
+                if ($r->num_rows() > 0) {
+                    $data = array(
+                        'quantity' => $product['quantity'],
+                        'od_price' => $product['unit_price'],
+                    );
+                    $this->db->where('order_id', $order['id']);
+                    $this->db->where('product', $product['id']);
+                    $this->db->update('orderdetails', $data);
+
+                } else {
+                    $data = array(
+                        'quantity' => $product['quantity'],
+                        'od_price' => $product['unit_price'],
+                        'product' => $product['id'],
+                        'order_id' => $order['id']
+                    );
+                    $this->db->insert('orderdetails', $data);
+                }
             }
             $data = array(
                 'quantity' => 0,

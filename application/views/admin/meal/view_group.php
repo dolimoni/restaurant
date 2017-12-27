@@ -289,7 +289,7 @@
         // This is a functions that scrolls to #{blah}link
         function scroll(id) {
             // Scroll
-            $('html,body').animate({scrollTop: $("#" + id).offset().top},'slow');
+            $('html,body').animate({scrollTop: $("#" + id).offset().top}, 'slow');
         }
 
     });

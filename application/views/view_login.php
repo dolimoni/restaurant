@@ -10,7 +10,7 @@
 </head>
 
 <body>
-<img class="logo" src="<?php echo base_url('assets/images/logo_md.png'); ?>"/>
+<!--<img class="logo" src="<?php /*echo base_url('assets/images/logo_md.png'); */?>"/>-->
     <div id="parent">
         <div class="loginPage form_login">
             <header>

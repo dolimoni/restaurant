@@ -34,6 +34,7 @@ class model_provider extends CI_Model {
                'address' => $provider['address'],
                'phone' => $provider['phone'],
                'mail' => $provider['mail'],
+               'tva' => $provider['tva'],
                'image' => $provider['image'],
             );
 		$this->db->insert('provider', $data);
@@ -187,19 +188,10 @@ class model_provider extends CI_Model {
 		return $result->result_array();
 	}
 	
-	public function update($provider)
+	public function update($id,$provider)
 	{
-		$data = array(
-			'title' => $provider['title'],
-			'name' => $provider['name'],
-			'prenom' => $provider['prenom'],
-			'address' => $provider['address'],
-			'mail' => $provider['mail'],
-			'phone' => $provider['phone']
-        );
-
-		$this->db->where('id', $provider['id']);
-		$this->db->update('provider', $data);
+		$this->db->where('id', $id);
+		$this->db->update('provider', $provider);
 	}
 
 

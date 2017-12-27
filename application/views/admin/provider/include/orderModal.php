@@ -33,12 +33,11 @@
 
                         </div>
                         <?php } ?>
-                        <hr/>
 
                     </div>
                 </form>
 
-                <div class="col-sm-12">
+                <div class="col-sm-12 col-md-offset-3">
                     <button type="button" class="selected"
                             id="price" placeholder="Oui" style="width: 250px;" data-toggle="collapse"
                             href="#email" aria-expanded="false" aria-controls="email">Envoyer la commande

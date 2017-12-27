@@ -5,6 +5,9 @@
 <div class="right_col" role="main">
     <div class="productsList">
         <div class="page-title">
+            <!--<pre>
+                <?php /*print_r($productsToOrder); */?>
+            </pre>-->
             <div class="title_left">
                 <h3>Profile du fournisseur</h3>
             </div>
@@ -57,15 +60,18 @@
                                 </li>
 
                                 <li class="provider-title">
-                                    <i class="fa fa-briefcase user-profile-icon"> <?php echo $provider['title']; ?></i>
+                                    <i class="fa fa-briefcase user-profile-icon"><?php echo $provider['title']; ?></i>
                                 </li>
 
                                 <li>
-                                    <i class="fa fa-phone provider-phone"> <?php echo $provider['phone']; ?></i>
+                                    <i class="fa fa-phone provider-phone"><?php echo $provider['phone']; ?></i>
                                 </li>
 
                                 <li >
-                                    <i class="fa fa-envelope user-profile-icon provider-mail"> <?php echo $provider['mail']; ?></i>
+                                    <i class="fa fa-envelope user-profile-icon provider-mail"><?php echo $provider['mail']; ?></i>
+                                </li>
+                                <li hidden>
+                                    <i class="fa fa-envelope user-profile-icon provider-tva" data-tva="<?php echo $provider['tva']; ?>"> <?php echo $provider['tva']; ?></i>
                                 </li>
                             </ul>
 
@@ -204,7 +210,7 @@
                                                 <th>#</th>
                                                 <th>Produit</th>
                                                 <th class="hidden-phone">Prix</th>
-                                                <th >Actions</th>
+                                                <!--<th >Actions</th>-->
                                             </tr>
                                             </thead>
                                             <tfoot>
@@ -212,7 +218,7 @@
                                                 <th>#</th>
                                                 <th>Produit</th>
                                                 <th>Prix</th>
-                                                <th>Action</th>
+                                                <!--<th>Action</th>-->
                                             </tr>
                                             </tfoot>
                                             <tbody>
@@ -221,24 +227,24 @@
                                                     <td> <?php echo $product['id']; ?></td>
                                                     <td> <?php echo $product['name']; ?></td>
                                                     <td> <?php echo $product['unit_price']; ?></td>
-                                                    <td class="vertical-align-mid">
+                                                    <!--<td class="vertical-align-mid">
                                                         <a class="btn btn-primary btn-xs editProductsModal"
                                                            data-toggle="modal"
                                                            data-target="#editProductsModal"
-                                                           data-id="<?php echo $product['id']; ?>">Modifier</a>
-                                                        <!--<a data-id="<?php /*echo $product['id']; */?>"
-                                                           class="btn btn-danger btn-xs deleteProduct">Supprimer</a>-->
-                                                    </td>
+                                                           data-id="<?php /*echo $product['id']; */?>">Modifier</a>
+                                                        <a data-id="<?php /*echo $product['id']; */?>"
+                                                           class="btn btn-danger btn-xs deleteProduct">Supprimer</a>
+                                                    </td>-->
                                                 </tr>
                                             <?php } ?>
                                             </tbody>
                                         </table>
-                                        <div>
+                                       <!-- <div>
                                             <br/>
                                             <input type="button" class="btn btn-info" value="Nouveau"
                                                    data-toggle="modal"
                                                    data-target="#addProductsModal"/>
-                                         </div>
+                                         </div>-->
                                         <?php include('include/addProductsModal.php'); ?>
                                         <?php include('include/editProductsModal.php'); ?>
                                    </div>
@@ -254,6 +260,7 @@
                                             <tr>
                                                 <th>#</th>
                                                 <th>Produit</th>
+                                                <th>Quantité minimum</th>
                                                 <th class="hidden-phone">Prix</th>
                                                 <!--<th>Actions</th>-->
                                             </tr>
@@ -263,6 +270,7 @@
                                                 <tr>
                                                     <td><?php echo $productToOrder['id']; ?></td>
                                                     <td><?php echo $productToOrder['name']; ?></td>
+                                                    <td><?php echo $productToOrder['min_quantity']- $productToOrder['quantity']; ?></td>
                                                     <td><?php echo $productToOrder['unit_price']; ?></td>
                                                     <!--<td class="vertical-align-mid">
                                                         <a class="btn btn-primary btn-xs editQuotation"
@@ -807,7 +815,7 @@
                      'id': $('#provider_id').attr('data-id')
                 },
                 'underTotal': underTotal,
-                'tva': 0.2,
+                'tva': $('.provider-tva').attr('data-tva'),
                 'shipping': '-',
                 'other': '-',
                 'email':email
@@ -823,7 +831,9 @@
                         $('#loading').hide();
                         console.log('ok');
                         window.open("<?=base_url()?>" + data.filepath);
-                        location.reload();
+                        if(event.data.url!=="admin/provider/apiPrintOrder"){
+                            //location.reload();
+                        }
                     }
                     else {
                         $('#loading').hide();
@@ -886,7 +896,7 @@
                      'id': $('#provider_id').attr('data-id')
                 },
                 'underTotal': underTotal,
-                'tva': 0.2,
+                'tva': $('.provider-tva').attr('data-tva'),
                 'shipping': '-',
                 'other': '-',
                 'status':status,
@@ -906,7 +916,9 @@
                        /* if(data.filepath);
                         window.open("<?=base_url()?>" + data.filepath);*/
                         $(".orderActualStatus").attr("data-status", data.orderStatus    );
-                        location.reload();
+                        if (event.data.url !== "admin/provider/apiPrintOrder") {
+                            //location.reload();
+                        }
                     }
                     else {
                         $('#loading').hide();
@@ -942,6 +954,18 @@
 
             }
 
+        var emailContent = "";
+        var send = false;
+        if ($('#editor-productsToOrder').html() !== "") {
+            emailContent = $('#editor-productsToOrder').html();
+            send = true;
+        }
+        var email = {
+            'send': send,
+            'content': emailContent,
+            'to': $('.provider-mail').text()
+        }
+
             var order = {
                 'productsList': productsList,
                 'provider': {
@@ -953,9 +977,10 @@
                      'id': $('#provider_id').attr('data-id')
                 },
                 'underTotal': underTotal,
-                'tva': 0.2,
+                'tva': $('.provider-tva').attr('data-tva'),
                 'shipping': '-',
-                'other': '-'
+                'other': '-',
+                'email': email
             };
 
 
