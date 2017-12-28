@@ -209,7 +209,9 @@ class model_department extends CI_Model {
                     'quantityToSale' => 0,
                     'lastStockQuantity' => $stock['lastStockQuantity'],
                 );
-                $this->db->insert('stock_meal', $data);
+                if($stock['meal']){
+                    $this->db->insert('stock_meal', $data);
+                }
             }
 
         }
