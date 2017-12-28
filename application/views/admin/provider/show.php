@@ -20,12 +20,12 @@
                 <div class="x_panel">
                     <div class="x_title">
                         <h2>Rapport du fournisseur
-                            <small>Activity report</small>
+                            <small>Rapport des activités</small>
                         </h2>
                         <ul class="nav navbar-right panel_toolbox">
                             <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
                             </li>
-                            <li class="dropdown">
+                            <!--<li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
                                    aria-expanded="false"><i class="fa fa-wrench"></i></a>
                                 <ul class="dropdown-menu" role="menu">
@@ -34,7 +34,7 @@
                                     <li><a href="#">Settings 2</a>
                                     </li>
                                 </ul>
-                            </li>
+                            </li>-->
                             <li><a class="close-link"><i class="fa fa-close"></i></a>
                             </li>
                         </ul>
@@ -131,7 +131,7 @@
                                             <ul class="nav navbar-right panel_toolbox">
                                                 <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
                                                 </li>
-                                                <li class="dropdown">
+                                                <!--<li class="dropdown">
                                                     <a href="#" class="dropdown-toggle" data-toggle="dropdown"
                                                        role="button"
                                                        aria-expanded="false"><i class="fa fa-wrench"></i></a>
@@ -141,7 +141,7 @@
                                                         <li><a href="#">Settings 2</a>
                                                         </li>
                                                     </ul>
-                                                </li>
+                                                </li>-->
                                                 <li><a class="close-link"><i class="fa fa-close"></i></a>
                                                 </li>
                                             </ul>
@@ -543,9 +543,15 @@
 
 
 <script>
+    window.close();
 
     var productsCount=1;
     var productsQuotationCount=1;
+
+    var url = document.location.toString();
+    if (url.match('#')) {
+        $('.nav-tabs a[href="#' + url.split('#')[1] + '"]').tab('show');
+    }
 
     function addForm(){
         productsCount++;
@@ -725,15 +731,19 @@
             data: {'id': $(this).attr('data-id')},
             success: function (data) {
                 if (data.status === true) {
-                    console.log(data.order);
                     $(".orderId").val(data.order['o_id']);
                     $(".orderActualStatus").attr("data-status", data.order['status']);
-                    changeStatus(data.order['status']);
+                    changeStatus("request",data.order['status']);
                     $.each(data.order.productsList, function (key, product) {
                        var l_product = $("#editOrderModal #editProductsOrder .product[data-id='" + product['id'] + "'] ");
                        l_product.find("input[name='quantity']").val(product['od_quatity']);
                        l_product.find(".productCost").html((parseFloat(product['od_quatity']) * parseFloat(product['od_price'])).toFixed(2));
                     });
+                    if(data.order['status']==="received"){
+                        $("#editOrderModal #editProductsOrder .product input[name=quantity]").attr("disabled", "true");
+                    }else{
+                        $("#editOrderModal #editProductsOrder .product input[name=quantity]").removeAttr("disabled");
+                    }
                 }
                 else {
                     console.log('ko');
@@ -829,10 +839,13 @@
                 success: function (data) {
                     if (data.status === true) {
                         $('#loading').hide();
-                        console.log('ok');
                         window.open("<?=base_url()?>" + data.filepath);
                         if(event.data.url!=="admin/provider/apiPrintOrder"){
-                            //location.reload();
+                            var url = window.location.href;
+                            if (!url.match('#')) {
+                                window.location.href = url + "#tab_orders";
+                            }
+                            location.reload();
                         }
                     }
                     else {
@@ -913,11 +926,17 @@
                 success: function (data) {
                     $('#loading').hide();
                     if (data.status === true) {
-                       /* if(data.filepath);
-                        window.open("<?=base_url()?>" + data.filepath);*/
+                        if(data.filepath){
+                            window.open("<?=base_url()?>" + data.filepath);
+                        }
                         $(".orderActualStatus").attr("data-status", data.orderStatus    );
                         if (event.data.url !== "admin/provider/apiPrintOrder") {
                             //location.reload();
+                            var url = window.location.href;
+                            if (!url.match('#')) {
+                                window.location.href = url + "#tab_orders";
+                            }
+                            location.reload();
                         }
                     }
                     else {
@@ -993,9 +1012,12 @@
                 success: function (data) {
                     $('#loading').hide();
                     if (data.status === true) {
-
-                        console.log('ok');
                         window.open("<?=base_url()?>" + data.filepath);
+                        var url = window.location.href;
+                        if (!url.match('#')) {
+                            window.location.href = url + "#tab_orders";
+                        }
+                        location.reload();
                     }
                     else {
                         console.log('ko');
@@ -1019,10 +1041,16 @@
     $("#changeStatus").on('click','button',changeStatusEvent);
     function changeStatusEvent(){
         var newStatus = $(this).attr("data-type");
-        changeStatus(newStatus);
+        changeStatus("event",newStatus);
     }
 
-    function changeStatus(newStatus) {
+    function changeStatus(type,newStatus) {
+        if (type === "request" && newStatus==="received") {
+            $(".orderActualStatus").attr("data-toggle", null);
+            $("#changeStatus").removeClass("in");
+        } else {
+            $(".orderActualStatus").attr("data-toggle", "collapse");
+        }
         switch (newStatus) {
             case 'received':
                 $('#changeStatus').empty();

@@ -313,7 +313,7 @@ class Provider extends BaseController
         try {
             $this->load->model('model_order');
             $order = $this->input->post('order');
-
+           // $db_order= $this->model_order->get($order['order_id']);
             if (strtolower($order['status']) === "en attente") {
                 $order['status'] = 'pending';
                 $this->model_order->update($order);
@@ -323,12 +323,14 @@ class Provider extends BaseController
             } else if (strtolower($order['status']) === "annulée") {
                 $order['status'] = 'canceled';
                 $this->model_order->update($order);
-                $this->model_product->updateQuantities($order['productsList']);
+
+               // $this->model_product->updateQuantities($order['productsList']);
             } else {
                 $order['status'] = 'received';
                 $this->model_order->update($order);
+                $this->model_product->updateQuantities($order['productsList'], 'up');
                 if ($order['oldStatus'] === "pending") {
-                    $this->model_product->updateQuantities($order['productsList'], 'up');
+                   // $this->model_product->updateQuantities($order['productsList'], 'up');
                 }
             }
             /* $data['order']=$order;
@@ -425,8 +427,8 @@ class Provider extends BaseController
             $image = $_FILES['image']['name'];
             $provider = array('title'=>$title,'name' => $name,"prenom"=>$prenom,"address"=>$address,"phone"=>$phone,"mail"=>$mail,"tva"=>$tva);
             if ($image !== "") {
-                $provider['image'] = $image;
-                $this->uploadFile();
+                $imageName=$this->uploadFile();
+                $provider['image']=$imageName;
             }
 
             $this->model_provider->update($id,$provider);

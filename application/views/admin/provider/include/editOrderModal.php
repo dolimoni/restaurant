@@ -20,45 +20,55 @@
                     Status de la commande
                 </h4>
                 <div class="text-center">
-                        <div data-toggle="collapse" data-status="" href="#changeStatus" class="btn btn-round btn-info orderActualStatus"></div>
+                    <div data-toggle="collapse" data-status="" href="#changeStatus"
+                         class="btn btn-round btn-info orderActualStatus"></div>
                 </div>
                 <div class="collapse text-center" id="changeStatus">
-                    <button data-toggle="collapse" data-type="received" href="#changeStatus" type="button" class="btn btn-round btn-success">Reçue</button>
-                    <button data-toggle="collapse" data-type="canceled" href="#changeStatus" type="button" class="btn btn-round btn-warning">Annulée</button>
+                    <button data-toggle="collapse" data-type="received" href="#changeStatus" type="button"
+                            class="btn btn-round btn-success">Reçue
+                    </button>
+                    <button data-toggle="collapse" data-type="canceled" href="#changeStatus" type="button"
+                            class="btn btn-round btn-warning">Annulée
+                    </button>
                 </div>
                 <form class="form-horizontal" role="form">
                     <input type="hidden" class="orderId">
                     <div class="form-group" id="editProductsOrder">
                         <?php foreach ($products as $key => $product) { ?>
-                        <div class="row product" data-index="<?php echo $key; ?>" data-id="<?php echo $product['id'];?>">
+                            <div class="row product" data-index="<?php echo $key; ?>"
+                                 data-id="<?php echo $product['id']; ?>">
 
-                            <label class="col-md-2 col-sm-2 col-xs-12 control-label">Produit</label>
-                            <div class="col-md-4 col-sm-4 col-xs-12">
-                               <input name="product" value="<?php echo $product['name']." (". $product['unit_price'].") DH"; ?>" disabled data-id="<?php echo $product['id']; ?>" data-price="<?php echo $product['unit_price']; ?>" data-name="<?php echo $product['name'];?>">
-                            </div>
-                            <label class="col-md-2 col-sm-2 col-xs-12 control-label">Quantité</label>
-                            <div class="col-md-4 col-sm-4 col-xs-12">
-                                <input type="text" name="quantity" /><span class="productCost"> 0DH</span>
-                            </div>
+                                <label class="col-md-2 col-sm-2 col-xs-12 control-label">Produit</label>
+                                <div class="col-md-4 col-sm-4 col-xs-12">
+                                    <input name="product"
+                                           value="<?php echo $product['name'] . " (" . $product['unit_price'] . ") DH"; ?>"
+                                           disabled data-id="<?php echo $product['id']; ?>"
+                                           data-price="<?php echo $product['unit_price']; ?>"
+                                           data-name="<?php echo $product['name']; ?>">
+                                </div>
+                                <label class="col-md-2 col-sm-2 col-xs-12 control-label">Quantité</label>
+                                <div class="col-md-4 col-sm-4 col-xs-12">
+                                    <input type="text" name="quantity"/><span class="productCost"> 0DH</span>
+                                </div>
 
-                        </div>
+                            </div>
                         <?php } ?>
-                       <!-- <hr/>-->
+                        <!-- <hr/>-->
 
                     </div>
                 </form>
 
 
-              <!--  <div class="col-sm-12">
-                    <button type="button" class="selected"
-                            id="price" placeholder="Oui" style="width: 250px;" data-toggle="collapse"
-                            href="#email" aria-expanded="false" aria-controls="emailEdit">Envoyer la commande
-                        par email
-                    </button>
-                </div>
+                <!--  <div class="col-sm-12">
+                      <button type="button" class="selected"
+                              id="price" placeholder="Oui" style="width: 250px;" data-toggle="collapse"
+                              href="#email" aria-expanded="false" aria-controls="emailEdit">Envoyer la commande
+                          par email
+                      </button>
+                  </div>
 
 
-                <br/>-->
+                  <br/>-->
                 <div class="col-md-12 col-sm-12 col-xs-12" class="collapse" id="emailEdit" hidden>
                     <div class="x_panel">
                         <div class="x_title">
