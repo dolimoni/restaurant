@@ -323,7 +323,6 @@ class Provider extends BaseController
             } else if (strtolower($order['status']) === "annulée") {
                 $order['status'] = 'canceled';
                 $this->model_order->update($order);
-
                // $this->model_product->updateQuantities($order['productsList']);
             } else {
                 $order['status'] = 'received';
@@ -333,8 +332,6 @@ class Provider extends BaseController
                    // $this->model_product->updateQuantities($order['productsList'], 'up');
                 }
             }
-            /* $data['order']=$order;
-             $output = $this->createPDF($data);*/
             $this->output
                 ->set_content_type("application/json")
                 ->set_output(json_encode(array('status' => true, 'orderStatus' => $order['status'])));

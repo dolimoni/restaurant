@@ -29,13 +29,13 @@
             </div>
             <div class="col-md-3 col-sm-6 col-xs-12 tile_stats_count">
                 <span class="count_top"><i class="fa fa-user"></i> Dépenses</span>
-                <div class="count red report_profit"><?php echo number_format((float)($report['cp']['s_cost']+$report['purchase']['price']+ $report['repair']['price']), 2, '.', ''); ?>
+                <div class="count red report_profit"><?php echo number_format((float)($report['stock_history']['price']+$report['purchase']['price']+ $report['repair']['price']), 2, '.', ''); ?>
                     DH
                 </div>
             </div>
             <div class="col-md-3 col-sm-6 col-xs-12 tile_stats_count">
                 <span class="count_top">Bénéfices</span>
-                <div class="count green report_products"><?php echo number_format((float)($report['consumption']['turnover']- $report['cp']['s_cost']- $report['purchase']['price']- $report['repair']['price']), 2, '.', ''); ?></div>
+                <div class="count green report_products"><?php echo number_format((float)($report['consumption']['turnover']- $report['stock_history']['price']- $report['purchase']['price']- $report['repair']['price']), 2, '.', ''); ?></div>
             </div>
             <div class="col-md-3 col-sm-6 col-xs-12 tile_stats_count">
                 <span class="count_top"><i class="fa fa-user"></i>Nombre de vente</span>

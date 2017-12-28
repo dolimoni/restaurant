@@ -1,6 +1,11 @@
 <?php $this->load->view('admin/partials/admin_header.php'); ?>
 <link href="<?php echo base_url('assets/vendors/bootstrap-daterangepicker/daterangepicker.css'); ?>" rel="stylesheet">
 <link href="<?php echo base_url("assets/build2/css/custom.min.css"); ?>" rel="stylesheet">
+<style>
+    .table-responsive {
+        overflow-x: visible;
+    }
+</style>
 <!-- page content -->
 <div class="right_col" role="main">
     <div class="productsList">
@@ -253,7 +258,10 @@
                 $("#datatable-alertes").DataTable({
                    /* aaSorting: [[0, 'desc']],*/
                     responsive: true,
-                    "bSort": false
+                    "bSort": false,
+                    "language": {
+                        "url": "<?php echo base_url("assets/vendors/datatables.net/French.json"); ?>"
+                    }
                 });
             }
         };

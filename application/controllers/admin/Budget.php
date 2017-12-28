@@ -33,11 +33,18 @@ class Budget extends BaseController {
         $data['params'] = $this->getParams();
         $this->load->view('admin/budget/reparation',$data);
     }
-    public function purchase()
+    public function variousPurchase()
     {
         $data['purchases']= $this->model_budget->getPurchases();
         $data['params'] = $this->getParams();
         $this->load->view('admin/budget/purchase',$data);
+    }
+    public function productPurchase()
+    {
+        $this->load->model('model_product');
+        $data['products'] = $this->model_product->getInStockHistory();
+        $data['params'] = $this->getParams();
+        $this->load->view('admin/budget/view_product',$data);
     }
 
     public function apiAddRepartion(){
@@ -68,10 +75,18 @@ class Budget extends BaseController {
        try {
            $article = $this->input->post('article');
            $price = $this->input->post('price');
+           $quantity = $this->input->post('quantity');
+           $provider = $this->input->post('provider');
+           $tel = $this->input->post('tel');
+           $comment = $this->input->post('comment');
 
            $purchase = array(
                'article' => $article,
                'price' => $price,
+               'quantity' => $quantity,
+               'provider' => $provider,
+               'tel' => $tel,
+               'comment' => $comment,
            );
            $this->model_budget->addPurchase($purchase);
            $this->output

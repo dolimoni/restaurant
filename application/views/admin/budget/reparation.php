@@ -1,4 +1,9 @@
 <?php $this->load->view('admin/partials/admin_header.php'); ?>
+<style>
+    .table-responsive {
+        overflow-x: visible;
+    }
+</style>
 <!-- page content -->
 <div class="right_col" role="main">
     <div class="productsList">
@@ -61,8 +66,8 @@
             <br>
         </div>
          <!-- /row -->
-        <div class="row">
-            <table id="datatable-responsive" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+        <div class="row table-responsive">
+            <table id="datatable-reparation" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
                 <thead>
                 <tr>
                     <th>Article</th>
@@ -104,10 +109,13 @@
 <script>
     $(document).ready(function () {
         var handleDataTableButtons = function () {
-            if ($("#datatable-salary").length) {
-                $("#datatable-salary").DataTable({
+            if ($("#datatable-reparation").length) {
+                $("#datatable-reparation").DataTable({
                     aaSorting: [[0, 'desc']],
                     responsive: true,
+                    "language": {
+                        "url": "<?php echo base_url("assets/vendors/datatables.net/French.json"); ?>"
+                    }
                 });
             }
         };

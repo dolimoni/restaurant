@@ -128,7 +128,12 @@ class model_report extends CI_Model
         $this->db->where('c.type', 'sale');
         $this->db->group_by('report_date');
         $this->db->limit(20);
-        $sales_history = $this->db->get()->result_array();
+        $sales_history = $this->db->get()->result_array();//Sales history
+
+        $this->db->select('sum(sh.total) as price');
+        $this->db->from('stock_history sh');
+        $this->db->where('sh.type', 'in');
+        $stock_history = $this->db->get()->row_array();
 
 
         //Sales history by month
@@ -169,6 +174,7 @@ class model_report extends CI_Model
         $global['sales_history_month']= $sales_history_month;
         $global['purchase']= $purchase;
         $global['repair']= $repair;
+        $global['stock_history']= $stock_history;
 
 
         return $global;

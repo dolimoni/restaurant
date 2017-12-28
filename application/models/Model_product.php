@@ -150,11 +150,21 @@ class model_product extends CI_Model {
             }
             $this->db->insert('quantity', $dataQuantity);
             $this->updateQuantity($product['id'], $product['quantity'],'up');
+
         }else{
 
             $this->updateLocalQuantity($product['id'], $product['quantity'], 'up');//product table
             $this->updateQuantity($product['id'], $product['quantity'], 'up');//quantity table
         }
+
+        $productHistory = array(
+            'id' => $product['id'],
+            'quantity' => $product['quantity'],
+            'price' => $product['unit_price'],
+            'unit' => $product['unit'],
+            'provider' => $product['provider'],
+        );
+        $this->addStockHistory($productHistory, 'in');
         if ($product['lostQuantity'] > 0) {
             $this->updateLocalQuantity($product['id'], $product['lostQuantity']);//product table
             $this->updateQuantity($product['id'], $product['lostQuantity']);// quantity table
@@ -206,6 +216,14 @@ class model_product extends CI_Model {
             );
             $this->addQuantity($dataQuantity);
 
+            $productHistory=array(
+                'id'=> $productItem,
+                'quantity'=> $product['quantity'],
+                'price'=> $product['unit_price'],
+                'unit'=> $product['unit'],
+                'provider'=> $product['provider'],
+            );
+            $this->addStockHistory($productHistory, 'in');
         }
 
     }
@@ -321,7 +339,22 @@ class model_product extends CI_Model {
         foreach ($productsList as $product) {
             $this->updateQuantity($product['id'], $product['quantity'], $direction);
             $this->updateLocalQuantity($product['id'], $product['quantity'], $direction);
+
+            if($direction==="up"){
+                $db_product = $this->getById($product['id']);
+                $productHistory = array(
+                    'id' => $product['id'],
+                    'quantity' => $product['quantity'],
+                    'price' => $db_product['unit_price'],
+                    'unit' => $db_product['unit'],
+                    'provider' => $db_product['provider'],
+                );
+                $this->addStockHistory($productHistory, 'in');
+            }
+
         }
+
+
     }
 
 	public function getAll($meals=false,$composition=false)
@@ -532,6 +565,31 @@ class model_product extends CI_Model {
 	        'name'=>'NULL', 'id' => 'NULL'
         );
 	    return $product;
+    }
+
+    public function addStockHistory($product, $type, $department = null)
+    {
+        $data = array(
+            'product' => $product['id'],
+            'quantity' => $product['quantity'],
+            'unit' => $product['unit'],
+            'type' => $type,
+            'unit_price' => $product['price'],
+            'total' => $product['price']*$product['quantity'],
+            'provider' => $product['provider'],
+        );
+        $this->db->insert('stock_history', $data);
+    }
+
+    public function getInStockHistory()
+    {
+        $this->db->select('p.name,sh.quantity,sh.total,sh.unit,pv.name as pv_name,sh.created_at');
+        $this->db->from('stock_history sh');
+        $this->db->join('product p','p.id=sh.product','lef');
+        $this->db->join('provider pv','pv.id=sh.provider','left');
+        $this->db->where('sh.type','in');
+        $this->db->order_by('sh.created_at',"desc");
+        return $this->db->get()->result_array();
     }
 
     private function accumulateQuantity($quantityData){

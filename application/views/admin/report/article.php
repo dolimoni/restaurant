@@ -245,4 +245,4 @@
         });
     });
 </script>
-<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+<script src="<?php echo base_url('assets/build/js/canvasjs.min.js'); ?>"></script>

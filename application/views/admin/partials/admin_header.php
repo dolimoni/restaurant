@@ -140,16 +140,17 @@
                   <li>
                       <a><i class="fa fa-bar-chart-o"></i> Rapports <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
-                      <li><a href="<?= base_url('admin/report/index'); ?>">Rapport des article</a></li>
+                      <li><a href="<?= base_url('admin/report/index'); ?>">Rapport des articles</a></li>
                       <li><a href="<?= base_url('admin/report/statistic'); ?>">Statistiques</a></li>
                     </ul>
                   </li>
                   <li>
-                      <a><i class="fa fa-dollar"></i> Budget <span class="fa fa-chevron-down"></span></a>
+                      <a><i class="fa fa-dollar"></i>Gestion du budget<span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
                       <li><a href="<?= base_url('admin/budget/regular'); ?>">Alertes</a></li>
                       <li><a href="<?= base_url('admin/budget/reparation'); ?>">Mes réparations</a></li>
-                      <li><a href="<?= base_url('admin/budget/purchase'); ?>">Mes achats</a></li>
+                      <li><a href="<?= base_url('admin/budget/productPurchase'); ?>">Achats produits</a></li>
+                      <li><a href="<?= base_url('admin/budget/variousPurchase'); ?>">Achats divers</a></li>
                     </ul>
                   </li>
 
