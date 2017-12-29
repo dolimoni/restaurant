@@ -17,6 +17,7 @@
             <tr>
                 <th>Quantité</th>
                 <th>Prix</th>
+                <th>Fournisseur</th>
                 <th>Status</th>
                 <th>Activer</th>
             </tr>
@@ -25,6 +26,7 @@
             <tr>
                 <th>Quantité</th>
                 <th>Prix</th>
+                <th>Fournisseur</th>
                 <th>Status</th>
                 <th>Activer</th>
             </tr>
@@ -39,7 +41,8 @@
                 <tr class="<?php echo $validate; ?>">
                     <td><?php echo $quantity['quantity']?></td>
                     <td><?php echo $quantity['unit_price']?></td>
-                    <td><?php echo $quantity['status']?></td>
+                    <td><?php echo ucfirst($quantity['pv_name'])?></td>
+                    <td><?php echo ucfirst($quantity['status'])?></td>
                     <td width="10%">
                        <?php if($quantity['status']!=="active"){ ?>
                            <button data-id="<?php echo $quantity['id'] ?>" class="btn btn-default btn-xs action activate"><span

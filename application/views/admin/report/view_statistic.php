@@ -16,6 +16,12 @@
           <!--  <div class="title_left">
                 <h3>Articles</h3>
             </div>-->
+        <div id="reportrange" class="pull-right"
+             style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc">
+            <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
+            <span>December 30, 2014 - January 28, 2015</span> <b class="caret"></b>
+        </div>
+
         </div>
         <div class="clearfix"></div>
         <hr>
@@ -29,17 +35,17 @@
             </div>
             <div class="col-md-3 col-sm-6 col-xs-12 tile_stats_count">
                 <span class="count_top"><i class="fa fa-user"></i> Dépenses</span>
-                <div class="count red report_profit"><?php echo number_format((float)($report['stock_history']['price']+$report['purchase']['price']+ $report['repair']['price']), 2, '.', ''); ?>
+                <div class="count red report_cost"><?php echo number_format((float)($report['stock_history']['price']+$report['purchase']['price']+ $report['repair']['price']), 2, '.', ''); ?>
                     DH
                 </div>
             </div>
             <div class="col-md-3 col-sm-6 col-xs-12 tile_stats_count">
                 <span class="count_top">Bénéfices</span>
-                <div class="count green report_products"><?php echo number_format((float)($report['consumption']['turnover']- $report['stock_history']['price']- $report['purchase']['price']- $report['repair']['price']), 2, '.', ''); ?></div>
+                <div class="count green report_profit"><?php echo number_format((float)($report['consumption']['turnover']- $report['stock_history']['price']- $report['purchase']['price']- $report['repair']['price']), 2, '.', ''); ?></div>
             </div>
             <div class="col-md-3 col-sm-6 col-xs-12 tile_stats_count">
                 <span class="count_top"><i class="fa fa-user"></i>Nombre de vente</span>
-                <div class="count report_cost"><?php echo number_format((float)($report['consumption']['s_quantity']), 0, '.', ''); ?>
+                <div class="count report_products"><?php echo number_format((float)($report['consumption']['s_quantity']), 0, '.', ''); ?>
                 </div>
             </div>
         </div>
@@ -130,10 +136,10 @@
 
 
 <script>
-    var rangeLink = "<?php echo base_url('admin/report/apiRange'); ?>";
+    var rangeLink = "<?php echo base_url('admin/report/apiStatistic'); ?>";
     var mealReportLink = "<?php echo base_url('admin/meal/report/'); ?>";
 </script>
-<script src="<?php echo base_url('assets/build2/js/dateRangePicker.js'); ?>"></script>
+<script src="<?php echo base_url('assets/build2/js/dateRangePickerStatistics.js'); ?>"></script>
 
 
 <script type="text/javascript">
@@ -249,13 +255,8 @@
             echo "var sales = " . $js_array . ";\n";
             ?>
             var chart_plot_05_data = [];
-            console.log('sales',sales);
-           /* for (var i = 0; i < 30; i++) {
-                chart_plot_05_data.push([new Date(Date.today().add(i).days()).getTime(), randNum() + i + i + 10]);
-            }*/
 
             $.each(sales, function (key, sale) {
-                console.log(new Date(sale['report_date']).getTime());
                 chart_plot_05_data.push([new Date(sale['report_date']), sale['s_amount']]);
             });
             timeformat = "%d-%m-%y";
@@ -339,6 +340,38 @@
                 }], chart_plot_05_settings);
 
         }
+
+        /************************Tooltip begin**************************/
+        function showChartTooltip(x, y, contents) {
+            $('<div id="charttooltip" class="chart-tooltip">' + contents + '<\/div>').css( {
+                position: 'absolute',
+                display:'none',
+                top: y - 25,
+                left:x - 25,
+                border:'1px solid #bfbfbf',
+                padding:'2px',
+                'background-color':'#ffffff',
+                opacity:1}
+            ).appendTo("body").fadeIn(200);
+        }
+
+        $("#chart_plot_05").bind("plothover", function (event, pos, item) {
+            $("#x").text(pos.x.toFixed(2));
+            $("#y").text(pos.y.toFixed(2));
+            if (item) {
+                $("#charttooltip").remove();
+                var x = item.datapoint[0].toFixed(2),
+                    y = item.datapoint[1].toFixed(2);
+                showChartTooltip(item.pageX, item.pageY, y+'DH');
+            } else {
+                $("#charttooltip").remove();
+            }
+        });
+        /*************************Tooltip end******************************/
+
+
+
+
     });
 </script>
 

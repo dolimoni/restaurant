@@ -18,86 +18,88 @@
         </div>
         <div class="clearfix"></div>
         <hr>
-       <div class="container">
-           <!-- /row -->
+        <div class="container">
+            <!-- /row -->
 
-           <div class="col-xs-12">
-               <div class="x_panel">
-                   <div class="x_title">
-                       <h2>Meilleurs prix</h2>
-                       <ul class="nav navbar-right panel_toolbox">
-                           <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
-                           <li><a class="close-link"><i class="fa fa-close"></i></a></li>
-                       </ul>
-                       <div class="clearfix"></div>
-                   </div>
-                   <div class="x_content table-responsive">
-                       <table id="datatable-bestPrice" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
-                           <thead>
-                           <tr>
-                               <th>Produit</th>
-                               <th>Prix</th>
-                               <th>Fournisseur</th>
-                           </tr>
-                           </thead>
-                           <tfoot>
-                           <tr>
-                               <th>Produit</th>
-                               <th>Prix</th>
-                               <th>Fournisseur</th>
-                           </tr>
-                           </tfoot>
-                           <tbody>
-                           <?php foreach ($productsPrice as $product) { ?>
-                               <tr>
-                                   <td><?php echo $product['name']; ?></td>
-                                   <td><?php echo $product['unit_price']; ?></td>
-                                   <td><?php echo $product['provider']; ?></td>
-                               </tr>
-                           <?php } ?>
-                           </tbody>
-                       </table>
+            <div class="col-xs-12">
+                <div class="x_panel">
+                    <div class="x_title">
+                        <h2>Meilleurs prix</h2>
+                        <ul class="nav navbar-right panel_toolbox">
+                            <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
+                            <li><a class="close-link"><i class="fa fa-close"></i></a></li>
+                        </ul>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content table-responsive">
+                        <table id="datatable-bestPrice" class="table table-striped table-bordered dt-responsive nowrap"
+                               cellspacing="0" width="100%">
+                            <thead>
+                            <tr>
+                                <th>Produit</th>
+                                <th>Prix</th>
+                                <th>Fournisseur</th>
+                            </tr>
+                            </thead>
+                            <tfoot>
+                            <tr>
+                                <th>Produit</th>
+                                <th>Prix</th>
+                                <th>Fournisseur</th>
+                            </tr>
+                            </tfoot>
+                            <tbody>
+                            <?php foreach ($productsPrice as $product) { ?>
+                                <tr>
+                                    <td><?php echo $product['name']; ?></td>
+                                    <td><?php echo $product['unit_price']; ?></td>
+                                    <td><?php echo $product['provider']; ?></td>
+                                </tr>
+                            <?php } ?>
+                            </tbody>
+                        </table>
 
-                   </div> <!-- /content -->
-               </div><!-- /x-panel -->
-           </div>
+                    </div> <!-- /content -->
+                </div><!-- /x-panel -->
+            </div>
 
-           <div class="col-xs-12">
-               <div class="x_panel">
-                   <div class="x_title">
-                       <h2>Liste des prix</h2>
-                       <ul class="nav navbar-right panel_toolbox">
-                           <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
-                           <li><a class="close-link"><i class="fa fa-close"></i></a></li>
-                       </ul>
-                       <div class="clearfix"></div>
-                   </div>
-                   <div class="x_content table-responsive">
-                       <table id="datatable-allPrice" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
-                           <thead>
-                           <tr>
-                               <th>Produit</th>
-                               <th>Prix</th>
-                               <th>Fournisseur</th>
-                           </tr>
-                           </thead>
-                           <tfoot>
-                           <tr>
-                               <th>Produit</th>
-                               <th>Prix</th>
-                               <th>Fournisseur</th>
-                           </tr>
-                           </tfoot>
-                           <tbody>
-                           <?php foreach ($products as $product) { ?>
-                               <tr>
-                                   <td><?php echo $product['name']; ?></td>
-                                   <td><?php echo $product['unit_price']; ?></td>
-                                   <td><?php echo $product['provider']; ?></td>
-                               </tr>
-                           <?php } ?>
-                           </tbody>
-                       </table>
+            <div class="col-xs-12">
+                <div class="x_panel">
+                    <div class="x_title">
+                        <h2>Liste des prix</h2>
+                        <ul class="nav navbar-right panel_toolbox">
+                            <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
+                            <li><a class="close-link"><i class="fa fa-close"></i></a></li>
+                        </ul>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content table-responsive">
+                        <table id="datatable-allPrice" class="table table-striped table-bordered dt-responsive nowrap"
+                               cellspacing="0" width="100%">
+                            <thead>
+                            <tr>
+                                <th>Produit</th>
+                                <th>Prix</th>
+                                <th>Fournisseur</th>
+                            </tr>
+                            </thead>
+                            <tfoot>
+                            <tr>
+                                <th>Produit</th>
+                                <th>Prix</th>
+                                <th>Fournisseur</th>
+                            </tr>
+                            </tfoot>
+                            <tbody>
+                            <?php foreach ($products as $product) { ?>
+                                <tr>
+                                    <td><?php echo $product['name']; ?></td>
+                                    <td><?php echo $product['unit_price']; ?></td>
+                                    <td><?php echo $product['provider']; ?></td>
+                                </tr>
+                            <?php } ?>
+                            </tbody>
+                        </table>
 
                    </div> <!-- /content -->
                </div><!-- /x-panel -->
@@ -141,7 +143,7 @@
 <script src="<?php echo base_url('assets/vendors/bootstrap-daterangepicker/daterangepicker.js'); ?>"></script>
 <script src="<?php echo base_url('assets/build2/js/dateRangePicker2.js'); ?>"></script>
 <!-- morris.js -->
-<script src="<?php echo base_url('assets/vendors/raphael/raphael.min.js'); ?>"></script>
+<script src="<?php echo base_url('assets/vendors/raphael/raphael.js'); ?>"></script>
 <script src="<?php echo base_url('assets/vendors/morris.js/morris.min.js'); ?>"></script>
 
 <script>
@@ -169,8 +171,8 @@
             data: [],
             xkey: 'period',
             lineColors: ['#26B99A', '#34495E', '#ACADAC', '#3498DB'],
-            pointSize: 2,
-            hideHover: 'auto',
+            pointSize: 1,
+            hideHover: false,
             resize: true,
             behaveLikeLine: true
         });

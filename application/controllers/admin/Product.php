@@ -145,7 +145,7 @@ class Product extends BaseController {
             $db_product = $this->model_product->getById($product['id']);
             $data = array();
 
-            if ($db_product['unit_price'] !== $product['unit_price']) {
+            if ($db_product['unit_price'] !== $product['unit_price'] or $db_product['provider'] !== $product['provider']) {
                 $this->model_product->edit($product,true);
             } else {
                 $data['product'] = $this->model_product->edit($product);

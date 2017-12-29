@@ -1,6 +1,12 @@
 <?php $this->load->view('admin/partials/admin_header.php'); ?>
 <link href="<?php echo base_url('assets/vendors/bootstrap-daterangepicker/daterangepicker.css'); ?>" rel="stylesheet">
 <link href="<?php echo base_url("assets/build2/css/custom.min.css"); ?>" rel="stylesheet">
+<style>
+    input.ordred{
+        background: #6cc;
+        color: white;
+    }
+</style>
 <!-- page content -->
 <div class="right_col" role="main">
     <div class="productsList">
@@ -734,9 +740,17 @@
                     $(".orderId").val(data.order['o_id']);
                     $(".orderActualStatus").attr("data-status", data.order['status']);
                     changeStatus("request",data.order['status']);
+
+                    //remove background from all quantity input
+                    $("#editOrderModal #editProductsOrder .product").find("input[name='quantity'],input[name='product']").removeClass("ordred");
+                    $("#editOrderModal #editProductsOrder .product").find("input[name='quantity']").val("");
+                    $("#editOrderModal #editProductsOrder .product").find('.productCost').html(' 0DH');
+
                     $.each(data.order.productsList, function (key, product) {
                        var l_product = $("#editOrderModal #editProductsOrder .product[data-id='" + product['id'] + "'] ");
                        l_product.find("input[name='quantity']").val(product['od_quatity']);
+                       // add background for ordred products
+                       l_product.find("input[name='quantity'],input[name='product']").addClass("ordred");
                        l_product.find(".productCost").html((parseFloat(product['od_quatity']) * parseFloat(product['od_price'])).toFixed(2));
                     });
                     if(data.order['status']==="received"){
@@ -774,6 +788,7 @@
         }else{
             row.find('.productCost').html(' 0DH');
         }
+
 
     };
 
@@ -1013,11 +1028,13 @@
                     $('#loading').hide();
                     if (data.status === true) {
                         window.open("<?=base_url()?>" + data.filepath);
-                        var url = window.location.href;
-                        if (!url.match('#')) {
-                            window.location.href = url + "#tab_orders";
+                        if (event.data.url !== "admin/provider/apiPrintOrder") {
+                            var url = window.location.href;
+                            if (!url.match('#')) {
+                                window.location.href = url + "#tab_orders";
+                            }
+                            location.reload();
                         }
-                        location.reload();
                     }
                     else {
                         console.log('ko');

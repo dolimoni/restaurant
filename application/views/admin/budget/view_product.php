@@ -8,6 +8,9 @@
 <div class="right_col" role="main">
     <div class="productsList">
         <div class="page-title">
+           <!-- <pre>
+                <?php /*print_r($products); */?>
+            </pre>-->
             <div class="title_left">
                 <h3>Liste des produits achetés</h3>
             </div>
@@ -61,6 +64,7 @@
             if ($("#datatable-product").length) {
                 $("#datatable-product").DataTable({
                     responsive: true,
+                    "bSort": false,
                     "language": {
                         "url": "<?php echo base_url("assets/vendors/datatables.net/French.json"); ?>"
                     }

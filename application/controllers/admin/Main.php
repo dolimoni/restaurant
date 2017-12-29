@@ -92,7 +92,7 @@ class Main extends BaseController
                 $meal = $this->model_meal->getByExternalCode($sale['0']);
                 $quantity = $sale[2] / 1000;
                 $priceCSV= $sale['3'] / 100 / $quantity;
-                if($meal['name']=== $sale['1'] and $priceCSV == $meal['sellPrice']){
+                if($meal['name']=== $sale['1'] /*and $priceCSV == $meal['sellPrice']*/){
                     $data['sales']['rows'][$key]['status']='valid';
                 }else{
                     $data['sales']['rows'][$key]['status'] = 'Invalid';
@@ -128,7 +128,7 @@ class Main extends BaseController
                     'amount'=>$sale['3'] / 100,
                     'date'=> $date
                 );
-                if($meal['name']=== $sale['1'] and $priceCSV == $meal['sellPrice']){
+                if($meal['name']=== $sale['1'] /*and $priceCSV == $meal['sellPrice']*/){
                     $data['sales']['rows'][$key]['status']='valid';
                     $mealsList[]=$mealItem;
                 }else{
@@ -136,7 +136,6 @@ class Main extends BaseController
 
                 }
             }
-            echo "count:".count($mealsList);
             $this->clean();
             $this->model_meal->consumption($mealsList);
 

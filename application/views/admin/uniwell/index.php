@@ -309,12 +309,14 @@
             });
 
             var myData = {'mealsList': mealsList};
+            $('#loading').show();
             $.ajax({
                 url: "<?php echo base_url(); ?>admin/meal/apiConsumption",
                 type: "POST",
                 dataType: "json",
                 data: myData,
                 success: function (data) {
+                    $('#loading').hide();
                     if (data.status === 'success') {
                         swal({
                             title: "Success",
@@ -338,6 +340,7 @@
                     }
                 },
                 error: function (data) {
+                    $('#loading').hide();
                     swal({
                         title: "Erreur",
                         text: "Une erreur s\'est produite",

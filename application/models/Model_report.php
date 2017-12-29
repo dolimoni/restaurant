@@ -99,7 +99,7 @@ class model_report extends CI_Model
         }
     }
 
-    public function global_report(){
+    public function global_report($startDate=null, $endDate=null){
         $global=array();
 
 
@@ -110,15 +110,24 @@ class model_report extends CI_Model
         $this->db->select('sum(c.total) as turnover');
         $this->db->from('consumption c');
         $this->db->where('c.type','sale');
+        if($startDate){
+            $this->db->where('c.report_date>=', $startDate);
+            $this->db->where('c.report_date<=', $endDate);
+        }
         $consumption = $this->db->get()->row_array();
 
         //costs
-        $this->db->select('*');
+        $this->db->select('cp.*');
         $this->db->select('sum(cp.unit_price) as s_price');
         $this->db->select('sum(cp.quantity) as s_quantity');
         $this->db->select('sum(cp.total) as s_cost');
         $this->db->from('consumption_product cp');
+        $this->db->join('consumption c',"c.id=cp.consumption");
         $this->db->where('cp.type', 'sale');
+        if ($startDate) {
+            $this->db->where('c.report_date>=', $startDate);
+            $this->db->where('c.report_date<=', $endDate);
+        }
         $consumption_product = $this->db->get()->row_array();
 
         //Sales history
@@ -126,6 +135,10 @@ class model_report extends CI_Model
         $this->db->select('sum(c.total) as s_amount');
         $this->db->from('consumption c');
         $this->db->where('c.type', 'sale');
+        if ($startDate) {
+            $this->db->where('c.report_date>=', $startDate);
+            $this->db->where('c.report_date<=', $endDate);
+        }
         $this->db->group_by('report_date');
         $this->db->limit(20);
         $sales_history = $this->db->get()->result_array();//Sales history
@@ -133,6 +146,10 @@ class model_report extends CI_Model
         $this->db->select('sum(sh.total) as price');
         $this->db->from('stock_history sh');
         $this->db->where('sh.type', 'in');
+        if ($startDate) {
+            $this->db->where('created_at>=', $startDate);
+            $this->db->where('created_at<=', $endDate);
+        }
         $stock_history = $this->db->get()->row_array();
 
 
@@ -141,6 +158,10 @@ class model_report extends CI_Model
         $this->db->select('sum(c.total) as s_amount');
         $this->db->from('consumption c');
         $this->db->where('c.type', 'sale');
+        if ($startDate) {
+            $this->db->where('c.report_date>=', $startDate);
+            $this->db->where('c.report_date<=', $endDate);
+        }
         $this->db->group_by('MONTH(report_date)');
         $this->db->order_by('report_date', 'DESC');
         $this->db->limit(10);
@@ -148,10 +169,15 @@ class model_report extends CI_Model
 
         //products costs
         $this->db->select('p.name');
-        $this->db->select('sum(total) as s_cost');
+        $this->db->select('sum(cp.total) as s_cost');
         $this->db->select('count(cp.product) as s_meal');
         $this->db->from('consumption_product cp');
+        $this->db->join('consumption c',"c.id=cp.consumption");
         $this->db->where('cp.type', 'sale');
+        if ($startDate) {
+            $this->db->where('c.report_date>=', $startDate);
+            $this->db->where('c.report_date<=', $endDate);
+        }
         $this->db->join('product p','p.id=cp.product');
         $this->db->group_by('product');
         $this->db->order_by('s_cost','DESC');
@@ -161,9 +187,17 @@ class model_report extends CI_Model
 
 
         $this->db->select('sum(price) as price');
+        if ($startDate) {
+            $this->db->where('created_at>=', $startDate);
+            $this->db->where('created_at<=', $endDate);
+        }
         $purchase = $this->db->get('purchase')->row_array();
 
         $this->db->select('sum(price) as price');
+        if ($startDate) {
+            $this->db->where('created_at>=', $startDate);
+            $this->db->where('created_at<=', $endDate);
+        }
         $repair = $this->db->get('reparation')->row_array();
 
 
@@ -618,7 +652,7 @@ class model_report extends CI_Model
         $this->db->select('avg(q.unit_price)price,pv.name,Date(q.created_at) date');
         $this->db->from('product p');
         $this->db->join('quantity q', 'q.product = p.id');
-        $this->db->join('provider pv', 'pv.id = p.provider');
+        $this->db->join('provider pv', 'pv.id = q.provider');
         $this->db->where('p.status', 'active');
         $this->db->where('p.name', $product);
         $this->db->where('DATE(q.created_at) >=', $startDate);

@@ -122,7 +122,7 @@ class model_provider extends CI_Model {
 	    $this->db->select('p.name,pv.name as provider,q.unit_price');
 	    $this->db->from('product p');
 	    $this->db->join('quantity q','p.id=q.product');
-	    $this->db->join('provider pv','pv.id=p.provider');
+	    $this->db->join('provider pv','pv.id=q.provider');
 	    $this->db->where('q.status','active');
 	    $this->db->where('p.status','active');
 	    $this->db->where('provider>0');
@@ -141,7 +141,7 @@ class model_provider extends CI_Model {
                 ) as temp 
                 inner join quantity q 
                 inner join product p on p.id=q.product and p.name = temp.name and temp.min_unit_price=unit_price 
-                inner join provider pv on pv.id=p.provider
+                inner join provider pv on pv.id=q.provider
                 where q.status='active' and provider>0 and p.status='active'";
 
         $dbResult = $this->db->query($query);
@@ -177,7 +177,7 @@ class model_provider extends CI_Model {
         $this->db->from('product p');
         $this->db->join('quantity q','q.product=p.id and q.status="active"','left');
         //$this->db->where('q.status','active');
-		$this->db->where('p.provider', $id);
+		$this->db->where('q.provider', $id);
 		$result = $this->db->get();
 		return $result->result_array();
 	}

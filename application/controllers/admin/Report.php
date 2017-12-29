@@ -30,6 +30,23 @@ class Report extends BaseController
         $data['params'] = $this->getParams();
         $this->load->view('admin/report/view_statistic', $data);
     }
+
+    public function apiStatistic()
+    {
+       try {
+           $startDate = $this->input->post('startDate');
+           $endDate = $this->input->post('endDate');
+           $report = $this->model_report->global_report($startDate, $endDate);
+
+           $this->output
+               ->set_content_type("application/json")
+               ->set_output(json_encode(array('status' => "success", 'report' => $report)));
+       } catch (Exception $e) {
+           $this->output
+               ->set_content_type("application/json")
+               ->set_output(json_encode(array('status' => "success", 'report' => $report)));
+       }
+    }
     public function apiReport()
     {
         $params=$this->input->post('params');
