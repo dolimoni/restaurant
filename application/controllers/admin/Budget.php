@@ -5,6 +5,8 @@ class Budget extends BaseController {
 	public function __construct()
 	{
 
+
+
 		parent::__construct();
         if ( ! $this->session->userdata('isLogin')) { 
             redirect('login');
@@ -21,34 +23,43 @@ class Budget extends BaseController {
 
     public function regular()
     {
+        $this->log_begin();
         $this->load->model('model_params');
         $data['regularCosts'] = $this->model_budget->getRegularCosts();
         $data['params'] = $this->model_params->config();
         $data['params'] = $this->getParams();
         $this->load->view('admin/budget/view_regular', $data);
+        $this->log_end($data);
     }
     public function reparation()
     {
+        $this->log_begin();
         $data['reparations']= $this->model_budget->getReparations();
         $data['params'] = $this->getParams();
         $this->load->view('admin/budget/reparation',$data);
+        $this->log_end($data);
     }
     public function variousPurchase()
     {
+        $this->log_begin();
         $data['purchases']= $this->model_budget->getPurchases();
         $data['params'] = $this->getParams();
         $this->load->view('admin/budget/purchase',$data);
+        $this->log_end($data);
     }
     public function productPurchase()
     {
+        $this->log_begin();
         $this->load->model('model_product');
         $data['products'] = $this->model_product->getInStockHistory();
         $data['params'] = $this->getParams();
         $this->load->view('admin/budget/view_product',$data);
+        $this->log_end($data);
     }
 
     public function apiAddRepartion(){
        try {
+           $this->log_begin();
            $article = $this->input->post('article');
            $price = $this->input->post('price');
            $problem = $this->input->post('problem');
@@ -60,10 +71,12 @@ class Budget extends BaseController {
                'problem' => $problem,
                'repairer' => $repairer,
            );
+           $this->log_middle($reparation);
            $this->model_budget->addReparation($reparation);
            $this->output
                ->set_content_type("application/json")
                ->set_output(json_encode(array('status' => 'success')));
+           $this->log_end(array('status' => 'success'));
        } catch (Exception $e) {
            $this->output
                ->set_content_type("application/json")
@@ -73,6 +86,7 @@ class Budget extends BaseController {
 
     public function apiAddPurchase(){
        try {
+           $this->log_begin();
            $article = $this->input->post('article');
            $price = $this->input->post('price');
            $quantity = $this->input->post('quantity');
@@ -88,10 +102,13 @@ class Budget extends BaseController {
                'tel' => $tel,
                'comment' => $comment,
            );
+           $this->log_middle($purchase);
            $this->model_budget->addPurchase($purchase);
+           $this->log_middle($purchase);
            $this->output
                ->set_content_type("application/json")
                ->set_output(json_encode(array('status' => 'success')));
+           $this->log_end(array('status' => 'success'));
        } catch (Exception $e) {
            $this->output
                ->set_content_type("application/json")
@@ -101,6 +118,7 @@ class Budget extends BaseController {
 
     public function apiAddRegularCostForm(){
        try {
+           $this->log_begin();
            $article = $this->input->post('article');
            $price = $this->input->post('price');
            $periodicity = $this->input->post('periodicity');
@@ -116,12 +134,15 @@ class Budget extends BaseController {
                'description' => $description,
                'paiementDate' => $paiementDate,
            );
+           $this->log_middle($regularCost);
            $this->model_budget->addRegularCost($regularCost);
 
            $this->model_budget->activeAlerts();
            $this->output
                ->set_content_type("application/json")
                ->set_output(json_encode(array('status' => 'success')));
+
+           $this->log_end(array('status' => 'success'));
        } catch (Exception $e) {
            $this->output
                ->set_content_type("application/json")
@@ -131,6 +152,7 @@ class Budget extends BaseController {
 
     public function apiReportAlert(){
         try {
+            $this->log_begin();
             $alert = $this->input->post('alert');
             if($alert['delay']==="dai"){
                 $alert['delay']="day";
@@ -153,6 +175,8 @@ class Budget extends BaseController {
                 $data['paiementDate']= date('Y-m-d', strtotime($alert['paiementDate'] . ' +1 ' . $alert['delay']));
                 $data['reminderDate'] = date('Y-m-d', strtotime($alert['reminderDate'] . ' +1 ' . $alert['delay']));
             }
+
+            $this->log_middle($data);
             $this->model_budget->updateAlertDates($alert['id'],$data);
 
 
@@ -160,6 +184,8 @@ class Budget extends BaseController {
             $this->output
                 ->set_content_type("application/json")
                 ->set_output(json_encode(array('status' => 'success')));
+
+            $this->log_end(array('status' => 'success'));
         } catch (Exception $e) {
             $this->output
                 ->set_content_type("application/json")
@@ -171,14 +197,18 @@ class Budget extends BaseController {
 
     public function apiEditAlert(){
         try {
+            $this->log_begin();
             $alert = $this->input->post('alert');
             $id = $this->input->post('id');
+            $this->log_middle($alert);
             $this->model_budget->update($id, $alert);
 
             $this->model_budget->activeAlerts(); // change passive alerte to active aletes
             $this->output
                 ->set_content_type("application/json")
                 ->set_output(json_encode(array('status' => 'success')));
+
+            $this->log_end(array('status' => 'success'));
         } catch (Exception $e) {
             $this->output
                 ->set_content_type("application/json")
@@ -189,19 +219,37 @@ class Budget extends BaseController {
 
     public function apiDeleteAlert(){
         try {
+            $this->log_begin();
             $alert_id = $this->input->post('alert_id');
             $this->model_budget->deleteAlert($alert_id);
-
             $this->model_budget->activeAlerts(); // change passive alerte to active aletes
             $this->output
                 ->set_content_type("application/json")
                 ->set_output(json_encode(array('status' => 'success')));
+
+            $this->log_end(array('status' => 'success'));
+
         } catch (Exception $e) {
             $this->output
                 ->set_content_type("application/json")
                 ->set_output(json_encode(array('status' => 'error')));
         }
 
+    }
+
+    private function log_begin()
+    {
+        log_message('info', "dolimoni=>Log_begin: " . $this->router->fetch_class() . " " . $this->router->fetch_method());
+        log_message('info', print_r($this->input->post(NULL, TRUE), TRUE));
+    }
+    private function log_middle($data)
+    {
+        log_message('info', "dolimoni=>Log_middle: ".print_r($data, TRUE));
+    }
+
+    private function log_end($data)
+    {
+        log_message('info', "dolimoni=>Log_end: " . print_r($data, TRUE));
     }
 }
 

@@ -15,25 +15,26 @@ class Reports extends BaseController {
     }
 
     public function index() {
+        $this->log_begin();
         $data['reports']    = $this->model_report->getAllReports();
         $data['params']     = $this->getParams();
         $this->load->view('admin/daily_report/index', $data);
+        $this->log_end($data);
     }
 
     public function create() {
-        $this->form_validation->set_rules('emails', 'Email', 'required');
+        //$this->form_validation->set_rules('emails', 'Email', 'required');
         $this->form_validation->set_rules('title', 'Title', 'required');
         $this->form_validation->set_rules('message', 'Message', 'required');
 
         if($this->form_validation->run() === TRUE){
             $this->model_report->addReport();
-
             // Set message
             $this->session->set_flashdata('report_created', 'Votre rapport a été bien ajouté');
-
             redirect('admin/reports');
         }else{
             $data['params'] = $this->getParams();
+            $this->session->set_flashdata('title', $this->input->post('title'));
             $this->load->view('admin/daily_report/create',$data);
         }
     }
@@ -48,7 +49,7 @@ class Reports extends BaseController {
         // $this->form_validation->set_rules('emails', 'Email', 'required');
         $this->form_validation->set_rules('title', 'Title', 'required');
         $this->form_validation->set_rules('message', 'Message', 'required');
-        $data['params']     = $this->getParams();
+        $data['params'] = $this->getParams();
 
         if($this->form_validation->run() === TRUE){
             $this->model_report->editReport();
@@ -123,10 +124,13 @@ class Reports extends BaseController {
         } else {
             return 0;
         }
-        /*try {
+    }
 
-       } catch (Exception $e) {
-
-       }*/
+    private function log_begin(){
+        log_message('info', "dolimoni=>Log_begin: " . $this->router->fetch_class() . " " . $this->router->fetch_method());
+        log_message('info', print_r($this->input, TRUE));
+    }
+    private function log_end($data){
+        log_message('info', "dolimoni=>Log_end: " . print_r($data, TRUE));
     }
 }

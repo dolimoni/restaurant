@@ -130,13 +130,6 @@
                       <li><a href="<?= base_url('admin/employee/add'); ?>">Liste des employés</a></li>
                     </ul>
                   </li>
-                  <!--<li>
-                  <a><i class="fa fa-edit"></i> Mes clients <span class="fa fa-chevron-down"></span></a>
-                    <ul class="nav child_menu">
-                      <li><a href="<?/*= base_url('admin/customer/add'); */?>">Nouveau client</a></li>
-                      <li><a href="<?/*= base_url('admin/customer'); */?>">Liste des clients</a></li>
-                    </ul>
-                  </li>-->
                   <li>
                       <a><i class="fa fa-bar-chart-o"></i> Rapports <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
