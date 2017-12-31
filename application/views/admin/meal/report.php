@@ -20,10 +20,19 @@
 
         <!-- page content -->
         <div class="right_col" role="main">
-            <!--<pre>
+           <!-- <pre>
                 <?php /*print_r($report); */?>
             </pre>-->
             <!-- top tiles -->
+            <div class="row">
+                <div class="col-md-12">
+                    <div id="reportrange1" class="pull-right"
+                         style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc">
+                        <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
+                        <span>December 30, 2014 - January 28, 2015</span> <b class="caret"></b>
+                    </div>
+                </div>
+            </div>
             <div class="row tile_count">
                 <div class="col-md-3 col-sm-4 col-xs-12 tile_stats_count">
                     <span class="count_top"><i class="fa fa-user"></i> Total de vente</span>
@@ -78,13 +87,6 @@
                                     <small>Dépenses-Ventes-Gain</small>
                                 </h3>
                             </div>
-                            <div class="col-md-6">
-                                <div id="reportrange1" class="pull-right"
-                                     style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc">
-                                    <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
-                                    <span>December 30, 2014 - January 28, 2015</span> <b class="caret"></b>
-                                </div>
-                            </div>
                         </div>
 
                         <div class="col-md-12 col-sm-12 col-xs-12">
@@ -109,26 +111,16 @@
                             <ul class="nav navbar-right panel_toolbox">
                                 <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
                                 </li>
-                                <li class="dropdown">
-                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
-                                       aria-expanded="false"><i class="fa fa-wrench"></i></a>
-                                    <ul class="dropdown-menu" role="menu">
-                                        <li><a href="#">Settings 1</a>
-                                        </li>
-                                        <li><a href="#">Settings 2</a>
-                                        </li>
-                                    </ul>
-                                </li>
                                 <li><a class="close-link"><i class="fa fa-close"></i></a>
                                 </li>
                             </ul>
                             <div class="clearfix"></div>
                         </div>
-                        <div class="x_content scroll">
+                        <div class="x_content scroll productsConsomationList">
                             <h4>Quantité des produits utitlisés</h4>
                             <?php foreach ($report['mealConsumptionRate'] as $mealConsumptionRate) { ?>
 
-                            <div class="widget_summary product-quantity" id="quantity_<?php echo $mealConsumptionRate['id'] ?>" >
+                            <div class="widget_summary product-quantity" id="quantity_<?php echo $mealConsumptionRate['product'] ?>" >
                                 <div class="w_left w_25">
                                     <?php echo $mealConsumptionRate['name'];?>
                                 </div>
@@ -157,8 +149,26 @@
                                 </div>
                                 <div class="clearfix"></div>
                             </div>
-
                             <?php } ?>
+                            <div class="product-quantity product-quantity-model" hidden >
+                                <div class="w_left w_25">
+                                </div>
+                                <div class="w_center w_55">
+                                    <div class="progress">
+                                        <div class="progress-bar bg-green" role="progressbar"
+                                             style="width: <?php echo round($mealConsumptionRate['sum_quantity'] / $report['totalConsumptionQuantity'] * 100); ?>%;">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="w_right w_20">
+
+                                    <span>
+                                    </span>
+                                    <span>
+                                    </span>
+                                </div>
+                                <div class="clearfix"></div>
+                            </div>
 
                         </div>
                     </div>
@@ -170,16 +180,6 @@
                             <h2>Consomation des produits</h2>
                             <ul class="nav navbar-right panel_toolbox">
                                 <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
-                                </li>
-                                <li class="dropdown">
-                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
-                                       aria-expanded="false"><i class="fa fa-wrench"></i></a>
-                                    <ul class="dropdown-menu" role="menu">
-                                        <li><a href="#">Settings 1</a>
-                                        </li>
-                                        <li><a href="#">Settings 2</a>
-                                        </li>
-                                    </ul>
                                 </li>
                                 <li><a class="close-link"><i class="fa fa-close"></i></a>
                                 </li>
@@ -294,6 +294,7 @@
                     $("#chart_plot_01").fadeIn();
                     flot_chart(data.evolution);
                 }
+                console.log(data.evolution);
             }
             else {
                 console.log('Error');
@@ -521,8 +522,6 @@
             var d = new Date(entry['rd']);
 
             if (!!d.valueOf()) { // Valid date
-                console.log(entry['profit']);
-                console.log(entry);
                 chartSellsArray.push([gd(d.getFullYear(), d.getMonth()+1, d.getDate()), parseFloat(entry['amount'] * entry['s_quantity'])]);
                 chartProfitsArray.push([gd(d.getFullYear(), d.getMonth()+1, d.getDate()), (parseFloat(entry['amount'] * entry['s_quantity'] - entry['s_cost'])) ]);
                 chartCostsArray.push([gd(d.getFullYear(), d.getMonth()+1, d.getDate()), entry['s_cost']]);
@@ -565,7 +564,7 @@
             data: myData,
             success: function (data) {
                 if (data.status === true) {
-                    /*****************************CHANGE GRAPH****************************************************/
+                    /*****************************CHANGE CONSOMMATION GRAPH****************************************************/
                     //empty quantity graph
                     $('.product-quantity .progress-bar').css({
                         'display': 'none',
@@ -583,9 +582,21 @@
                             };
                             myDataPoints.push(point);
 
+                            if (!$('#quantity_' + mealConsumptionRateProduct['product']).length) {
+                               var productModel=$(".product-quantity-model").clone().removeAttr("hidden");
+                                productModel.addClass("widget_summary");
+                                productModel.attr('id', 'quantity_' + mealConsumptionRateProduct['product']);
+                                productModel.removeClass("product-quantity-model");
+                                productModel.find(' .progress-bar').attr('style', 'width: ' + Math.round(mealConsumptionRateProduct['sum_quantity'] / mealConsumptionRateRange['totalQuantity'] * 100) + '%')
+                                productModel.find(' .w_right span:nth-child(1)').html(mealConsumptionRateProduct['sum_quantity']);
+                                productModel.find(' .w_right span:nth-child(2)').html(" "+mealConsumptionRateProduct['unit']);
+                                productModel.find(".w_left.w_25").html(mealConsumptionRateProduct["name"]);
+                                $(".productsConsomationList").append(productModel);
+                               console.log(productModel);
+                            }
                             //change quantity graph
-                            $('#quantity_' + mealConsumptionRateProduct['id'] + ' .progress-bar').attr('style', 'width: ' + Math.round(mealConsumptionRateProduct['sum_quantity'] / mealConsumptionRateRange['totalQuantity'] * 100) + '%')
-                            $('#quantity_' + mealConsumptionRateProduct['id'] + ' .w_right span:nth-child(1)').html(mealConsumptionRateProduct['sum_quantity']);
+                            $('#quantity_' + mealConsumptionRateProduct['product'] + ' .progress-bar').attr('style', 'width: ' + Math.round(mealConsumptionRateProduct['sum_quantity'] / mealConsumptionRateRange['totalQuantity'] * 100) + '%')
+                            $('#quantity_' + mealConsumptionRateProduct['product'] + ' .w_right span:nth-child(1)').html(mealConsumptionRateProduct['sum_quantity']);
                         }
                     });
 
@@ -612,6 +623,7 @@
                     } else {
                         $("#chartContainer1").hide();
                         $("#chart_plot_01").fadeIn();
+                        console.log(data.evolution);
                         flot_chart(data.evolution);
                           $.each(data.evolution, function (key, meal) {
                                 if(meal['id']){
@@ -624,11 +636,19 @@
                     $.each(data.evolution.mealConsumptionRateRange, function (key, products) {
                         productsCount++;
                     });
+                    var l_amount=0;
+                    var l_scost=0;
+                    var l_squantity=0;
+                    if(data.evolution[0]){
+                        l_amount= data.evolution[0]['amount'];
+                        l_scost= data.evolution[0]['s_cost'];
+                        l_squantity= data.evolution[0]['s_quantity'];
+                    }
                     var reportData = {
-                        'amount': parseFloat(data.evolution[0]['amount'] * data.evolution[0]['s_quantity']).toFixed(2),
+                        'amount': parseFloat(l_amount * l_squantity).toFixed(2),
                         'cost': parseFloat(cost).toFixed(2),
-                        'profit': parseFloat(data.evolution[0]['amount'] * data.evolution[0]['s_quantity'] - data.evolution[0]['s_cost']).toFixed(2),
-                        'quantity': parseInt(data.evolution[0]['s_quantity']),
+                        'profit': parseFloat(l_amount * l_squantity - l_scost).toFixed(2),
+                        'quantity': parseInt(l_squantity),
                         'products': productsCount,// mealConsumptionRateRange contains products and other variabls
                     };
                     changeReportData(reportData);
@@ -654,21 +674,18 @@
         endDate: moment(),
         minDate: '01/01/2017',
         maxDate: '12/31/2027',
-        dateLimit: {
-            days: 60
-        },
         showDropdowns: true,
         showWeekNumbers: true,
         timePicker: false,
         timePickerIncrement: 1,
         timePicker12Hour: true,
         ranges: {
-            'Today': [moment(), moment()],
-            'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-            'Last 7 Days': [moment().subtract(6, 'days'), moment()],
-            'Last 30 Days': [moment().subtract(29, 'days'), moment()],
-            'This Month': [moment().startOf('month'), moment().endOf('month')],
-            'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+            'Aujourd\'hui': [moment(), moment()],
+            'Hier': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+            'Dernier 7 jours': [moment().subtract(6, 'days'), moment()],
+            'Dernier 30 jours': [moment().subtract(29, 'days'), moment()],
+            'Ce mois': [moment().startOf('month'), moment().endOf('month')],
+            'Mois précédent': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
         },
         opens: 'left',
         buttonClasses: ['btn btn-default'],
@@ -677,13 +694,13 @@
         format: 'MM/DD/YYYY',
         separator: ' to ',
         locale: {
-            applyLabel: 'Submit',
-            cancelLabel: 'Clear',
+            applyLabel: 'Envoyer',
+            cancelLabel: 'Annuler',
             fromLabel: 'From',
             toLabel: 'To',
-            customRangeLabel: 'Custom',
-            daysOfWeek: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
-            monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+            customRangeLabel: 'Personnalisé',
+            daysOfWeek: ['Lu', 'Ma', 'Me', 'Je', 'Ve', 'Sa', 'Di'],
+            monthNames: ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'],
             firstDay: 1
         }
     };

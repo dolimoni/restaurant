@@ -140,15 +140,17 @@ class model_report extends CI_Model
             $this->db->where('c.report_date<=', $endDate);
         }
         $this->db->group_by('report_date');
+        $this->db->order_by('report_date',"desc");
         $this->db->limit(20);
         $sales_history = $this->db->get()->result_array();//Sales history
+        $sales_history= array_reverse($sales_history);
 
         $this->db->select('sum(sh.total) as price');
         $this->db->from('stock_history sh');
         $this->db->where('sh.type', 'in');
         if ($startDate) {
-            $this->db->where('created_at>=', $startDate);
-            $this->db->where('created_at<=', $endDate);
+            $this->db->where('date(created_at)>=', $startDate);
+            $this->db->where('date(created_at)<=', $endDate);
         }
         $stock_history = $this->db->get()->row_array();
 
@@ -188,15 +190,15 @@ class model_report extends CI_Model
 
         $this->db->select('sum(price) as price');
         if ($startDate) {
-            $this->db->where('created_at>=', $startDate);
-            $this->db->where('created_at<=', $endDate);
+            $this->db->where('date(created_at)>=', $startDate);
+            $this->db->where('date(created_at)<=', $endDate);
         }
         $purchase = $this->db->get('purchase')->row_array();
 
         $this->db->select('sum(price) as price');
         if ($startDate) {
-            $this->db->where('created_at>=', $startDate);
-            $this->db->where('created_at<=', $endDate);
+            $this->db->where('date(created_at)>=', $startDate);
+            $this->db->where('date(created_at)<=', $endDate);
         }
         $repair = $this->db->get('reparation')->row_array();
 
@@ -214,7 +216,7 @@ class model_report extends CI_Model
         return $global;
     }
 
-    public function reportById($meal_id)
+    public function reportById($meal_id,$startDate=null,$endDate=null)
     {
         $this->db->select('*');
         $this->db->select('sum(c.quantity) as s_quantity');
@@ -223,6 +225,10 @@ class model_report extends CI_Model
         $this->db->join('consumption c', 'm.id = c.meal');
         $this->db->where('m.id', $meal_id);
         $this->db->where('c.type', 'sale');
+        if($startDate){
+            $this->db->where('DATE(c.report_date) >=', $startDate);
+            $this->db->where('DATE(c.report_date) <=', $endDate);
+        }
         $this->db->group_by('c.meal');
         $report = $this->db->get()->row_array();
 
@@ -232,6 +238,10 @@ class model_report extends CI_Model
         $this->db->join('consumption_product cp', 'c.id = cp.consumption', 'left');
         $this->db->where('c.meal', $meal_id);
         $this->db->where('cp.type', 'sale');
+        if ($startDate) {
+            $this->db->where('DATE(c.report_date) >=', $startDate);
+            $this->db->where('DATE(c.report_date) <=', $endDate);
+        }
         $s_cost = $this->db->get()->row()->s_cost;
 
         $report['s_cost']=$s_cost;
@@ -239,7 +249,7 @@ class model_report extends CI_Model
 
 
 
-        $report['mealConsumptionRate'] = $this->mealConsumptionRate($meal_id);
+        $report['mealConsumptionRate'] = $this->mealConsumptionRate($meal_id,$startDate,$endDate);
         $report['totalPrice'] = $report['mealConsumptionRate']['totalPrice'];
         $report['totalConsumptionQuantity'] = $report['mealConsumptionRate']['totalQuantity'];
         unset($report['mealConsumptionRate']['totalPrice']);
@@ -427,15 +437,20 @@ class model_report extends CI_Model
         return $meals;
     }
 
-    public function mealConsumptionRate($meal_id)
+    public function mealConsumptionRate($meal_id, $startDate, $endDate)
     {
         $this->db->select('*,avg(cp.unit_price) as avg_unit_price,sum(cp.quantity) as sum_quantity');
         $this->db->from('consumption_product cp');
         $this->db->join('product p', 'p.id=cp.product');
+        $this->db->join('consumption c', 'c.id=cp.consumption');
         $this->db->group_by('cp.product');
         $this->db->group_by('cp.meal');
         $this->db->where('cp.meal', $meal_id);
         $this->db->where('cp.type', 'sale');
+        if($startDate){
+            $this->db->where('c.report_date >=', $startDate);
+            $this->db->where('c.report_date <=', $endDate);
+        }
         $mealConsumptionRate = $this->db->get()->result_array();
         $mealConsumptionTotal = 0; // total price
         $mealConsumptionTotalQuantity = 0; // total quantity
@@ -450,6 +465,7 @@ class model_report extends CI_Model
         return $mealConsumptionRate;
     }
 
+    // a remplacer par la fonction ci-dessus
     public function mealConsumptionRateRange($meal_id, $startDate, $endDate)
     {
         $this->db->select('cp.*,p.*,avg(cp.unit_price) as avg_unit_price,sum(cp.quantity) as sum_quantity');

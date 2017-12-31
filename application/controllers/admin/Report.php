@@ -59,6 +59,8 @@ class Report extends BaseController
     {
         $startDate=$this->input->post('startDate');
         $endDate=$this->input->post('endDate');
+        $this->session->set_userdata('startDate', $startDate);
+        $this->session->set_userdata('endDate', $endDate);
         $articles=$this->model_report->reportRange($startDate,$endDate);
         $this->output
             ->set_content_type("application/json")

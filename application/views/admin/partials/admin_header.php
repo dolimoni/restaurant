@@ -83,7 +83,7 @@
             <!-- menu profile quick info -->
             <div class="profile clearfix">
                 <div class="profile_pic">
-                    <img src="<?= base_url('assets/images/itsMe.jpg'); ?>" alt="..." class="img-circle profile_img">
+                    <img src="<?= base_url('assets/images/profile-default-male.png'); ?>" alt="..." class="img-circle profile_img">
                 </div>
                 <div class="profile_info">
                     <span>Bienvenu,</span>
@@ -140,8 +140,9 @@
                   <li>
                       <a><i class="fa fa-bar-chart-o"></i> Rapports <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
-                      <li><a href="<?= base_url('admin/report/index'); ?>">Rapport des articles</a></li>
                       <li><a href="<?= base_url('admin/report/statistic'); ?>">Statistiques</a></li>
+                      <li><a href="<?= base_url('admin/report'); ?>">Rapport des articles</a></li>
+                      <li><a href="<?= base_url('admin/reports'); ?>">Rapport du jour</a></li>
                     </ul>
                   </li>
                   <li>

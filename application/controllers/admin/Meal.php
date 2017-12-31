@@ -37,9 +37,15 @@ class Meal extends BaseController {
         $data['meal'] = $this->model_meal->get($meal_id);
         $data['products'] = $this->model_meal->getProducts($meal_id);
         $data['report'] = $this->model_report->reportById($meal_id);
-        $start = date('Y-m-d', strtotime('-1 month'));
+        $start = date('Y-m-d', strtotime('-2 month'));
         $end = date('Y-m-d');
         $evolution = $this->model_report->evolutionRange($meal_id, $start, $end);
+        if($this->session->userdata('startDate')){
+            $startDate= $this->session->userdata('startDate');
+            $endDate= $this->session->userdata('endDate');
+            $data['report'] = $this->model_report->reportById($meal_id, $startDate, $endDate);
+            $evolution = $this->model_report->evolutionRange($meal_id, $startDate, $endDate);
+        }
         $data['report']['rds']=count($this->rds($evolution));
         $data['params'] = $this->getParams();
         $this->load->view('admin/meal/report',$data);
@@ -48,7 +54,16 @@ class Meal extends BaseController {
     public function apiEvolution(){
         $meal_id = $this->input->post('id');
 
+
         $evolution = $this->model_report->evolution($meal_id);
+
+        if ($this->session->userdata('startDate')) {
+            $startDate = $this->session->userdata('startDate');
+            $endDate = $this->session->userdata('endDate');
+            $evolution = $this->model_report->evolutionRange($meal_id, $startDate, $endDate);
+            $this->session->unset_userdata('startDate');
+            $this->session->unset_userdata('endDate');
+        }
 
         $rds = array_column($evolution, 'rd');
 
@@ -58,7 +73,6 @@ class Meal extends BaseController {
         }
 
         usort($rds, "date_sort");
-
 
         $this->output
             ->set_content_type("application/json")
@@ -70,10 +84,6 @@ class Meal extends BaseController {
         $startDate = $this->input->post('startDate');
         $endDate = $this->input->post('endDate');
         $evolution = $this->model_report->evolutionRange($meal_id, $startDate,$endDate);
-
-
-
-
         $this->output
             ->set_content_type("application/json")
             ->set_output(json_encode(array('status' => true, 'evolution' => $evolution,'rds'=>$this->rds($evolution))));

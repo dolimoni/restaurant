@@ -9,9 +9,9 @@
 <!-- page content -->
 <div class="right_col" role="main">
     <div class="">
-           <!-- <pre>
-                <?php /*print_r($report); */?>
-            </pre>
+            <!--<pre>
+                <?php /*print_r($report['sales_history']); */?>
+            </pre>-->
         <div class="page-title">
           <!--  <div class="title_left">
                 <h3>Articles</h3>
@@ -78,11 +78,8 @@
                                     <div class="clearfix"></div>
                                 </div>
                                 <ul class="list-unstyled top_profiles scroll-view">
-                                        <?php foreach ($report['products_cost'] as $key=>$products_cost){ ?>
+                                    <?php foreach ($report['products_cost'] as $key=>$products_cost){ ?>
                                     <li class="media event">
-                                       <!-- <a class="pull-left border-aero profile_thumb">
-                                            <i class="fa fa-user aero"></i>
-                                        </a>-->
                                         <div class="media-body">
                                             <a class="title" href="#"><?php echo $products_cost['name']; ?></a>
                                             <p>Consommation <strong><?php echo $products_cost['s_cost']; ?>DH</strong></p>
@@ -93,6 +90,17 @@
                                     </li>
                                     <?php } ?>
                                 </ul>
+                                <li class="media event productModel" hidden>
+                                    <div class="media-body">
+                                        <a class="title" href="#"></a>
+                                        <p>Consommation <strong></strong>
+                                        </p>
+                                        <p>
+                                            <small>
+                                            </small>
+                                        </p>
+                                    </div>
+                                </li>
                             </div>
                         </div>
 
