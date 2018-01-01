@@ -39,6 +39,7 @@ class Main extends BaseController
     }
 
     private function readSalesCSV($file_name){
+        $this->log_begin();
         $row = 1;
         $index = 0;
         $rows = array();
@@ -80,11 +81,13 @@ class Main extends BaseController
         }
         $data['rows'] = $rows;
         $data['dateTime'] = $dateTime;
+        $this->log_end($data);
         return $data;
     }
     public function apiLoadFile()
     {
         try {
+            $this->log_begin();
             $file_path = $this->uploadFile();
             $data['sales'] = $this->readSalesCSV($file_path);
 
@@ -102,6 +105,7 @@ class Main extends BaseController
             $this->output
                 ->set_content_type("application/json")
                 ->set_output(json_encode(array('status' => 'success', 'response' => $data)));
+            $this->log_end($data);
         } catch (Exception $e) {
             $this->output
                 ->set_content_type("application/json")
@@ -113,9 +117,11 @@ class Main extends BaseController
     public function ftp()
     {
         try {
+            $this->log_begin();
             //$data['sales'] = $this->readSalesCSV(base_url('uploads/ftp/x-plu_1_0001001.csv'));
             $data['sales'] = $this->readSalesCSV('/var/www/html/fiori/uploads/ftp/x-plu_1_0001001.csv');
             $mealsList=array();
+            $this->log_middle($data['sales']);
             foreach ($data['sales']['rows'] as $key => $sale) {
                 $meal = $this->model_meal->getByExternalCode($sale['0']);
                 $quantity = $sale[2] / 1000;
@@ -136,21 +142,16 @@ class Main extends BaseController
 
                 }
             }
+            $this->log_middle($mealsList);
             $this->clean();
             $this->model_meal->consumption($mealsList);
+            $this->log_end(array('status' => 'error'));
 
         } catch (Exception $e) {
 
         }
     }
 
-    public function message($to = 'World')
-    {
-        if ($this->input->is_cli_request()){
-            echo "Hello {$to}!" . PHP_EOL;
-        }
-        echo "khalid";
-    }
 
     private function uploadFile()
     {
@@ -181,6 +182,7 @@ class Main extends BaseController
             }
         }
         $save_path = base_url() . $file_path;
+        $this->log_end(array('file_upload_status' => 'success'));
         return $file_path;
     }
 

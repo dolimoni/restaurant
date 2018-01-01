@@ -16,10 +16,10 @@ class Customer extends BaseController {
                 
 	}
 	public function index()
-	{	
+	{
+        $this->log_begin();
         $data['customers'] = $this->model_customer->getAll();
         $data['params'] = $this->getParams();
-
         $this->parser->parse('admin/customer/list', $data);
     }
 
@@ -27,6 +27,8 @@ class Customer extends BaseController {
     {
 
         //$this->model_employee->automaticSalary();
+
+        $this->log_begin();
 
         if (!$this->input->post('addEmployee')) {
             $data['products'] = $this->model_product->getAll();
@@ -46,6 +48,7 @@ class Customer extends BaseController {
             }
             $this->uploadFile();
             $worker = array('name' => $name, 'prenom' => $prenom, 'cin' => $cin, 'address' => $address, 'phone' => $phone, 'salary' => $salary, 'workType' => $workType, 'image' => $image);
+            $this->log_middle($worker);
             $this->model_employee->add($worker);
             $this->output
                 ->set_content_type("application/json")
@@ -53,10 +56,14 @@ class Customer extends BaseController {
 
         }
 
+        $this->log_begin(array('status' => 'success'));
+
     }
 
     public function edit($cid)
-	{	
+	{
+        $this->log_begin();
+
 		if(!$this->input->post('buttonSubmit'))
 		{
 			$data['message'] = '';
@@ -87,25 +94,34 @@ class Customer extends BaseController {
 				$this->load->view('view_employee', $data);
 			}
 		}
+
+        $this->log_begin(array('status' => 'success'));
 	}
 
     public function show()
     {
+        $this->log_begin();
         $id = $this->uri->segment(4);
         $data['employee'] = $this->model_employee->get($id);
         $data['events'] = $this->model_employee->getEvents($id);
         $data['salaries'] = $this->model_employee->getSalaries($id);
         $this->load->view('admin/employee/show', $data);
+        $this->log_middle($data);
+        $this->log_begin(array('status' => 'success'));
     }
 
     public function apiUpdateEvent()
     {
         try {
+            $this->log_begin();
+
             $event = $this->input->post('updateEvent');
             $this->model_employee->updateEvent($event);
+            $this->log_middle($event);
             $this->output
                 ->set_content_type("application/json")
                 ->set_output(json_encode(array('status' => 'success')));
+            $this->log_begin(array('status' => 'success'));
         } catch (Exception $e) {
             $this->output
                 ->set_content_type("application/json")
@@ -116,11 +132,14 @@ class Customer extends BaseController {
     public function apiCreateEvent()
     {
         try {
+            $this->log_begin();
             $event = $this->input->post('createEvent');
+            $this->log_middle($event);
             $this->model_employee->createEvent($event);
             $this->output
                 ->set_content_type("application/json")
                 ->set_output(json_encode(array('status' => 'success')));
+            $this->log_begin(array('status' => 'success'));
         } catch (Exception $e) {
             $this->output
                 ->set_content_type("application/json")
@@ -131,11 +150,15 @@ class Customer extends BaseController {
     public function apiDeleteEvent()
     {
         try {
+            $this->log_begin();
+
             $event = $this->input->post('deleteEvent');
+            $this->log_middle($event);
             $this->model_employee->deleteEvent($event);
             $this->output
                 ->set_content_type("application/json")
                 ->set_output(json_encode(array('status' => 'success')));
+            $this->log_begin(array('status' => 'success'));
         } catch (Exception $e) {
             $this->output
                 ->set_content_type("application/json")
@@ -144,9 +167,12 @@ class Customer extends BaseController {
     }
 
 	public function delete($cid)
-	{	
+	{
+        $this->log_begin();
         $this->model_employee->delete($cid);
         $this->session->set_flashdata('message','Employee Successfully deleted.');
+        $this->log_begin(array('status' => 'success'));
+
         redirect(base_url('admin/employee'));
 	}
 

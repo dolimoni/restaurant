@@ -16,33 +16,41 @@ class Product extends BaseController {
 	}
 	public function index()
 	{
+        $this->log_begin();
         $data['products'] = $this->model_product->getAll(true,false);//param1: get Meals,param2:get compositions
         $data['productsComposition'] = $this->model_product->getCompositions(true);//true: get Meals
         $data['providers'] = $this->model_provider->getAll();
         $data['params'] = $this->getParams();
         $this->parser->parse('admin/product/view_products', $data);
+        $this->log_end($data);
     }
     public function toOrder()
 	{
+        $this->log_begin();
         $data['products'] = $this->model_product->getToOrder();
         $data['params'] = $this->getParams();
         $this->parser->parse('admin/product/view_productsToOrder', $data);
+        $this->log_end($data);
     }
 
     public function add()
     {
+       $this->log_begin();
        try {
            if (!$this->input->post('productsList')) {
                $data['products'] = $this->model_product->getAll();
                $data['providers'] = $this->model_provider->getAll();
                $data['params'] = $this->getParams();
                $this->load->view('admin/product/add', $data);
+               $this->log_end($data);
            } else {
                $productsList = $this->input->post('productsList');
+               $this->log_middle($productsList);
                $this->model_product->addProducts($productsList);
                $this->output
                    ->set_content_type("application/json")
                    ->set_output(json_encode(array('status' => 'success', 'redirect' => base_url('admin/product/index'))));
+               $this->log_end(array('status' => 'success', 'redirect' => base_url('admin/product/index')));
            }
        } catch (Exception $e) {
            $this->output
@@ -54,17 +62,22 @@ class Product extends BaseController {
 
     public function addComposition()
     {
+        $this->log_begin();
        try {
            if (!$this->input->post('composition')) {
                $data['products'] = $this->model_product->getAll(false,true);
                $data['params'] = $this->getParams();
                $this->load->view('admin/product/view_addComposition', $data);
+               $this->log_end($data);
            } else {
                $composition = $this->input->post('composition');
+               $this->log_middle($composition);
                $this->model_product->addComposition($composition);
                $this->output
                    ->set_content_type("application/json")
                    ->set_output(json_encode(array('status' => 'success', 'redirect' => base_url('admin/product/index'))));
+               $this->log_end(array('status' => 'success', 'redirect' => base_url('admin/product/index')));
+
            }
        } catch (Exception $e) {
            $this->output
@@ -77,6 +90,7 @@ class Product extends BaseController {
     public function editComposition()
     {
        try {
+           $this->log_begin();
 
            $id = $this->uri->segment(4);
            $data['composition'] = $this->model_product->getComposition($id);
@@ -84,6 +98,7 @@ class Product extends BaseController {
            $data['products'] = $this->model_product->getAll(false,true);
            $data['params'] = $this->getParams();
            $this->load->view('admin/product/view_editComposition', $data);
+           $this->log_end($data);
 
        } catch (Exception $e) {
            $this->output
@@ -94,19 +109,24 @@ class Product extends BaseController {
 
     public function apiEditComposition(){
         try {
+            $this->log_begin();
             $composition = $this->input->post('composition');
             $db_product = $this->model_product->getById($composition['id']);
             $data = array();
 
+            $this->log_middle($db_product);
             if ($db_product['unit_price'] !== $composition['cost'] and $composition['quantity']>0) {
                 $this->model_product->addComposition($composition,true);
             } else {
                 $this->model_product->addComposition($composition);
             }
 
+
+
             $this->output
                 ->set_content_type("application/json")
                 ->set_output(json_encode(array('status' => 'success', 'redirect' => base_url('admin/product/index'))));
+            $this->log_end(array('status' => 'success', 'redirect' => base_url('admin/product/index')));
         } catch (Exception $e) {
             $this->output
                 ->set_content_type("application/json")
@@ -116,12 +136,14 @@ class Product extends BaseController {
 
     public function apiGetByProvider(){
         try {
+            $this->log_begin();
                 $product_id = $this->input->post('product');
                 $provider = $this->input->post('provider');
                 $prodcut = $this->model_product->getByProvider($product_id,$provider);
                 $this->output
                     ->set_content_type("application/json")
                     ->set_output(json_encode(array('status' => 'success','product'=> $prodcut)));
+            $this->log_end(array('status' => 'success', 'product' => $prodcut));
         } catch (Exception $e) {
             $this->output
                 ->set_content_type("application/json")
@@ -131,20 +153,24 @@ class Product extends BaseController {
 
     public function edit()
 	{
+        $this->log_begin();
         $id = $this->uri->segment(4);
         $data['providers'] = $this->model_provider->getAll();
 		$data['product'] = $this->model_product->getById($id);
 		$data['quantities'] = $this->model_product->getQuantitiesToShow($id);
         $data['params'] = $this->getParams();
 		$this->load->view('admin/product/edit',$data);
+        $this->log_end($data);
 	}
 	public function apiEdit()
 	{
         try {
+            $this->log_begin();
             $product = $this->input->post('product');
             $db_product = $this->model_product->getById($product['id']);
             $data = array();
 
+            $this->log_middle($db_product);
             if ($db_product['unit_price'] !== $product['unit_price'] or $db_product['provider'] !== $product['provider']) {
                 $this->model_product->edit($product,true);
             } else {
@@ -153,6 +179,8 @@ class Product extends BaseController {
             $this->output
                 ->set_content_type("application/json")
                 ->set_output(json_encode(array('status' => 'success', 'redirect' => base_url('admin/product/index'))));
+            $this->log_end(array('status' => 'success', 'redirect' => base_url('admin/product/index')));
+
         } catch (Exception $e) {
             $this->load->view('admin/product/edit', $data);
             $this->output
@@ -164,10 +192,12 @@ class Product extends BaseController {
 	public function apiEditForProvider()
 	{
         try {
+            $this->log_begin();
             $product = $this->input->post('product');
             $db_product = $this->model_product->getById($product['id']);
             $data = array();
 
+            $this->log_middle($db_product);
             if ($db_product['unit_price'] !== $product['unit_price']) {
                 $this->model_product->apiEditForProvider($product,true);
             } else {
@@ -176,6 +206,7 @@ class Product extends BaseController {
             $this->output
                 ->set_content_type("application/json")
                 ->set_output(json_encode(array('status' => 'success')));
+            $this->log_end(array('status' => 'success'));
         } catch (Exception $e) {
             $this->load->view('admin/product/edit', $data);
             $this->output
@@ -187,12 +218,14 @@ class Product extends BaseController {
 	public function apiActivateQuantity()
 	{
         try {
+            $this->log_begin();
 
             //id of quantity to be activated
             $quantity_id = $this->input->post('quantity_id');
 
             //getting quantity from db
             $quantity = $this->model_product->getQuantity($quantity_id);
+            $this->log_middle($quantity);
 
             //searching actual active quantity by product
             $activeQuantity= $this->model_product->getActiveQuantityByProduct($quantity['product']);
@@ -219,6 +252,8 @@ class Product extends BaseController {
             $this->output
                 ->set_content_type("application/json")
                 ->set_output(json_encode(array('status' => 'success')));
+
+            $this->log_end(array('status' => 'success'));
         } catch (Exception $e) {
             $this->output
                 ->set_content_type("application/json")
@@ -230,11 +265,13 @@ class Product extends BaseController {
 	{
 
         try {
+            $this->log_begin();
             $status="success";
             $message="success";
             $id = $this->input->post('id');
             if($this->model_product->canBeDeleted($id)){
                 $this->model_product->delete($id);
+                $this->log_middle("deleted");
             }else{
                 $status = "warning";
                 $message= "Ce produit est utilisé dans certain articles";
@@ -242,6 +279,7 @@ class Product extends BaseController {
             $this->output
                 ->set_content_type("application/json")
                 ->set_output(json_encode(array('status' => $status,'message'=>$message)));
+            $this->log_end(array('status' => $status, 'message' => $message));
         } catch (Exception $e) {
             $this->output
                 ->set_content_type("application/json")

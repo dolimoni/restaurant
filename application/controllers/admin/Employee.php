@@ -14,16 +14,19 @@ class Employee extends BaseController {
 
 	}
 	public function index()
-	{	
+	{
+        $this->log_begin();
         $data['emp'] = $this->model_employee->getAll();
-
         $this->parser->parse('admin/employee/list', $data);
+        $this->log_end($data);
     }
 
 	public function add()
     {
 
         //$this->model_employee->automaticSalary();
+
+        $this->log_begin();
 
         if (!$this->input->post('name')) {
             $data['message'] = '';
@@ -48,13 +51,15 @@ class Employee extends BaseController {
             $this->output
                 ->set_content_type("application/json")
                 ->set_output(json_encode(array('status' => true,'worker'=> $worker)));
+            $this->log_end($worker);
 
         }
 
     }
 
     public function edit($cid)
-	{	
+	{
+        $this->log_begin();
 		if(!$this->input->post('buttonSubmit'))
 		{
 			$data['message'] = '';
@@ -62,8 +67,7 @@ class Employee extends BaseController {
 			$data['userRow'] = $userRow;
 			$this->load->view('admin/view_editemployee', $data);
 		}
-		else
-		{
+		else{
 			if($this->form_validation->run('editemp'))
 			{
 				$f_name = $this->input->post('f_name');
@@ -77,6 +81,7 @@ class Employee extends BaseController {
                 $u_address = $this->input->post('u_address');
 				$u_id = $this->input->post('u_id');
 				$this->model_employee->update($f_name,$l_name,$u_bday,$u_position,$u_type,$u_pass,$u_mobile,$u_gender,$u_address,$u_id);
+                $this->log_end(array('status' => 'success'));
 				redirect(base_url('admin/employee'));
 			}
 			else
@@ -89,23 +94,28 @@ class Employee extends BaseController {
 
     public function show()
     {
+        $this->log_begin();
         $id = $this->uri->segment(4);
         $data['employee'] = $this->model_employee->get($id);
         $data['events'] = $this->model_employee->getEvents($id);
         $data['salaries'] = $this->model_employee->getSalaries($id);
         $data['params'] = $this->getParams();
         $this->load->view('admin/employee/show', $data);
+        $this->log_end($data);
     }
 
     public function apiUpdateEmployee()
     {
+        $this->log_begin();
         try {
             $employee = $this->input->post('employee');
             $id = $this->input->post('id');
+            $this->log_middle($employee);
             $this->model_employee->updateEmployee($id,$employee);
             $this->output
                 ->set_content_type("application/json")
                 ->set_output(json_encode(array('status' => 'success')));
+            $this->log_end(array('status' => 'success'));
         } catch (Exception $e) {
             $this->output
                 ->set_content_type("application/json")
@@ -115,9 +125,12 @@ class Employee extends BaseController {
 
     public function apiUpdateEvent()
     {
+        $this->log_begin();
         try {
             $event = $this->input->post('updateEvent');
+            $this->log_middle($event);
             $this->model_employee->updateEvent($event);
+            $this->log_end(array('status' => 'success'));
             $this->output
                 ->set_content_type("application/json")
                 ->set_output(json_encode(array('status' => 'success')));
@@ -131,11 +144,14 @@ class Employee extends BaseController {
     public function apiCreateEvent()
     {
         try {
+            $this->log_begin();
             $event = $this->input->post('createEvent');
+            $this->log_middle($event);
             $this->model_employee->createEvent($event);
             $this->output
                 ->set_content_type("application/json")
                 ->set_output(json_encode(array('status' => 'success')));
+            $this->log_end(array('status' => 'success'));
         } catch (Exception $e) {
             $this->output
                 ->set_content_type("application/json")
@@ -146,11 +162,14 @@ class Employee extends BaseController {
     public function apiDeleteEvent()
     {
         try {
+            $this->log_begin();
             $event = $this->input->post('deleteEvent');
+            $this->log_middle($event);
             $this->model_employee->deleteEvent($event);
             $this->output
                 ->set_content_type("application/json")
                 ->set_output(json_encode(array('status' => 'success')));
+            $this->log_end(array('status' => 'success'));
         } catch (Exception $e) {
             $this->output
                 ->set_content_type("application/json")
@@ -161,12 +180,14 @@ class Employee extends BaseController {
 
     public function apiDeleteEmployee()
     {
+        $this->log_begin();
         try {
             $employee_id = $this->input->post('employee_id');
             $this->model_employee->deleteEmployee($employee_id);
             $this->output
                 ->set_content_type("application/json")
                 ->set_output(json_encode(array('status' => 'success')));
+            $this->log_end(array('status' => 'success'));
         } catch (Exception $e) {
 
             $this->output
@@ -177,6 +198,7 @@ class Employee extends BaseController {
 
     private function uploadFile()
     {
+        $this->log_begin();
         $valid_file = true;
         $message = '';
         //if they DID upload a file...

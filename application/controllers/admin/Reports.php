@@ -11,7 +11,6 @@ class Reports extends BaseController {
 
         //$this->load->database();
         $this->load->model('model_report');
-
     }
 
     public function index() {
@@ -24,6 +23,7 @@ class Reports extends BaseController {
 
     public function create() {
         //$this->form_validation->set_rules('emails', 'Email', 'required');
+        $this->log_begin();
         $this->form_validation->set_rules('title', 'Title', 'required');
         $this->form_validation->set_rules('message', 'Message', 'required');
 
@@ -31,21 +31,26 @@ class Reports extends BaseController {
             $this->model_report->addReport();
             // Set message
             $this->session->set_flashdata('report_created', 'Votre rapport a été bien ajouté');
+            $this->log_end(array('status' => true));
             redirect('admin/reports');
         }else{
             $data['params'] = $this->getParams();
             $this->session->set_flashdata('title', $this->input->post('title'));
             $this->load->view('admin/daily_report/create',$data);
+            $this->log_end($data);
         }
     }
 
     public function viewReport($id) {
+        $this->log_begin();
         $data['report'] = $this->model_report->getReport($id);
         $data['params'] = $this->getParams();
         $this->load->view('admin/daily_report/viewReport', $data);
+        $this->log_end($data);
     }
 
     public function editReport($id) {
+        $this->log_begin();
         // $this->form_validation->set_rules('emails', 'Email', 'required');
         $this->form_validation->set_rules('title', 'Title', 'required');
         $this->form_validation->set_rules('message', 'Message', 'required');
@@ -56,38 +61,47 @@ class Reports extends BaseController {
 
             // Set message
             $this->session->set_flashdata('report_created', 'Votre rapport a été bien ajouté');
+            $this->log_end(array('status' => true));
 
             redirect('admin/reports');
         }else{
             $data['report'] = $this->model_report->getReport($id);
             $this->load->view('admin/daily_report/editReport', $data);
+            $this->log_end($data);
         }
     }
 
     public function getReportByName() {
+        $this->log_begin();
         $data = $this->model_report->getUsersSearch($this->input->post('q'));
 
         $this->output
             ->set_content_type("application/json")
             ->set_output(json_encode($data));
+        $this->log_end($data);
     }
 
     public function send($id) {
+        $this->log_begin();
         $data['report'] = $this->model_report->getReport($id);
         // $this->load->library('Provider');
         // $pro = new Provider();
         // print_r($data['report']);
         if($this->sendEmail($data['report'])){
             $this->model_report->updateSentMail($id);
+            $this->log_end(array('status' => true));
             redirect('admin/reports');
         }
+        $this->log_end(array('status' => true));
     }
 
     public function delete() {
+        $this->log_begin();
         $data['report'] = $this->model_report->deleteReport($this->input->post('id'));
         $this->output
             ->set_content_type("application/json")
             ->set_output(json_encode($data));
+        $this->log_end($data);
     }
 
     public function sendEmail($e_params) {
@@ -124,13 +138,5 @@ class Reports extends BaseController {
         } else {
             return 0;
         }
-    }
-
-    private function log_begin(){
-        log_message('info', "dolimoni=>Log_begin: " . $this->router->fetch_class() . " " . $this->router->fetch_method());
-        log_message('info', print_r($this->input, TRUE));
-    }
-    private function log_end($data){
-        log_message('info', "dolimoni=>Log_end: " . print_r($data, TRUE));
     }
 }

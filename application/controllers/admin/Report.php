@@ -19,28 +19,33 @@ class Report extends BaseController
 
     public function index()
     {
+        $this->log_begin();
         $data['articles']=$this->model_report->report();
         $data['params'] = $this->getParams();
         $this->load->view('admin/report/article', $data);
+        $this->log_end($data);
     }
     public function statistic()
     {
+        $this->log_begin();
         $data['articles']=$this->model_report->report();
         $data['report'] = $this->model_report->global_report();
         $data['params'] = $this->getParams();
         $this->load->view('admin/report/view_statistic', $data);
+        $this->log_end($data);
     }
 
     public function apiStatistic()
     {
+       $this->log_begin();
        try {
            $startDate = $this->input->post('startDate');
            $endDate = $this->input->post('endDate');
            $report = $this->model_report->global_report($startDate, $endDate);
-
            $this->output
                ->set_content_type("application/json")
                ->set_output(json_encode(array('status' => "success", 'report' => $report)));
+           $this->log_end($report);
        } catch (Exception $e) {
            $this->output
                ->set_content_type("application/json")
@@ -49,14 +54,17 @@ class Report extends BaseController
     }
     public function apiReport()
     {
+        $this->log_begin();
         $params=$this->input->post('params');
         $articles=$this->model_report->report($params);
         $this->output
             ->set_content_type("application/json")
             ->set_output(json_encode(array('status' => true, 'articles' => $articles)));
+        $this->log_end($articles);
     }
     public function apiRange()
     {
+        $this->log_begin();
         $startDate=$this->input->post('startDate');
         $endDate=$this->input->post('endDate');
         $this->session->set_userdata('startDate', $startDate);
@@ -65,10 +73,12 @@ class Report extends BaseController
         $this->output
             ->set_content_type("application/json")
             ->set_output(json_encode(array('status' => true,'articles'=>$articles)));
+        $this->log_end($articles);
     }
 
     public function apiPriceRange()
     {
+        $this->log_begin();
         $startDate=$this->input->post('startDate');
         $endDate=$this->input->post('endDate');
         $product=$this->input->post('product');
@@ -77,15 +87,18 @@ class Report extends BaseController
         $this->output
             ->set_content_type("application/json")
             ->set_output(json_encode(array('status' => 'success','prices'=> $prices,'providers'=> $providers)));
+        $this->log_end(array('status' => 'success', 'prices' => $prices, 'providers' => $providers));
     }
 
     public function view()
     {
+        $this->log_begin();
         $meal_id = $this->uri->segment(4);
         $data['meal'] = $this->model_meal->get($meal_id);
         $data['products'] = $this->model_meal->getProducts($meal_id);
 
         $this->parser->parse('admin/meal/view_meal', $data);
+        $this->log_end($data);
     }
 
     public function mypdfTest()
@@ -117,10 +130,12 @@ class Report extends BaseController
     public function add()
     {
 
+        $this->log_begin();
         if (!$this->input->post('addProvider')) {
             $data['message'] = '';
             $data['providers'] = $this->model_provider->getAll();
             $this->parser->parse('admin/provider/add', $data);
+            $this->log_end($data);
         } else {
             $title = $this->input->post('title');
             $name = $this->input->post('name');
@@ -131,10 +146,12 @@ class Report extends BaseController
             $image = $_FILES['image']['name'];
             $this->uploadFile();
             $provider = array('title' => $title, 'name' => $name, 'prenom' => prenom, 'address' => $address, 'phone' => $phone, 'mail' => $mail, 'image' => $image);
+            $this->log_middle($provider);
             $this->model_provider->add($provider);
             $this->output
                 ->set_content_type("application/json")
                 ->set_output(json_encode(array('status' => true)));
+            $this->log_end(array('status' => true));
 
         }
 
@@ -142,19 +159,23 @@ class Report extends BaseController
 
     public function apiAddProducts()
     {
+        $this->log_begin();
         $productsList = $this->input->post('productsList');
         $this->model_provider->addProducts($productsList);
         $this->output
             ->set_content_type("application/json")
             ->set_output(json_encode(array('status' => true)));
+        $this->log_end(array('status' => true));
     }
 
     public function show()
     {
+        $this->log_begin();
         $id = $this->uri->segment(4);
         $data['provider'] = $this->model_provider->get(1)[0];
         $data['products'] = $this->model_provider->getProducts(1);
         $this->load->view('admin/provider/show', $data);
+        $this->log_end($data);
     }
 
     private function uploadFile()
@@ -190,22 +211,26 @@ class Report extends BaseController
 
     function apiPrintOrder()
     {
+        $this->log_begin();
         $order = $this->input->post('order');
         $data['order'] = $order;
         $output = $this->createPDF($data);
         $this->output
             ->set_content_type("application/json")
             ->set_output(json_encode(array('status' => true, 'filepath' => $output)));
+        $this->log_end(array('status' => true, 'filepath' => $output));
     }
 
     function order()
     {
+        $this->log_begin();
         $order = $this->input->post('order');
         $data['order'] = $order;
         $output = $this->createPDF($data);
         $this->output
             ->set_content_type("application/json")
             ->set_output(json_encode(array('status' => true, 'filepath' => $output)));
+        $this->log_end(array('status' => true, 'filepath' => $output));
     }
 
     function createPDF($data)
@@ -231,11 +256,13 @@ class Report extends BaseController
 
     public function edit($cid)
     {
+        $this->log_begin();
         if (!$this->input->post('buttonSubmit')) {
             $data['message'] = '';
             $userRow = $this->model_employee->get($cid);
             $data['userRow'] = $userRow;
             $this->load->view('admin/view_editemployee', $data);
+            $this->log_end($data);
         } else {
             if ($this->form_validation->run('editemp')) {
                 $f_name = $this->input->post('f_name');
@@ -253,14 +280,17 @@ class Report extends BaseController
             } else {
                 $data['message'] = validation_errors();  //data ta message name er lebel er kase pathay
                 $this->load->view('view_employee', $data);
+                $this->log_end($data);
             }
         }
     }
 
     public function delete($cid)
     {
+        $this->log_begin();
         $this->model_employee->delete($cid);
         $this->session->set_flashdata('message', 'Employee Successfully deleted.');
+        $this->log_end(array('status' => true));
         redirect(base_url('admin/employee'));
     }
 }
