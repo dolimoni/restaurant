@@ -37,6 +37,15 @@ class Main extends BaseController
 
         $this->load->view('admin/uniwell/index',$data);
     }
+    public function index2()
+    {
+
+        //$data = $this->readSalesCSV('uploads/XAFUL.CSV');
+
+        $data['params'] = $this->getParams();
+
+        $this->load->view('admin/uniwell/index2',$data);
+    }
 
     private function readSalesCSV($file_name){
         $this->log_begin();
@@ -184,6 +193,24 @@ class Main extends BaseController
         $save_path = base_url() . $file_path;
         $this->log_end(array('file_upload_status' => 'success'));
         return $file_path;
+    }
+
+    public function searchMeal()
+    {
+        $this->log_begin();
+        try {
+            $mealName = $this->input->post("mealName");
+            $meal=$this->model_meal->getByName($mealName);
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'success', 'meal' => $meal)));
+            $this->log_end($meal);
+        } catch (Exception $e) {
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'error')));
+        }
+
     }
 
     public function clean()

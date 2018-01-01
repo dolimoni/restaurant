@@ -300,17 +300,16 @@ class model_meal extends CI_Model {
                             $consumption_type = "lost";
                         }
 
-
-
                         $l_reponse='';
                         if($meal['quantity'] >= $todayConsumption['quantity']){
-
                             $this->model_product->updateQuantity($m_product['product'], $m_product['mp_quantity'] * $m_product['unitConvert'] * $quantityStep);
                             $l_reponse=$this->model_product->updateLocalQuantity($m_product['product'], $m_product['mp_quantity'] * $m_product['unitConvert'] * $quantityStep);
                         }else{
                             $this->model_product->updateQuantity($m_product['product'], $m_product['mp_quantity'] * $m_product['unitConvert'] * $quantityStep,'up');
                             $l_reponse=$this->model_product->updateLocalQuantity($m_product['product'], $m_product['mp_quantity'] * $m_product['unitConvert'] * $quantityStep,'up');
                         }
+
+                        // consommation des produits selon la quantité de la fiche technique et leurs prix selon le stock
                         foreach ($l_reponse['quantities'] as $quantity) {
                             // il faut modifier ces donnée pour prendre en considération l'utilisation de plusieurs quantités
                             // l'ajout de consommation des produits doit etre fait apres la reduction de quantités produits
@@ -484,4 +483,10 @@ class model_meal extends CI_Model {
 		$this->db->where('id', $meal_id);
 		$this->db->delete('meal');
 	}
+
+    public function getByName($productName)
+    {
+        $this->db->where('name', $productName);
+        return $this->db->get("meal")->result_array();
+    }
 }

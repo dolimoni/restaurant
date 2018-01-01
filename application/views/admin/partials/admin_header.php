@@ -146,9 +146,15 @@
                       <li><a href="<?= base_url('admin/budget/productPurchase'); ?>">Achats produits</a></li>
                       <li><a href="<?= base_url('admin/budget/variousPurchase'); ?>">Achats divers</a></li>
                     </ul>
+                  </li><li>
+                      <a><i class="fa fa-refresh"></i>Synchorinisation<span class="fa fa-chevron-down"></span></a>
+                    <ul class="nav child_menu">
+                        <li><a href="<?= base_url('admin/Main/index'); ?>">Synchorinisation par fichier </a></li>
+                        <li><a href="<?= base_url('admin/Main/index2'); ?>">Synchorinisation manuelle</a></li>
+                    </ul>
                   </li>
 
-                  <li><a href="<?= base_url('admin/Main/index'); ?>"><i class="fa fa-refresh"></i> Synchorinisation System </a></li>
+
                   <!--<li><a href="<?/*= base_url('admin/Cron/index'); */?>"><i class="fa fa-refresh"></i> Synchronisation des produits </a></li>-->
 
                    <!-- <li>

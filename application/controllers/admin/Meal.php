@@ -74,12 +74,12 @@ class Meal extends BaseController {
 
         $rds = array_column($evolution, 'rd');
 
-        function date_sort($a, $b)
+        function date_sort2($a, $b)
         {
             return strtotime($a) - strtotime($b);
         }
 
-        usort($rds, "date_sort");
+        usort($rds, "date_sort2");
 
         $this->output
             ->set_content_type("application/json")
@@ -97,19 +97,19 @@ class Meal extends BaseController {
         $this->output
             ->set_content_type("application/json")
             ->set_output(json_encode(array('status' => true, 'evolution' => $evolution,'rds'=>$this->rds($evolution))));
-        $this->log_end(array('status' => true, 'evolution' => $evolution, 'rds' => $this->rds($evolution)));
+        $this->log_end(array('status' => true, 'evolution' => $evolution));
     }
 
     // sort attribut createdAt
     private function rds($evolution){
         $rds = array_column($evolution, 'report_date');
 
-        function date_sort($a, $b)
+        function date_sortRds($a, $b)
         {
             return strtotime($a) - strtotime($b);
         }
 
-        usort($rds, "date_sort");
+        usort($rds, "date_sortRds");
 
         return $rds;
     }
@@ -459,13 +459,13 @@ class Meal extends BaseController {
                     ->set_output(json_encode(array('flag' => 'ok', 'status' => $response['status'], 'redirect' => base_url('admin/meal/index'), 'mealsExist' => $response['mealsExist'])));
 
 
-                $this->log_end(json_encode(array('flag' => 'ok', 'status' => $response['status'], 'redirect' => base_url('admin/meal/index'), 'mealsExist' => $response['mealsExist'])));
+                $this->log_end(array('flag' => 'ok', 'status' => $response['status'], 'redirect' => base_url('admin/meal/index'), 'mealsExist' => $response['mealsExist']));
             } else if ($type === "update") {
                 $response = $this->model_meal->updateMeals($mealsList);
                 $this->output
                     ->set_content_type("application/json")
                     ->set_output(json_encode(array('status' => $response['status'], 'redirect' => base_url('admin/meal/index'), 'res' => $response)));
-                $this->log_end(array('status' => $response['status'], 'redirect' => base_url('admin/meal/index'), 'res' => $response))
+                $this->log_end(array('status' => $response['status'], 'redirect' => base_url('admin/meal/index'), 'res' => $response));
             }else{
                 $this->output
                     ->set_content_type("application/json")
