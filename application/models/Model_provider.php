@@ -171,13 +171,15 @@ class model_provider extends CI_Model {
 		return $result->result_array();
 	}
 
-	public function getProducts($id,$status="active")
+	public function getProducts($id,$status="active",$visibility="shown")
 	{
         $this->db->select('*,p.id as id, q.id as q_id');
         $this->db->from('product p');
-        $this->db->join('quantity q','q.product=p.id and q.status="active"','left');
+        $this->db->join('quantity q','q.product=p.id and (q.status="active" or q.status="stock")','left');
         //$this->db->where('q.status','active');
 		$this->db->where('q.provider', $id);
+		$this->db->where('p.status', "active");
+		$this->db->where('q.visibility', $visibility);
 		$result = $this->db->get();
 		return $result->result_array();
 	}
@@ -225,5 +227,12 @@ class model_provider extends CI_Model {
     {
         $this->db->where('id', $provider_id);
         $this->db->delete('provider');
+    }
+
+    public function deleteProduct($product_id, $quantity_id)
+    {
+        $this->db->where('id', $quantity_id);
+        $this->db->where('product', $product_id);
+        $this->db->update('quantity',array("visibility"=>"hidden"));
     }
 }

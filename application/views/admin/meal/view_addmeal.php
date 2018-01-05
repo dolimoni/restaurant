@@ -100,7 +100,6 @@
                                                <option value="0.001" name="Centilitre">Centilitre</option>
                                                <option value="0.000001" name="Millilitre">Millilitre</option>
                                        </select>
-                                       Quantité :
                                        <input class="form-inline  md-button-v" placeholder="Quantité" name="quantity"
                                                          type="text"><!--<span class="ProductUnit"> Kg</span>
                                        <div class="text-center productCost">0 Dh</div>-->
@@ -157,7 +156,7 @@
                                         <option value="0.001" name="Centilitre">Centilitre</option>
                                         <option value="0.000001" name="Millilitre">Millilitre</option>
                                     </select>
-                                    Quantité : <input class="form-inline  md-button-v" placeholder="Quantité" name="quantity"
+                                    <input class="form-inline  md-button-v" placeholder="Quantité" name="quantity"
                                                       type="text">
                                 </div>
                             </div>
@@ -292,8 +291,12 @@
             }
 
             $('.cost').html(prixTotal.toFixed(2)+'DH');
-            $('.gain').html((sellPrice- prixTotal).toFixed(2)+'DH');
 
+            if (sellPrice > 0) {
+                $('.gain').html(parseFloat(sellPrice - prixTotal).toFixed(2) + 'DH');
+            } else {
+                $('.gain').html('0.00DH');
+            }
 
             changeUnit(panel.find('select[name="product"] option:selected').attr('data-unit'), panel);
 
@@ -347,6 +350,12 @@
 
             }
             var profit = prixTotal * gainRate - prixTotal;
+            if(profit<0){
+                profit=0;
+            }
+            prixTotal=parseFloat(prixTotal).toFixed(2);
+            sellPrice=parseFloat(sellPrice).toFixed(2);
+            profit=parseFloat(profit).toFixed(2);
             //var sellPrice = prixTotal * gainRate ;
             var meal = {
                 'name': name,
@@ -392,7 +401,7 @@
                     showConfirmButton: false
                 });
                 validate=false;
-            }else if(meal['sellPrice']===0){
+            }else if (meal['sellPrice'] === '' || isNaN(meal['sellPrice'])) {
                 swal({
                     title: "Attention",
                     text: "Quel est le prix de votre article ?",
@@ -400,8 +409,8 @@
                     timer: 2000,
                     showConfirmButton: false
                 });
-                validate=false;
-            }else if(meal['sellPrice']< meal['cost']){
+                validate = false;
+            }else if(meal['sellPrice']< meal['cost'] && meal['sellPrice']>0){
                 swal({
                     title: "Attention",
                     text: "Le prix est inférieur au coût",

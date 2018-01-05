@@ -137,7 +137,7 @@
                                                </select>
                                            </div>
                                            <div class="col-md-6 col-sm-12 col-xs-12">
-                                              <span class="sm-hidden">Quantité : </span> <input class="form-inline md-button-v" placeholder="Quantité"
+                                              <input class="form-inline md-button-v" placeholder="Quantité"
                                                                  name="quantity"
                                                                  value="<?php echo $pc['mp_quantity']; ?>"
                                                                  type="text">
@@ -202,7 +202,7 @@
                                             </select>
                                         </div>
                                         <div class="col-md-6 col-sm-12 col-xs-12">
-                                            <span class="sm-hidden">Quantité : </span><input class="form-inline md-button-v" placeholder="Quantité" name="quantity"
+                                            <input class="form-inline md-button-v" placeholder="Quantité" name="quantity"
                                                               type="text">
                                         </div>
 
@@ -317,7 +317,12 @@
             sellPrice=$(".sellPriceProduct").val();
             $(".count.sellPrice.green").html(sellPrice+'DH');
             $('.cost').html(prixTotal.toFixed(2) +'DH');
-            $('.gain').html((sellPrice - prixTotal).toFixed(2)+'DH');
+
+            if (sellPrice > 0) {
+                $('.gain').html(parseFloat(sellPrice - prixTotal).toFixed(2) + 'DH');
+            } else {
+                $('.gain').html('0.00DH');
+            }
 
             changeUnit(panel.find('select[name="product"] option:selected').attr('data-unit'), panel);
         };
@@ -377,6 +382,9 @@
             }
             var profit = prixTotal * gainRate - prixTotal;
 
+            if(profit<0){
+                profit=0;
+            }
             var meal={'name':name,'id':<?php echo $meal['id']; ?>,'group':group,'productsList': productsList, 'cost': prixTotal,'sellPrice': sellPrice,'profit': profit};
 
             if(validate(meal)){
@@ -421,7 +429,7 @@
                     showConfirmButton: false
                 });
                 validate = false;
-            } else if (meal['sellPrice'] === 0) {
+            }else if (meal['sellPrice'] === '' || isNaN(meal['sellPrice'])) {
                 swal({
                     title: "Attention",
                     text: "Quel est le prix de votre article ?",
@@ -430,7 +438,7 @@
                     showConfirmButton: false
                 });
                 validate = false;
-            } else if (meal['sellPrice'] < meal['cost']) {
+            } else if (meal['sellPrice'] < meal['cost'] && meal['sellPrice'] > 0) {
                 swal({
                     title: "Attention",
                     text: "Le prix est inférieur au coût",

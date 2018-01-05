@@ -41,11 +41,11 @@
                 <tbody>
                    <?php foreach ($products as $product) { ?>
                        <tr>
-                           <td><?php echo $product['name'];?></td>
+                           <td><?php echo ucfirst($product['name']);?></td>
                            <td><?php echo $product['quantity']."". $product['unit'];?></td>
                            <td><?php echo $product['total'];?>DH</td>
-                           <td><?php echo $product['pv_name'];?></td>
-                           <td><?php echo $product['created_at'];?></td>
+                           <td><?php echo ucfirst($product['pv_name']);?></td>
+                           <td><?php echo ucfirst($product['created_at']);?></td>
                        </tr>
                    <?php } ?>
                 </tbody>

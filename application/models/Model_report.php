@@ -35,6 +35,9 @@ class model_report extends CI_Model
 
                 if(isset($products[$key]) and $products[$key]['meal']===$val['meal']){
                     $val2= $products[$key];
+                    if ($val["sellPrice"] === "0.00") {
+                        $val2['s_cost']= $val2['s_cost']*$val['s_quantity'];
+                    }
                     if($val2['s_cost']==''){
                         $val2['s_cost']='0';
                     }
@@ -79,6 +82,9 @@ class model_report extends CI_Model
 
                 if (isset($products[$key]) and $products[$key]['meal'] === $val['meal']) {
                     $val2 = $products[$key];
+                    if ($val["sellPrice"] === "0.00") {
+                        $val2['s_cost'] = $val2['s_cost'] * $val['s_quantity'];
+                    }
                     if ($val2['s_cost'] == '') {
                         $val2['s_cost'] = '0';
                     }
@@ -285,6 +291,9 @@ class model_report extends CI_Model
 
             if (isset($products[$key]) and $products[$key]['meal'] === $val['meal']) {
                 $val2 = $products[$key];
+                if ($val["sellPrice"] === "0.00") {
+                    $val2['s_cost'] = $val2['s_cost'] * $val['s_quantity'];
+                }
                 if ($val2['s_cost'] == '') {
                     $val2['s_cost'] = '0';
                 }
@@ -363,6 +372,9 @@ class model_report extends CI_Model
 
             if (isset($products[$key]) and $products[$key]['meal'] === $val['meal']) {
                 $val2 = $products[$key];
+                if ($val["sellPrice"] === "0.00") {
+                    $val2['s_cost'] = $val2['s_cost'] * $val['s_quantity'];
+                }
                 if ($val2['s_cost'] == '') {
                     $val2['s_cost'] = '0';
                 }
@@ -399,7 +411,7 @@ class model_report extends CI_Model
     public function reportRange($startDate, $endDate)
     {
 
-        $this->db->select('*');
+        $this->db->select('*,m.id as m_id');
         $this->db->select('sum(c.quantity) as s_quantity');
         $this->db->select('sum(c.quantity)*c.amount as s_amount');
         $this->db->from('meal m');
@@ -428,6 +440,9 @@ class model_report extends CI_Model
 
             if (isset($products[$key]) and $products[$key]['meal'] === $val['meal']) {
                 $val2 = $products[$key];
+                if ($val["sellPrice"] === "0.00") {
+                    $val2['s_cost'] = $val2['s_cost'] * $val['s_quantity'];
+                }
                 if ($val2['s_cost'] == '') {
                     $val2['s_cost'] = '0';
                 }

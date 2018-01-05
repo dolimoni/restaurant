@@ -56,7 +56,7 @@ class Customer extends BaseController {
 
         }
 
-        $this->log_begin(array('status' => 'success'));
+        $this->log_end(array('status' => 'success'));
 
     }
 
@@ -95,7 +95,7 @@ class Customer extends BaseController {
 			}
 		}
 
-        $this->log_begin(array('status' => 'success'));
+        $this->log_end(array('status' => 'success'));
 	}
 
     public function show()
@@ -121,7 +121,7 @@ class Customer extends BaseController {
             $this->output
                 ->set_content_type("application/json")
                 ->set_output(json_encode(array('status' => 'success')));
-            $this->log_begin(array('status' => 'success'));
+            $this->log_end(array('status' => 'success'));
         } catch (Exception $e) {
             $this->output
                 ->set_content_type("application/json")
@@ -139,7 +139,7 @@ class Customer extends BaseController {
             $this->output
                 ->set_content_type("application/json")
                 ->set_output(json_encode(array('status' => 'success')));
-            $this->log_begin(array('status' => 'success'));
+            $this->log_end(array('status' => 'success'));
         } catch (Exception $e) {
             $this->output
                 ->set_content_type("application/json")
@@ -158,7 +158,7 @@ class Customer extends BaseController {
             $this->output
                 ->set_content_type("application/json")
                 ->set_output(json_encode(array('status' => 'success')));
-            $this->log_begin(array('status' => 'success'));
+            $this->log_end(array('status' => 'success'));
         } catch (Exception $e) {
             $this->output
                 ->set_content_type("application/json")
@@ -171,7 +171,7 @@ class Customer extends BaseController {
         $this->log_begin();
         $this->model_employee->delete($cid);
         $this->session->set_flashdata('message','Employee Successfully deleted.');
-        $this->log_begin(array('status' => 'success'));
+        $this->log_end(array('status' => 'success'));
 
         redirect(base_url('admin/employee'));
 	}

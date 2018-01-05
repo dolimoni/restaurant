@@ -1,4 +1,5 @@
 <?php $this->load->view('admin/partials/admin_header.php'); ?>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 <style>
     .validate{
         background: #26b99a !important;
@@ -22,7 +23,7 @@
                 <div class="col-md-12 col-sm-12 col-xs-12">
                     <div class="x_panel">
                         <div class="x_title">
-                            <h2>Ajouter les produits vendu aujoud'hui</h2>
+                            <h2>Ajouter les articles vendu aujoud'hui</h2>
                             <ul class="nav navbar-right panel_toolbox">
                                 <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
                                 <li><a class="close-link"><i class="fa fa-close"></i></a></li>
@@ -34,6 +35,7 @@
                         <table class="table table-striped table-bordered">
                             <thead>
                                 <tr>
+                                    <th hidden>Id</th>
                                     <th>Code</th>
                                     <th>Article</th>
                                     <th>Quantité totale</th>
@@ -41,12 +43,31 @@
                                 </tr>
                             </thead>
                             <tbody id="productBody">
+                                <?php foreach ($sales as $sale){ ?>
+                                    <tr class="validate">
+                                        <td hidden>
+                                            <div data-type="id"><?php echo $sale["m_id"] ?></div>
+                                        </td>
+                                        <td>
+                                            <div data-type="externalCode"><?php echo $sale["externalCode"] ?></div>
+                                        </td>
+                                        <td>
+                                            <div data-type="meal" contenteditable><?php echo $sale["name"] ?></div>
+                                        </td>
+                                        <td>
+                                            <div data-type="quantity" contenteditable><?php echo $sale["quantity"] ?></div>
+                                        </td>
+                                        <td>
+                                            <div data-type="amount" contenteditable><?php echo $sale["total"] ?></div>
+                                        </td>
+                                    </tr>
+                                <?php } ?>
                                 <tr class="mealModel" hidden>
                                     <td hidden>
                                         <div data-type="id"></div>
                                     </td>
                                     <td>
-                                        <div data-type="code"></div>
+                                        <div data-type="externalCode"></div>
                                     </td>
                                     <td>
                                         <div data-type="meal" contenteditable></div>
@@ -60,6 +81,7 @@
                                 </tr>
                             </tbody>
                         </table>
+
                         <div>
                             <button type="button" class="btn btn-success newMeal" name="newMeal">+</button>
                         </div>
@@ -70,6 +92,7 @@
                         </div>
                     </div><!-- /x-panel -->
                 </div> <!-- /col -->
+
             </div> <!-- /row -->
         </div>
     </div> <!-- /.col-right -->
@@ -77,24 +100,36 @@
 
 <?php $this->load->view('admin/partials/admin_footer'); ?>
 <script src="<?php echo base_url('assets/vendors/moment/min/moment.min.js'); ?>"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
 <script>
 
     $(document).ready(function () {
+        <?php
+        $js_array = json_encode($mealsName);
+        echo "var mealsName = " . $js_array . ";\n";
+        ?>
+
         $(".newMeal").on("click", addNewMealEvent);
         function addNewMealEvent(){
             var mealModel=$(".mealModel").clone().removeAttr("hidden");
             mealModel.removeClass("mealModel");
             $("#productBody").append(mealModel);
             $(mealModel.find("div[data-type=meal]")).focus();
-
+            $(mealModel.find("div[data-type=meal]")).autocomplete({
+                source: mealsName,
+                select: function (event, ui) {
+                    var label = ui.item.label;
+                    var value = ui.item.value;
+                    var target= $(this);
+                    searchMealEvent(target,value);
+                }
+            });
         }
-
-        $(document).on("blur","div[data-type=meal]",searchMealEvent);
-        function searchMealEvent() {
-            var tr= $(this).closest("tr");
-            var mealName=$(this).html();
+        function searchMealEvent(target,value) {
+            var tr= target.closest("tr");
             var myData={
-                "mealName": mealName
+                "mealName": value
             };
             $.ajax({
                 url: "<?php echo base_url('admin/main/searchMeal'); ?>",
@@ -105,7 +140,7 @@
                     if(data.status==="success"){
                         if(data.meal.length){
                             tr.addClass("validate");
-                            tr.find("div[data-type=code]").html(data.meal[0].externalCode);
+                            tr.find("div[data-type=externalCode]").html(data.meal[0].externalCode);
                             tr.find("div[data-type=id]").html(data.meal[0].id);
                         }
                     }
@@ -156,7 +191,7 @@
                     'date': report_date.split('T')
                 };
 
-                if (id > 0 && amount>0 && quantity>0) {
+                if (id > 0 && amount>=0 && quantity>0) {
                     mealsList.push(meal);
                 }
             });

@@ -9,6 +9,10 @@
         width: 130px;
         height: 126px;
     }
+    .benefit{
+        background: #6cc;
+        color: white;
+    }
 </style>
     <!-- page content -->
     <div class="right_col" role="main">
@@ -82,10 +86,9 @@
                                     <th class="md-hidden-only">Id</th>
                                     <th>Nom</th>
                                     <th class="sm-hidden">Famille</th>
-                                    <th>Coût</th>
                                     <th>Prix de vente</th>
-                                    <th>Bénifices</th>
-                                    <th class="md-hidden-only">Nombre de produits</th>
+                                    <th class="danger">Coût de revient</th>
+                                    <th class="benefit">Bénifices</th>
                                     <th width="20%">Action</th>
                                 </tr>
                                 </thead>
@@ -94,10 +97,9 @@
                                     <th class="md-hidden-only">Id</th>
                                     <th>Nom</th>
                                     <th class="sm-hidden">Famille</th>
-                                    <th>Coût</th>
                                     <th>Prix de vente</th>
-                                    <th>Bénifices</th>
-                                    <th class="md-hidden-only">Nombre de produits</th>
+                                    <th class="danger">Coût de revient</th>
+                                    <th class="benefit">Bénifices</th>
                                     <th>Action</th>
                                 </tr>
                                 </tfoot>
@@ -107,10 +109,9 @@
                                         <td class="md-hidden-only"><?php echo $meal['meal_id']; ?></td>
                                         <td><?php echo $meal['meal_name']; ?></td>
                                         <td class="sm-hidden"><?php echo $meal['g_name']; ?></td>
-                                        <td><?php echo $meal['cost']; ?></td>
                                         <td><?php echo $meal['sellPrice']; ?></td>
-                                        <td><?php echo $meal['profit']; ?></td>
-                                        <td class="md-hidden-only"><?php echo $meal['products_count']; ?></td>
+                                        <td class="danger"><?php echo $meal['cost']; ?></td>
+                                        <td class="benefit"><?php echo $meal['profit']; ?></td>
                                         <td>
                                             <a href=" <?php echo base_url(); ?>admin/meal/edit/<?php echo $meal['meal_id']; ?>"
                                                class="btn btn-primary  btn-xs"><i class="fa fa-pencil"></i></a>

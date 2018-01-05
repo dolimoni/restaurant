@@ -27,10 +27,10 @@
                         <table class="table table-striped">
                             <tr>
                                 <th>
-                                    Produit
+                                    Id
                                 </th>
                                 <th>
-                                    Nom
+                                    Produit
                                 </th>
                                 <th>
                                     Quantité

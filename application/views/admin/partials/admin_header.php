@@ -139,7 +139,7 @@
                     </ul>
                   </li>
                   <li>
-                      <a><i class="fa fa-dollar"></i>Gestion du budget<span class="fa fa-chevron-down"></span></a>
+                      <a><i class="fa fa-dollar"></i>Gestion des charges<span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
                       <li><a href="<?= base_url('admin/budget/regular'); ?>">Alertes</a></li>
                       <li><a href="<?= base_url('admin/budget/reparation'); ?>">Mes réparations</a></li>

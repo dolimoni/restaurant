@@ -27,7 +27,7 @@
                                     Id
                                 </th>
                                 <th>
-                                    Nom
+                                    Produit
                                 </th>
                                 <th>
                                     Quantité

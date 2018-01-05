@@ -336,25 +336,37 @@ class model_product extends CI_Model {
         return $response;
     }
 
-	public function updateQuantities($productsList, $direction="down"){
+	public function updateQuantities($productsList, $direction="down", $provider_id){
         foreach ($productsList as $product) {
             $this->updateQuantity($product['id'], $product['quantity'], $direction);
-            $this->updateLocalQuantity($product['id'], $product['quantity'], $direction);
 
             if($direction==="up"){
                 $db_product = $this->getById($product['id']);
                 $productHistory = array(
                     'id' => $product['id'],
                     'quantity' => $product['quantity'],
-                    'price' => $db_product['unit_price'],
-                    'unit' => $db_product['unit'],
-                    'provider' => $db_product['provider'],
+                    'price' => $product['unit_price'],
+                    'unit' => $product['unit'],
+                    'provider' => $provider_id,
                 );
                 $this->addStockHistory($productHistory, 'in');
+                $this->newQuantity($product['id'], $product['quantity'], $provider_id,$product["idQuantity"]);
             }
 
         }
 
+
+    }
+
+    public function newQuantity($id,$quantity,$provider_id,$idQuantity){
+	    $this->db->select('*');
+	    $this->db->from('quantity');
+	    $this->db->where("id", $idQuantity);
+	    $result = $this->db->get()->row_array();
+
+	    $l_quantity=$result["quantity"]+$quantity;
+	    $this->db->where("id", $idQuantity);
+	    $this->db->update("quantity",array("quantity"=>$l_quantity));
 
     }
 

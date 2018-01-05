@@ -164,7 +164,7 @@ class Provider extends BaseController
         $this->log_begin();
         $id = $this->uri->segment(4);
         $data['provider'] = $this->model_provider->get($id);
-        $data['products'] = $this->model_provider->getProducts($id);
+        $data['products'] = $this->model_provider->getProducts($id,"active");
         $data['productsToOrder'] = $this->model_product->getToOrderFromProvider($id);
         $data['quotations'] = $this->model_provider->getQuotations($id);
         $data['orders'] = $this->model_provider->getOrders($id);
@@ -342,12 +342,13 @@ class Provider extends BaseController
         try {
             $this->load->model('model_order');
             $order = $this->input->post('order');
+            $provider_id = $order["provider"]["id"];
            // $db_order= $this->model_order->get($order['order_id']);
             if (strtolower($order['status']) === "en attente") {
                 $order['status'] = 'pending';
                 $this->model_order->update($order);
                 if ($order['oldStatus'] === "received") {
-                    $this->model_product->updateQuantities($order['productsList']);
+                    $this->model_product->updateQuantities($order['productsList'],"down", $provider_id);
                 }
             } else if (strtolower($order['status']) === "annulée") {
                 $order['status'] = 'canceled';
@@ -356,7 +357,7 @@ class Provider extends BaseController
             } else {
                 $order['status'] = 'received';
                 $this->model_order->update($order);
-                $this->model_product->updateQuantities($order['productsList'], 'up');
+                $this->model_product->updateQuantities($order['productsList'], 'up', $provider_id);
                 if ($order['oldStatus'] === "pending") {
                    // $this->model_product->updateQuantities($order['productsList'], 'up');
                 }
@@ -472,6 +473,25 @@ class Provider extends BaseController
             $this->load->model('model_order');
             $order_id = $this->input->post('order_id');
             $this->model_order->delete($order_id);
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'success')));
+            $this->log_end(array('status' => 'success'));
+        } catch (Exception $e) {
+
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'error')));
+        }
+    }
+
+    public function apiDeleteProduit()
+    {
+        $this->log_begin();
+        try {
+            $product_id = $this->input->post('product_id');
+            $quantity_id = $this->input->post('quantity_id');
+            $this->model_provider->deleteProduct($product_id, $quantity_id);
             $this->output
                 ->set_content_type("application/json")
                 ->set_output(json_encode(array('status' => 'success')));

@@ -43,7 +43,12 @@ class Main extends BaseController
         //$data = $this->readSalesCSV('uploads/XAFUL.CSV');
 
         $data['params'] = $this->getParams();
-
+        $this->load->model('model_report');
+        $this->load->model('model_meal');
+        $meals= $this->model_meal->getMealsOnly();
+        $data['mealsName']=array_column($meals,"name");
+        $data['meals']= $meals;
+        $data["sales"]=$this->model_report->reportRange(Date("Y-m-d"), Date("Y-m-d"));
         $this->load->view('admin/uniwell/index2',$data);
     }
 

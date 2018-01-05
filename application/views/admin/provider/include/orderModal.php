@@ -24,7 +24,13 @@
 
                             <label class="col-md-2 col-sm-2 col-xs-12 control-label">Produit</label>
                             <div class="col-md-4 col-sm-4 col-xs-12">
-                               <input name="product" value="<?php echo $product['name']." (". $product['unit_price'].") DH"; ?>" disabled data-id="<?php echo $product['id']; ?>" data-price="<?php echo $product['unit_price']; ?>" data-name="<?php echo $product['name'];?>">
+                               <input name="product"
+                                      value="<?php echo $product['name'] . " (" . $product['unit_price'] . "DH/" . $product['unit'] . ")"; ?>" disabled
+                                      data-id="<?php echo $product['id']; ?>"
+                                      data-price="<?php echo $product['unit_price']; ?>"
+                                      data-name="<?php echo $product['name'];?>"
+                                      data-id-quantity="<?php echo $product['q_id']; ?>"
+                                      data-unit="<?php echo $product['unit'];?>">
                             </div>
                             <label class="col-md-2 col-sm-2 col-xs-12 control-label">Quantité</label>
                             <div class="col-md-4 col-sm-4 col-xs-12">

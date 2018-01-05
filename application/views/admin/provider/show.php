@@ -216,7 +216,7 @@
                                                 <th>#</th>
                                                 <th>Produit</th>
                                                 <th class="hidden-phone">Prix</th>
-                                                <!--<th >Actions</th>-->
+                                                <th >Actions</th>
                                             </tr>
                                             </thead>
                                             <tfoot>
@@ -224,23 +224,23 @@
                                                 <th>#</th>
                                                 <th>Produit</th>
                                                 <th>Prix</th>
-                                                <!--<th>Action</th>-->
+                                                <th>Action</th>
                                             </tr>
                                             </tfoot>
                                             <tbody>
                                             <?php foreach ($products as $product) { ?>
-                                                <tr>
+                                                <tr data-id="<?php echo $product['id']; ?>" data-quantity="<?php echo $product['q_id']; ?>">
                                                     <td> <?php echo $product['id']; ?></td>
                                                     <td> <?php echo $product['name']; ?></td>
                                                     <td> <?php echo $product['unit_price']; ?></td>
-                                                    <!--<td class="vertical-align-mid">
-                                                        <a class="btn btn-primary btn-xs editProductsModal"
+                                                    <td class="vertical-align-mid">
+                                                       <!-- <a class="btn btn-primary btn-xs editProductsModal"
                                                            data-toggle="modal"
                                                            data-target="#editProductsModal"
-                                                           data-id="<?php /*echo $product['id']; */?>">Modifier</a>
-                                                        <a data-id="<?php /*echo $product['id']; */?>"
+                                                           data-id="<?php /*echo $product['id']; */?>">Modifier</a>-->
+                                                        <a data-id="<?php echo $product['id']; ?>"
                                                            class="btn btn-danger btn-xs deleteProduct">Supprimer</a>
-                                                    </td>-->
+                                                    </td>
                                                 </tr>
                                             <?php } ?>
                                             </tbody>
@@ -549,7 +549,6 @@
 
 
 <script>
-    window.close();
 
     var productsCount=1;
     var productsQuotationCount=1;
@@ -747,7 +746,9 @@
                     $("#editOrderModal #editProductsOrder .product").find('.productCost').html(' 0DH');
 
                     $.each(data.order.productsList, function (key, product) {
-                       var l_product = $("#editOrderModal #editProductsOrder .product[data-id='" + product['id'] + "'] ");
+                       var l_productSelector= "#editOrderModal #editProductsOrder .product[data-id='" + product['id'] + "'][data-id-quantity='" + product['idQuantity'] + "']";
+                       console.log(l_productSelector);
+                       var l_product = $(l_productSelector);
                        l_product.find("input[name='quantity']").val(product['od_quatity']);
                        // add background for ordred products
                        l_product.find("input[name='quantity'],input[name='product']").addClass("ordred");
@@ -807,11 +808,13 @@
                 var quantity = parseFloat(row.find('input[name="quantity"]').val().replace(',', '.'));
                 var id = row.find('input[name="product"]').attr('data-id');
                 var name = row.find('input[name="product"]').attr('data-name');
+                var unit = row.find('input[name="product"]').attr('data-unit');
+                var idQuantity = row.find('input[name="product"]').attr('data-id-quantity');
                 var unit_price = parseFloat(row.find('input[name="product"]').attr('data-price').replace(',', '.'));
                 console.log(id,quantity, unit_price);
                 if (quantity > 0 && unit_price > 0) {
                     underTotal += quantity * unit_price;
-                    var product = {'id': id, 'name': name, 'quantity': quantity, 'unit_price': unit_price, 'unit': '-'};
+                    var product = {'id': id, 'name': name, 'quantity': quantity, 'unit_price': unit_price, 'unit': unit,"idQuantity": idQuantity};
                     productsList.push(product);
                 }
 
@@ -901,11 +904,13 @@
                 var quantity = parseFloat(row.find('input[name="quantity"]').val().replace(',', '.'));
                 var id = row.find('input[name="product"]').attr('data-id');
                 var name = row.find('input[name="product"]').attr('data-name');
+                var idQuantity = row.find('input[name="product"]').attr('data-id-quantity');
+                var unit = row.find('input[name="product"]').attr('data-unit');
                 var unit_price = parseFloat(row.find('input[name="product"]').attr('data-price').replace(',', '.'));
                 console.log(id,quantity, unit_price);
                 if (quantity > 0 && unit_price > 0) {
                     underTotal += quantity * unit_price;
-                    var product = {'id': id, 'name': name, 'quantity': quantity, 'unit_price': unit_price, 'unit': '-'};
+                    var product = {'id': id, 'name': name, 'quantity': quantity, 'unit_price': unit_price, 'unit': unit,"idQuantity": idQuantity};
                     productsList.push(product);
                 }
 
@@ -1263,6 +1268,66 @@
                     error: function (data) {
                     }
                });
+        }
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $('a.deleteProduct').on('click', deleteProductEvent);
+
+        function deleteProductEvent() {
+            var product_id = $(this).closest('tr').attr('data-id');
+            var quantity_id = $(this).closest('tr').attr('data-quantity');
+            swal({
+                    title: "Attention ! ",
+                    text: "Vous voulez vraiment supprimer ce produit ?",
+                    type: "warning",
+                    showConfirmButton: true,
+                    showCancelButton: true,
+                    cancelButtonText: 'Non',
+                    confirmButtonText: 'Oui'
+                },
+                function () {
+                    $.ajax({
+                        url: "<?php echo base_url('admin/provider/apiDeleteProduit'); ?>",
+                        type: "POST",
+                        dataType: "json",
+                        data: {'product_id': product_id,"quantity_id": quantity_id},
+                        success: function (data) {
+                            if (data.status === 'success') {
+                                swal({
+                                    title: "Success",
+                                    text: "L'opération a été bien effectuée",
+                                    type: "success",
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                });
+                                location.reload();
+                            }
+                            else {
+                                swal({
+                                    title: "Erreur",
+                                    text: "Une erreur s'est produite",
+                                    type: "error",
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                });
+                            }
+                        },
+                        error: function (data) {
+                            swal({
+                                title: "Erreur",
+                                text: "Une erreur s'est produite",
+                                type: "error",
+                                timer: 1500,
+                                showConfirmButton: false
+                            });
+                        }
+                    });
+
+                });
+
+
         }
     });
 </script>

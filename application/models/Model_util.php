@@ -66,6 +66,53 @@ class model_util extends CI_Model {
         $this->query($sql);
     }
 
+    public function customClear($tables)
+    {
+        $this->load->model('model_db');
+        $this->load->model('model_group');
+
+        foreach ($tables as $table) {
+            if($table==="group"){
+                $sql = "SET FOREIGN_KEY_CHECKS = 0;";
+                $this->query($sql);
+
+                $this->model_db->troncate('group');
+
+                $sql = "SET FOREIGN_KEY_CHECKS = 1;";
+                $this->query($sql);
+            }else if ($table==="consumption"){
+                $this->model_db->troncate('consumption');
+                $this->model_db->troncate('consumption_product');
+            }else if ($table==="employee"){
+                $this->model_db->troncate('employee');
+                $this->model_db->troncate('employee_event');
+                $this->model_db->troncate('salary');
+            }else if ($table==="meal"){
+                $this->model_db->troncate('meal');
+                $this->model_db->troncate('meal_product');
+            }else if ($table==="product"){
+                $this->model_db->troncate('product');
+                $this->model_db->troncate('product_composition');
+                $this->model_db->troncate('quantity');
+            }else if ($table==="provider"){
+                $this->model_db->troncate('provider');
+                $this->model_db->troncate('order');
+                $this->model_db->troncate('orderdetails');
+                $this->model_db->troncate('quotation');
+            }else if ($table==="order"){
+                $this->model_db->troncate('order');
+                $this->model_db->troncate('orderdetails');
+            }else if($table === "charges"){
+                $this->model_db->troncate('purchase');
+                $this->model_db->troncate('regularcost');
+                $this->model_db->troncate('reparation');
+            }else if($table === "history"){
+                $this->model_db->troncate('stock_history');
+            }
+        }
+
+    }
+
     
     public function populate(){
         $sql = "SET FOREIGN_KEY_CHECKS = 0;";

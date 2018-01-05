@@ -216,6 +216,25 @@ class Budget extends BaseController {
         }
 
     }
+    public function apiEditReparation(){
+        try {
+            $this->log_begin();
+            $reparation = $this->input->post('reparation');
+            $id = $this->input->post('id');
+            $this->log_middle($reparation);
+            $this->model_budget->updateReparation($id, $reparation);
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'success')));
+
+            $this->log_end(array('status' => 'success'));
+        } catch (Exception $e) {
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'error')));
+        }
+
+    }
 
     public function apiDeleteAlert(){
         try {
@@ -223,6 +242,25 @@ class Budget extends BaseController {
             $alert_id = $this->input->post('alert_id');
             $this->model_budget->deleteAlert($alert_id);
             $this->model_budget->activeAlerts(); // change passive alerte to active aletes
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'success')));
+
+            $this->log_end(array('status' => 'success'));
+
+        } catch (Exception $e) {
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'error')));
+        }
+
+    }
+
+    public function apiDeleteReparation(){
+        try {
+            $this->log_begin();
+            $reparation_id = $this->input->post('reparation_id');
+            $this->model_budget->deleteReparation($reparation_id);
             $this->output
                 ->set_content_type("application/json")
                 ->set_output(json_encode(array('status' => 'success')));

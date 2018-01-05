@@ -18,9 +18,9 @@
     </div>-->
     <div class="">
         <div class="page-title">
-            <pre>
-                <?php /*print_r($articles);*/ ?>
-            </pre>
+           <!-- <pre>
+                <?php /*print_r($articles); */?>
+            </pre>-->
             <div class="title_left">
                 <h3>Articles</h3>
             </div>
@@ -47,13 +47,11 @@
                         <div class="clearfix"></div>
                     </div>
                     <div class="x_content table-responsive">
-                        <table class="table table-striped">
+                        <table class="table table-striped" id="datatable-sales">
+                            <thead>
                             <tr>
                                 <th>
                                     Nom
-                                </th>
-                                <th>
-                                    Famille
                                 </th>
                                 <th>
                                     Qunatité
@@ -71,6 +69,7 @@
                                     Actions
                                 </th>
                             </tr>
+                            </thead>
                             <tbody id="tbodyid">
                             <?php
                             $t_quantity=0;
@@ -80,17 +79,21 @@
                             foreach ($articles as $article) {
                                 $t_quantity+= $article['s_quantity'];
                                 $t_amount+= $article['s_amount'];
-                                $t_profits+= $article['s_amount'] - $article['s_cost'];
+                                $u_profit= $article['s_amount'] - $article['s_cost'];
+                                if($u_profit>=0){
+                                    $t_profits+= $u_profit;
+                                }else{
+                                    $u_profit=0;
+                                }
                                 $t_costs+= $article['s_cost'];
                             ?>
                                 <tr data-id="">
                                     <td data-type="name"> <?php echo $article['name']; ?></td>
-                                    <td data-type="description">Test</td>
                                     <td data-type="quantity"><?php echo $article['s_quantity']; ?></td>
                                     <td data-type="amount">
                                         <?php echo number_format((float)$article['s_amount'], 2, '.', ''); ?>DH
                                     </td>
-                                    <td data-type="benefit" style="background: #6cc; color: white;"><?php echo number_format((float)($article['s_amount']- $article['s_cost']), 2, '.', ''); ?> DH</td>
+                                    <td data-type="benefit" style="background: #6cc; color: white;"><?php echo number_format((float)$u_profit, 2, '.', ''); ?> DH</td>
                                     <td data-type="cost" class="danger"><?php echo number_format((float)$article['s_cost'], 2, '.', ''); ?> DH</td>
                                     <td>
                                         <!--<button class="btn btn-danger btn-xs action" data-type="delete"
@@ -104,19 +107,48 @@
                             <?php } ?>
 
                             <tr>
-                                <td>-</td>
-                                <td>-</td>
+                                <td>#</td>
                                 <td><?php echo $t_quantity; ?></td>
                                 <td>TOTALE : <?php echo number_format((float)$t_amount, 2, '.', ''); ?>DH</td>
-                                <td style="background: #6cc;color: white;">TOTALE : <?php echo number_format((float)$t_profits, 2, '.', ''); ?>DH</td>
-                                <td class="danger" >TOTALE : <?php echo number_format((float)$t_costs, 2, '.', ''); ?>DH</td>
+                                <td style="background: #6cc;color: white;">TOTALE
+                                    : <?php echo number_format((float)$t_profits, 2, '.', ''); ?>DH
+                                </td>
+                                <td class="danger">TOTALE
+                                    : <?php echo number_format((float)$t_costs, 2, '.', ''); ?>
+                                    DH
+                                </td>
                                 <td>
+                                    <button class="btn btn-success btn-xs action"
+                                            onclick="window.location.href='<?php echo base_url('admin/report/statistic'); ?>'"><span
+                                                class="fa fa-eye"></span></button>
                                 </td>
                             </tr>
 
                             </tbody>
 
 
+                            <tfoot>
+                            <tr>
+                                <th>
+                                    Nom
+                                </th>
+                                <th>
+                                    Qunatité
+                                </th>
+                                <th>
+                                    Montant
+                                </th>
+                                <th style="background: #6cc;color: white;">
+                                    Bénéfits
+                                </th>
+                                <th class="danger">
+                                    Coût
+                                </th>
+                                <th>
+                                    Actions
+                                </th>
+                            </tr>
+                            </tfoot>
                         </table>
                     </div> <!-- /content -->
                 </div><!-- /x-panel -->
@@ -141,7 +173,35 @@
     var mealReportLink = "<?php echo base_url('admin/meal/report/'); ?>";
 </script>
 <script src="<?php echo base_url('assets/build2/js/dateRangePicker.js'); ?>"></script>
+<script src="<?php echo base_url("assets/vendors/datatables.net/js/jquery.dataTables.min.js"); ?>"></script>
+<script>
+    $(document).ready(function () {
+        var handleDataTableButtons = function () {
+            if ($("#datatable-sales").length) {
+                $("#datatable-sales").DataTable({
+                    responsive: true,
+                    "lengthMenu": [[25, 50, 200, -1], [25, 50, 200, "Tout"]],
+                    "bSort":false,
+                    "language": {
+                        "url": "<?php echo base_url("assets/vendors/datatables.net/French.json"); ?>"
+                    }
+                });
+            }
+        };
 
+        TableManageButtons = function () {
+            "use strict";
+            return {
+
+                init: function () {
+                    handleDataTableButtons();
+                }
+            };
+        }();
+
+        TableManageButtons.init();
+    });
+</script>
 
 <script type="text/javascript">
     var params = {

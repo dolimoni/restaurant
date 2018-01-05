@@ -442,6 +442,11 @@ class model_meal extends CI_Model {
         }
         $profit= $meal['sellPrice']-$cost;
 
+        // le profit d un commentaire est 0
+        // le prix d un commentaire est 0
+        if($profit<0 && $meal['sellPrice']==="0.00"){
+            $profit=0;
+        }
 
         $data = array(
             'cost' => $cost,
@@ -487,6 +492,10 @@ class model_meal extends CI_Model {
     public function getByName($productName)
     {
         $this->db->where('name', $productName);
+        return $this->db->get("meal")->result_array();
+    }
+    public function getMealsOnly()
+    {
         return $this->db->get("meal")->result_array();
     }
 }
