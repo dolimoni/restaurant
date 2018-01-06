@@ -1,4 +1,6 @@
 <?php $this->load->view('admin/partials/admin_header.php'); ?>
+<link href="<?php echo base_url('assets/vendors/bootstrap-daterangepicker/daterangepicker.css'); ?>" rel="stylesheet">
+<link href="<?php echo base_url("assets/build2/css/custom.min.css"); ?>" rel="stylesheet">
 <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 <style>
     .validate{
@@ -12,6 +14,9 @@
     <!-- page content -->
     <div class="right_col" role="main">
         <div class="">
+            <!--<pre>
+                <?php /*print_r($sales); */?>
+            </pre>-->
             <div class="page-title">
                 <div class="title_left">
                     <h3>Synchronisation manuelle</h3>
@@ -20,10 +25,16 @@
             <div class="clearfix"></div>
             <hr>
             <div class="row">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6 col-md-4">
+                        <label for="paiementDate">Date du rapport :</label>
+                        <?php include('include/calender.php'); ?>
+                    </div>
+                </div>
                 <div class="col-md-12 col-sm-12 col-xs-12">
                     <div class="x_panel">
                         <div class="x_title">
-                            <h2>Ajouter les articles vendu aujoud'hui</h2>
+                            <h2>Ajouter les articles vendu</h2>
                             <ul class="nav navbar-right panel_toolbox">
                                 <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
                                 <li><a class="close-link"><i class="fa fa-close"></i></a></li>
@@ -99,8 +110,15 @@
     <!-- /page content -->
 
 <?php $this->load->view('admin/partials/admin_footer'); ?>
+
+<script src="<?php echo base_url('assets/vendors/bootstrap-progressbar/bootstrap-progressbar.min.js'); ?>"></script>
+
 <script src="<?php echo base_url('assets/vendors/moment/min/moment.min.js'); ?>"></script>
+
+<script src="<?php echo base_url('assets/vendors/bootstrap-daterangepicker/daterangepicker.js'); ?>"></script>
+
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
 
 <script>
 
@@ -166,8 +184,10 @@
 
 <script>
     $(document).ready(function () {
+
+
         $('button[name="validate"]').on('click', function () {
-            var report_date = moment().format('YYYY-MM-DD') + "T10";
+            var report_date = moment($("#single_cal3").val()).format("YYYY-MM-DD") + "T10";
             var mealsList = [];
             $('tr.validate').each(function (i, obj) {
                 var tr = $(this);

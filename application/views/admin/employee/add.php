@@ -215,12 +215,14 @@
                     confirmButtonText: 'Oui'
                 },
                 function () {
+                    $('#loading').show();
                     $.ajax({
                         url: "<?php echo base_url('admin/employee/apiDeleteEmployee'); ?>",
                         type: "POST",
                         dataType: "json",
                         data: {'employee_id': employee_id},
                         success: function (data) {
+                            $('#loading').hide();
                             if (data.status === 'success') {
                                 swal({
                                     title: "Success",
@@ -242,6 +244,7 @@
                             }
                         },
                         error: function (data) {
+                            $('#loading').hide();
                             swal({
                                 title: "Erreur",
                                 text: "Une erreur s'est produite",

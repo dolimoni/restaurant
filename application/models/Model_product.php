@@ -159,14 +159,16 @@ class model_product extends CI_Model {
             $this->updateQuantity($product['id'], $product['quantity'], 'up');//quantity table
         }
 
-        $productHistory = array(
-            'id' => $product['id'],
-            'quantity' => $product['quantity'],
-            'price' => $product['unit_price'],
-            'unit' => $product['unit'],
-            'provider' => $product['provider'],
-        );
-        $this->addStockHistory($productHistory, 'in');
+        if($product['quantity']>0){
+            $productHistory = array(
+                'id' => $product['id'],
+                'quantity' => $product['quantity'],
+                'price' => $product['unit_price'],
+                'unit' => $product['unit'],
+                'provider' => $product['provider'],
+            );
+            $this->addStockHistory($productHistory, 'in');
+        }
         if ($product['lostQuantity'] > 0) {
             $this->updateLocalQuantity($product['id'], $product['lostQuantity']);//product table
             $this->updateQuantity($product['id'], $product['lostQuantity']);// quantity table
