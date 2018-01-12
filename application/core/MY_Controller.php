@@ -11,7 +11,9 @@ class BaseController extends CI_Controller
         parent::__construct();
 
         $this->load->model('model_params');
+        $this->load->model('model_budget');
         $this->params = $this->model_params->config(); // getting user configuration
+        $this->params['alertes'] = $this->model_budget->getActiveAlerts();
     }
 
     /**

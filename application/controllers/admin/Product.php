@@ -20,6 +20,7 @@ class Product extends BaseController {
         $data['products'] = $this->model_product->getAll(true,false);//param1: get Meals,param2:get compositions
         $data['productsComposition'] = $this->model_product->getCompositions(true);//true: get Meals
         $data['providers'] = $this->model_provider->getAll();
+       /* $this->control();*/
         $data['params'] = $this->getParams();
         $this->parser->parse('admin/product/view_products', $data);
         $this->log_end($data);
@@ -286,6 +287,24 @@ class Product extends BaseController {
                 ->set_output(json_encode(array('status' => 'error')));
         }
 	}
+
+    private function control()
+    {
+
+        // quantité de la table product doit être toujours egal a la somme des quantités de la table quantity
+        $this->load->model('model_product');
+        $products = $this->model_product->getAll(false);
+        foreach ($products as $product) {
+            $quantities = $this->model_product->getAllQuantities($product['id']);
+            $totalQuantity = array_sum(array_column($quantities, 'quantity'));
+            $data = array(
+                'totalQuantity' => $totalQuantity
+            );
+
+            $this->model_product->update($product['id'], $data);
+        }
+        $products = $this->model_product->controlQuantity();
+    }
 
 
 }

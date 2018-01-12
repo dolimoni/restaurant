@@ -30,6 +30,8 @@ class Report extends BaseController
         $this->log_begin();
         $data['articles']=$this->model_report->report();
         $data['report'] = $this->model_report->global_report();
+        $this->load->model('model_budget');
+        $data['alertes'] = $this->model_budget->getActiveAlerts();
         $data['params'] = $this->getParams();
         $this->load->view('admin/report/view_statistic', $data);
         $this->log_end($data);

@@ -223,6 +223,20 @@ class model_provider extends CI_Model {
         return $result;
     }
 
+    public function getProductMultipleProviders(){
+        $this->db->select('p.name,pv.name as provider,q.unit_price');
+        $this->db->select('count(q.product) count');
+        $this->db->from('product p');
+        $this->db->join('quantity q', 'p.id=q.product');
+        $this->db->join('provider pv', 'pv.id=q.provider');
+        //$this->db->where('q.status', 'active');
+        $this->db->where('p.status', 'active');
+       // $this->db->where('provider>0');
+        $this->db->group_by('q.product');
+        $this->db->order_by('count',"desc");
+        $result = $this->db->get();
+        return $result->row_array();
+    }
     public function deleteProvider($provider_id)
     {
         $this->db->where('id', $provider_id);

@@ -107,6 +107,10 @@
                                     Prix unitaire : <input value="<?php echo $product['unit_price']; ?>" class="form-control" placeholder="Prix unitaire"
                                                            name="unit_price" type="text">
                                 </div>
+                                <div class="form-group">
+                                    Poid par unité(en gr)<input value="<?php echo $product['weightByUnit']; ?>" class="form-control" placeholder="Poid par unité"
+                                                         name="weightByUnit">
+                                </div>
 
                                 <div class="form-group">
                                     Quantité minimum du stock : <input value="<?php echo $product['min_quantity']; ?>" class="form-control" placeholder="Prix unitaire"
@@ -187,6 +191,7 @@
             var quantity = $('input[name="quantity"]').val();
             var unit = $('select[name="unit"]').val();
             var unit_price = $('input[name="unit_price"]').val();
+            var weightByUnit = $('input[name="weightByUnit"]').val();
             var daily_quantity = $('input[name="daily_quantity"]').val();
             var min_quantity = $('input[name="min_quantity"]').val();
             var lostQuantity = $('input[name="lostQuantity"]').val();
@@ -198,6 +203,7 @@
                 'quantity': quantity,
                 'unit': unit,
                 'unit_price': unit_price,
+                'weightByUnit': weightByUnit,
                 'provider': provider,
                 'min_quantity': min_quantity,
                 'daily_quantity': daily_quantity,

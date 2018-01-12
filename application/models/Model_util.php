@@ -56,6 +56,11 @@ class model_util extends CI_Model {
         $this->model_db->troncate('orderdetails');
         $this->model_db->troncate('order');
 
+        $this->db->where("id >=", 1);
+        $this->db->delete("meal");
+        $this->db->where("id >=", 1);
+        $this->db->delete("meal_product");
+
 
         $sql = "SET FOREIGN_KEY_CHECKS = 0;";
         $this->query($sql);
@@ -81,33 +86,59 @@ class model_util extends CI_Model {
                 $sql = "SET FOREIGN_KEY_CHECKS = 1;";
                 $this->query($sql);
             }else if ($table==="consumption"){
-                $this->model_db->troncate('consumption');
-                $this->model_db->troncate('consumption_product');
+                $this->db->where("id >=", 1);
+                $this->db->delete("consumption");
+                $this->db->where("id >=", 1);
+                $this->db->delete("consumption_product");
             }else if ($table==="employee"){
-                $this->model_db->troncate('employee');
-                $this->model_db->troncate('employee_event');
-                $this->model_db->troncate('salary');
+                $this->db->where("id >=", 1);
+                $this->db->delete("employee");
+                $this->db->where("id >=", 1);
+                $this->db->delete("employee_event");
+                $this->db->where("id >=", 1);
+                $this->db->delete("salary");
             }else if ($table==="meal"){
-                $this->model_db->troncate('meal');
-                $this->model_db->troncate('meal_product');
+                $this->db->where("id >=", 1);
+                $this->db->delete("meal");
+                $this->db->where("id >=", 1);
+                $this->db->delete("meal_product");
             }else if ($table==="product"){
-                $this->model_db->troncate('product');
-                $this->model_db->troncate('product_composition');
-                $this->model_db->troncate('quantity');
+                $this->db->where("id >=", 1);
+                $this->db->delete("product");
+                $this->db->where("id >=", 1);
+                $this->db->delete("product_composition");
+                $this->db->where("id >=", 1);
+                $this->db->delete("quantity");
             }else if ($table==="provider"){
-                $this->model_db->troncate('provider');
-                $this->model_db->troncate('order');
-                $this->model_db->troncate('orderdetails');
-                $this->model_db->troncate('quotation');
+                $this->db->where("id >=",1);
+                $this->db->delete("provider");
+                $this->db->where("id >=",1);
+                $this->db->delete("order");
+                $this->db->where("id >=",1);
+                $this->db->delete("orderdetails");
+                $this->db->where("id >=",1);
+                $this->db->delete("quotation");
+
+                $this->db->update("quantity",array("provider"=>0));
             }else if ($table==="order"){
-                $this->model_db->troncate('order');
-                $this->model_db->troncate('orderdetails');
+                $this->db->where("id >=", 1);
+                $this->db->delete("order");
+                $this->db->where("id >=", 1);
+                $this->db->delete("orderdetails");
             }else if($table === "charges"){
-                $this->model_db->troncate('purchase');
-                $this->model_db->troncate('regularcost');
-                $this->model_db->troncate('reparation');
+                $this->db->where("id >=", 1);
+                $this->db->delete("purchase");
+
+                $this->db->where("id >=", 1);
+                $this->db->delete("regularcost");
+
+                $this->db->where("id >=", 1);
+                $this->db->delete("reparation");
+
+               // $this->model_db->troncate('reparation');
             }else if($table === "history"){
-                $this->model_db->troncate('stock_history');
+                $this->db->where("id >=", 1);
+                $this->db->delete("stock_history");
             }
         }
 

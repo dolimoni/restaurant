@@ -11,8 +11,8 @@
 <div class="right_col" role="main">
     <div class="productsList">
         <div class="page-title">
-            <!--<pre>
-                <?php /*print_r($productsToOrder); */?>
+           <!-- <pre>
+                <?php /*print_r($provider); */?>
             </pre>-->
             <div class="title_left">
                 <h3>Profile du fournisseur</h3>
@@ -231,7 +231,7 @@
                                             <?php foreach ($products as $product) { ?>
                                                 <tr data-id="<?php echo $product['id']; ?>" data-quantity="<?php echo $product['q_id']; ?>">
                                                     <td> <?php echo $product['id']; ?></td>
-                                                    <td> <?php echo $product['name']; ?></td>
+                                                     <td><a href="<?php echo base_url('admin/product/edit/'. $product['id']); ?>"><?php echo $product['name']; ?></a></td>
                                                     <td> <?php echo $product['unit_price']; ?></td>
                                                     <td class="vertical-align-mid">
                                                        <!-- <a class="btn btn-primary btn-xs editProductsModal"
@@ -982,12 +982,12 @@
                 var row = $('.product[data-index=' + i + ']');
                 var quantity = parseFloat(row.find('input[name="quantityToOrder"]').val().replace(',', '.'));
                 var id = row.find('input[name="productToOrder"]').attr('data-id');
+                var idQuantity = row.attr("data-id-quantity");
                 var name = row.find('input[name="productToOrder"]').attr('data-name');
                 var unit_price = parseFloat(row.find('input[name="productToOrder"]').attr('data-price').replace(',', '.'));
-                console.log(id,quantity, unit_price);
                 if (quantity > 0 && unit_price > 0) {
                     underTotal += quantity * unit_price;
-                    var product = {'id': id, 'name': name, 'quantity': quantity, 'unit_price': unit_price, 'unit': '-'};
+                    var product = {'id': id, 'name': name, 'quantity': quantity, 'unit_price': unit_price,"idQuantity": idQuantity, 'unit': '-'};
                     productsList.push(product);
                 }
 
@@ -1023,7 +1023,7 @@
             };
 
 
-             $('#loading').show();
+            $('#loading').show();
             $.ajax({
                 url: "<?php echo base_url(); ?>"+ event.data.url,
                 type: "POST",

@@ -10,6 +10,11 @@
     .mealModel div{
         text-transform: uppercase;
     }
+
+    .benefit {
+        background: #6cc;
+        color: white;
+    }
 </style>
     <!-- page content -->
     <div class="right_col" role="main">
@@ -104,6 +109,54 @@
                     </div><!-- /x-panel -->
                 </div> <!-- /col -->
 
+                <div class="col-xs-12">
+                    <div class="x_panel">
+                        <div class="x_title">
+                            <h2>Liste des articles</h2>
+                            <ul class="nav navbar-right panel_toolbox">
+                                <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
+                                <li><a class="close-link"><i class="fa fa-close"></i></a></li>
+                            </ul>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content table-responsive">
+                            <table id="datatable-responsivee"
+                                   class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0"
+                                   width="100%">
+                                <thead>
+                                <tr>
+                                    <th class="md-hidden-only">Id</th>
+                                    <th>Nom</th>
+                                    <th>Prix de vente</th>
+                                    <th class="danger">Coût de revient</th>
+                                    <th class="benefit">Bénifices</th>
+                                </tr>
+                                </thead>
+                                <tfoot>
+                                <tr>
+                                    <th class="md-hidden-only">Id</th>
+                                    <th>Nom</th>
+                                    <th>Prix de vente</th>
+                                    <th class="danger">Coût de revient</th>
+                                    <th class="benefit">Bénifices</th>
+                                </tr>
+                                </tfoot>
+                                <tbody>
+                                <?php foreach ($mealsList as $meal) { ?>
+                                    <tr>
+                                        <td class="md-hidden-only"><?php echo $meal['meal_id']; ?></td>
+                                        <td><?php echo $meal['meal_name']; ?></td>
+                                        <td><?php echo $meal['sellPrice']; ?></td>
+                                        <td class="danger"><?php echo $meal['cost']; ?></td>
+                                        <td class="benefit"><?php echo $meal['profit']; ?></td>
+                                    </tr>
+                                <?php } ?>
+                                </tbody>
+                            </table>
+
+                        </div> <!-- /content -->
+                    </div><!-- /x-panel -->
+                </div>
             </div> <!-- /row -->
         </div>
     </div> <!-- /.col-right -->

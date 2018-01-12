@@ -228,8 +228,8 @@
                   <?php
                       $activeAlert="passive-alert";
                       $alertes_count=0;
-                      if (isset($alertes) and count($alertes)>0) {
-                          $alertes_count= count($alertes) ;
+                      if (isset($params["alertes"]) and count($params["alertes"])>0) {
+                          $alertes_count= count($params["alertes"]) ;
                           $activeAlert="active-alert";
                       }
                   ?>
@@ -240,7 +240,7 @@
                   </a>
                   <ul class="dropdown-menu dropdown-usermenu pull-right">
 
-                    <li><a href="<?php echo base_url() . 'admin/budget/regular'; ?>"><i class="fa fa-sign-out pull-right"></i>Afficher les alertes</a></li>
+                    <li><a href="<?php echo base_url() . 'admin/budget/regular'; ?>"><i class="fa fa-eye pull-right"></i>Afficher les alertes</a></li>
                   </ul>
                 </li>
               </ul>

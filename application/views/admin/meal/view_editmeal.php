@@ -85,22 +85,21 @@
                                    <div class="x_content oldContent" style="margin-top:30px;">
                                        <div class="row">
 
-                                         <div class="col-md-3 col-sm-12 col-xs-12">
-                                             <select name="product" class="productSelect md-button-v">
-                                                 <?php foreach ($products as $product) {
-                                                     $selected = $product['id'] == $pc['product'] ? 'selected' : '';
-                                                     ?>
-                                                     <option <?php echo $selected; ?>
-                                                             data-unit="<?php echo $product['unit']; ?>"
-                                                             value="<?php echo $product['id']; ?>"
-                                                             data-price="<?php echo $product['unit_price']; ?>"><?php echo $product['name']; ?></option>
-                                                 <?php } ?>
-                                             </select>
-
-                                         </div>
+                                           <select name="product" class="productSelect md-button-v">
+                                               <?php foreach ($products as $product) {
+                                                   $selected = $product['id'] == $pc['product'] ? 'selected' : '';
+                                                   ?>
+                                                   <option <?php echo $selected; ?>
+                                                           data-unit="<?php echo $product['unit']; ?>"
+                                                           value="<?php echo $product['id']; ?>"
+                                                           data-weightByUnit="<?php echo $product['weightByUnit'] ?>"
+                                                           data-price="<?php echo $product['unit_price']; ?>"><?php echo $product['name']; ?></option>
+                                               <?php } ?>
+                                           </select>
                                            <?php
                                            $KgUnitHidden = 'hidden';
                                            $LUnitHidden = 'hidden';
+                                           $unitConvert = $pc['unitConvert'];
                                            if ($pc['unit'] === "kg") {
                                                $KgUnitHidden = '';
                                            }
@@ -110,38 +109,43 @@
                                            $mp_unit=strtoupper($pc['mp_unit']);
                                            $mp_unit= preg_replace('/\s+/', '', $mp_unit);
                                            ?>
-                                           <div class="col-md-3 col-sm-12 col-xs-12">
-                                               <select name="kgUnitHidden"
-                                                       class="kgUnitHidden small-button md-button-v" <?php echo $KgUnitHidden ?>>
-                                                   <option <?php if ($mp_unit === 'KILOGRAMME'){echo "selected";} ?>
-                                                           value="1" name="Kilogramme">Kilogramme
-                                                   </option>
-                                                   <option <?php if ($mp_unit === 'GRAMME'){ echo "selected";} ?>
-                                                           value="0.001" name="Gramme">Gramme
-                                                   </option>
-                                                   <option <?php if ($mp_unit === 'MILLIGRAMME') echo "selected"; ?>
-                                                           value="0.000001" name="Milligramme">Milligramme
-                                                   </option>
-                                               </select>
-                                               <select name="lUnitHidden"
-                                                       class="lUnitHidden  md-button-v" <?php echo $LUnitHidden ?>>
-                                                   <option <?php if ($mp_unit === 'LITRE') echo "selected"; ?>
-                                                           value="1" name="Litre">Litre
-                                                   </option>
-                                                   <option <?php if ($mp_unit === 'CENTILITRE') echo "selected"; ?>
-                                                           value="0.001" name="Centilitre">Centilitre
-                                                   </option>
-                                                   <option <?php if ($mp_unit === 'MILLILITRE') echo "selected"; ?>
-                                                           value="0.000001" name="Millilitre">Millilitre
-                                                   </option>
-                                               </select>
-                                           </div>
-                                           <div class="col-md-6 col-sm-12 col-xs-12">
-                                              <input class="form-inline md-button-v" placeholder="Quantité"
-                                                                 name="quantity"
-                                                                 value="<?php echo $pc['mp_quantity']; ?>"
-                                                                 type="text">
-                                           </div>
+
+                                           <select name="kgUnitHidden"
+                                                   class="kgUnitHidden small-button md-button-v" <?php echo $KgUnitHidden ?>>
+                                               <option <?php if ($mp_unit === 'KILOGRAMME') {
+                                                   echo "selected";
+                                               } ?>
+                                                       value="1" name="Kilogramme">Kilogramme
+                                               </option>
+                                               <option <?php if ($mp_unit === 'GRAMME') {
+                                                   echo "selected";
+                                               } ?>
+                                                       value="0.001" name="Gramme">Gramme
+                                               </option>
+                                               <option <?php if ($mp_unit === 'MILLIGRAMME') echo "selected"; ?>
+                                                       value="0.000001" name="Milligramme">Milligramme
+                                               </option>
+                                               <option <?php if ($mp_unit === 'PCS') echo "selected"; ?>
+                                                       value="<?php echo $unitConvert; ?>" name="pcs">Pcs
+                                               </option>
+                                           </select>
+                                           <select name="lUnitHidden"
+                                                   class="lUnitHidden  md-button-v" <?php echo $LUnitHidden ?>>
+                                               <option <?php if ($mp_unit === 'LITRE') echo "selected"; ?>
+                                                       value="1" name="Litre">Litre
+                                               </option>
+                                               <option <?php if ($mp_unit === 'CENTILITRE') echo "selected"; ?>
+                                                       value="0.001" name="Centilitre">Centilitre
+                                               </option>
+                                               <option <?php if ($mp_unit === 'MILLILITRE') echo "selected"; ?>
+                                                       value="0.000001" name="Millilitre">Millilitre
+                                               </option>
+                                           </select>
+
+                                           <input class="form-inline md-button-v" placeholder="Quantité"
+                                                  name="quantity"
+                                                  value="<?php echo $pc['mp_quantity']; ?>"
+                                                  type="text">
 
                                        </div>
                                    </div>
@@ -169,15 +173,14 @@
                                     <div class="row">
 
 
-                                       <div class="col-md-3 col-sm-12 col-xs-12">
-                                           <select name="product" class="productSelectNew md-button-v">
-                                               <?php foreach ($products as $product) { ?>
-                                                   <option value="<?php echo $product['id']; ?>"
-                                                           data-unit="<?php echo $product['unit']; ?>"
-                                                           data-price="<?php echo $product['unit_price']; ?>"><?php echo $product['name']; ?></option>
-                                               <?php } ?>
-                                           </select>
-                                       </div>
+                                        <select name="product" class="productSelectNew md-button-v">
+                                            <?php foreach ($products as $product) { ?>
+                                                <option value="<?php echo $product['id']; ?>"
+                                                        data-unit="<?php echo $product['unit']; ?>"
+                                                        data-weightByUnit="<?php echo $product['weightByUnit'] ?>"
+                                                        data-price="<?php echo $product['unit_price']; ?>"><?php echo $product['name']; ?></option>
+                                            <?php } ?>
+                                        </select>
                                         <?php
                                         $KgUnitHidden = 'hidden';
                                         $LUnitHidden = 'hidden';
@@ -188,23 +191,23 @@
                                             $LUnitHidden = '';
                                         }
                                         ?>
-                                        <div class="col-md-3 col-sm-12 col-xs-12 md-button-v">
-                                            <select name="kgUnitHidden"
-                                                    class="kgUnitHidden" <?php echo $KgUnitHidden ?>>
-                                                <option value="1" name="Kilogramme">Kilogramme</option>
-                                                <option value="0.001" name="Gramme">Gramme</option>
-                                                <option value="0.000001" name="Milligramme">Milligramme</option>
-                                            </select>
-                                            <select name="lUnitHidden" class="lUnitHidden md-button-v" <?php echo $LUnitHidden ?>>
-                                                <option value="1" name="Litre">Litre</option>
-                                                <option value="0.001" name="Centilitre">Centilitre</option>
-                                                <option value="0.000001" name="Millilitre">Millilitre</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-md-6 col-sm-12 col-xs-12">
-                                            <input class="form-inline md-button-v" placeholder="Quantité" name="quantity"
-                                                              type="text">
-                                        </div>
+
+                                        <select name="kgUnitHidden"
+                                                class="kgUnitHidden" <?php echo $KgUnitHidden ?>>
+                                            <option value="1" name="Kilogramme">Kilogramme</option>
+                                            <option value="0.001" name="Gramme">Gramme</option>
+                                            <option value="0.000001" name="Milligramme">Milligramme</option>
+                                            <option value="0.001" name="pcs">Pcs</option>
+                                        </select>
+                                        <select name="lUnitHidden"
+                                                class="lUnitHidden md-button-v" <?php echo $LUnitHidden ?>>
+                                            <option value="1" name="Litre">Litre</option>
+                                            <option value="0.001" name="Centilitre">Centilitre</option>
+                                            <option value="0.000001" name="Millilitre">Millilitre</option>
+                                        </select>
+
+                                        <input class="form-inline md-button-v" placeholder="Quantité" name="quantity"
+                                               type="text">
 
                                     </div>
                                 </div>
@@ -294,12 +297,19 @@
                 var row = $('.product[data-id=' + i + ']');
                 l_panel = row.closest('.product');
                 var unit = l_panel.find('select[name="product"] option:selected').attr('data-unit');
+                var weightByunit = l_panel.find('select[name="product"] option:selected').attr('data-weightByunit');
                 var quantity = parseFloat(row.find('input[type="text"]').val().replace(',', '.'));
                 var unit_price = parseFloat(row.find('select').find('option:selected').attr('data-price').replace(',', '.'));
 
                 var unitConvertName = 'Pcs';
                 var unitConvert = 1;
                 if (unit === 'kg') {
+                    //prix par unité
+                    var weightByunitConvert = 0;
+                    if (weightByunit > 0) {
+                        weightByunitConvert = weightByunit / 1000;
+                    }
+                    l_panel.find('select[name="kgUnitHidden"] option[name=pcs]').val(weightByunitConvert);
                     unitConvert = parseFloat(l_panel.find('select[name="kgUnitHidden"] option:selected').val());
                     unitConvertName = l_panel.find('select[name="kgUnitHidden"] option:selected').text();
                     unit_price *= unitConvert;
@@ -369,13 +379,15 @@
                     unit_price *= unitConvert;
                 }
 
-                if (quantity > 0 && unit_price > 0){
-                    prixTotal += quantity * unit_price;
+                if (quantity > 0){
                     var product= {
                         'id': id, 'quantity': quantity, 'unit_price': unit_price, 'profit': profit,
                         'unit': unitConvertName,
                         'unitConvert': unitConvert
                     };
+                    if (unit_price > 0) {
+                        prixTotal += quantity * unit_price;
+                    }
                     productsList.push(product);
                 }
 

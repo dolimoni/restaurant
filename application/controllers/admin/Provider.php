@@ -179,6 +179,7 @@ class Provider extends BaseController
         $data['message'] = '';
         $data['providers'] = $this->model_provider->getAll();
         $data['products'] = $this->model_provider->getAllProducts();
+        $data['productMultipleProviders'] = $this->model_provider->getProductMultipleProviders();
         $data['productsPrice'] = $this->model_provider->getBestProductsPrice();
         $data['params'] = $this->getParams();
         $this->load->view('admin/provider/compare_view', $data);

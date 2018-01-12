@@ -13,7 +13,7 @@ if (defined('STDIN')) {
 $config['index_page'] = 'index.php';
 $config['uri_protocol']	= 'AUTO'; //REQUEST_URI
 $config['url_suffix'] = '';
-$config['language']	= 'french';
+$config['language']	= 'english';
 $config['charset'] = 'UTF-8';
 $config['enable_hooks'] = FALSE;
 $config['subclass_prefix'] = 'MY_';

@@ -324,7 +324,25 @@ class model_meal extends CI_Model {
                                 'type' => $consumption_type
                             );
 
-                            if (!isset($todayConsumption)) {
+                            $this->db->where('consumption', $consumption_id);
+                            $this->db->where('meal', $meal['id']);
+                            $this->db->where('product',$m_product['p_id']);
+                            $this->db->where('type',"sale");
+                            $this->db->where('unit_price', $quantity['unit_price']);
+                            $this->db->where('quantity>', 0);
+                            $q=$this->db->get("consumption_product");
+
+                            if ($q->num_rows() > 0) {
+                                $my_quantity= $q->row_array();
+                                $consumption_product["quantity"]+= $my_quantity["quantity"];
+                                $consumption_product["total"]+= $my_quantity["quantity"];
+                                $this->db->where('consumption', $consumption_id);
+                                $this->db->where('meal', $meal['id']);
+                                $this->db->where('product', $m_product['p_id']);
+                                $this->db->where('type', "sale");
+                                $this->db->where('unit_price', $quantity['unit_price']);
+                                $this->db->update('consumption_product', $consumption_product);
+                            }else{
                                 $this->db->insert('consumption_product', $consumption_product);
                             }
                         }
@@ -470,7 +488,11 @@ class model_meal extends CI_Model {
         $cost=$meal['cost'];
 
 	    foreach ($products as $product){
-            $productCostRate=$product['mp_quantity']*$product['unitConvert']*$product['unit_price']/$cost;
+
+            $productCostRate=0;
+            if($cost>0){
+                $productCostRate = $product['mp_quantity'] * $product['unitConvert'] * $product['unit_price'] / $cost;
+            }
 
             $data = array(
                 'consumptionRate' => $productCostRate

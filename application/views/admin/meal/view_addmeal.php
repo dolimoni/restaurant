@@ -68,12 +68,14 @@
                         <label><?php echo $message; ?></label>
                         <form method="post">
                             <fieldset>
-                                <div class="">
+                                <div class="row">
                                    <div class="x_content">
 
                                        <select name="product" class="productSelect  md-button-v">
                                            <?php foreach ($products as $product){ ?>
-                                               <option value="<?php echo $product['id'] ?>" data-unit="<?php echo $product['unit'] ?>" data-price="<?php echo $product['unit_price'] ?>">
+                                               <option value="<?php echo $product['id'] ?>" data-unit="<?php echo $product['unit'] ?>"
+                                                       data-price="<?php echo $product['unit_price'] ?>"
+                                                       data-weightByUnit="<?php echo $product['weightByUnit'] ?>">
                                                    <?php echo $product['name'] ?>
                                                </option>
                                            <?php } ?>
@@ -94,6 +96,7 @@
                                            <option value="1" name="Kilogramme">Kilogramme</option>
                                            <option value="0.001" name="Gramme">Gramme</option>
                                            <option value="0.000001" name="Milligramme">Milligramme</option>
+                                           <option value="0.001" name="pcs">Pcs</option>
                                        </select>
                                        <select name="lUnitHidden" class="lUnitHidden  md-button-v" <?php echo $LUnitHidden ?>>
                                                <option value="1" name="Kilogramme">Litre</option>
@@ -134,13 +137,14 @@
                     <label><?php echo $message; ?></label>
                     <form method="post">
                         <fieldset>
-                            <div class="">
+                            <div class="row">
                                 <div class="x_content" id="newContent">
 
                                     <select name="product" class="productSelectNew  md-button-v">
                                         <?php foreach ($products as $product) { ?>
                                             <option value="<?php echo $product['id']; ?>"
                                                     data-unit="<?php echo $product['unit'] ?>"
+                                                    data-weightByUnit="<?php echo $product['weightByUnit'] ?>"
                                                     data-price="<?php echo $product['unit_price']; ?>">
                                                 <?php echo $product['name']; ?>
                                             </option>
@@ -150,6 +154,7 @@
                                         <option value="1" name="Kilogramme">Kilogramme</option>
                                         <option value="0.001" name="Gramme">Gramme</option>
                                         <option value="0.000001" name="Milligramme">Milligramme</option>
+                                        <option value="0.001" name="pcs">Pcs</option>
                                     </select>
                                     <select name="lUnitHidden" class="lUnitHidden  md-button-v" <?php echo $LUnitHidden ?>>
                                         <option value="1" name="Kilogramme">Litre</option>
@@ -272,11 +277,19 @@
                 var row = $('.product[data-id=' + i + ']');
                 l_panel = row.closest('.product');
                 var unit = l_panel.find('select[name="product"] option:selected').attr('data-unit');
+                var weightByunit = l_panel.find('select[name="product"] option:selected').attr('data-weightByunit');
                 var quantity = parseFloat(row.find('input[type="text"]').val().replace(',', '.'));
                 var unit_price = parseFloat(row.find('select').find('option:selected').attr('data-price').replace(',', '.'));
                 var unitConvert=1;
                 var unitConvertName='';
                 if (unit === 'kg') {
+
+                    //prix par unité
+                    var weightByunitConvert=0;
+                    if(weightByunit>0){
+                        weightByunitConvert= weightByunit/1000;
+                    }
+                    l_panel.find('select[name="kgUnitHidden"] option[name=pcs]').val(weightByunitConvert);
                     unitConvert = parseFloat(l_panel.find('select[name="kgUnitHidden"] option:selected').val());
                     unitConvertName = parseFloat(l_panel.find('select[name="kgUnitHidden"] option:selected').text());
                     unit_price *= unitConvert;
@@ -342,10 +355,12 @@
                     unitConvertName = l_panel.find('select[name="lUnitHidden"] option:selected').text();
                     unit_price *= unitConvert;
                 }
-                if (quantity > 0 && unit_price > 0){
-                    prixTotal += quantity * unit_price;
+                if (quantity > 0){
                     var product={'id':id,'quantity':quantity,'unit_price':unit_price,'profit': profit,'unit': unitConvertName,'unitConvert': unitConvert};
                     productsList.push(product);
+                }
+                if(unit_price > 0){
+                    prixTotal += quantity * unit_price;
                 }
 
             }
@@ -410,10 +425,10 @@
                     showConfirmButton: false
                 });
                 validate = false;
-            }else if(meal['sellPrice']< meal['cost'] && meal['sellPrice']>0){
+            }else if(meal['profit']< 0 && meal['sellPrice']>0){
                 swal({
                     title: "Attention",
-                    text: "Le prix est inférieur au coût",
+                    text: "Le bénifice est négative",
                     type: "warning",
                     timer: 2000,
                     showConfirmButton: false
@@ -467,6 +482,7 @@
         });
 
 
+        $(".well[data-id=<?php echo $defaultGroup; ?>]").trigger("click");
         $('button[name="addProduct"]').on('click', addProduct);
         function addProduct(event) {
             var productModel = $('.productModel').clone().removeAttr('hidden');

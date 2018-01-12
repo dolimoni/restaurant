@@ -164,6 +164,7 @@
         updateGraph();
     });
 
+
     if ($('#graph_area_price').length) {
 
         var chart = Morris.Area({
@@ -206,6 +207,10 @@
                 }
             });
         }
+
+        myData['product'] = "<?php echo $productMultipleProviders["name"]; ?>";
+        console.log(myData);
+        updateGraph();
 
     }
 

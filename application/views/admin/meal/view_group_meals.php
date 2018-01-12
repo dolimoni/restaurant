@@ -22,16 +22,14 @@
                 <div class="text-center tile_stats_count">
                     <div class="count">
                         <?php
-                            if(isset($meals[0])){
-                                echo $meals[0]['g_name'];
-                            }
+                                echo $group['name'];
                         ?>
                     </div>
                 </div>
             </div>
             <div class="row">
                 <button type="submit" class="btn btn-success" name="new"
-                        onclick="window.location.href='<?php echo base_url('admin/meal/add/'); ?>'">
+                        onclick="window.location.href='<?php  echo base_url('admin/meal/add/'. $group['id']); ?>'">
                     <span></span> Nouveau
                 </button>
                 <button type="submit" class="btn btn-warning" name="Fichier"

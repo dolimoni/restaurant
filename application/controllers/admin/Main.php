@@ -48,6 +48,7 @@ class Main extends BaseController
         $meals= $this->model_meal->getMealsOnly();
         $data['mealsName']=array_column($meals,"name");
         $data['meals']= $meals;
+        $data['mealsList'] = $this->model_meal->getAll();
         $data["sales"]=$this->model_report->reportRange(Date("Y-m-d"), Date("Y-m-d"));
         $this->load->view('admin/uniwell/index2',$data);
     }

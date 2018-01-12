@@ -23,7 +23,7 @@ class Meal extends BaseController {
         $data['groups'] = $this->model_group->getAll();
         $data['params'] = $this->getParams();
         $this->parser->parse('admin/meal/view_meals', $data);
-        $this->log_end($data);
+        $this->log_end("end success");
     }
     public function view()
 	{
@@ -113,6 +113,18 @@ class Meal extends BaseController {
 
         return $rds;
     }
+    private function sortListByName($data){
+        function cmpList($a, $b)
+        {
+            if ($a == $b)
+                return 0;
+            return ($a['name'] < $b['name']) ? -1 : 1;
+        }
+
+        usort($data, "cmpList");
+        return $data;
+
+    }
     public function mypdfTest()
     {
         $meal_id = $this->uri->segment(4);
@@ -147,7 +159,14 @@ class Meal extends BaseController {
         $this->log_begin();
         if (!$this->input->post('meal')) {
             $data['message'] = '';
+            $group= $this->uri->segment(4);
+            if($group){
+                $data['defaultGroup'] = $group;
+            }else{
+                $data['defaultGroup'] = 0;
+            }
             $data['products'] = $this->model_product->getAll(false,true);
+            $data['products'] = $this->sortListByName($data['products']);
             $data['compositions'] = $this->model_product->getCompositions();
             $data['groups'] = $this->model_group->getAll();
             $data['params'] = $this->getParams();
@@ -173,6 +192,7 @@ class Meal extends BaseController {
         $data['productsComposition'] = $this->model_meal->getProducts($meal_id);
         $data['message'] = '';
         $data['products'] = $this->model_product->getAll(false,true);
+        $data['products'] = $this->sortListByName($data['products']);
         $data['groups'] = $this->model_group->getAll();
         $data['params'] = $this->getParams();
         $this->parser->parse('admin/meal/view_editmeal', $data);
@@ -197,6 +217,8 @@ class Meal extends BaseController {
             $data['message'] = '';
             $data['groups'] = $this->model_group->getAll();
             $data['productsToOrder'] = $this->model_product->getToOrder();
+            $this->load->model('model_budget');
+            $data['alertes'] = $this->model_budget->getActiveAlerts();
             $data['params'] = $this->getParams();
             $this->parser->parse('admin/meal/view_group', $data);
             $this->log_end($data);
@@ -272,6 +294,7 @@ class Meal extends BaseController {
 
         $group_id = $this->uri->segment(4);
         $data['meals']=$this->model_meal->getByGroup($group_id);
+        $data['group']=$this->model_group->get($group_id);
         $data['params'] = $this->getParams();
         $this->load->view('admin/meal/view_group_meals',$data);
 
