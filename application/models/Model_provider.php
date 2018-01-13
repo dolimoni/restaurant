@@ -34,6 +34,7 @@ class model_provider extends CI_Model {
                'address' => $provider['address'],
                'phone' => $provider['phone'],
                'mail' => $provider['mail'],
+               'tva' => $provider['tva'],
                'image' => $provider['image'],
             );
 		$this->db->insert('provider', $data);
@@ -121,13 +122,30 @@ class model_provider extends CI_Model {
 	    $this->db->select('p.name,pv.name as provider,q.unit_price');
 	    $this->db->from('product p');
 	    $this->db->join('quantity q','p.id=q.product');
-	    $this->db->join('provider pv','pv.id=p.provider');
+	    $this->db->join('provider pv','pv.id=q.provider');
 	    $this->db->where('q.status','active');
 	    $this->db->where('p.status','active');
 	    $this->db->where('provider>0');
 	    $this->db->order_by('name');
 		$result = $this->db->get();
 		return $result->result_array();
+	}
+
+	public function getBestProductsPrice()
+	{
+
+        $query="SELECT p.name,pv.name as provider,unit_price
+                from (
+                   select q.id,min(unit_price) as min_unit_price,p.name
+                   from quantity q inner join product p  on p.id=q.product where q.status='active' and provider>0 and p.status='active' group by p.name
+                ) as temp 
+                inner join quantity q 
+                inner join product p on p.id=q.product and p.name = temp.name and temp.min_unit_price=unit_price 
+                inner join provider pv on pv.id=q.provider
+                where q.status='active' and provider>0 and p.status='active'";
+
+        $dbResult = $this->db->query($query);
+        return $dbResult->result_array();
 	}
 	public function getAllActive()
 	{
@@ -153,13 +171,15 @@ class model_provider extends CI_Model {
 		return $result->result_array();
 	}
 
-	public function getProducts($id,$status="active")
+	public function getProducts($id,$status="active",$visibility="shown")
 	{
         $this->db->select('*,p.id as id, q.id as q_id');
         $this->db->from('product p');
-        $this->db->join('quantity q','q.product=p.id and q.status="active"','left');
+        $this->db->join('quantity q','q.product=p.id and (q.status="active" or q.status="stock")','left');
         //$this->db->where('q.status','active');
-		$this->db->where('p.provider', $id);
+		$this->db->where('q.provider', $id);
+		$this->db->where('p.status', "active");
+		$this->db->where('q.visibility', $visibility);
 		$result = $this->db->get();
 		return $result->result_array();
 	}
@@ -170,19 +190,10 @@ class model_provider extends CI_Model {
 		return $result->result_array();
 	}
 	
-	public function update($provider)
+	public function update($id,$provider)
 	{
-		$data = array(
-			'title' => $provider['title'],
-			'name' => $provider['name'],
-			'prenom' => $provider['prenom'],
-			'address' => $provider['address'],
-			'mail' => $provider['mail'],
-			'phone' => $provider['phone']
-        );
-
-		$this->db->where('id', $provider['id']);
-		$this->db->update('provider', $data);
+		$this->db->where('id', $id);
+		$this->db->update('provider', $provider);
 	}
 
 
@@ -212,9 +223,30 @@ class model_provider extends CI_Model {
         return $result;
     }
 
+    public function getProductMultipleProviders(){
+        $this->db->select('p.name,pv.name as provider,q.unit_price');
+        $this->db->select('count(q.product) count');
+        $this->db->from('product p');
+        $this->db->join('quantity q', 'p.id=q.product');
+        $this->db->join('provider pv', 'pv.id=q.provider');
+        //$this->db->where('q.status', 'active');
+        $this->db->where('p.status', 'active');
+       // $this->db->where('provider>0');
+        $this->db->group_by('q.product');
+        $this->db->order_by('count',"desc");
+        $result = $this->db->get();
+        return $result->row_array();
+    }
     public function deleteProvider($provider_id)
     {
         $this->db->where('id', $provider_id);
         $this->db->delete('provider');
+    }
+
+    public function deleteProduct($product_id, $quantity_id)
+    {
+        $this->db->where('id', $quantity_id);
+        $this->db->where('product', $product_id);
+        $this->db->update('quantity',array("visibility"=>"hidden"));
     }
 }

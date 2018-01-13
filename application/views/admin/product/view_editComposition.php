@@ -2,9 +2,9 @@
 <!-- page content -->
 <div class="right_col" role="main">
     <div class="productsList">
-        <pre>
-            <?php print_r($composition); ?>
-        </pre>
+       <!-- <pre>
+            <?php /*print_r($composition); */?>
+        </pre>-->
         <div class="page-title">
             <div class="title_left">
                 <h3>Produit composé</h3>
@@ -71,7 +71,7 @@
                         <div class="x_content">
                             <fieldset>
                                 <div class="row">
-                                        <div class="col-md-6">
+                                        <div class="col-md-6 col-xs-12">
                                             <div class="form-group">
                                                 <input type="hidden" name="productId" value="<?php echo $composition['composition']['id']; ?>"/>
                                                 Nom<span class="required">*</span> : <input class="form-control"
@@ -90,7 +90,7 @@
                                                                                             required>
                                             </div>
                                         </div>
-                                        <div class="col-md-6">
+                                        <div class="col-md-6 col-xs-12">
                                             <div class="form-group">
                                                 Unité de mesure :
                                                 <select class="form-control" name="unit">
@@ -129,7 +129,7 @@
                         <h2>Composition</h2>
                         <ul class="nav navbar-right panel_toolbox">
                             <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
-                            <li><a class="close-link"><i class="fa fa-close"></i></a></li>
+                           <!-- <li><a class="close-link"><i class="fa fa-close"></i></a></li>-->
                         </ul>
                         <div class="clearfix"></div>
                     </div>
@@ -205,7 +205,7 @@
                     <h2>Produit</h2>
                     <ul class="nav navbar-right panel_toolbox">
                         <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
-                        <li><a class="close-link"><i class="fa fa-close"></i></a></li>
+                        <!--<li><a class="close-link"><i class="fa fa-close"></i></a></li>-->
                     </ul>
                     <div class="clearfix"></div>
                 </div>
@@ -391,7 +391,7 @@
                                 timer: 2000,
                                 showConfirmButton: false
                             });
-                            //document.location.href = data.redirect;
+                            document.location.href = data.redirect;
                         }
                         else {
                             swal({

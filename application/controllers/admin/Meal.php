@@ -17,80 +17,113 @@ class Meal extends BaseController {
 
 	}
 	public function index()
-	{	
+	{
+        $this->log_begin();
         $data['meals'] = $this->model_meal->getAll();
         $data['groups'] = $this->model_group->getAll();
         $data['params'] = $this->getParams();
         $this->parser->parse('admin/meal/view_meals', $data);
+        $this->log_end("end success");
     }
     public function view()
 	{
+        $this->log_begin();
         $meal_id = $this->uri->segment(4);
         $data['meal'] = $this->model_meal->get($meal_id);
         $data['products'] = $this->model_meal->getProducts($meal_id);
         $data['params'] = $this->getParams();
         $this->parser->parse('admin/meal/view_meal', $data);
+        $this->log_end($data);
     }
     public function report()
 	{
+        $this->log_begin();
         $meal_id = $this->uri->segment(4);
         $data['meal'] = $this->model_meal->get($meal_id);
         $data['products'] = $this->model_meal->getProducts($meal_id);
         $data['report'] = $this->model_report->reportById($meal_id);
-        $start = date('Y-m-d', strtotime('-1 month'));
+        $start = date('Y-m-d', strtotime('-2 month'));
         $end = date('Y-m-d');
         $evolution = $this->model_report->evolutionRange($meal_id, $start, $end);
+        if($this->session->userdata('startDate')){
+            $startDate= $this->session->userdata('startDate');
+            $endDate= $this->session->userdata('endDate');
+            $data['report'] = $this->model_report->reportById($meal_id, $startDate, $endDate);
+            $evolution = $this->model_report->evolutionRange($meal_id, $startDate, $endDate);
+        }
         $data['report']['rds']=count($this->rds($evolution));
         $data['params'] = $this->getParams();
         $this->load->view('admin/meal/report',$data);
+        $this->log_end($data);
     }
 
     public function apiEvolution(){
+        $this->log_begin();
         $meal_id = $this->input->post('id');
+
 
         $evolution = $this->model_report->evolution($meal_id);
 
+        if ($this->session->userdata('startDate')) {
+            $startDate = $this->session->userdata('startDate');
+            $endDate = $this->session->userdata('endDate');
+            $evolution = $this->model_report->evolutionRange($meal_id, $startDate, $endDate);
+            $this->session->unset_userdata('startDate');
+            $this->session->unset_userdata('endDate');
+        }
+
         $rds = array_column($evolution, 'rd');
 
-        function date_sort($a, $b)
+        function date_sort2($a, $b)
         {
             return strtotime($a) - strtotime($b);
         }
 
-        usort($rds, "date_sort");
-
+        usort($rds, "date_sort2");
 
         $this->output
             ->set_content_type("application/json")
             ->set_output(json_encode(array('status' => true, 'evolution' => $evolution,'rds'=> $rds)));
+
+        $this->log_end(array('status' => true, 'evolution' => $evolution, 'rds' => $rds));
     }
     public function apiEvolutionRange(){
 
+        $this->log_begin();
         $meal_id = $this->input->post('id');
         $startDate = $this->input->post('startDate');
         $endDate = $this->input->post('endDate');
         $evolution = $this->model_report->evolutionRange($meal_id, $startDate,$endDate);
-
-
-
-
         $this->output
             ->set_content_type("application/json")
             ->set_output(json_encode(array('status' => true, 'evolution' => $evolution,'rds'=>$this->rds($evolution))));
+        $this->log_end(array('status' => true, 'evolution' => $evolution));
     }
 
     // sort attribut createdAt
     private function rds($evolution){
         $rds = array_column($evolution, 'report_date');
 
-        function date_sort($a, $b)
+        function date_sortRds($a, $b)
         {
             return strtotime($a) - strtotime($b);
         }
 
-        usort($rds, "date_sort");
+        usort($rds, "date_sortRds");
 
         return $rds;
+    }
+    private function sortListByName($data){
+        function cmpList($a, $b)
+        {
+            if ($a == $b)
+                return 0;
+            return ($a['name'] < $b['name']) ? -1 : 1;
+        }
+
+        usort($data, "cmpList");
+        return $data;
+
     }
     public function mypdfTest()
     {
@@ -103,6 +136,7 @@ class Meal extends BaseController {
 
     function mypdf()
     {
+        $this->log_begin();
         $id=$this->input->post('id');
         //$id=1;
 
@@ -122,62 +156,85 @@ class Meal extends BaseController {
 	public function add()
 	{
 
+        $this->log_begin();
         if (!$this->input->post('meal')) {
             $data['message'] = '';
+            $group= $this->uri->segment(4);
+            if($group){
+                $data['defaultGroup'] = $group;
+            }else{
+                $data['defaultGroup'] = 0;
+            }
             $data['products'] = $this->model_product->getAll(false,true);
+            $data['products'] = $this->sortListByName($data['products']);
             $data['compositions'] = $this->model_product->getCompositions();
             $data['groups'] = $this->model_group->getAll();
             $data['params'] = $this->getParams();
             $this->parser->parse('admin/meal/view_addmeal', $data);
+            $this->log_end($data);
         }else{
             $meal = $this->input->post('meal');
             $id = $this->model_meal->add($meal);
+            $this->log_end(array('status' => true, 'redirect' => base_url('admin/meal/view/' . $id)));
             $this->output
                 ->set_content_type("application/json")
                 ->set_output(json_encode(array('status' => true, 'redirect' => base_url('admin/meal/view/'.$id))));
+
 
         }
 
 	}
 	public function edit()
 	{
+        $this->log_begin();
         $meal_id = $this->uri->segment(4);
         $data['meal'] = $this->model_meal->get($meal_id);
         $data['productsComposition'] = $this->model_meal->getProducts($meal_id);
         $data['message'] = '';
         $data['products'] = $this->model_product->getAll(false,true);
+        $data['products'] = $this->sortListByName($data['products']);
         $data['groups'] = $this->model_group->getAll();
         $data['params'] = $this->getParams();
         $this->parser->parse('admin/meal/view_editmeal', $data);
+        $this->log_end($data);
 	}
 	public function editApi()
 	{
+        $this->log_begin();
         $meal = $this->input->post('meal');
         $id = $this->model_meal->edit($meal);
         $this->output
             ->set_content_type("application/json")
             ->set_output(json_encode(array('status' => 'success', 'redirect' => base_url('admin/meal/view/' . $id))));
+        $this->log_end(array('status' => 'success', 'redirect' => base_url('admin/meal/view/' . $id)));
 	}
 	public function group()
 	{
+
+        $this->log_begin();
 
         if (!$this->input->post('groupName')) {
             $data['message'] = '';
             $data['groups'] = $this->model_group->getAll();
             $data['productsToOrder'] = $this->model_product->getToOrder();
+            $this->load->model('model_budget');
+            $data['alertes'] = $this->model_budget->getActiveAlerts();
             $data['params'] = $this->getParams();
             $this->parser->parse('admin/meal/view_group', $data);
+            $this->log_end($data);
         }else{
 
             $name = $this->input->post('groupName');
             $image = $_FILES['image']['name'];
             $group=array('name'=>$name,'image'=>$image);
+            $this->log_middle($group);
             $this->uploadFile();
             $this->model_group->add($group);
 
             $this->output
                 ->set_content_type("application/json")
                 ->set_output(json_encode(array('status' => 'success')));
+            $this->log_end(array('status' => 'success'));
 
         }
 
@@ -186,6 +243,7 @@ class Meal extends BaseController {
 	public function apiGroupEdit()
 	{
         try {
+            $this->log_begin();
             $name = $this->input->post('groupNameEdit');
             $id = $this->input->post('id');
             $image = $_FILES['image']['name'];
@@ -194,11 +252,13 @@ class Meal extends BaseController {
                 $group['image']=$image;
                 $this->uploadFile();
             }
+            $this->log_middle($group);
             $this->model_group->edit($id,$group);
 
             $this->output
                 ->set_content_type("application/json")
                 ->set_output(json_encode(array('status' => 'success')));
+            $this->log_end(array('status' => 'success'));
         } catch (Exception $e) {
             $this->output
                 ->set_content_type("application/json")
@@ -210,6 +270,7 @@ class Meal extends BaseController {
 	{
         try {
 
+            $this->log_begin();
             $group_id = $this->input->post('group_id');
 
             $this->model_group->switchProductsGroup($group_id,1);
@@ -218,6 +279,7 @@ class Meal extends BaseController {
             $this->output
                 ->set_content_type("application/json")
                 ->set_output(json_encode(array('status' => 'success')));
+            $this->log_end(array('status' => 'success'));
         } catch (Exception $e) {
             $this->output
                 ->set_content_type("application/json")
@@ -228,11 +290,15 @@ class Meal extends BaseController {
 
 	public function groupMeals()
 	{
+        $this->log_begin();
 
         $group_id = $this->uri->segment(4);
         $data['meals']=$this->model_meal->getByGroup($group_id);
+        $data['group']=$this->model_group->get($group_id);
         $data['params'] = $this->getParams();
         $this->load->view('admin/meal/view_group_meals',$data);
+
+        $this->log_end($data);
 
 	}
 
@@ -265,26 +331,31 @@ class Meal extends BaseController {
             }
         }
         $save_path = base_url() . $file_path;
+        $this->log_end($file_path);
         return $file_path;
     }
 
 
 
 	public function apiDeleteProductForMeal(){
+        $this->log_begin();
         $meal_id = $this->input->post('meal_id');
         $product_id = $this->input->post('product_id');
         $this->model_meal->deleteProductForMeal($meal_id, $product_id);
         $this->output
             ->set_content_type("application/json")
             ->set_output(json_encode(array('status' => 'success')));
+        $this->log_end(array('status' => 'success'));
     }
     public function apiDeleteMeal(){
        try {
+           $this->log_begin();
            $meal_id = $this->input->post('meal_id');
            $this->model_meal->deleteMeal($meal_id);
            $this->output
                ->set_content_type("application/json")
                ->set_output(json_encode(array('status' => 'success')));
+           $this->log_end(array('status' => 'success'));
        } catch (Exception $e) {
 
            $this->output
@@ -296,11 +367,13 @@ class Meal extends BaseController {
     public function apiConsumption()
     {
        try {
+           $this->log_begin();
            $productsList = $this->input->post('mealsList');
            $response = $this->model_meal->consumption($productsList);
            $this->output
                ->set_content_type("application/json")
                ->set_output(json_encode(array('status' => $response['status'],'productsList'=>$response['productsList'])));
+           $this->log_end(array('status' => $response['status'], 'productsList' => $response['productsList']));
        } catch (Exception $e) {
            $this->output
                ->set_content_type("application/json")
@@ -311,11 +384,13 @@ class Meal extends BaseController {
     public function apiAddLostQuantity()
     {
        try {
+           $this->log_begin();
            $mealsList = $this->input->post('mealsList');
            $response = $this->model_meal->consumption($mealsList,true);
            $this->output
                ->set_content_type("application/json")
                ->set_output(json_encode(array('status' => 'success')));
+           $this->log_end(array('status' => 'success'));
        } catch (Exception $e) {
            $this->output
                ->set_content_type("application/json")
@@ -332,6 +407,7 @@ class Meal extends BaseController {
     public function apiLoadFile()
     {
         try {
+            $this->log_begin();
             $destination="uploads/articlePrg/";
             $aa=$this->uploadFile($destination);
 
@@ -350,6 +426,7 @@ class Meal extends BaseController {
             $data['groups'] = array();
             $groups= $this->ParseGroup($file);
             $this->model_group->createGroupsIfNotExists($groups);
+            $this->log_middle($groups);
             foreach ($groups as $group) {
                 $data['groups'][]=$this->model_group->getByNum($group['num']);
             }
@@ -357,6 +434,7 @@ class Meal extends BaseController {
             $this->output
                 ->set_content_type("application/json")
                 ->set_output(json_encode(array('status' => 'success', 'response' => $data)));
+            $this->log_end($data);
         } catch (Exception $e) {
             log_message('error', $e->getMessage());
             $this->output
@@ -391,6 +469,7 @@ class Meal extends BaseController {
     }
     public function apiLoadMeals()
     {
+        $this->log_begin();
         $type='';
         try {
             $mealsList      = $this->input->post('mealsList');
@@ -402,15 +481,20 @@ class Meal extends BaseController {
                     ->set_content_type("application/json")
                     ->set_output(json_encode(array('flag' => 'ok', 'status' => $response['status'], 'redirect' => base_url('admin/meal/index'), 'mealsExist' => $response['mealsExist'])));
 
+
+                $this->log_end(array('flag' => 'ok', 'status' => $response['status'], 'redirect' => base_url('admin/meal/index'), 'mealsExist' => $response['mealsExist']));
             } else if ($type === "update") {
                 $response = $this->model_meal->updateMeals($mealsList);
                 $this->output
                     ->set_content_type("application/json")
                     ->set_output(json_encode(array('status' => $response['status'], 'redirect' => base_url('admin/meal/index'), 'res' => $response)));
+                $this->log_end(array('status' => $response['status'], 'redirect' => base_url('admin/meal/index'), 'res' => $response));
             }else{
                 $this->output
                     ->set_content_type("application/json")
                     ->set_output(json_encode(array('status' => 'error')));
+                $this->log_end(json_encode(array('status' => 'error')));
+
             }
         } catch (Exception $e) {
             $this->output
@@ -447,6 +531,7 @@ class Meal extends BaseController {
         $simpleXml = simplexml_load_string($fileContents);
         $json = json_encode($simpleXml);*/
 
+        $this->log_middle($url);
         $xml = simplexml_load_file($url) or die("Error: Cannot create csv");
         $meals = array();
         foreach ($xml->plu_list->plu as $plu) {
@@ -458,6 +543,8 @@ class Meal extends BaseController {
             if($name[0]!=="")
                 $meals[] = $meal;
         }
+
+        $this->log_end($meals);
 
 
         return $meals;

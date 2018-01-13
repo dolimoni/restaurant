@@ -51,6 +51,9 @@
                             <li><a data-toggle="tab" href="#menu1" id="diffTab">Différences</a></li>
                         </ul>
 
+
+
+
                         <div class="tab-content">
                             <div id="home" class="tab-pane fade in active">
                                 <div class="x_content">
@@ -147,6 +150,7 @@
                                 </div>
                             </div>
                         </div>
+
                     </div><!-- /x-panel -->
                 </div> <!-- /col -->
             </div> <!-- /row -->
@@ -309,12 +313,14 @@
             });
 
             var myData = {'mealsList': mealsList};
+            $('#loading').show();
             $.ajax({
                 url: "<?php echo base_url(); ?>admin/meal/apiConsumption",
                 type: "POST",
                 dataType: "json",
                 data: myData,
                 success: function (data) {
+                    $('#loading').hide();
                     if (data.status === 'success') {
                         swal({
                             title: "Success",
@@ -338,6 +344,7 @@
                     }
                 },
                 error: function (data) {
+                    $('#loading').hide();
                     swal({
                         title: "Erreur",
                         text: "Une erreur s\'est produite",

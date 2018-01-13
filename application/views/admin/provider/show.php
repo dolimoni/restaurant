@@ -1,10 +1,19 @@
 <?php $this->load->view('admin/partials/admin_header.php'); ?>
 <link href="<?php echo base_url('assets/vendors/bootstrap-daterangepicker/daterangepicker.css'); ?>" rel="stylesheet">
 <link href="<?php echo base_url("assets/build2/css/custom.min.css"); ?>" rel="stylesheet">
+<style>
+    input.ordred{
+        background: #6cc;
+        color: white;
+    }
+</style>
 <!-- page content -->
 <div class="right_col" role="main">
     <div class="productsList">
         <div class="page-title">
+           <!-- <pre>
+                <?php /*print_r($provider); */?>
+            </pre>-->
             <div class="title_left">
                 <h3>Profile du fournisseur</h3>
             </div>
@@ -17,12 +26,12 @@
                 <div class="x_panel">
                     <div class="x_title">
                         <h2>Rapport du fournisseur
-                            <small>Activity report</small>
+                            <small>Rapport des activités</small>
                         </h2>
                         <ul class="nav navbar-right panel_toolbox">
                             <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
                             </li>
-                            <li class="dropdown">
+                            <!--<li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
                                    aria-expanded="false"><i class="fa fa-wrench"></i></a>
                                 <ul class="dropdown-menu" role="menu">
@@ -31,7 +40,7 @@
                                     <li><a href="#">Settings 2</a>
                                     </li>
                                 </ul>
-                            </li>
+                            </li>-->
                             <li><a class="close-link"><i class="fa fa-close"></i></a>
                             </li>
                         </ul>
@@ -57,15 +66,18 @@
                                 </li>
 
                                 <li class="provider-title">
-                                    <i class="fa fa-briefcase user-profile-icon"> <?php echo $provider['title']; ?></i>
+                                    <i class="fa fa-briefcase user-profile-icon"><?php echo $provider['title']; ?></i>
                                 </li>
 
                                 <li>
-                                    <i class="fa fa-phone provider-phone"> <?php echo $provider['phone']; ?></i>
+                                    <i class="fa fa-phone provider-phone"><?php echo $provider['phone']; ?></i>
                                 </li>
 
                                 <li >
-                                    <i class="fa fa-external-link user-profile-icon provider-mail"><?php echo $provider['mail']; ?></i>
+                                    <i class="fa fa-envelope user-profile-icon provider-mail"><?php echo $provider['mail']; ?></i>
+                                </li>
+                                <li hidden>
+                                    <i class="fa fa-envelope user-profile-icon provider-tva" data-tva="<?php echo $provider['tva']; ?>"> <?php echo $provider['tva']; ?></i>
                                 </li>
                             </ul>
 
@@ -115,7 +127,7 @@
                             <!-- end of skills -->
 
                         </div>
-                        <div class="col-md-9 col-sm-12 col-xs-12">
+                        <div class="col-md-9 col-sm-9 col-xs-12">
 
                             <div class="profile_title">
                                 <div class="col-md-12 col-sm-12 col-xs-12">
@@ -125,7 +137,7 @@
                                             <ul class="nav navbar-right panel_toolbox">
                                                 <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
                                                 </li>
-                                                <li class="dropdown">
+                                                <!--<li class="dropdown">
                                                     <a href="#" class="dropdown-toggle" data-toggle="dropdown"
                                                        role="button"
                                                        aria-expanded="false"><i class="fa fa-wrench"></i></a>
@@ -135,7 +147,7 @@
                                                         <li><a href="#">Settings 2</a>
                                                         </li>
                                                     </ul>
-                                                </li>
+                                                </li>-->
                                                 <li><a class="close-link"><i class="fa fa-close"></i></a>
                                                 </li>
                                             </ul>
@@ -217,9 +229,9 @@
                                             </tfoot>
                                             <tbody>
                                             <?php foreach ($products as $product) { ?>
-                                                <tr>
+                                                <tr data-id="<?php echo $product['id']; ?>" data-quantity="<?php echo $product['q_id']; ?>">
                                                     <td> <?php echo $product['id']; ?></td>
-                                                    <td> <?php echo $product['name']; ?></td>
+                                                     <td><a href="<?php echo base_url('admin/product/edit/'. $product['id']); ?>"><?php echo $product['name']; ?></a></td>
                                                     <td> <?php echo $product['unit_price']; ?></td>
                                                     <!--<td class="vertical-align-mid">
                                                         <a class="btn btn-primary btn-xs editProductsModal"
@@ -227,6 +239,14 @@
                                                            data-target="#editProductsModal"
                                                            data-id="<?php /*echo $product['id']; */?>">Modifier</a>
                                                     </td>-->
+                                                    <td class="vertical-align-mid">
+                                                       <!-- <a class="btn btn-primary btn-xs editProductsModal"
+                                                           data-toggle="modal"
+                                                           data-target="#editProductsModal"
+                                                           data-id="<?php /*echo $product['id']; */?>">Modifier</a>-->
+                                                        <a data-id="<?php echo $product['id']; ?>"
+                                                           class="btn btn-danger btn-xs deleteProduct">Supprimer</a>
+                                                    </td>
                                                 </tr>
                                             <?php } ?>
                                             </tbody>
@@ -252,6 +272,7 @@
                                             <tr>
                                                 <th>#</th>
                                                 <th>Produit</th>
+                                                <th>Quantité minimum</th>
                                                 <th class="hidden-phone">Prix</th>
                                                 <!--<th>Actions</th>-->
                                             </tr>
@@ -261,6 +282,7 @@
                                                 <tr>
                                                     <td><?php echo $productToOrder['id']; ?></td>
                                                     <td><?php echo $productToOrder['name']; ?></td>
+                                                    <td><?php echo $productToOrder['min_quantity']- $productToOrder['quantity']; ?></td>
                                                     <td><?php echo $productToOrder['unit_price']; ?></td>
                                                     <!--<td class="vertical-align-mid">
                                                         <a class="btn btn-primary btn-xs editQuotation"
@@ -426,18 +448,27 @@
                 $("#datatable-responsive").DataTable({
                     aaSorting: [[0, 'desc']],
                     responsive: true,
+                    "language": {
+                        "url": "<?php echo base_url("assets/vendors/datatables.net/French.json"); ?>"
+                    }
                 });
             }
             if ($("#datatable-responsive4").length) {
                 $("#datatable-responsive4").DataTable({
                     aaSorting: [[0, 'desc']],
                     responsive: true,
+                    "language": {
+                        "url": "<?php echo base_url("assets/vendors/datatables.net/French.json"); ?>"
+                    }
                 });
             }
             if ($("#datatable-responsive5").length) {
                 $("#datatable-responsive5").DataTable({
                     aaSorting: [[0, 'desc']],
                     responsive: true,
+                    "language": {
+                        "url": "<?php echo base_url("assets/vendors/datatables.net/French.json"); ?>"
+                    }
                 });
             }
         };
@@ -527,6 +558,11 @@
 
     var productsCount=1;
     var productsQuotationCount=1;
+
+    var url = document.location.toString();
+    if (url.match('#')) {
+        $('.nav-tabs a[href="#' + url.split('#')[1] + '"]').tab('show');
+    }
 
     function addForm(){
         productsCount++;
@@ -706,15 +742,29 @@
             data: {'id': $(this).attr('data-id')},
             success: function (data) {
                 if (data.status === true) {
-                    console.log(data.order);
                     $(".orderId").val(data.order['o_id']);
                     $(".orderActualStatus").attr("data-status", data.order['status']);
-                    changeStatus(data.order['status']);
+                    changeStatus("request",data.order['status']);
+
+                    //remove background from all quantity input
+                    $("#editOrderModal #editProductsOrder .product").find("input[name='quantity'],input[name='product']").removeClass("ordred");
+                    $("#editOrderModal #editProductsOrder .product").find("input[name='quantity']").val("");
+                    $("#editOrderModal #editProductsOrder .product").find('.productCost').html(' 0DH');
+
                     $.each(data.order.productsList, function (key, product) {
-                       var l_product = $("#editOrderModal #editProductsOrder .product[data-id='" + product['id'] + "'] ");
+                       var l_productSelector= "#editOrderModal #editProductsOrder .product[data-id='" + product['id'] + "'][data-id-quantity='" + product['idQuantity'] + "']";
+                       console.log(l_productSelector);
+                       var l_product = $(l_productSelector);
                        l_product.find("input[name='quantity']").val(product['od_quatity']);
+                       // add background for ordred products
+                       l_product.find("input[name='quantity'],input[name='product']").addClass("ordred");
                        l_product.find(".productCost").html((parseFloat(product['od_quatity']) * parseFloat(product['od_price'])).toFixed(2));
                     });
+                    if(data.order['status']==="received"){
+                        $("#editOrderModal #editProductsOrder .product input[name=quantity]").attr("disabled", "true");
+                    }else{
+                        $("#editOrderModal #editProductsOrder .product input[name=quantity]").removeAttr("disabled");
+                    }
                 }
                 else {
                     console.log('ko');
@@ -746,6 +796,7 @@
             row.find('.productCost').html(' 0DH');
         }
 
+
     };
 
     $('button[name="save"]').on('click', {url: "admin/provider/order"}, newOrder);
@@ -763,11 +814,13 @@
                 var quantity = parseFloat(row.find('input[name="quantity"]').val().replace(',', '.'));
                 var id = row.find('input[name="product"]').attr('data-id');
                 var name = row.find('input[name="product"]').attr('data-name');
+                var unit = row.find('input[name="product"]').attr('data-unit');
+                var idQuantity = row.find('input[name="product"]').attr('data-id-quantity');
                 var unit_price = parseFloat(row.find('input[name="product"]').attr('data-price').replace(',', '.'));
                 console.log(id,quantity, unit_price);
                 if (quantity > 0 && unit_price > 0) {
                     underTotal += quantity * unit_price;
-                    var product = {'id': id, 'name': name, 'quantity': quantity, 'unit_price': unit_price, 'unit': '-'};
+                    var product = {'id': id, 'name': name, 'quantity': quantity, 'unit_price': unit_price, 'unit': unit,"idQuantity": idQuantity};
                     productsList.push(product);
                 }
 
@@ -796,7 +849,7 @@
                      'id': $('#provider_id').attr('data-id')
                 },
                 'underTotal': underTotal,
-                'tva': 0.2,
+                'tva': $('.provider-tva').attr('data-tva'),
                 'shipping': '-',
                 'other': '-',
                 'email':email
@@ -810,9 +863,14 @@
                 success: function (data) {
                     if (data.status === true) {
                         $('#loading').hide();
-                        console.log('ok');
                         window.open("<?=base_url()?>" + data.filepath);
-                        location.reload();
+                        if(event.data.url!=="admin/provider/apiPrintOrder"){
+                            var url = window.location.href;
+                            if (!url.match('#')) {
+                                window.location.href = url + "#tab_orders";
+                            }
+                            location.reload();
+                        }
                     }
                     else {
                         $('#loading').hide();
@@ -852,11 +910,13 @@
                 var quantity = parseFloat(row.find('input[name="quantity"]').val().replace(',', '.'));
                 var id = row.find('input[name="product"]').attr('data-id');
                 var name = row.find('input[name="product"]').attr('data-name');
+                var idQuantity = row.find('input[name="product"]').attr('data-id-quantity');
+                var unit = row.find('input[name="product"]').attr('data-unit');
                 var unit_price = parseFloat(row.find('input[name="product"]').attr('data-price').replace(',', '.'));
                 console.log(id,quantity, unit_price);
                 if (quantity > 0 && unit_price > 0) {
                     underTotal += quantity * unit_price;
-                    var product = {'id': id, 'name': name, 'quantity': quantity, 'unit_price': unit_price, 'unit': '-'};
+                    var product = {'id': id, 'name': name, 'quantity': quantity, 'unit_price': unit_price, 'unit': unit,"idQuantity": idQuantity};
                     productsList.push(product);
                 }
 
@@ -875,7 +935,7 @@
                      'id': $('#provider_id').attr('data-id')
                 },
                 'underTotal': underTotal,
-                'tva': 0.2,
+                'tva': $('.provider-tva').attr('data-tva'),
                 'shipping': '-',
                 'other': '-',
                 'status':status,
@@ -892,10 +952,18 @@
                 success: function (data) {
                     $('#loading').hide();
                     if (data.status === true) {
-                       /* if(data.filepath);
-                        window.open("<?=base_url()?>" + data.filepath);*/
+                        if(data.filepath){
+                            window.open("<?=base_url()?>" + data.filepath);
+                        }
                         $(".orderActualStatus").attr("data-status", data.orderStatus    );
-                        location.reload();
+                        if (event.data.url !== "admin/provider/apiPrintOrder") {
+                            //location.reload();
+                            var url = window.location.href;
+                            if (!url.match('#')) {
+                                window.location.href = url + "#tab_orders";
+                            }
+                            location.reload();
+                        }
                     }
                     else {
                         $('#loading').hide();
@@ -920,16 +988,28 @@
                 var row = $('.product[data-index=' + i + ']');
                 var quantity = parseFloat(row.find('input[name="quantityToOrder"]').val().replace(',', '.'));
                 var id = row.find('input[name="productToOrder"]').attr('data-id');
+                var idQuantity = row.attr("data-id-quantity");
                 var name = row.find('input[name="productToOrder"]').attr('data-name');
                 var unit_price = parseFloat(row.find('input[name="productToOrder"]').attr('data-price').replace(',', '.'));
-                console.log(id,quantity, unit_price);
                 if (quantity > 0 && unit_price > 0) {
                     underTotal += quantity * unit_price;
-                    var product = {'id': id, 'name': name, 'quantity': quantity, 'unit_price': unit_price, 'unit': '-'};
+                    var product = {'id': id, 'name': name, 'quantity': quantity, 'unit_price': unit_price,"idQuantity": idQuantity, 'unit': '-'};
                     productsList.push(product);
                 }
 
             }
+
+        var emailContent = "";
+        var send = false;
+        if ($('#editor-productsToOrder').html() !== "") {
+            emailContent = $('#editor-productsToOrder').html();
+            send = true;
+        }
+        var email = {
+            'send': send,
+            'content': emailContent,
+            'to': $('.provider-mail').text()
+        }
 
             var order = {
                 'productsList': productsList,
@@ -942,13 +1022,14 @@
                      'id': $('#provider_id').attr('data-id')
                 },
                 'underTotal': underTotal,
-                'tva': 0.2,
+                'tva': $('.provider-tva').attr('data-tva'),
                 'shipping': '-',
-                'other': '-'
+                'other': '-',
+                'email': email
             };
 
 
-             $('#loading').show();
+            $('#loading').show();
             $.ajax({
                 url: "<?php echo base_url(); ?>"+ event.data.url,
                 type: "POST",
@@ -957,9 +1038,14 @@
                 success: function (data) {
                     $('#loading').hide();
                     if (data.status === true) {
-
-                        console.log('ok');
                         window.open("<?=base_url()?>" + data.filepath);
+                        if (event.data.url !== "admin/provider/apiPrintOrder") {
+                            var url = window.location.href;
+                            if (!url.match('#')) {
+                                window.location.href = url + "#tab_orders";
+                            }
+                            location.reload();
+                        }
                     }
                     else {
                         console.log('ko');
@@ -983,10 +1069,16 @@
     $("#changeStatus").on('click','button',changeStatusEvent);
     function changeStatusEvent(){
         var newStatus = $(this).attr("data-type");
-        changeStatus(newStatus);
+        changeStatus("event",newStatus);
     }
 
-    function changeStatus(newStatus) {
+    function changeStatus(type,newStatus) {
+        if (type === "request" && newStatus==="received") {
+            $(".orderActualStatus").attr("data-toggle", null);
+            $("#changeStatus").removeClass("in");
+        } else {
+            $(".orderActualStatus").attr("data-toggle", "collapse");
+        }
         switch (newStatus) {
             case 'received':
                 $('#changeStatus').empty();
@@ -1104,7 +1196,7 @@
             $('.provider-title').attr('contenteditable', edit);
             $('.provider-address').attr('contenteditable', edit);
             $('.provider-phone').attr('contenteditable', edit);
-            $('.provider-mail').attr('contenteditable', 'edit');
+            $('.provider-mail').attr('contenteditable', edit);
         }
     });
 </script>
@@ -1182,6 +1274,66 @@
                     error: function (data) {
                     }
                });
+        }
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $('a.deleteProduct').on('click', deleteProductEvent);
+
+        function deleteProductEvent() {
+            var product_id = $(this).closest('tr').attr('data-id');
+            var quantity_id = $(this).closest('tr').attr('data-quantity');
+            swal({
+                    title: "Attention ! ",
+                    text: "Vous voulez vraiment supprimer ce produit ?",
+                    type: "warning",
+                    showConfirmButton: true,
+                    showCancelButton: true,
+                    cancelButtonText: 'Non',
+                    confirmButtonText: 'Oui'
+                },
+                function () {
+                    $.ajax({
+                        url: "<?php echo base_url('admin/provider/apiDeleteProduit'); ?>",
+                        type: "POST",
+                        dataType: "json",
+                        data: {'product_id': product_id,"quantity_id": quantity_id},
+                        success: function (data) {
+                            if (data.status === 'success') {
+                                swal({
+                                    title: "Success",
+                                    text: "L'opération a été bien effectuée",
+                                    type: "success",
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                });
+                                location.reload();
+                            }
+                            else {
+                                swal({
+                                    title: "Erreur",
+                                    text: "Une erreur s'est produite",
+                                    type: "error",
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                });
+                            }
+                        },
+                        error: function (data) {
+                            swal({
+                                title: "Erreur",
+                                text: "Une erreur s'est produite",
+                                type: "error",
+                                timer: 1500,
+                                showConfirmButton: false
+                            });
+                        }
+                    });
+
+                });
+
+
         }
     });
 </script>

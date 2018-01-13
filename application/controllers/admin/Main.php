@@ -35,10 +35,26 @@ class Main extends BaseController
 
         $data['params'] = $this->getParams();
 
-        $this->load->view('admin/uniwell/index');
+        $this->load->view('admin/uniwell/index',$data);
+    }
+    public function index2()
+    {
+
+        //$data = $this->readSalesCSV('uploads/XAFUL.CSV');
+
+        $data['params'] = $this->getParams();
+        $this->load->model('model_report');
+        $this->load->model('model_meal');
+        $meals= $this->model_meal->getMealsOnly();
+        $data['mealsName']=array_column($meals,"name");
+        $data['meals']= $meals;
+        $data['mealsList'] = $this->model_meal->getAll();
+        $data["sales"]=$this->model_report->reportRange(Date("Y-m-d"), Date("Y-m-d"));
+        $this->load->view('admin/uniwell/index2',$data);
     }
 
     private function readSalesCSV($file_name){
+        $this->log_begin();
         $row = 1;
         $index = 0;
         $rows = array();
@@ -80,11 +96,13 @@ class Main extends BaseController
         }
         $data['rows'] = $rows;
         $data['dateTime'] = $dateTime;
+        $this->log_end($data);
         return $data;
     }
     public function apiLoadFile()
     {
         try {
+            $this->log_begin();
             $file_path = $this->uploadFile();
             $data['sales'] = $this->readSalesCSV($file_path);
 
@@ -92,7 +110,7 @@ class Main extends BaseController
                 $meal = $this->model_meal->getByExternalCode($sale['0']);
                 $quantity = $sale[2] / 1000;
                 $priceCSV= $sale['3'] / 100 / $quantity;
-                if($meal['name']=== $sale['1'] and $priceCSV == $meal['sellPrice']){
+                if($meal['name']=== $sale['1'] /*and $priceCSV == $meal['sellPrice']*/){
                     $data['sales']['rows'][$key]['status']='valid';
                 }else{
                     $data['sales']['rows'][$key]['status'] = 'Invalid';
@@ -102,6 +120,7 @@ class Main extends BaseController
             $this->output
                 ->set_content_type("application/json")
                 ->set_output(json_encode(array('status' => 'success', 'response' => $data)));
+            $this->log_end($data);
         } catch (Exception $e) {
             $this->output
                 ->set_content_type("application/json")
@@ -113,9 +132,11 @@ class Main extends BaseController
     public function ftp()
     {
         try {
+            $this->log_begin();
             //$data['sales'] = $this->readSalesCSV(base_url('uploads/ftp/x-plu_1_0001001.csv'));
             $data['sales'] = $this->readSalesCSV('/var/www/html/fiori/uploads/ftp/x-plu_1_0001001.csv');
             $mealsList=array();
+            $this->log_middle($data['sales']);
             foreach ($data['sales']['rows'] as $key => $sale) {
                 $meal = $this->model_meal->getByExternalCode($sale['0']);
                 $quantity = $sale[2] / 1000;
@@ -128,7 +149,7 @@ class Main extends BaseController
                     'amount'=>$sale['3'] / 100,
                     'date'=> $date
                 );
-                if($meal['name']=== $sale['1'] and $priceCSV == $meal['sellPrice']){
+                if($meal['name']=== $sale['1'] /*and $priceCSV == $meal['sellPrice']*/){
                     $data['sales']['rows'][$key]['status']='valid';
                     $mealsList[]=$mealItem;
                 }else{
@@ -136,22 +157,16 @@ class Main extends BaseController
 
                 }
             }
-            echo "count:".count($mealsList);
+            $this->log_middle($mealsList);
             $this->clean();
             $this->model_meal->consumption($mealsList);
+            $this->log_end(array('status' => 'error'));
 
         } catch (Exception $e) {
 
         }
     }
 
-    public function message($to = 'World')
-    {
-        if ($this->input->is_cli_request()){
-            echo "Hello {$to}!" . PHP_EOL;
-        }
-        echo "khalid";
-    }
 
     private function uploadFile()
     {
@@ -182,13 +197,44 @@ class Main extends BaseController
             }
         }
         $save_path = base_url() . $file_path;
+        $this->log_end(array('file_upload_status' => 'success'));
         return $file_path;
+    }
+
+    public function searchMeal()
+    {
+        $this->log_begin();
+        try {
+            $mealName = $this->input->post("mealName");
+            $meal=$this->model_meal->getByName($mealName);
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'success', 'meal' => $meal)));
+            $this->log_end($meal);
+        } catch (Exception $e) {
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'error')));
+        }
+
     }
 
     public function clean()
     {
         $this->load->model('model_util');
         $this->model_util->clean();
+    }
+
+    public function clear()
+    {
+        $this->load->model('model_util');
+        $this->model_util->clear();
+    }
+
+    public function populate()
+    {
+        $this->load->model('model_util');
+        $this->model_util->populate();
     }
 
 

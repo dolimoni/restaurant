@@ -17,16 +17,18 @@
             <tr>
                 <th>Quantité</th>
                 <th>Prix</th>
+                <th>Fournisseur</th>
                 <th>Status</th>
-                <th>Activer</th>
+                <th>Action</th>
             </tr>
             </thead>
             <tfoot>
             <tr>
                 <th>Quantité</th>
                 <th>Prix</th>
+                <th>Fournisseur</th>
                 <th>Status</th>
-                <th>Activer</th>
+                <th>Action</th>
             </tr>
             </tfoot>
             <tbody>
@@ -39,25 +41,31 @@
                 <tr class="<?php echo $validate; ?>">
                     <td><?php echo $quantity['quantity']?></td>
                     <td><?php echo $quantity['unit_price']?></td>
-                    <td><?php echo $quantity['status']?></td>
+                    <td><?php echo ucfirst($quantity['pv_name'])?></td>
+                    <td><?php echo ucfirst($quantity['status'])?></td>
                     <td width="10%">
                        <?php if($quantity['status']!=="active"){ ?>
                            <button data-id="<?php echo $quantity['id'] ?>" class="btn btn-default btn-xs action activate"><span
                                        class="glyphicon glyphicon-ok"></span></button>
                        <?php } ?>
+                        <button data-id="<?php echo $quantity['id'] ?>"
+                                data-quantity="<?php echo $quantity['unit_price'] ?>"
+                                data-provider="<?php echo $quantity['pv_id'] ?>"
+                                class="btn btn-default btn-xs action edit"><span
+                                    class="glyphicon glyphicon-edit"></span></button>
                     </td>
                 </tr>
             <?php } ?>
             </tbody>
         </table>
-        <div class="row productsListContent">
+        <div class="row productsListContent" id="productPanel">
             <div class="col-md-offset-3 col-md-6 col-sm-12 col-xs-12 productItem" data-id="1">
                 <div class="x_panel">
                     <div class="x_title">
                         <h2>Produit</h2>
                         <ul class="nav navbar-right panel_toolbox">
                             <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
-                            <li><a class="close-link"><i class="fa fa-close"></i></a></li>
+                           <!-- <li><a class="close-link"><i class="fa fa-close"></i></a></li>-->
                         </ul>
                         <div class="clearfix"></div>
                     </div>
@@ -103,6 +111,10 @@
                                 <div class="form-group">
                                     Prix unitaire : <input value="<?php echo $product['unit_price']; ?>" class="form-control" placeholder="Prix unitaire"
                                                            name="unit_price" type="text">
+                                </div>
+                                <div class="form-group">
+                                    Poid par unité(en gr)<input value="<?php echo $product['weightByUnit']; ?>" class="form-control" placeholder="Poid par unité"
+                                                         name="weightByUnit">
                                 </div>
 
                                 <div class="form-group">
@@ -184,6 +196,7 @@
             var quantity = $('input[name="quantity"]').val();
             var unit = $('select[name="unit"]').val();
             var unit_price = $('input[name="unit_price"]').val();
+            var weightByUnit = $('input[name="weightByUnit"]').val();
             var daily_quantity = $('input[name="daily_quantity"]').val();
             var min_quantity = $('input[name="min_quantity"]').val();
             var lostQuantity = $('input[name="lostQuantity"]').val();
@@ -195,6 +208,7 @@
                 'quantity': quantity,
                 'unit': unit,
                 'unit_price': unit_price,
+                'weightByUnit': weightByUnit,
                 'provider': provider,
                 'min_quantity': min_quantity,
                 'daily_quantity': daily_quantity,
@@ -234,7 +248,22 @@
 <script>
     $(document).ready(function () {
         $('button.activate').on('click', activateEvent);
+        $('button.edit').on('click', editEvent);
 
+        function editEvent(){
+            var quantity = $(this).attr('data-quantity');
+            var provider = $(this).attr('data-provider');
+            $('input[name="unit_price"]').val(quantity);
+            console.log(provider);
+            $('select[name=provider]').val(provider);
+            scroll("productPanel")
+
+        }
+
+        function scroll(id) {
+            // Scroll
+            $('html,body').animate({scrollTop: $("#" + id).offset().top}, 'slow');
+        }
         function activateEvent(event) {
             var id = $(this).attr('data-id');
             $.ajax({

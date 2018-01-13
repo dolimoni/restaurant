@@ -27,7 +27,7 @@
                         <div class="x_content">
                             <fieldset>
                                 <div class="row">
-                                        <div class="col-md-6">
+                                        <div class="col-md-6 col-xs-12">
                                             <div class="form-group">
                                                 Nom<span class="required">*</span> : <input class="form-control"
                                                                                             placeholder="Produit"
@@ -44,7 +44,7 @@
                                                                                             required>
                                             </div>
                                         </div>
-                                        <div class="col-md-6">
+                                        <div class="col-md-6 col-xs-12">
                                             <div class="form-group">
                                                 Unité de mesure :
                                                 <select class="form-control" name="unit">
@@ -71,7 +71,7 @@
                         <h2>Composition</h2>
                         <ul class="nav navbar-right panel_toolbox">
                             <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
-                            <li><a class="close-link"><i class="fa fa-close"></i></a></li>
+                            <!--<li><a class="close-link"><i class="fa fa-close"></i></a></li>-->
                         </ul>
                         <div class="clearfix"></div>
                     </div>
@@ -137,7 +137,7 @@
                     <h2>Produit</h2>
                     <ul class="nav navbar-right panel_toolbox">
                         <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
-                        <li><a class="close-link"><i class="fa fa-close"></i></a></li>
+                        <!--<li><a class="close-link"><i class="fa fa-close"></i></a></li>-->
                     </ul>
                     <div class="clearfix"></div>
                 </div>
@@ -269,16 +269,35 @@
                     dataType: "json",
                     data: {'composition': composition},
                     success: function (data) {
-                        if (data.status === true) {
-                            document.location.href = data.redirect;
-                        }
-                        else {
-                            /*$('#show_id').html("<div style='border:1px solid red;font-size: 11px;margin:0 auto !important;'>" + response.error + "</div>");*/
-                        }
+                        if (data.status = "success") {
+                            swal({
+                                title: "Success",
+                                text: "Success",
+                                type: "success",
+                                timer: 1500,
+                                showConfirmButton: false
+                            });
 
+                            window.location.href = data.redirect;
+                        } else {
+                            swal({
+                                title: "Oups !",
+                                text: "Une erreur s'est produite",
+                                type: "error",
+                                timer: 1500,
+                                showConfirmButton: false
+                            });
+
+                        }
                     },
                     error: function (data) {
-                        // do something
+                        swal({
+                            title: "Oups !",
+                            text: "Une erreur s'est produite",
+                            type: "error",
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
                     }
                 });
             }

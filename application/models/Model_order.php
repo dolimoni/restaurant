@@ -8,22 +8,6 @@ class model_order extends CI_Model {
 
         $this->load->model('model_quotation');
     }
-	public function insert($u_email,$f_name,$l_name,$u_bday,$u_position,$u_type,$u_pass,$u_mobile,$u_gender,$u_address)
-	{
-		$data = array(
-			   'email' => $u_email,
-               'first_name' => $f_name,
-               'last_name' => $l_name,
-               'birthday' => $u_bday,
-			   'position' => $u_position,
-			   'type' => $u_type,
-			   'password' => $u_pass,
-			   'mobile' => $u_mobile,
-			   'gender' => $u_gender,
-			   'address' => $u_address
-            );
-		$this->db->insert('users', $data); 
-	}
 
 	public function add($order)
 	{
@@ -31,7 +15,7 @@ class model_order extends CI_Model {
         $data = array(
             'provider' => $order['provider']['id'],
             'tva' => $order['tva'],
-            'ttc' => $order['underTotal']*(1+$order['tva']),
+            'ttc' => $order['underTotal']*(1+$order['tva']/100),
         );
 
         $this->db->insert('order', $data);
@@ -42,6 +26,7 @@ class model_order extends CI_Model {
                 'order_id' => $orderId,
                 'quantity' => $product['quantity'],
                 'od_price' => $product['unit_price'],
+                'quantity_id' => $product['idQuantity'],
             );
             $this->db->insert('orderdetails', $data);
         }
@@ -53,24 +38,44 @@ class model_order extends CI_Model {
         $data = array(
             'status' => $order['status'],
             'tva' => $order['tva'],
-            'ttc' => $order['underTotal'] * (1 + $order['tva']),
+            'ttc' => $order['underTotal'] * (1 + $order['tva']/100),
         );
 
         $this->db->where("id",$order['id']);
         $this->db->update("order",$data);
         if(isset($order['productsList'])){
             foreach ($order['productsList'] as $product) {
-                $data = array(
-                    'quantity' => $product['quantity'],
-                    'od_price' => $product['unit_price'],
-                );
                 $this->db->where('order_id', $order['id']);
                 $this->db->where('product', $product['id']);
-                $this->db->update('orderdetails', $data);
+                $this->db->where('quantity_id', $product['idQuantity']);
+                $r = $this->db->get('orderdetails');
+
+                if ($r->num_rows() > 0) {
+                    $data = array(
+                        'quantity' => $product['quantity'],
+                        'od_price' => $product['unit_price'],
+                    );
+                    $this->db->where('order_id', $order['id']);
+                    $this->db->where('product', $product['id']);
+                    $this->db->where('quantity_id', $product['idQuantity']);
+                    $this->db->update('orderdetails', $data);
+
+                } else {
+                    $data = array(
+                        'quantity' => $product['quantity'],
+                        'od_price' => $product['unit_price'],
+                        'product' => $product['id'],
+                        'quantity_id' => $product['idQuantity'],
+                        'order_id' => $order['id']
+                    );
+                    $this->db->insert('orderdetails', $data);
+                }
             }
             $data = array(
                 'quantity' => 0,
             );
+
+            // mettre la quantité a 0 pour tous les produits deja commandé et non envoyé dans la modification
             $ids = array_column($order['productsList'],'id');
             $this->db->where_not_in('product', $ids);
             $this->db->where('order_id', $order['id']);
@@ -165,8 +170,10 @@ class model_order extends CI_Model {
     public function get($id, $fetch = 'LAZY')
     {
         if ($fetch === "LAZY") {
+            $this->db->select('o.*');
+            $this->db->from('order o');
+            $this->db->join('quantity q',"q.id=o.quantity_id");
             $this->db->where('id', $id);
-            $result = $this->db->get('order');
             return $result->row_array();
         } else {
 
@@ -175,10 +182,11 @@ class model_order extends CI_Model {
             $this->db->where('o.id', $id);
             $order = $this->db->get()->row_array();
 
-            $this->db->select('od.*, p.*,od.quantity as od_quatity');
+            $this->db->select('od.*, p.*,od.quantity as od_quatity,q.id as idQuantity');
             $this->db->from('order o');
             $this->db->join('orderdetails od', 'od.order_id = o.id');
             $this->db->join('product p', 'p.id = od.product');
+            $this->db->join('quantity q', "q.id=od.quantity_id");
             $this->db->where('o.id', $id);
             $order['productsList'] = $this->db->get()->result_array();
             return $order;

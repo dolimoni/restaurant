@@ -43,7 +43,11 @@ class model_product extends CI_Model {
 	public function addComposition($compostion,$newQuantity=false)
 	{
 	    // update product if exist
-	    if(isset($compostion['id'])){
+        $newProduct=false;
+        if(isset($compostion['id'])){
+            $newProduct=true;
+        }
+	    if($newProduct){
             $dataProduct = array(
                 'name' => $compostion['name'],
                 'unit' => $compostion['unit'],
@@ -51,12 +55,13 @@ class model_product extends CI_Model {
             $this->db->where('id', $compostion['id']);
             $this->db->update('product', $dataProduct);
 
-            // if this is a new quantity => price1!=price2
+            // if this is a new quantity => price1!=price2 or provider1!=provicer2
             if ($newQuantity) {
                 $dataQuantity = array(
                     'product' => $compostion['id'],
                     'quantity' => $compostion['quantity'],
-                    'unit_price' => $compostion['unit_price']
+                    'unit_price' => $compostion['unit_price'],
+                    "provider"=>0
                 );
                 $this->accumulateQuantity($dataQuantity);
             }
@@ -64,7 +69,7 @@ class model_product extends CI_Model {
 
 
 	    // if update !
-	    if(isset($compostion['id'])){
+	    if($newProduct){
 
 	        // delete existing product and they will be changed by new products
 	        $this->db->where('owner', $compostion['id']);
@@ -73,11 +78,13 @@ class model_product extends CI_Model {
 	        // if this new a new create product
             $data = array(
                 'name' => $compostion['name'],
-                'totalQuantity' => $compostion['cost'],
+                'totalQuantity' => $compostion['quantity'],
                 'unit' => $compostion['unit'],
                 'type' => 'composition'
             );
+
             $this->db->insert('product', $data);
+
             $product_id = $this->db->insert_id();
             $compostion['id'] = $product_id;
             $dataQuantity = array(
@@ -109,10 +116,12 @@ class model_product extends CI_Model {
 
         }
 
-        if(!$newQuantity){
-            $this->updateLocalQuantity($compostion['id'], $compostion['quantity'], 'up');
+        if($newProduct){
+            if (!$newQuantity ){
+                $this->updateLocalQuantity($compostion['id'], $compostion['quantity'], 'up');
+            }
+             $this->updateQuantity($compostion['id'], $compostion['quantity'], 'up');
         }
-        $this->updateQuantity($compostion['id'], $compostion['quantity'], 'up');
 
 
 	}
@@ -121,7 +130,7 @@ class model_product extends CI_Model {
         $dataProduct = array(
             'name' => $product['name'],
             'unit' => $product['unit'],
-            'provider' => $product['provider'],
+            'weightByUnit' => $product['weightByUnit'],
             'status' => $product['status'],
             'min_quantity' => $product['min_quantity'],
             'daily_quantity' => $product['daily_quantity']
@@ -129,23 +138,54 @@ class model_product extends CI_Model {
         $this->db->where('id', $product['id']);
         $this->db->update('product', $dataProduct);
 
+        $stock = $this->getActiveStock($product['id']);
+
+        // si changement simple de fournisseur sans donner la quantité
+       /* if($product['quantity']==="" && $stock["provider"]!== $product['provider']){
+            $this->db->where('provider', $product['provider']);
+            $l_quantity=$this->db->get('quantity')->row_array();
+
+            $this->db->where('id', $stock['id']);
+            $this->db->update('quantity', array("status" => "stock"));
+
+            $this->db->where('id', $l_quantity['id']);
+            $this->db->update('quantity', array("status" => "active"));
+        }*/
+
         if($newQuantity){
             $dataQuantity = array(
                 'product' => $product['id'],
                 'quantity' => $product['quantity'],
-                'unit_price' => $product['unit_price']
+                'unit_price' => $product['unit_price'],
+                'provider' => $product['provider']
             );
-            $stock = $this->getActiveStock($product['id']);
             if ($stock['quantity'] <= 0) {
                 $dataQuantity['status'] = 'active';
                 $this->updateActiveQuantity($stock['id'], array('status' => 'sold_out'));
             }
-            $this->db->insert('quantity', $dataQuantity);
+            $this->accumulateQuantity($dataQuantity);
+
             $this->updateQuantity($product['id'], $product['quantity'],'up');
+
         }else{
+
+           /* $this->db->where("product", $product['id']);
+            $this->db->where("unit_price", $product['unit_price']);
+            $this->db->update('quantity', array("provider"=> $product['provider']));*/
 
             $this->updateLocalQuantity($product['id'], $product['quantity'], 'up');//product table
             $this->updateQuantity($product['id'], $product['quantity'], 'up');//quantity table
+        }
+
+        if($product['quantity']>0){
+            $productHistory = array(
+                'id' => $product['id'],
+                'quantity' => $product['quantity'],
+                'price' => $product['unit_price'],
+                'unit' => $product['unit'],
+                'provider' => $product['provider'],
+            );
+            $this->addStockHistory($productHistory, 'in');
         }
         if ($product['lostQuantity'] > 0) {
             $this->updateLocalQuantity($product['id'], $product['lostQuantity']);//product table
@@ -180,13 +220,12 @@ class model_product extends CI_Model {
         foreach ($productsList as $product) {
             $data = array(
                 'name' => $product['name'],
-                'provider' => $product['provider'],
                 'totalQuantity' => $product['quantity'],
                 'unit' => $product['unit'],
+                'weightByUnit' => $product['weightByUnit'],
                 'status' => $product['status'],
                 'min_quantity' => $product['min_quantity'],
                 'daily_quantity' => $product['daily_quantity'],
-                'provider'=> $product['provider']
             );
             $this->db->insert('product', $data);
             $productItem= $insert_id = $this->db->insert_id();
@@ -194,10 +233,21 @@ class model_product extends CI_Model {
                 'unit_price' => $product['unit_price'],
                 'quantity' => $product['quantity'],
                 'product'=>$productItem,
+                "provider"=> $product['provider'],
                 'status'=>'active',
             );
             $this->addQuantity($dataQuantity);
 
+            $productHistory=array(
+                'id'=> $productItem,
+                'quantity'=> $product['quantity'],
+                'price'=> $product['unit_price'],
+                'unit'=> $product['unit'],
+                'provider'=> $product['provider'],
+            );
+            if($productHistory["quantity"]>0){
+                $this->addStockHistory($productHistory, 'in');
+            }
         }
 
     }
@@ -223,6 +273,7 @@ class model_product extends CI_Model {
         $this->db->update('product', $data);
     }
 
+    //$product : id
     public function updateLocalQuantity($product,$quantity,$direction="down")
 	{
         $response = array();
@@ -309,11 +360,38 @@ class model_product extends CI_Model {
         return $response;
     }
 
-	public function updateQuantities($productsList, $direction="down"){
+	public function updateQuantities($productsList, $direction="down", $provider_id){
         foreach ($productsList as $product) {
             $this->updateQuantity($product['id'], $product['quantity'], $direction);
-            $this->updateLocalQuantity($product['id'], $product['quantity'], $direction);
+
+            if($direction==="up"){
+                $db_product = $this->getById($product['id']);
+                $productHistory = array(
+                    'id' => $product['id'],
+                    'quantity' => $product['quantity'],
+                    'price' => $product['unit_price'],
+                    'unit' => $product['unit'],
+                    'provider' => $provider_id,
+                );
+                $this->addStockHistory($productHistory, 'in');
+                $this->newQuantity($product['id'], $product['quantity'], $provider_id,$product["idQuantity"]);
+            }
+
         }
+
+
+    }
+
+    public function newQuantity($id,$quantity,$provider_id,$idQuantity){
+	    $this->db->select('*');
+	    $this->db->from('quantity');
+	    $this->db->where("id", $idQuantity);
+	    $result = $this->db->get()->row_array();
+
+	    $l_quantity=$result["quantity"]+$quantity;
+	    $this->db->where("id", $idQuantity);
+	    $this->db->update("quantity",array("quantity"=>$l_quantity));
+
     }
 
 	public function getAll($meals=false,$composition=false)
@@ -326,6 +404,7 @@ class model_product extends CI_Model {
         if ($composition === false) {
             $this->db->where("p.type", "product");
         }
+        $this->db->order_by("p.id");
 		$result = $this->db->get()->result_array();
 
 		if($meals){
@@ -349,8 +428,8 @@ class model_product extends CI_Model {
 	    $this->db->select('p.id,p.min_quantity,p.totalQuantity,q.product,p.name,p.unit,q.quantity,q.unit_price');
 	    $this->db->select('sum(pc.quantity*pc.unitConvert*q.unit_price) as price');
 	    $this->db->from('product p');
-        $this->db->join('product_composition pc', 'pc.owner=p.id');
-        $this->db->join('quantity q', 'pc.owner=q.product');
+        $this->db->join('product_composition pc', 'pc.owner=p.id', 'left');
+        $this->db->join('quantity q', 'p.id=q.product', 'left');
 	    $this->db->where("q.status","active");
 	    $this->db->where("p.status","active");
 	    $this->db->where("type","composition");
@@ -363,7 +442,7 @@ class model_product extends CI_Model {
                 $this->db->from('meal_product mp');
                 $this->db->join('product p', 'mp.product=p.id');
                 $this->db->join('meal m', 'mp.meal=m.id');
-                $this->db->where("p.id", $item['id']);
+                $this->db->where("mp.product", $item['id']);
                 $this->db->where("mp.status",'current');
                 $this->db->group_by("mp.meal");
                 $meals = $this->db->get()->result_array();
@@ -408,22 +487,17 @@ class model_product extends CI_Model {
 	    $this->db->where("product",$product);
 	    $this->db->where("status = 'stock' or status = 'active'");
 	    $this->db->order_by("status,id","ASC");
-		$result = $this->db->get('quantity');
 		return $result->result_array();
 	}
 
 	public function getQuantitiesToShow($product)
 	{
-	    $sql= "SELECT * FROM quantity 
-               WHERE ((quantity<0 and status='sold_out') or (quantity>0 and status!='sold_out') or status='active')
-               and product = ?
+	    $sql= "SELECT quantity.*,pv.name as pv_name,pv.id as pv_id FROM quantity left join provider pv on pv.id=quantity.provider 
+               WHERE 
+               product = ?
                order by FIELD(status,'active','stock','sold_out') ASC";
         $dbResult = $this->db->query($sql, $product);
 
-       /* $this->db->where("product",$product);
-	    $this->db->where("(quantity<0 and status='sold_out') or (quantity>0 and status!='sold_out')");
-	    $this->db->order_by("FIELD(id,3,1,20)");
-		$result = $this->db->get('quantity');*/
 		return $dbResult->result_array();
 	}
 
@@ -507,6 +581,17 @@ class model_product extends CI_Model {
         $this->db->update('product',$data);
     }
 
+    public function getProviders($productName){
+        $this->db->distinct();
+	    $this->db->select('pv.name');
+	    $this->db->from('provider pv');
+	    $this->db->join('quantity q','q.provider=pv.id');
+	    $this->db->join('product p','q.product=p.id');
+	    $this->db->where('p.name',$productName);
+	    //$this->db->where('q.status',"active");
+	    return $this->db->get()->result_array();
+    }
+
 	public function defaultProduct(){
 	    $product=array('name'=>'produit1');
 	    return $product;
@@ -518,18 +603,66 @@ class model_product extends CI_Model {
 	    return $product;
     }
 
+    public function addStockHistory($product, $type, $department = null)
+    {
+        $data = array(
+            'product' => $product['id'],
+            'quantity' => $product['quantity'],
+            'unit' => $product['unit'],
+            'type' => $type,
+            'unit_price' => $product['price'],
+            'total' => $product['price']*$product['quantity'],
+            'provider' => $product['provider'],
+        );
+        $this->db->insert('stock_history', $data);
+    }
+
+    public function getInStockHistory()
+    {
+        $this->db->select('p.name,sh.quantity,sh.total,sh.unit,pv.name as pv_name,sh.created_at');
+        $this->db->from('stock_history sh');
+        $this->db->join('product p','p.id=sh.product','lef');
+        $this->db->join('provider pv','pv.id=sh.provider','left');
+        $this->db->where('sh.type','in');
+        $this->db->order_by('sh.created_at',"DESC");
+        $stockHistory= $this->db->get()->result_array();
+        return $stockHistory;
+    }
+
+    public function controlQuantity(){
+        $this->db->where('quantity<',0);
+        $this->db->update('quantity', array("status"=>"sold_out"));
+    }
+
     private function accumulateQuantity($quantityData){
 
         $this->db->where('product', $quantityData['product']);
         $this->db->where('unit_price', $quantityData['unit_price']);
+        $this->db->where('provider', $quantityData['provider']);
         $db_quantity = $this->db->get('quantity')->row_array();
         if($db_quantity){
             $quantityData['quantity']+= $db_quantity['quantity'];
             $this->db->where('product', $quantityData['product']);
             $this->db->where('unit_price', $quantityData['unit_price']);
+            $this->db->where('provider', $quantityData['provider']);
             $this->db->update('quantity', $quantityData);
         }else{
             $this->db->insert('quantity', $quantityData);
         }
+    }
+
+    public function autoConsum(){
+        $this->db->where("daily_quantity>",0);
+        $products=$this->db->get("product")->result_array();
+        foreach ($products as $product) {
+            $this->updateQuantity($product["id"],$product["daily_quantity"]);
+            $this->updateLocalQuantity($product["id"], $product["daily_quantity"]);
+            $dataAutoconsum=array(
+                "product"=> $product["id"],
+                "quantity"=> $product["daily_quantity"],
+            );
+            $this->db->insert("product_autoconsum", $dataAutoconsum);
+        }
+
     }
 }

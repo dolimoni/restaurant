@@ -1,4 +1,15 @@
 <?php $this->load->view('admin/partials/admin_header.php'); ?>
+<style>
+    .well {
+        max-height: 155px;
+    }
+
+    .well img {
+        max-height: 75px;
+        width: 130px;
+        height: 126px;
+    }
+</style>
 <!-- page content -->
 <div class="right_col" role="main">
     <div class="productsList">
@@ -49,7 +60,7 @@
                         <h2>Produit</h2>
                         <ul class="nav navbar-right panel_toolbox">
                             <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
-                            <li><a class="close-link"><i class="fa fa-close"></i></a></li>
+                            <!--<li><a class="close-link"><i class="fa fa-close"></i></a></li>-->
                         </ul>
                         <div class="clearfix"></div>
                     </div>
@@ -57,12 +68,14 @@
                         <label><?php echo $message; ?></label>
                         <form method="post">
                             <fieldset>
-                                <div class="">
+                                <div class="row">
                                    <div class="x_content">
 
                                        <select name="product" class="productSelect  md-button-v">
                                            <?php foreach ($products as $product){ ?>
-                                               <option value="<?php echo $product['id'] ?>" data-unit="<?php echo $product['unit'] ?>" data-price="<?php echo $product['unit_price'] ?>">
+                                               <option value="<?php echo $product['id'] ?>" data-unit="<?php echo $product['unit'] ?>"
+                                                       data-price="<?php echo $product['unit_price'] ?>"
+                                                       data-weightByUnit="<?php echo $product['weightByUnit'] ?>">
                                                    <?php echo $product['name'] ?>
                                                </option>
                                            <?php } ?>
@@ -83,13 +96,13 @@
                                            <option value="1" name="Kilogramme">Kilogramme</option>
                                            <option value="0.001" name="Gramme">Gramme</option>
                                            <option value="0.000001" name="Milligramme">Milligramme</option>
+                                           <option value="0.001" name="pcs">Pcs</option>
                                        </select>
                                        <select name="lUnitHidden" class="lUnitHidden  md-button-v" <?php echo $LUnitHidden ?>>
                                                <option value="1" name="Kilogramme">Litre</option>
                                                <option value="0.001" name="Centilitre">Centilitre</option>
                                                <option value="0.000001" name="Millilitre">Millilitre</option>
                                        </select>
-                                       Quantité :
                                        <input class="form-inline  md-button-v" placeholder="Quantité" name="quantity"
                                                          type="text"><!--<span class="ProductUnit"> Kg</span>
                                        <div class="text-center productCost">0 Dh</div>-->
@@ -116,7 +129,7 @@
                     <h2>Produit</h2>
                     <ul class="nav navbar-right panel_toolbox">
                         <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
-                        <li><a class="close-link"><i class="fa fa-close"></i></a></li>
+                       <!-- <li><a class="close-link"><i class="fa fa-close"></i></a></li>-->
                     </ul>
                     <div class="clearfix"></div>
                 </div>
@@ -124,13 +137,14 @@
                     <label><?php echo $message; ?></label>
                     <form method="post">
                         <fieldset>
-                            <div class="">
+                            <div class="row">
                                 <div class="x_content" id="newContent">
 
                                     <select name="product" class="productSelectNew  md-button-v">
                                         <?php foreach ($products as $product) { ?>
                                             <option value="<?php echo $product['id']; ?>"
                                                     data-unit="<?php echo $product['unit'] ?>"
+                                                    data-weightByUnit="<?php echo $product['weightByUnit'] ?>"
                                                     data-price="<?php echo $product['unit_price']; ?>">
                                                 <?php echo $product['name']; ?>
                                             </option>
@@ -140,13 +154,14 @@
                                         <option value="1" name="Kilogramme">Kilogramme</option>
                                         <option value="0.001" name="Gramme">Gramme</option>
                                         <option value="0.000001" name="Milligramme">Milligramme</option>
+                                        <option value="0.001" name="pcs">Pcs</option>
                                     </select>
                                     <select name="lUnitHidden" class="lUnitHidden  md-button-v" <?php echo $LUnitHidden ?>>
                                         <option value="1" name="Kilogramme">Litre</option>
                                         <option value="0.001" name="Centilitre">Centilitre</option>
                                         <option value="0.000001" name="Millilitre">Millilitre</option>
                                     </select>
-                                    Quantité : <input class="form-inline  md-button-v" placeholder="Quantité" name="quantity"
+                                    <input class="form-inline  md-button-v" placeholder="Quantité" name="quantity"
                                                       type="text">
                                 </div>
                             </div>
@@ -164,31 +179,50 @@
         </div>
 
 
-        <?php
-        //Columns must be a factor of 12 (1,2,3,4,6,12)
-        $numOfCols = 6;
-        $numOfSMCols = 1;
-        $rowCount = 0;
-        $bootstrapColMDWidth = 12 / $numOfCols;
-        $bootstrapColSMWidth = 12 / $numOfSMCols;
-        ?>
-        <div class="row">
-            <?php
-            foreach ($groups as $group) {
-                ?>
-                <div class="col-md-<?php echo $bootstrapColMDWidth; ?> col-xs-12 col-sm-<?php echo $bootstrapColSMWidth; ?>">
-                    <div class="well" data-id="<?php echo $group['g_id'] ?>">
-                        <img src="<?php echo base_url(); ?>assets/images/<?php echo $group['image'] ?>" alt=""
-                             class="img-responsive">
-                        <h4 class="brief text-center"><?php echo $group['g_name'] ?></h4>
+            <div class="col-md-12 col-sm-12 col-xs-12" >
+                <div class="x_panel">
+                    <div class="x_title">
+                        <h2>Choisissez une famille</h2>
+                        <ul class="nav navbar-right panel_toolbox">
+                            <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
+                            <!--<li><a class="close-link"><i class="fa fa-close"></i></a></li>-->
+                        </ul>
+                        <div class="clearfix"></div>
                     </div>
-                </div>
-                <?php
-                $rowCount++;
-                if ($rowCount % $numOfCols == 0) echo '</div><div class="row">';
-            }
-            ?>
-        </div>
+                    <div class="x_content">
+                        <?php
+                        //Columns must be a factor of 12 (1,2,3,4,6,12)
+                        $numOfCols = 6;
+                        $numOfSMCols = 3;
+                        $rowCount = 0;
+                        $bootstrapColMDWidth = 12 / $numOfCols;
+                        $bootstrapColSMWidth = 12 / $numOfSMCols;
+                        ?>
+                            <div class="row">
+                                <?php
+                                foreach ($groups as $group) {
+                                    ?>
+                                    <div class="col-md-<?php echo $bootstrapColMDWidth; ?> col-xs-12 col-xs-<?php echo $bootstrapColSMWidth; ?>">
+                                        <div class="well selectGroup" data-id="<?php echo $group['g_id'] ?>">
+                                            <img src="<?php echo base_url(); ?>assets/images/<?php echo $group['image'] ?>"
+                                                 alt=""
+                                                 class="img-responsive">
+                                            <h4 class="brief text-center"><?php echo $group['g_name'] ?></h4>
+                                        </div>
+                                    </div>
+                                    <?php
+                                    $rowCount++;
+                                    if ($rowCount % $numOfCols == 0) echo '</div><div class="row">';
+                                }
+                                ?>
+                            </div>
+                    </div> <!-- /content -->
+                </div><!-- /x-panel -->
+            </div>
+
+
+
+
 
         <input type="submit" name="buttonSubmit" value="Confirmer" class="btn btn-success"/>
     </div>
@@ -243,11 +277,19 @@
                 var row = $('.product[data-id=' + i + ']');
                 l_panel = row.closest('.product');
                 var unit = l_panel.find('select[name="product"] option:selected').attr('data-unit');
+                var weightByunit = l_panel.find('select[name="product"] option:selected').attr('data-weightByunit');
                 var quantity = parseFloat(row.find('input[type="text"]').val().replace(',', '.'));
                 var unit_price = parseFloat(row.find('select').find('option:selected').attr('data-price').replace(',', '.'));
                 var unitConvert=1;
                 var unitConvertName='';
                 if (unit === 'kg') {
+
+                    //prix par unité
+                    var weightByunitConvert=0;
+                    if(weightByunit>0){
+                        weightByunitConvert= weightByunit/1000;
+                    }
+                    l_panel.find('select[name="kgUnitHidden"] option[name=pcs]').val(weightByunitConvert);
                     unitConvert = parseFloat(l_panel.find('select[name="kgUnitHidden"] option:selected').val());
                     unitConvertName = parseFloat(l_panel.find('select[name="kgUnitHidden"] option:selected').text());
                     unit_price *= unitConvert;
@@ -262,8 +304,12 @@
             }
 
             $('.cost').html(prixTotal.toFixed(2)+'DH');
-            $('.gain').html((sellPrice- prixTotal).toFixed(2)+'DH');
 
+            if (sellPrice > 0) {
+                $('.gain').html(parseFloat(sellPrice - prixTotal).toFixed(2) + 'DH');
+            } else {
+                $('.gain').html('0.00DH');
+            }
 
             changeUnit(panel.find('select[name="product"] option:selected').attr('data-unit'), panel);
 
@@ -309,14 +355,22 @@
                     unitConvertName = l_panel.find('select[name="lUnitHidden"] option:selected').text();
                     unit_price *= unitConvert;
                 }
-                if (quantity > 0 && unit_price > 0){
-                    prixTotal += quantity * unit_price;
+                if (quantity > 0){
                     var product={'id':id,'quantity':quantity,'unit_price':unit_price,'profit': profit,'unit': unitConvertName,'unitConvert': unitConvert};
                     productsList.push(product);
+                }
+                if(unit_price > 0){
+                    prixTotal += quantity * unit_price;
                 }
 
             }
             var profit = prixTotal * gainRate - prixTotal;
+            if(profit<0){
+                profit=0;
+            }
+            prixTotal=parseFloat(prixTotal).toFixed(2);
+            sellPrice=parseFloat(sellPrice).toFixed(2);
+            profit=parseFloat(profit).toFixed(2);
             //var sellPrice = prixTotal * gainRate ;
             var meal = {
                 'name': name,
@@ -362,7 +416,7 @@
                     showConfirmButton: false
                 });
                 validate=false;
-            }else if(meal['sellPrice']===0){
+            }else if (meal['sellPrice'] === '' || isNaN(meal['sellPrice'])) {
                 swal({
                     title: "Attention",
                     text: "Quel est le prix de votre article ?",
@@ -370,11 +424,11 @@
                     timer: 2000,
                     showConfirmButton: false
                 });
-                validate=false;
-            }else if(meal['sellPrice']< meal['cost']){
+                validate = false;
+            }else if(meal['profit']< 0 && meal['sellPrice']>0){
                 swal({
                     title: "Attention",
-                    text: "Le prix est inférieur au coût",
+                    text: "Le bénifice est négative",
                     type: "warning",
                     timer: 2000,
                     showConfirmButton: false
@@ -396,7 +450,7 @@
         var productSize=1;
 
 
-        $('.well').on('click', function () {
+        $('.well.selectGroup').on('click', function () {
             group = $(this).attr('data-id');
             var actualColor = $(this).css('backgroundColor')
             var defaultColor = "rgb(245, 245, 245)";
@@ -410,7 +464,7 @@
                 );
             } else {
 
-                $('.well').css(
+                $('.well.selectGroup').css(
                     {
                         'background': defaultColor,
                         'color': 'rgb(115, 135, 156)',
@@ -428,6 +482,7 @@
         });
 
 
+        $(".well[data-id=<?php echo $defaultGroup; ?>]").trigger("click");
         $('button[name="addProduct"]').on('click', addProduct);
         function addProduct(event) {
             var productModel = $('.productModel').clone().removeAttr('hidden');

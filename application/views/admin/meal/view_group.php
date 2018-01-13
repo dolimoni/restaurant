@@ -97,7 +97,7 @@
 
             <?php foreach ($groups as $group) { ?>
 
-                <div class="col-md-4 col-sm-4 col-xs-12">
+                <div class="col-md-4 col-sm-6 col-xs-12">
                     <div class="well profile_view" style="min-height:170px;">
                         <a href="<?php echo base_url('admin/meal/groupMeals/' . $group['g_id']); ?>">
                             <div class="col-sm-12">
@@ -246,6 +246,13 @@
 
             $('input[name="groupNameEdit"]').val($(this).attr('data-name'));
             $('input[name="id"]').val($(this).attr('data-id'));
+            scroll("editGroup");
+        }
+
+        // This is a functions that scrolls to #{blah}link
+        function scroll(id) {
+            // Scroll
+            $('html,body').animate({scrollTop: $("#" + id).offset().top}, 'slow');
         }
 
     });

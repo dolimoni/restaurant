@@ -20,11 +20,13 @@
                 <form class="form-horizontal" role="form">
                     <div class="form-group" id="productToOrder">
                         <?php foreach ($productsToOrder as $key => $product) { ?>
-                        <div class="row product" data-index="<?php echo $key; ?>">
+                        <div class="row product" data-index="<?php echo $key; ?>"
+                             data-id="<?php echo $product['id']; ?>"
+                             data-id-quantity="<?php echo $product['q_id']; ?>">
 
                             <label class="col-sm-2 control-label">Produit</label>
                             <div class="col-sm-4">
-                               <input name="productToOrder" value="<?php echo $product['name']." (". $product['unit_price'].") DH"; ?>" disabled data-id="<?php echo $product['id']; ?>" data-price="<?php echo $product['unit_price']; ?>" data-name="<?php echo $product['name'];?>">
+                               <input name="productToOrder" value="<?php echo $product['name']." (". $product['unit_price']."DH/".$product['unit'].")"; ?>" disabled data-id="<?php echo $product['id']; ?>" data-price="<?php echo $product['unit_price']; ?>" data-name="<?php echo $product['name'];?>">
                             </div>
                             <label class="col-sm-2 control-label">Quantité</label>
                             <div class="col-sm-4">
@@ -40,7 +42,7 @@
 
               <!--  <label class="col-sm-2 control-label"
                        for="inputPassword3">Envoyer la commande par email</label>-->
-                <div class="col-sm-12">
+                <div class="col-sm-12 col-md-offset-3">
                     <button type="button" class="selected"
                             id="price" placeholder="Oui" style="width: 250px;" data-toggle="collapse"
                             href="#emailProductToOrder" aria-expanded="false" aria-controls="email">Envoyer la commande
@@ -79,7 +81,7 @@
                         </div>
                         <div class="x_content">
                             <div id="alerts"></div>
-                            <div class="btn-toolbar editor" data-role="editor-toolbar" data-target="#editor-one">
+                            <div class="btn-toolbar editor" data-role="editor-toolbar" data-target="#editor-productsToOrder">
                                 <div class="btn-group">
                                     <a class="btn dropdown-toggle" data-toggle="dropdown" title="Font"><i
                                                 class="fa fa-font"></i><b class="caret"></b></a>
@@ -164,7 +166,7 @@
                                 </div>
                             </div>
 
-                            <div id="editor-one" class="editor-wrapper"></div>
+                            <div id="editor-productsToOrder" class="editor-wrapper"></div>
 
                             <textarea name="descr" id="descr" style="display:none;"></textarea>
 
