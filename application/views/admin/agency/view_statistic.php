@@ -5,6 +5,9 @@
         background: #26b99a !important;
         color: white;
     }
+    #agencies{
+        height: 31px;
+    }
 </style>
 <!-- page content -->
 <div class="right_col" role="main">
@@ -20,6 +23,13 @@
              style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc">
             <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
             <span>December 30, 2014 - January 28, 2015</span> <b class="caret"></b>
+        </div>
+        <div  class="pull-right">
+            <select id="agencies" class="form-control">
+                <option value="1">GAUTIER</option>
+                <option value="2">ANFA</option>
+                <option value="3">Toutes les agneces</option>
+            </select>
         </div>
 
         </div>
@@ -166,7 +176,6 @@
     var rangeLink = "<?php echo base_url('admin/report/apiStatistic'); ?>";
     var mealReportLink = "<?php echo base_url('admin/meal/report/'); ?>";
 </script>
-<script src="<?php echo base_url('assets/build2/js/dateRangePickerStatistics.js'); ?>"></script>
 
 
 <script type="text/javascript">
@@ -434,3 +443,18 @@
     });
 </script>
 <script src="<?php echo base_url('assets/build/js/canvasjs.min.js'); ?>"></script>
+
+
+<script>
+    var mainAgencyLink = "<?php echo base_url(''); ?>";
+    var agency1Link = "https://fiori.ga";
+    var rangeAgencyLink="";
+</script>
+<script src="<?php echo base_url('assets/dist/js/agence/statistics.js'); ?>"></script>
+
+
+
+
+
+
+

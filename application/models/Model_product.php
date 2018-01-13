@@ -492,7 +492,7 @@ class model_product extends CI_Model {
 
 	public function getQuantitiesToShow($product)
 	{
-	    $sql= "SELECT quantity.*,pv.name as pv_name FROM quantity left join provider pv on pv.id=quantity.provider 
+	    $sql= "SELECT quantity.*,pv.name as pv_name,pv.id as pv_id FROM quantity left join provider pv on pv.id=quantity.provider 
                WHERE 
                product = ?
                order by FIELD(status,'active','stock','sold_out') ASC";

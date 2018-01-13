@@ -19,7 +19,7 @@
                 <th>Prix</th>
                 <th>Fournisseur</th>
                 <th>Status</th>
-                <th>Activer</th>
+                <th>Action</th>
             </tr>
             </thead>
             <tfoot>
@@ -28,7 +28,7 @@
                 <th>Prix</th>
                 <th>Fournisseur</th>
                 <th>Status</th>
-                <th>Activer</th>
+                <th>Action</th>
             </tr>
             </tfoot>
             <tbody>
@@ -48,12 +48,17 @@
                            <button data-id="<?php echo $quantity['id'] ?>" class="btn btn-default btn-xs action activate"><span
                                        class="glyphicon glyphicon-ok"></span></button>
                        <?php } ?>
+                        <button data-id="<?php echo $quantity['id'] ?>"
+                                data-quantity="<?php echo $quantity['unit_price'] ?>"
+                                data-provider="<?php echo $quantity['pv_id'] ?>"
+                                class="btn btn-default btn-xs action edit"><span
+                                    class="glyphicon glyphicon-edit"></span></button>
                     </td>
                 </tr>
             <?php } ?>
             </tbody>
         </table>
-        <div class="row productsListContent">
+        <div class="row productsListContent" id="productPanel">
             <div class="col-md-offset-3 col-md-6 col-sm-12 col-xs-12 productItem" data-id="1">
                 <div class="x_panel">
                     <div class="x_title">
@@ -243,7 +248,22 @@
 <script>
     $(document).ready(function () {
         $('button.activate').on('click', activateEvent);
+        $('button.edit').on('click', editEvent);
 
+        function editEvent(){
+            var quantity = $(this).attr('data-quantity');
+            var provider = $(this).attr('data-provider');
+            $('input[name="unit_price"]').val(quantity);
+            console.log(provider);
+            $('select[name=provider]').val(provider);
+            scroll("productPanel")
+
+        }
+
+        function scroll(id) {
+            // Scroll
+            $('html,body').animate({scrollTop: $("#" + id).offset().top}, 'slow');
+        }
         function activateEvent(event) {
             var id = $(this).attr('data-id');
             $.ajax({
