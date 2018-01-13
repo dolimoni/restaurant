@@ -152,7 +152,7 @@ class model_product extends CI_Model {
             $this->db->update('quantity', array("status" => "active"));
         }*/
 
-        if($newQuantity){
+        if ($newQuantity && $product['newUserQuantity'] == "true") {
             $dataQuantity = array(
                 'product' => $product['id'],
                 'quantity' => $product['quantity'],
@@ -168,13 +168,17 @@ class model_product extends CI_Model {
             $this->updateQuantity($product['id'], $product['quantity'],'up');
 
         }else{
-
-           /* $this->db->where("product", $product['id']);
-            $this->db->where("unit_price", $product['unit_price']);
-            $this->db->update('quantity', array("provider"=> $product['provider']));*/
-
-            $this->updateLocalQuantity($product['id'], $product['quantity'], 'up');//product table
-            $this->updateQuantity($product['id'], $product['quantity'], 'up');//quantity table
+                $dataQuantity = array(
+                    'unit_price' => $product['unit_price'],
+                );
+                if ($product['newUserQuantity'] == "false") {
+                    $this->db->where("product", $product['id']);
+                    $this->db->where("provider", $product['provider']);
+                    $this->db->where("status", "active");
+                    $this->db->update("quantity", $dataQuantity);
+                }
+                $this->updateLocalQuantity($product['id'], $product['quantity'], 'up');//product table
+                $this->updateQuantity($product['id'], $product['quantity'], 'up');//quantity table
         }
 
         if($product['quantity']>0){

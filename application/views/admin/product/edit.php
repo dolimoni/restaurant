@@ -51,8 +51,9 @@
                         <button data-id="<?php echo $quantity['id'] ?>"
                                 data-quantity="<?php echo $quantity['unit_price'] ?>"
                                 data-provider="<?php echo $quantity['pv_id'] ?>"
-                                class="btn btn-default btn-xs action edit"><span
+                                class="btn btn-success btn-xs action edit"><span
                                     class="glyphicon glyphicon-edit"></span></button>
+
                     </td>
                 </tr>
             <?php } ?>
@@ -111,6 +112,13 @@
                                 <div class="form-group">
                                     Prix unitaire : <input value="<?php echo $product['unit_price']; ?>" class="form-control" placeholder="Prix unitaire"
                                                            name="unit_price" type="text">
+                                    <div class="checkbox">
+                                        <label>
+                                            <input type="checkbox" checked="checked" name="newUserQuantity"> Créer
+                                            nouveau stock si le prix est différent
+                                        </label>
+                                    </div>
+
                                 </div>
                                 <div class="form-group">
                                     Poid par unité(en gr)<input value="<?php echo $product['weightByUnit']; ?>" class="form-control" placeholder="Poid par unité"
@@ -191,6 +199,7 @@
         $('#editProductForm').submit(function (e) {
             e.preventDefault();
 
+            var newUserQuantity="true";
             var id = $('input[name="id"]').val();
             var name = $('input[name="name"]').val();
             var quantity = $('input[name="quantity"]').val();
@@ -200,6 +209,7 @@
             var daily_quantity = $('input[name="daily_quantity"]').val();
             var min_quantity = $('input[name="min_quantity"]').val();
             var lostQuantity = $('input[name="lostQuantity"]').val();
+            newUserQuantity = $('input[name="newUserQuantity"]').is(':checked');
             if(lostQuantity=="")lostQuantity= 0;
             var provider = $('select[name=provider]').val();
             var product = {
@@ -213,6 +223,7 @@
                 'min_quantity': min_quantity,
                 'daily_quantity': daily_quantity,
                 'lostQuantity': lostQuantity,
+                "newUserQuantity": newUserQuantity,
                 'status': 'active'
             };
 
