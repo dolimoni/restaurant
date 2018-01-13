@@ -140,19 +140,7 @@ class model_product extends CI_Model {
 
         $stock = $this->getActiveStock($product['id']);
 
-        // si changement simple de fournisseur sans donner la quantité
-       /* if($product['quantity']==="" && $stock["provider"]!== $product['provider']){
-            $this->db->where('provider', $product['provider']);
-            $l_quantity=$this->db->get('quantity')->row_array();
-
-            $this->db->where('id', $stock['id']);
-            $this->db->update('quantity', array("status" => "stock"));
-
-            $this->db->where('id', $l_quantity['id']);
-            $this->db->update('quantity', array("status" => "active"));
-        }*/
-
-        if($newQuantity){
+        if($newQuantity && $product['newUserQuantity']=="true"){
             $dataQuantity = array(
                 'product' => $product['id'],
                 'quantity' => $product['quantity'],
@@ -163,18 +151,22 @@ class model_product extends CI_Model {
                 $dataQuantity['status'] = 'active';
                 $this->updateActiveQuantity($stock['id'], array('status' => 'sold_out'));
             }
-            $this->accumulateQuantity($dataQuantity);
 
             $this->updateQuantity($product['id'], $product['quantity'],'up');
 
         }else{
-
-           /* $this->db->where("product", $product['id']);
-            $this->db->where("unit_price", $product['unit_price']);
-            $this->db->update('quantity', array("provider"=> $product['provider']));*/
-
             $this->updateLocalQuantity($product['id'], $product['quantity'], 'up');//product table
             $this->updateQuantity($product['id'], $product['quantity'], 'up');//quantity table
+
+            $dataQuantity = array(
+                'unit_price' => $product['unit_price'],
+            );
+            if ($product['newUserQuantity'] == "false") {
+                $this->db->where("product", $product['id']);
+                $this->db->where("provider", $product['provider']);
+                $this->db->where("status", "active");
+                $this->db->update("quantity", $dataQuantity);
+            }
         }
 
         if($product['quantity']>0){
@@ -190,6 +182,13 @@ class model_product extends CI_Model {
         if ($product['lostQuantity'] > 0) {
             $this->updateLocalQuantity($product['id'], $product['lostQuantity']);//product table
             $this->updateQuantity($product['id'], $product['lostQuantity']);// quantity table
+        }
+
+        if($product['newUserQuantity']){
+
+            if($stock["unit_price"]=== $product["unit_price"]){
+
+            }
         }
     }
 
