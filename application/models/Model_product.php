@@ -170,10 +170,10 @@ class model_product extends CI_Model {
         }else{
                 $dataQuantity = array(
                     'unit_price' => $product['unit_price'],
+                    'provider' => $product['provider']
                 );
                 if ($product['newUserQuantity'] == "false") {
                     $this->db->where("product", $product['id']);
-                    $this->db->where("provider", $product['provider']);
                     $this->db->where("status", "active");
                     $this->db->update("quantity", $dataQuantity);
                 }

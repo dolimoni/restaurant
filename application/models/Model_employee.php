@@ -90,7 +90,7 @@ class model_employee extends CI_Model {
         $employee=$this->get($event['employee']);
         $paid='false';
         if($this->model_util->isLastDayInMonth($event['day'])){
-           $paid='true';
+           $paid='false';
         }
 
         $lastDay = $this->model_util->getLastDayInMonth($event['day']);
@@ -125,6 +125,47 @@ class model_employee extends CI_Model {
             $this->db->update('salary', $data);
         }else{
             $this->db->insert('salary', $data);
+        }
+
+    }
+	public function automaticSalaryForAll(){
+        $this->load->model('model_util');
+        $lastDay = $this->model_util->getLastDayInMonth(date("Y-m-d"));
+        $paid = 'true';
+        $employees=$this->getAll();
+        foreach ($employees as $employee) {
+
+            $absencesData = $this->getAbsences($employee['id'], $lastDay);
+            $delaysData = $this->getDelays($employee['id'], $lastDay);
+
+            $absences = count($absencesData);
+            $delays = count($delaysData);
+
+            $salary = $this->calculateSalary($employee, $lastDay);
+            $advance = $this->getAdvance($employee, $lastDay);
+            $substraction = $employee['salary'] - $salary;
+            $data = array(
+                'salary' => $employee['salary'],
+                'advance' => $advance,
+                'remain' => $salary - $advance,
+                'delay' => $delays,
+                'paymentDate' => $lastDay,
+                'substraction' => $substraction,
+                'absence' => $absences,
+                'paid' => $paid
+            );
+
+            $this->db->where('paymentDate', $lastDay);
+            $this->db->where('employee', $employee['id']);
+            $salaryMonth = count($this->db->get('salary')->result_array());
+            if ($salaryMonth > 0) {
+                $this->db->where('paymentDate', $lastDay);
+                $this->db->where('employee', $employee['id']);
+                $this->db->update('salary', $data);
+            } else {
+                $data["employee"]= $employee['id'];
+                $this->db->insert('salary', $data);
+            }
         }
 
     }
@@ -229,7 +270,7 @@ class model_employee extends CI_Model {
 
     public function getSalaries($employee_id){
         $this->db->where('employee',$employee_id);
-        $this->db->order_by('id','desc');
+        $this->db->order_by('paymentDate','desc');
         return $this->db->get('salary')->result_array();
     }
     private function getAdvance($employee, $date)

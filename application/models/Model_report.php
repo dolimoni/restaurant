@@ -208,6 +208,14 @@ class model_report extends CI_Model
         }
         $repair = $this->db->get('reparation')->row_array();
 
+        $this->db->select('sum(salary) as salary');
+        if ($startDate) {
+            $this->db->where('date(paymentDate)>=', $startDate);
+            $this->db->where('date(paymentDate)<=', $endDate);
+        }
+        $this->db->where('paid', "true");
+        $salary = $this->db->get('salary')->row_array();
+
 
         $global['consumption']= $consumption;
         $global['cp']= $consumption_product;
@@ -216,7 +224,9 @@ class model_report extends CI_Model
         $global['sales_history_month']= $sales_history_month;
         $global['purchase']= $purchase;
         $global['repair']= $repair;
+        $global['salary']= $salary;
         $global['stock_history']= $stock_history;
+        $global["charges"]= $global['stock_history']['price'] + $global['purchase']['price'] + $global['repair']['price'] + $global['salary']['salary'];
 
 
         return $global;

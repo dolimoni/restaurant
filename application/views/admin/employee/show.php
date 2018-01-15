@@ -6,6 +6,10 @@
         white-space: nowrap;
         overflow: hidden;
     }
+    #idtbody .active{
+        background: #6cc;
+        color: white;
+    }
 </style>
 <!-- page content -->
 <div class="right_col" role="main">
@@ -160,16 +164,21 @@
                                     <th>Date de paiement<br></th>
                                 </tr>
                                 </tfoot>
-                                <tbody>
-                                <?php foreach ($salaries as $salary) { ?>
+                                <tbody id="idtbody">
+                                <?php foreach ($salaries as $salary) {
+                                    $active="";
+                                    if($salary["paid"]=="true"){
+                                        $active="active";
+                                    }
+                                    ?>
                                     <tr>
-                                        <td><?php echo $salary['salary']?>DH</td>
-                                        <td><?php echo $salary['advance'];?>DH</td>
-                                        <td><?php echo $salary['remain'];?>DH</td>
-                                        <td><?php echo $salary['absence'];?></td>
-                                        <td><?php echo $salary['substraction'];?></td>
+                                        <td class="<?php echo $active ?>"><?php echo $salary['salary']?>DH</td>
+                                        <td class="<?php echo $active ?>"><?php echo $salary['advance'];?>DH</td>
+                                        <td class="<?php echo $active ?>"><?php echo $salary['remain'];?>DH</td>
+                                        <td class="<?php echo $active ?>"><?php echo $salary['absence'];?></td>
+                                        <td class="<?php echo $active ?>"><?php echo $salary['substraction'];?></td>
                                         <!--<td><?php /*if($salary['paid']==="true"){echo $salary['paymentDate'];}*/?></td>-->
-                                        <td><?php echo $salary['paymentDate']; ?></td>
+                                        <td class="<?php echo $active ?>"><?php echo $salary['paymentDate']; ?></td>
                                     </tr>
                                 <?php } ?>
                                 </tbody>

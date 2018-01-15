@@ -151,4 +151,10 @@ class Cron extends BaseController {
         //$products = $this->model_product->controlQuantity();
     }
 
+    public function automaticSalaryForAll()
+    {
+        $this->load->model('model_employee');
+        $this->model_employee->automaticSalaryForAll();
+    }
+
 }

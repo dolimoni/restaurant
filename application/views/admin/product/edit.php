@@ -115,7 +115,7 @@
                                     <div class="checkbox">
                                         <label>
                                             <input type="checkbox" checked="checked" name="newUserQuantity"> Créer
-                                            nouveau stock si le prix est différent
+                                            nouveau stock si le prix ou le fournisseur sont différents
                                         </label>
                                     </div>
 

@@ -5,9 +5,7 @@ class Config extends BaseController {
 	public function __construct()
 	{
         parent::__construct();
-        if (!$this->session->userdata('isLogin') || ($this->session->userdata('type') != "admin")) {
-            redirect('login');
-        }
+
         $this->load->model('model_util');
 	}
 
@@ -44,7 +42,5 @@ class Config extends BaseController {
         }
 
 	}
-
-
 
 }

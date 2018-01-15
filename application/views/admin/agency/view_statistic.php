@@ -28,7 +28,7 @@
             <select id="agencies" class="form-control">
                 <option value="1">GAUTIER</option>
                 <option value="2">ANFA</option>
-                <option value="3">Toutes les agneces</option>
+                <option value="all">Toutes les agences</option>
             </select>
         </div>
 
@@ -45,13 +45,13 @@
             </div>
             <div class="col-md-3 col-sm-6 col-xs-12 tile_stats_count">
                 <span class="count_top"><i class="fa fa-user"></i> Dépenses</span>
-                <div class="count red report_cost"><?php echo number_format((float)($report['stock_history']['price']+$report['purchase']['price']+ $report['repair']['price']), 2, '.', ''); ?>
+                <div class="count red report_cost"><?php echo number_format((float)($report["charges"]), 2, '.', ''); ?>
                     DH
                 </div>
             </div>
             <div class="col-md-3 col-sm-6 col-xs-12 tile_stats_count">
                 <span class="count_top">Bénéfices</span>
-                <div class="count green report_profit"><?php echo number_format((float)($report['consumption']['turnover']- $report['stock_history']['price']- $report['purchase']['price']- $report['repair']['price']), 2, '.', ''); ?></div>
+                <div class="count green report_profit"><?php echo number_format((float)($report['consumption']['turnover']- $report["charges"]), 2, '.', ''); ?></div>
             </div>
             <div class="col-md-3 col-sm-6 col-xs-12 tile_stats_count">
                 <span class="count_top"><i class="fa fa-user"></i>Nombre de vente</span>
@@ -76,44 +76,11 @@
                         <div class="clearfix"></div>
                     </div>
                     <div class="x_content">
-                        <div class="col-md-9 col-sm-12 col-xs-12">
+                        <div class="col-md-12 col-sm-12 col-xs-12">
                             <div class="demo-container" style="height:280px">
                                 <div id="chart_plot_05" class="demo-placeholder"></div>
                             </div>
                         </div>
-                        <div class="col-md-3 col-sm-12 col-xs-12">
-                            <div>
-                                <div class="x_title">
-                                    <h2>Top consommation produits</h2>
-                                    <div class="clearfix"></div>
-                                </div>
-                                <ul class="list-unstyled top_profiles scroll-view">
-                                    <?php foreach ($report['products_cost'] as $key=>$products_cost){ ?>
-                                    <li class="media event">
-                                        <div class="media-body">
-                                            <a class="title" href="#"><?php echo $products_cost['name']; ?></a>
-                                            <p>Consommation <strong><?php echo $products_cost['s_cost']; ?>DH</strong></p>
-                                            <p>
-                                                <small>Nombre d'utilisations : <?php echo $products_cost['s_meal']; ?> fois</small>
-                                            </p>
-                                        </div>
-                                    </li>
-                                    <?php } ?>
-                                </ul>
-                                <li class="media event productModel" hidden>
-                                    <div class="media-body">
-                                        <a class="title" href="#"></a>
-                                        <p>Consommation <strong></strong>
-                                        </p>
-                                        <p>
-                                            <small>
-                                            </small>
-                                        </p>
-                                    </div>
-                                </li>
-                            </div>
-                        </div>
-
                     </div>
                 </div>
             </div>
@@ -142,28 +109,6 @@
 
 <!-- DateJS -->
 <script src="<?php echo base_url('assets/vendors/DateJS/build/date.js'); ?>"></script>
-
-
-<script>
-    $(document).ready(function () {
-        function requestFullScreen(element) {
-            // Supports most browsers and their versions.
-            var requestMethod = element.requestFullScreen || element.webkitRequestFullScreen || element.mozRequestFullScreen || element.msRequestFullScreen;
-
-            if (requestMethod) { // Native full screen.
-                requestMethod.call(element);
-            } else if (typeof window.ActiveXObject !== "undefined") { // Older IE.
-                var wscript = new ActiveXObject("WScript.Shell");
-                if (wscript !== null) {
-                    wscript.SendKeys("{F11}");
-                }
-            }
-        }
-
-        var elem = document.body; // Make the body go full screen.
-        requestFullScreen(elem);
-    });
-</script>
 
 <!-- ECharts -->
 <script src="<?php echo base_url('assets/vendors/echarts/dist/echarts.js'); ?>"></script>
