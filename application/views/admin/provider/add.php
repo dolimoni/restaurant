@@ -34,13 +34,13 @@
                             <label for="name">Nom :</label>
                             <input type="text"  class="form-control" name="name"
                                    placeholder="Nom"
-                                   required>
+                                   >
                         </div><div class="col-xs-4">
                             <br>
                             <label for="name">Prénom :</label>
                             <input type="text" step="any" class="form-control" name="prenom"
                                    placeholder="Prénom"
-                                   required>
+                                   >
                         </div>
 
                     </div>
@@ -50,19 +50,19 @@
                             <label for="name">Adresse :</label>
                             <input type="text"  class="form-control" name="address"
                                    placeholder="Adresse"
-                                   required>
+                                   >
                         </div><div class="col-xs-4">
                             <br>
                             <label for="name">Téléphone :</label>
                             <input type="text"  class="form-control" name="phone"
                                    placeholder="Téléphone"
-                                   required>
+                                   >
                         </div><div class="col-xs-4">
                             <br>
                             <label for="name">Email :</label>
                             <input type="text"  class="form-control" name="mail"
                                    placeholder="Email"
-                                   required>
+                                   >
                         </div>
 
 
@@ -71,7 +71,7 @@
                         <div class="col-xs-4">
                             <br>
                             <label for="image">TVA :</label>
-                            <input type="text" class="form-control" name="tva">
+                            <input type="text" class="form-control" name="tva" value="0">
                         </div>
 
                          <div class="col-xs-4">
@@ -109,14 +109,14 @@
                             <label for="name">Nom :</label>
                             <input type="text" class="form-control" name="name"
                                    placeholder="Nom"
-                                   required>
+                                   >
                         </div>
                         <div class="col-xs-4">
                             <br>
                             <label for="name">Prénom :</label>
                             <input type="text" step="any" class="form-control" name="prenom"
                                    placeholder="Prénom"
-                                   required>
+                                   >
                         </div>
 
                     </div>
@@ -126,21 +126,21 @@
                             <label for="name">Adresse :</label>
                             <input type="text" class="form-control" name="address"
                                    placeholder="Adresse"
-                                   required>
+                                   >
                         </div>
                         <div class="col-xs-4">
                             <br>
                             <label for="name">Téléphone :</label>
                             <input type="text" class="form-control" name="phone"
                                    placeholder="Téléphone"
-                                   required>
+                                   >
                         </div>
                         <div class="col-xs-4">
                             <br>
                             <label for="name">Email :</label>
                             <input type="text" class="form-control" name="mail"
                                    placeholder="Email"
-                                   required>
+                                   >
                         </div>
 
 
@@ -297,6 +297,7 @@
         $('#editProviderForm').on('submit', function (e) {
             e.preventDefault();
             var formData = new FormData(this);
+            $('#loading').show();
             $.ajax({
                 type: 'POST',
                 url: "<?php echo base_url('admin/provider/apiEditMainProvider'); ?>",
@@ -305,6 +306,7 @@
                 contentType: false,
                 processData: false,
                 success: function (data) {
+                    $('#loading').hide();
                     if (data.status === "success") {
                         swal({
                             title: "Success",
@@ -325,6 +327,7 @@
                     }
                 },
                 error: function (data) {
+                    $('#loading').hide();
                     swal({
                         title: "Erreur",
                         text: "Une erreur s'est produit",
@@ -393,6 +396,7 @@
                     confirmButtonText: 'Oui'
                 },
                 function () {
+                    $('#loading').show();
                     $.ajax({
                         url: "<?php echo base_url('admin/provider/apiDeleteProvider'); ?>",
                         type: "POST",
@@ -410,6 +414,7 @@
                                 location.reload();
                             }
                             else {
+                                $('#loading').hide();
                                 swal({
                                     title: "Erreur",
                                     text: "Une erreur s'est produite",
@@ -420,6 +425,7 @@
                             }
                         },
                         error: function (data) {
+                            $('#loading').hide();
                             swal({
                                 title: "Erreur",
                                 text: "Une erreur s'est produite",
@@ -427,6 +433,9 @@
                                 timer: 1500,
                                 showConfirmButton: false
                             });
+                        },
+                        complete: function () {
+
                         }
                     });
 

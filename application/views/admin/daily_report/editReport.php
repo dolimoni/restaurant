@@ -19,7 +19,6 @@
 <?php $this->load->view('admin/partials/admin_header.php'); ?>
     <!-- page content -->
     <div class="right_col" role="main">
-        <?php echo validation_errors(); ?>
 
         <?php echo form_open_multipart('admin/reports/editReport'); ?>
             <input type="hidden" id="emails_to" name="emails" value="<?php echo $report["send_to"] ?>" />
@@ -34,7 +33,7 @@
             <div class="row">
                 <div class="form-group col-md-12">
                     <label>Titre</label>
-                    <input type="text" class="form-control" name="title" value="<?php echo $report["title"] ?>" placeholder="Ajouter titre" />
+                    <input type="text" class="form-control" name="title" required value="<?php echo $report["title"] ?>" placeholder="Ajouter titre" />
                 </div>
                 <div class="form-group col-md-11">
                     <label>Envoyer à </label>

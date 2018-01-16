@@ -19,8 +19,6 @@
 <?php $this->load->view('admin/partials/admin_header.php'); ?>
 	<!-- page content -->
 	<div class="right_col" role="main">
-		<?php echo validation_errors(); ?>
-
 		<?php echo form_open_multipart('admin/reports/create'); ?>
 			<input type="hidden" id="emails_to" name="emails" value="" />
             <div class="page-title">
@@ -33,19 +31,22 @@
 			<div class="row">
 				<div class="form-group col-md-12">
 					<label>Titre</label>
-					<input type="text" class="form-control" name="title" placeholder="Ajouter titre" />
+					<input type="text" value="<?php if ($this->session->flashdata('title') != NULL){
+                        echo $this->session->flashdata('title');} ?>"
+                       class="form-control" name="title" placeholder="Ajouter titre" required />
 				</div>
 				<div class="form-group col-md-11">
 					<label>Envoyer à </label>
 					<input id="email_to" type="email" class="form-control" name="email" placeholder="Ajouter l'adresse e-mail" />
 				</div>
 				<div class="form-group col-md-1">
+                    <br/>
 					<a id="add_email" href="#" class="btn btn-primary">Ajouter</a>
 				</div>
 				<div class="form-group col-md-12" id="display_emails"></div>
 				<div class="form-group col-md-12">
 					<label>Message</label>
-					<textarea id="editor1" class="form-control" name="message" placeholder="Ajouter Rapport" /></textarea>
+					<textarea id="editor1" class="form-control" name="message" required="required" placeholder="Ajouter Rapport" /></textarea>
 				</div>
 				<div class="form-group col-md-12">
 					<button type="submit" class="btn btn-primary">Créer</button>
@@ -56,9 +57,11 @@
 	</div>
 
 	<!-- /page content -->
-	<script src="https://cdn.ckeditor.com/4.7.3/standard/ckeditor.js"></script>
-	<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<?php $this->load->view('admin/partials/admin_footer'); ?>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="https://cdn.ckeditor.com/4.7.3/standard/ckeditor.js"></script>
+
+
 	<script type="text/javascript">
 		CKEDITOR.replace( 'editor1' );
         function addBulle( email ) {

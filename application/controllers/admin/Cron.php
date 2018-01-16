@@ -1,6 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class Cron extends CI_Controller {
+class Cron extends BaseController {
 
 	public function __construct()
 	{
@@ -28,22 +28,46 @@ class Cron extends CI_Controller {
         $this->parser->parse('admin/product/view_products', $data);
 	}
 
+    public function productAutoConsum()
+    {
+        $this->load->model('model_product');
+        $this->model_product->autoConsum();
+    }
 	public function alerte(){
         $this->load->model('model_budget');
         $this->model_budget->activeAlerts(); // change passive alerte to active aletes
     }
 
     public function alerteSMS(){
+        $this->log_begin();
         $this->load->model('model_budget');// contains alertes
+        $this->load->model('model_product');// contains alertes
         $this->load->model('model_params');// contains alertes
 
         $alertes = $this->model_budget->getActiveAlerts();
         $alertes_count= count($alertes);
 
+        $products = $this->model_product->getToOrder();
+        $products_count= count($products);
+
         $config = $this->model_params->config(); // getting user configuration
 
-        $date = date('H:i:s');
-        $isTime= $config['sms_time'] >= "10:00:00";
+        $time = date('H:i:s');
+        $isTime=false;
+        if($config['sms_time'] <= $time && $config["toDayCount"]==3){
+            $isTime = true;
+        }else if ($config['sms_time2'] <= $time && $config["toDayCount"] == 2) {
+            $isTime = true;
+        }else if ($config['sms_time3'] <= $time && $config["toDayCount"] == 1) {
+            $isTime = true;
+        }
+
+        $this->log_middle($config);
+        $this->log_middle($products);
+        $this->log_middle($alertes);
+        $this->log_middle($time);
+
+
 
         /*
          * Conditions for sending sms :
@@ -52,24 +76,35 @@ class Cron extends CI_Controller {
          * $config['sms_AlerteStatus_today'] : passive si on a envoyé les alertes d'aujourd'hui
          * $alertes_count doit être > 0 pour envoyer un message d'alerte
          */
-        if($config['sms_status']==="active" and $config['sms_AlerteStatus_today']==="active" and $alertes_count>0 and $isTime){
+        if($config['sms_status']==="active" and $config['sms_AlerteStatus_today']==="active" and ($alertes_count>0 or $products_count>0) and $isTime){
             // send sms
             $this->load->library('Clickatell');
-            $sms_content='Besys : Vous avez '. $alertes_count .' alertes aujourd\'hui';
-            $this->clickatell->send_message($config['sms_destination'], $sms_content);
+            $sms_content="";
+            if($alertes_count > 0){
+                $sms_content .= 'Besystem: Vous avez ' . $alertes_count  . ' alertes aujourd\'hui.';
+            }if($products_count > 0){
+                $sms_content .= 'Besystem: Vous avez ' . $products_count . ' produits à commander';
+            }
+            $this->clickatell->send_message("+212656011827", $sms_content);
 
-            //
+            //configuration
             $sms_available = $config['sms_available']-1;
+            $toDayCount = $config['toDayCount']-1;
             $data = array(
                 'sms_available'=>$sms_available,
-                'sms_AlerteStatus_today'=>'passive'
+                "toDayCount"=>$toDayCount
             );
             if($sms_available===0){
                 $data['sms_status']='passive';
             };
+            if($toDayCount===0){
+                $data['sms_AlerteStatus_today']='passive';
+            };
 
             $this->model_params->update($data);
 
+            $this->log_middle($data);
+            $this->log_ok("end alerte sms");
         }
     }
 
@@ -113,6 +148,13 @@ class Cron extends CI_Controller {
 
             $this->model_product->update($product['id'],$data);
         }
+        //$products = $this->model_product->controlQuantity();
+    }
+
+    public function automaticSalaryForAll()
+    {
+        $this->load->model('model_employee');
+        $this->model_employee->automaticSalaryForAll();
     }
 
 }

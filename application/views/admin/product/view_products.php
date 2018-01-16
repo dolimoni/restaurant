@@ -23,14 +23,20 @@
                         </ul>
                         <div class="clearfix"></div>
                     </div>
+                    <div class="row">
+                        <div class="col-md-3 col-sm-6 col-xs-12">
+                            <label for="exampleInputName2">Rechercher</label>
+                            <input type="text" placeholder="Nom du produit" class="form-control" id="searchInput" onkeyup="myFunction()">
+                        </div>
+                    </div>
                     <div class="x_content table-responsive">
-                        <table class="table table-striped">
+                        <table class="table table-striped" id="searchTable">
                             <tr>
                                 <th>
-                                    Produit
+                                    Id
                                 </th>
                                 <th>
-                                    Nom
+                                    Produit
                                 </th>
                                 <th>
                                     Quantité
@@ -49,7 +55,7 @@
                             <?php foreach ($products as $product) {
                                 $status= $product['min_quantity'] > $product['totalQuantity']?'danger':'success';
                             ?>
-                            <tr class="<?php echo $status; ?>">
+                            <tr class="productsList <?php echo $status; ?>">
                                 <td><?php echo $product['product'];?></td>
                                 <td><?php echo $product['name']; ?></td>
                                 <td><?php echo $product['totalQuantity']; ?></td>
@@ -133,7 +139,7 @@
                             <?php foreach ($productsComposition as $composition) {
                                 $status= $composition['min_quantity'] > $composition['totalQuantity']?'danger':'warning';
                             ?>
-                            <tr class="<?php echo $status; ?>">
+                            <tr class="productsList <?php echo $status; ?>">
                                 <td><?php echo $composition['product'];?></td>
                                 <td><?php echo $composition['name']; ?></td>
                                 <td><?php echo $composition['totalQuantity']; ?></td>
@@ -280,4 +286,28 @@
             });
         }
     });
+</script>
+
+
+
+<!--Search in table-->
+<script>
+    function myFunction() {
+        var input, filter, table, tr, td, i;
+        input = document.getElementById("searchInput");
+        filter = input.value.toUpperCase();
+        table = document.getElementById("searchTable");
+        tr = table.getElementsByClassName("productsList");
+        for (i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td")[1];
+            console.log(td);
+            if (td) {
+                if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+    }
 </script>

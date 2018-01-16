@@ -9,6 +9,10 @@
         width: 130px;
         height: 126px;
     }
+    .benefit{
+        background: #6cc;
+        color: white;
+    }
 </style>
     <!-- page content -->
     <div class="right_col" role="main">
@@ -73,6 +77,13 @@
                             </ul>
                             <div class="clearfix"></div>
                         </div>
+                        <div class="row">
+                            <div class="col-md-3 col-sm-6 col-xs-12">
+                                <label for="exampleInputName2">Rechercher</label>
+                                <input type="text" placeholder="Nom du produit" class="form-control" id="searchInput"
+                                       onkeyup="myFunction()">
+                            </div>
+                        </div>
                         <div class="x_content table-responsive">
                             <table id="datatable-responsivee"
                                    class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0"
@@ -82,10 +93,9 @@
                                     <th class="md-hidden-only">Id</th>
                                     <th>Nom</th>
                                     <th class="sm-hidden">Famille</th>
-                                    <th>Coût</th>
                                     <th>Prix de vente</th>
-                                    <th>Bénifices</th>
-                                    <th class="md-hidden-only">Nombre de produits</th>
+                                    <th class="danger">Coût de revient</th>
+                                    <th class="benefit">Bénifices</th>
                                     <th width="20%">Action</th>
                                 </tr>
                                 </thead>
@@ -94,23 +104,21 @@
                                     <th class="md-hidden-only">Id</th>
                                     <th>Nom</th>
                                     <th class="sm-hidden">Famille</th>
-                                    <th>Coût</th>
                                     <th>Prix de vente</th>
-                                    <th>Bénifices</th>
-                                    <th class="md-hidden-only">Nombre de produits</th>
+                                    <th class="danger">Coût de revient</th>
+                                    <th class="benefit">Bénifices</th>
                                     <th>Action</th>
                                 </tr>
                                 </tfoot>
                                 <tbody>
                                 <?php foreach ($meals as $meal) { ?>
-                                    <tr>
+                                    <tr class="productsList">
                                         <td class="md-hidden-only"><?php echo $meal['meal_id']; ?></td>
                                         <td><?php echo $meal['meal_name']; ?></td>
                                         <td class="sm-hidden"><?php echo $meal['g_name']; ?></td>
-                                        <td><?php echo $meal['cost']; ?></td>
                                         <td><?php echo $meal['sellPrice']; ?></td>
-                                        <td><?php echo $meal['profit']; ?></td>
-                                        <td class="md-hidden-only"><?php echo $meal['products_count']; ?></td>
+                                        <td class="danger"><?php echo $meal['cost']; ?></td>
+                                        <td class="benefit"><?php echo $meal['profit']; ?></td>
                                         <td>
                                             <a href=" <?php echo base_url(); ?>admin/meal/edit/<?php echo $meal['meal_id']; ?>"
                                                class="btn btn-primary  btn-xs"><i class="fa fa-pencil"></i></a>
@@ -251,4 +259,27 @@
 
         TableManageButtons.init();
     });
+</script>
+
+<!--Search in table-->
+<script>
+    function myFunction() {
+        var input, filter, table, tr, td, i;
+        input = document.getElementById("searchInput");
+        filter = input.value.toUpperCase();
+        table = document.getElementById("datatable-responsivee");
+        console.log(table);
+        tr = table.getElementsByClassName("productsList");
+        for (i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td")[1];
+            console.log(td);
+            if (td) {
+                if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+    }
 </script>

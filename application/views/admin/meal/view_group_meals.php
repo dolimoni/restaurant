@@ -1,4 +1,10 @@
 <?php $this->load->view('admin/partials/admin_header.php'); ?>
+<style>
+    .benefit {
+        background: #6cc;
+        color: white;
+    }
+</style>
     <!-- page content -->
     <div class="right_col" role="main">
         <div class="">
@@ -7,7 +13,7 @@
                     <?php /*print_r($meals);*/?>
                 </pre>-->
                 <div class="title_left">
-                    <h3>Liste des articles articles</h3>
+                    <h3>Liste des articles</h3>
                 </div>
             </div>
             <div class="clearfix"></div>
@@ -16,16 +22,14 @@
                 <div class="text-center tile_stats_count">
                     <div class="count">
                         <?php
-                            if(isset($meals[0])){
-                                echo $meals[0]['g_name'];
-                            }
+                                echo $group['name'];
                         ?>
                     </div>
                 </div>
             </div>
             <div class="row">
                 <button type="submit" class="btn btn-success" name="new"
-                        onclick="window.location.href='<?php echo base_url('admin/meal/add/'); ?>'">
+                        onclick="window.location.href='<?php  echo base_url('admin/meal/add/'. $group['id']); ?>'">
                     <span></span> Nouveau
                 </button>
                 <button type="submit" class="btn btn-warning" name="Fichier"
@@ -51,10 +55,9 @@
                                 <tr>
                                     <th class="md-hidden-only">Id</th>
                                     <th>Nom</th>
-                                    <th>Coût</th>
                                     <th>Prix de vente</th>
-                                    <th>Bénifices</th>
-                                    <th class="md-hidden-only">Nombre de produits</th>
+                                    <th class="danger">Coût</th>
+                                    <th class="benefit">Bénifices</th>
                                     <th width="20%">Action</th>
                                 </tr>
                                 </thead>
@@ -62,10 +65,9 @@
                                 <tr>
                                     <th class="md-hidden-only">Id</th>
                                     <th>Nom</th>
-                                    <th>Coût</th>
                                     <th>Prix de vente</th>
-                                    <th>Bénifices</th>
-                                    <th class="md-hidden-only">Nombre de produits</th>
+                                    <th class="danger">Coût</th>
+                                    <th class="benefit">Bénifices</th>
                                     <th>Action</th>
                                 </tr>
                                 </tfoot>
@@ -74,10 +76,9 @@
                                     <tr>
                                         <td class="md-hidden-only"><?php echo $meal['m_id']; ?></td>
                                         <td><?php echo $meal['meal_name']; ?></td>
-                                        <td><?php echo $meal['cost']; ?></td>
                                         <td><?php echo $meal['sellPrice']; ?></td>
-                                        <td><?php echo $meal['profit']; ?></td>
-                                        <td class="md-hidden-only"><?php echo $meal['products_count']; ?></td>
+                                        <td class="danger"><?php echo $meal['cost']; ?></td>
+                                        <td class="benefit"><?php echo $meal['profit']; ?></td>
                                         <td>
                                             <a href=" <?php echo base_url(); ?>admin/meal/edit/<?php echo $meal['m_id']; ?>"
                                                class="btn btn-primary btn-xs "><i class="fa fa-pencil"></i></a>

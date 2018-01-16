@@ -391,7 +391,7 @@
                                 timer: 2000,
                                 showConfirmButton: false
                             });
-                            //document.location.href = data.redirect;
+                            document.location.href = data.redirect;
                         }
                         else {
                             swal({

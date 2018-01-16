@@ -20,7 +20,9 @@
                 <form class="form-horizontal" role="form">
                     <div class="form-group" id="productToOrder">
                         <?php foreach ($productsToOrder as $key => $product) { ?>
-                        <div class="row product" data-index="<?php echo $key; ?>">
+                        <div class="row product" data-index="<?php echo $key; ?>"
+                             data-id="<?php echo $product['id']; ?>"
+                             data-id-quantity="<?php echo $product['q_id']; ?>">
 
                             <label class="col-sm-2 control-label">Produit</label>
                             <div class="col-sm-4">

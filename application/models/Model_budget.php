@@ -63,9 +63,17 @@ class model_budget extends CI_Model {
         $this->db->where('id',$id);
         $this->db->update('regularcost', $data);
     }
+    public function updateReparation($id,$data){
+        $this->db->where('id',$id);
+        $this->db->update('reparation', $data);
+    }
     public function deleteAlert($id){
             $this->db->where('id',$id);
             $this->db->delete('regularcost');
+    }
+    public function deleteReparation($id){
+            $this->db->where('id',$id);
+            $this->db->delete('reparation');
     }
 
 }

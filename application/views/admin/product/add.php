@@ -44,8 +44,7 @@
                                     <div class="form-group">
                                         Quantité<span class="required">*</span> : <input class="form-control"
                                                                                          placeholder="Quantité"
-                                                                                         name="quantity"
-                                                                                         type="number">
+                                                                                         name="quantity">
                                     </div>
                                     <div class="form-group">
                                         Unité de mesure :
@@ -69,6 +68,10 @@
                                         Prix unitaire<span class="required">*</span> : <input class="form-control"
                                                                                               placeholder="Prix unitaire"
                                                                                               name="unit_price">
+                                    </div>
+                                    <div class="form-group">
+                                        Poid par unité<input class="form-control"placeholder="Poid par unité"
+                                                                                              name="weightByUnit">
                                     </div>
 
                                     <div class="form-group">
@@ -107,24 +110,23 @@
                                                      id="username" type="text">
                                 </div>
                                 <div class="form-group">
-                                    Quantité<span class="required">*</span> : <input class="form-control" placeholder="Quantité" name="quantity"
-                                                      type="number">
+                                    Quantité<span class="required">*</span> : <input class="form-control" placeholder="Quantité" name="quantity">
                                 </div>
                                 <div class="form-group">
                                     Unité de mesure :
                                     <select class="form-control" name="unit">
                                         <option name="unit" value="kg">Kg</option>
                                         <option name="unit" value="pcs">Pcs</option>
-                                        <option name="unit" value="l">Litre</option>
+                                        <option name="unit" value="L">Litre</option>
                                     </select>
                                 </div>
                                 <div class="form-group">
                                     Fournisseur :
                                     <select class="form-control" name="provider">
                                         <option value="0">Aucun</option>
-                                        <?php foreach ($providers as $provide) { ?>
+                                        <?php foreach ($providers as $provider) { ?>
                                             <option name="unit"
-                                                    value="<?php echo $provide['name']; ?>"><?php echo $provide['name']; ?></option>
+                                                    value="<?php echo $provider['id']; ?>"><?php echo $provider['name']; ?></option>
                                         <?php } ?>
                                     </select>
                                 </div>
@@ -133,13 +135,16 @@
                                                            name="unit_price">
                                 </div>
                                 <div class="form-group">
+                                    Poid par unité(en gr)<input class="form-control" placeholder="Poid par unité"
+                                                         name="weightByUnit">
+                                </div>
+                                <div class="form-group">
                                     Quantité minimum du stock : <input class="form-control"
                                                                        placeholder="Quantité minimum du stock"
-                                                                       name="min_quantity" type="number">
+                                                                       name="min_quantity">
                                     <div class="form-group">
                                         Consomation par jour : <input class="form-control" placeholder="Quantité"
-                                                                      name="daily_quantity"
-                                                                      type="number">
+                                                                      name="daily_quantity">
                                     </div>
                                     <br/>
                                     <!-- <input type="submit" name="buttonSubmit" value="Confirmer" class="btn btn-success" />
@@ -182,14 +187,15 @@
                 var row = $('.productItem[data-id=' + i + ']');
 
                 var name = row.find('input[name="name"]').val();
-                var quantity = row.find('input[name="quantity"]').val();
+                var quantity = parseFloat(row.find('input[name="quantity"]').val().replace(',', '.'));
                 var unit = row.find('select[name="unit"]').val();
                 var unit_price = row.find('input[name="unit_price"]').val();
+                var weightByUnit = row.find('input[name="weightByUnit"]').val();
                 var daily_quantity = row.find('input[name="daily_quantity"]').val();
                 var min_quantity = row.find('input[name="min_quantity"]').val();
-                var provider = $('select[name=provider]').val();
-                var product1 = {'name': name, 'quantity': quantity, 'unit': unit, 'unit_price': unit_price,'provider': provider, 'min_quantity': min_quantity, 'daily_quantity': daily_quantity,'status':'active'};
-               if(name!=="" && quantity>0 && unit_price>0){
+                var provider = row.find('select[name=provider]').val();
+                var product1 = {'name': name, 'quantity': quantity, 'unit': unit, 'unit_price': unit_price,'weightByUnit': weightByUnit,'provider': provider, 'min_quantity': min_quantity, 'daily_quantity': daily_quantity,'status':'active'};
+               if(name!==""){
                    productsList.push(product1);
                }
             }

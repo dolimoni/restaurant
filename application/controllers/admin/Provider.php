@@ -24,12 +24,14 @@ class Provider extends BaseController
         $data['groups'] = $this->model_group->getAll();
         $this->parser->parse('admin/provider/view_providers', $data);*/
 
+        $this->log_begin();
         if (!$this->input->post('addProvider')) {
             $data['message'] = '';
             $data['providers'] = $this->model_provider->getAll();
             $data['products'] = $this->model_provider->getAllProducts();
             $data['params'] = $this->getParams();
             $this->parser->parse('admin/provider/add', $data);
+            $this->log_end($data);
         } else {
             $title = $this->input->post('title');
             $name = $this->input->post('name');
@@ -44,6 +46,7 @@ class Provider extends BaseController
             $this->output
                 ->set_content_type("application/json")
                 ->set_output(json_encode(array('status' => true)));
+            $this->log_end(array('status' => true));
 
         }
 
@@ -51,11 +54,12 @@ class Provider extends BaseController
 
     public function view()
     {
+        $this->log_begin();
         $meal_id = $this->uri->segment(4);
         $data['meal'] = $this->model_meal->get($meal_id);
         $data['products'] = $this->model_meal->getProducts($meal_id);
-
         $this->parser->parse('admin/meal/view_meal', $data);
+        $this->log_end($data);
     }
 
     public function mypdfTest()
@@ -69,6 +73,7 @@ class Provider extends BaseController
 
     function mypdf()
     {
+        $this->log_begin();
         $id = $this->input->post('id');
         //$id=1;
 
@@ -87,11 +92,13 @@ class Provider extends BaseController
     public function add()
     {
 
+        $this->log_begin();
         try {
             if (!$this->input->post('title')) {
                 $data['message'] = '';
                 $data['providers'] = $this->model_provider->getAll();
                 $this->parser->parse('admin/provider/add', $data);
+                $this->log_end($data);
             } else {
                 $title = $this->input->post('title');
                 $name = $this->input->post('name');
@@ -112,10 +119,12 @@ class Provider extends BaseController
                     $image = "profile-default-male.png";
                 }
                 $provider = array('title' => $title, 'name' => $name, 'prenom' => $prenom, 'address' => $address, 'phone' => $phone,'tva'=>$tva, 'mail' => $mail, 'image' => $image);
+                $this->log_middle($provider);
                 $this->model_provider->add($provider);
                 $this->output
                     ->set_content_type("application/json")
                     ->set_output(json_encode(array('status' => 'success')));
+                $this->log_end(array('status' => 'success'));
 
             }
         } catch (Exception $e) {
@@ -128,6 +137,7 @@ class Provider extends BaseController
 
     public function apiAddProducts()
     {
+        $this->log_begin();
         $productsList = $this->input->post('productsList');
         $quotation = '';
         if ($this->input->post('quotation')) {
@@ -146,47 +156,57 @@ class Provider extends BaseController
         $this->output
             ->set_content_type("application/json")
             ->set_output(json_encode(array('status' => true)));
+        $this->log_end(array('status' => true));
     }
 
     public function show()
     {
+        $this->log_begin();
         $id = $this->uri->segment(4);
         $data['provider'] = $this->model_provider->get($id);
-        $data['products'] = $this->model_provider->getProducts($id);
+        $data['products'] = $this->model_provider->getProducts($id,"active");
         $data['productsToOrder'] = $this->model_product->getToOrderFromProvider($id);
         $data['quotations'] = $this->model_provider->getQuotations($id);
         $data['orders'] = $this->model_provider->getOrders($id);
         $data['statistics'] = $this->model_provider->getStatistics($id);
         $data['params'] = $this->getParams();
         $this->load->view('admin/provider/show', $data);
+        $this->log_end($data);
     }
     public function compare()
     {
+        $this->log_begin();
         $data['message'] = '';
         $data['providers'] = $this->model_provider->getAll();
         $data['products'] = $this->model_provider->getAllProducts();
+        $data['productMultipleProviders'] = $this->model_provider->getProductMultipleProviders();
         $data['productsPrice'] = $this->model_provider->getBestProductsPrice();
         $data['params'] = $this->getParams();
         $this->load->view('admin/provider/compare_view', $data);
+        $this->log_end($data);
     }
 
     //get quotation by its id
     public function apiGetQuotation()
     {
+        $this->log_begin();
         $this->load->model('model_quotation');
         $id = $this->input->post('id');
         $quotation = $this->model_quotation->get($id, 'EAGER');
         $this->output
             ->set_content_type("application/json")
             ->set_output(json_encode(array('status' => true, 'quotation' => $quotation)));
+        $this->log_end(array('status' => true, 'quotation' => $quotation));
     }
 
     //get Order by Id
     public function apiGetOrder()
     {
+        $this->log_begin();
         $this->load->model('model_order');
         $id = $this->input->post('id');
         $order = $this->model_order->get($id, 'EAGER');
+        $this->log_middle($order);
         $orderStatus = "En attente";
         if ($order['status'] === "canceled") {
             $orderStatus = "Annulée";
@@ -196,6 +216,7 @@ class Provider extends BaseController
         $this->output
             ->set_content_type("application/json")
             ->set_output(json_encode(array('status' => true, 'order' => $order, 'orderStatus' => $orderStatus)));
+        $this->log_end(array('status' => true, 'order' => $order, 'orderStatus' => $orderStatus));
     }
 
 
@@ -231,22 +252,26 @@ class Provider extends BaseController
             }
         }
         $save_path = base_url() . $file_path;
+        $this->log_end($file_path);
         return $new_file_name;
 
     }
 
     function apiPrintOrder()
     {
+        $this->log_begin();
         $order = $this->input->post('order');
         $data['order'] = $order;
         $output = $this->createPDF($data);
         $this->output
             ->set_content_type("application/json")
             ->set_output(json_encode(array('status' => true, 'filepath' => $output)));
+        $this->log_end(array('status' => true, 'filepath' => $output));
     }
 
     function order()
     {
+        $this->log_begin();
 
         $this->load->model('model_order');
         $order = $this->input->post('order');
@@ -270,10 +295,12 @@ class Provider extends BaseController
         $this->output
             ->set_content_type("application/json")
             ->set_output(json_encode(array('status' => true, 'filepath' => $output, 'emailStatus' => $emailStatus)));
+        $this->log_end(array('status' => true, 'filepath' => $output, 'emailStatus' => $emailStatus));
     }
 
     private function sendEmail($e_params)
     {
+
 
         $config = Array(
             'protocol' => 'smtp',
@@ -298,7 +325,9 @@ class Provider extends BaseController
         if ($this->email->send()) {
             return 'Your email was sent';
         } else {
-            return $this->email->print_debugger();
+            $error= $this->email->print_debugger();
+            $this->log_middle($error);
+            return $error;
         }
         /*try {
 
@@ -310,32 +339,34 @@ class Provider extends BaseController
     function apiEditOrder()
     {
 
+        $this->log_begin();
         try {
             $this->load->model('model_order');
             $order = $this->input->post('order');
-
+            $provider_id = $order["provider"]["id"];
+           // $db_order= $this->model_order->get($order['order_id']);
             if (strtolower($order['status']) === "en attente") {
                 $order['status'] = 'pending';
                 $this->model_order->update($order);
                 if ($order['oldStatus'] === "received") {
-                    $this->model_product->updateQuantities($order['productsList']);
+                    $this->model_product->updateQuantities($order['productsList'],"down", $provider_id);
                 }
             } else if (strtolower($order['status']) === "annulée") {
                 $order['status'] = 'canceled';
                 $this->model_order->update($order);
-                $this->model_product->updateQuantities($order['productsList']);
+               // $this->model_product->updateQuantities($order['productsList']);
             } else {
                 $order['status'] = 'received';
                 $this->model_order->update($order);
+                $this->model_product->updateQuantities($order['productsList'], 'up', $provider_id);
                 if ($order['oldStatus'] === "pending") {
-                    $this->model_product->updateQuantities($order['productsList'], 'up');
+                   // $this->model_product->updateQuantities($order['productsList'], 'up');
                 }
             }
-            /* $data['order']=$order;
-             $output = $this->createPDF($data);*/
             $this->output
                 ->set_content_type("application/json")
                 ->set_output(json_encode(array('status' => true, 'orderStatus' => $order['status'])));
+            $this->log_end($order);
         } catch (Exception $e) {
             $this->output
                 ->set_content_type("application/json")
@@ -365,37 +396,10 @@ class Provider extends BaseController
     }
 
 
-    /* public function edit($cid)
-     {
-         if (!$this->input->post('buttonSubmit')) {
-             $data['message'] = '';
-             $userRow = $this->model_employee->get($cid);
-             $data['userRow'] = $userRow;
-             $this->load->view('admin/view_editemployee', $data);
-         } else {
-             if ($this->form_validation->run('editemp')) {
-                 $f_name = $this->input->post('f_name');
-                 $l_name = $this->input->post('l_name');
-                 $u_bday = $this->input->post('u_bday');
-                 $u_position = $this->input->post('u_position');
-                 $u_type = $this->input->post('u_type');
-                 $u_pass = md5($this->input->post('u_pass'));
-                 $u_mobile = $this->input->post('u_mobile');
-                 $u_gender = $this->input->post('u_gender');
-                 $u_address = $this->input->post('u_address');
-                 $u_id = $this->input->post('u_id');
-                 $this->model_employee->update($f_name, $l_name, $u_bday, $u_position, $u_type, $u_pass, $u_mobile, $u_gender, $u_address, $u_id);
-                 redirect(base_url('admin/employee'));
-             } else {
-                 $data['message'] = validation_errors();  //data ta message name er lebel er kase pathay
-                 $this->load->view('view_employee', $data);
-             }
-         }
-     }*/
-
 
     public function apiUpdate()
     {
+        $this->log_begin();
         try {
             $provider = $this->input->post('provider');
             $id= $provider['id'];
@@ -404,6 +408,7 @@ class Provider extends BaseController
             $this->output
                 ->set_content_type("application/json")
                 ->set_output(json_encode(array('status' => 'success')));
+            $this->log_end($data);
         } catch (Exception $e) {
             $this->output
                 ->set_content_type("application/json")
@@ -413,6 +418,7 @@ class Provider extends BaseController
 
     public function apiEditMainProvider()
     {
+        $this->log_begin();
         try {
             $name = $this->input->post('name');
             $title = $this->input->post('title');
@@ -425,14 +431,15 @@ class Provider extends BaseController
             $image = $_FILES['image']['name'];
             $provider = array('title'=>$title,'name' => $name,"prenom"=>$prenom,"address"=>$address,"phone"=>$phone,"mail"=>$mail,"tva"=>$tva);
             if ($image !== "") {
-                $provider['image'] = $image;
-                $this->uploadFile();
+                $imageName=$this->uploadFile();
+                $provider['image']=$imageName;
             }
 
             $this->model_provider->update($id,$provider);
             $this->output
                 ->set_content_type("application/json")
                 ->set_output(json_encode(array('status' => 'success')));
+            $this->log_end($provider);
         } catch (Exception $e) {
             $this->output
                 ->set_content_type("application/json")
@@ -444,12 +451,14 @@ class Provider extends BaseController
 
     public function apiDeleteProvider()
     {
+        $this->log_begin();
         try {
             $provider_id = $this->input->post('provider_id');
             $this->model_provider->deleteProvider($provider_id);
             $this->output
                 ->set_content_type("application/json")
                 ->set_output(json_encode(array('status' => 'success')));
+            $this->log_end(array('status' => 'success'));
         } catch (Exception $e) {
 
             $this->output
@@ -460,6 +469,7 @@ class Provider extends BaseController
 
     public function apiDeleteOrder()
     {
+        $this->log_begin();
         try {
             $this->load->model('model_order');
             $order_id = $this->input->post('order_id');
@@ -467,6 +477,26 @@ class Provider extends BaseController
             $this->output
                 ->set_content_type("application/json")
                 ->set_output(json_encode(array('status' => 'success')));
+            $this->log_end(array('status' => 'success'));
+        } catch (Exception $e) {
+
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'error')));
+        }
+    }
+
+    public function apiDeleteProduit()
+    {
+        $this->log_begin();
+        try {
+            $product_id = $this->input->post('product_id');
+            $quantity_id = $this->input->post('quantity_id');
+            $this->model_provider->deleteProduct($product_id, $quantity_id);
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'success')));
+            $this->log_end(array('status' => 'success'));
         } catch (Exception $e) {
 
             $this->output

@@ -112,16 +112,18 @@
             <tr>
                 <th>Quantité</th>
                 <th>Prix</th>
+                <th>Fournisseur</th>
                 <th>Status</th>
-                <th>Activer</th>
+                <th>Action</th>
             </tr>
             </thead>
             <tfoot>
             <tr>
                 <th>Quantité</th>
                 <th>Prix</th>
+                <th>Fournisseur</th>
                 <th>Status</th>
-                <th>Activer</th>
+                <th>Action</th>
             </tr>
             </tfoot>
             <tbody>
@@ -134,19 +136,26 @@
                 <tr class="<?php echo $validate; ?>">
                     <td><?php echo $quantity['quantity']?></td>
                     <td><?php echo $quantity['unit_price']?></td>
-                    <td><?php echo $quantity['status']?></td>
+                    <td><?php echo ucfirst($quantity['pv_name'])?></td>
+                    <td><?php echo ucfirst($quantity['status'])?></td>
                     <td width="10%">
                        <?php if($quantity['status']!=="active"){ ?>
                            <button data-id="<?php echo $quantity['id'] ?>" class="btn btn-default btn-xs action activate"><span
                                        class="glyphicon glyphicon-ok"></span></button>
                        <?php } ?>
+                        <button data-id="<?php echo $quantity['id'] ?>"
+                                data-quantity="<?php echo $quantity['unit_price'] ?>"
+                                data-provider="<?php echo $quantity['pv_id'] ?>"
+                                class="btn btn-success btn-xs action edit"><span
+                                    class="glyphicon glyphicon-edit"></span></button>
+
                     </td>
                 </tr>
             <?php } ?>
             </tbody>
         </table>
->>>>>>> master
-        <div class="row productsListContent">
+
+        <div class="row productsListContent" id="productPanel">
             <div class="col-md-offset-3 col-md-6 col-sm-12 col-xs-12 productItem" data-id="1">
                 <div class="x_panel">
                     <div class="x_title">
@@ -199,6 +208,17 @@
                                 <div class="form-group">
                                     Prix unitaire : <input value="<?php echo $product['unit_price']; ?>" class="form-control" placeholder="Prix unitaire"
                                                            name="unit_price" type="text">
+                                    <div class="checkbox">
+                                        <label>
+                                            <input type="checkbox" checked="checked" name="newUserQuantity"> Créer
+                                            nouveau stock si le prix ou le fournisseur sont différents
+                                        </label>
+                                    </div>
+
+                                </div>
+                                <div class="form-group">
+                                    Poid par unité(en gr)<input value="<?php echo $product['weightByUnit']; ?>" class="form-control" placeholder="Poid par unité"
+                                                         name="weightByUnit">
                                 </div>
 
                                 <div class="form-group">
@@ -298,14 +318,17 @@
         $('#editProductForm').submit(function (e) {
             e.preventDefault();
 
+            var newUserQuantity="true";
             var id = $('input[name="id"]').val();
             var name = $('input[name="name"]').val();
             var quantity = $('input[name="quantity"]').val();
             var unit = $('select[name="unit"]').val();
             var unit_price = $('input[name="unit_price"]').val();
+            var weightByUnit = $('input[name="weightByUnit"]').val();
             var daily_quantity = $('input[name="daily_quantity"]').val();
             var min_quantity = $('input[name="min_quantity"]').val();
             var lostQuantity = $('input[name="lostQuantity"]').val();
+            newUserQuantity = $('input[name="newUserQuantity"]').is(':checked');
             if(lostQuantity=="")lostQuantity= 0;
             var provider = $('select[name=provider]').val();
             var product = {
@@ -314,10 +337,12 @@
                 'quantity': quantity,
                 'unit': unit,
                 'unit_price': unit_price,
+                'weightByUnit': weightByUnit,
                 'provider': provider,
                 'min_quantity': min_quantity,
                 'daily_quantity': daily_quantity,
                 'lostQuantity': lostQuantity,
+                "newUserQuantity": newUserQuantity,
                 'status': 'active'
             };
 
@@ -353,7 +378,22 @@
 <script>
     $(document).ready(function () {
         $('button.activate').on('click', activateEvent);
+        $('button.edit').on('click', editEvent);
 
+        function editEvent(){
+            var quantity = $(this).attr('data-quantity');
+            var provider = $(this).attr('data-provider');
+            $('input[name="unit_price"]').val(quantity);
+            console.log(provider);
+            $('select[name=provider]').val(provider);
+            scroll("productPanel")
+
+        }
+
+        function scroll(id) {
+            // Scroll
+            $('html,body').animate({scrollTop: $("#" + id).offset().top}, 'slow');
+        }
         function activateEvent(event) {
             var id = $(this).attr('data-id');
             $.ajax({

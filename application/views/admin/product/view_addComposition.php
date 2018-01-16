@@ -278,7 +278,7 @@
                                 showConfirmButton: false
                             });
 
-                            //window.location.href = data.redirect;
+                            window.location.href = data.redirect;
                         } else {
                             swal({
                                 title: "Oups !",

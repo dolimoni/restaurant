@@ -3,15 +3,15 @@
 	<!-- page content -->
 	<div class="right_col" role="main">
         <div class="page-title">
+            <h3 class="text-center">Titre : <?php echo $report['title'] ?></h3>
             <div class="title_left">
-                <h3><?php echo $report['title'] ?></h3>
                 <h4>Par :  <?php echo $report['first_name'].' '.$report['last_name']?>, le <?php echo $report['createdAt_report'] ?> </h4>
             </div>
         </div>
         <div class="clearfix"></div>
         <hr>
         <div class="row">
-        	<div class="col-md-8 col-md-offset-2">
+        	<div class="col-md-12">
         		<?php echo $report['message'] ?>
         	</div>
         </div>

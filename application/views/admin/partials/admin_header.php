@@ -83,7 +83,7 @@
             <!-- menu profile quick info -->
             <div class="profile clearfix">
                 <div class="profile_pic">
-                    <img src="<?= base_url('assets/images/itsMe.jpg'); ?>" alt="..." class="img-circle profile_img">
+                    <img src="<?= base_url('assets/images/profile-default-male.png'); ?>" alt="..." class="img-circle profile_img">
                 </div>
                 <div class="profile_info">
                     <span>Bienvenu,</span>
@@ -144,30 +144,43 @@
                       <li><a href="<?= base_url('admin/employee/add'); ?>">Liste des employés</a></li>
                     </ul>
                   </li>
-                  <!--<li>
-                  <a><i class="fa fa-edit"></i> Mes clients <span class="fa fa-chevron-down"></span></a>
-                    <ul class="nav child_menu">
-                      <li><a href="<?/*= base_url('admin/customer/add'); */?>">Nouveau client</a></li>
-                      <li><a href="<?/*= base_url('admin/customer'); */?>">Liste des clients</a></li>
-                    </ul>
-                  </li>-->
                   <li>
                       <a><i class="fa fa-bar-chart-o"></i> Rapports <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
-                      <li><a href="<?= base_url('admin/report/index'); ?>">Rapport des article</a></li>
                       <li><a href="<?= base_url('admin/report/statistic'); ?>">Statistiques</a></li>
+                      <li><a href="<?= base_url('admin/report'); ?>">Rapport des articles</a></li>
+                      <li><a href="<?= base_url('admin/reports'); ?>">Rapport du jour</a></li>
                     </ul>
                   </li>
                   <li>
-                      <a><i class="fa fa-dollar"></i> Budget <span class="fa fa-chevron-down"></span></a>
+                      <a><i class="fa fa-dollar"></i>Gestion des charges<span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
                       <li><a href="<?= base_url('admin/budget/regular'); ?>">Alertes</a></li>
                       <li><a href="<?= base_url('admin/budget/reparation'); ?>">Mes réparations</a></li>
-                      <li><a href="<?= base_url('admin/budget/purchase'); ?>">Mes achats</a></li>
+                      <li><a href="<?= base_url('admin/budget/productPurchase'); ?>">Achats produits</a></li>
+                      <li><a href="<?= base_url('admin/budget/variousPurchase'); ?>">Achats divers</a></li>
                     </ul>
                   </li>
+                  <li>
+                      <a><i class="fa fa-refresh"></i>Synchorinisation<span class="fa fa-chevron-down"></span></a>
+                    <ul class="nav child_menu">
+                        <li><a href="<?= base_url('admin/Main/index'); ?>">Synchorinisation par fichier </a></li>
+                        <li><a href="<?= base_url('admin/Main/index2'); ?>">Synchorinisation manuelle</a></li>
+                    </ul>
+                  </li>
+                      <li>
+                          <a><i class="fa fa-bar-chart-o"></i>Mes agences<span class="fa fa-chevron-down"></span></a>
+                          <ul class="nav child_menu">
+                              <li><a href="<?= base_url('admin/agency/statistic'); ?>">Statistiques</a></li>
+                              <li><a href="<?= base_url('admin/agency'); ?>">Rapport des articles</a></li>
+                          </ul>
+                      </li>
+                      <li><a href="<?= base_url('admin/config'); ?>"><i class="fa fa-home"></i>Paramètres</a>
+                      </li>
+
 
                   <li><a href="<?= base_url('admin/Main/index'); ?>"><i class="fa fa-refresh"></i> Synchorinisation System </a></li>
+                  <!--<li><a href="<?/*= base_url('admin/Cron/index'); */?>"><i class="fa fa-refresh"></i> Synchronisation des produits </a></li>-->
 
                     <?php endif; ?>
 
@@ -252,8 +265,8 @@
                   <?php
                       $activeAlert="passive-alert";
                       $alertes_count=0;
-                      if (isset($alertes) and count($alertes)>0) {
-                          $alertes_count= count($alertes) ;
+                      if (isset($params["alertes"]) and count($params["alertes"])>0) {
+                          $alertes_count= count($params["alertes"]) ;
                           $activeAlert="active-alert";
                       }
                   ?>
@@ -264,7 +277,7 @@
                   </a>
                   <ul class="dropdown-menu dropdown-usermenu pull-right">
 
-                    <li><a href="<?php echo base_url() . 'admin/budget/regular'; ?>"><i class="fa fa-sign-out pull-right"></i>Afficher les alertes</a></li>
+                    <li><a href="<?php echo base_url() . 'admin/budget/regular'; ?>"><i class="fa fa-eye pull-right"></i>Afficher les alertes</a></li>
                   </ul>
                 </li>
               </ul>

@@ -361,34 +361,50 @@ class model_meal extends CI_Model {
                             if ($lost) {
                                 $consumption_type = "lost";
                             }
+                        $l_reponse='';
+                        if($meal['quantity'] >= $todayConsumption['quantity']){
+                            $this->model_product->updateQuantity($m_product['product'], $m_product['mp_quantity'] * $m_product['unitConvert'] * $quantityStep);
+                            $l_reponse=$this->model_product->updateLocalQuantity($m_product['product'], $m_product['mp_quantity'] * $m_product['unitConvert'] * $quantityStep);
+                        }else{
+                            $this->model_product->updateQuantity($m_product['product'], $m_product['mp_quantity'] * $m_product['unitConvert'] * $quantityStep,'up');
+                            $l_reponse=$this->model_product->updateLocalQuantity($m_product['product'], $m_product['mp_quantity'] * $m_product['unitConvert'] * $quantityStep,'up');
+                        }
 
+                        // consommation des produits selon la quantité de la fiche technique et leurs prix selon le stock
+                        foreach ($l_reponse['quantities'] as $quantity) {
+                            // il faut modifier ces donnée pour prendre en considération l'utilisation de plusieurs quantités
+                            // l'ajout de consommation des produits doit etre fait apres la reduction de quantités produits
+                            // on renvoie la liste des  produit utilisé et on les insère dans la table consomation produit
+                            $consumption_product = array(
+                                'consumption' => $consumption_id,
+                                'meal' => $meal['id'],
+                                'product' => $m_product['p_id'],
+                                'quantity' => abs($quantity['quantity']),
+                                'unit_price' => $quantity['unit_price'],
+                                'total' => abs($quantity['quantity'])*$quantity['unit_price'],
+                                'type' => $consumption_type
+                            );
 
-                            $l_reponse = '';
-                            if ($meal['quantity'] >= $todayConsumption['quantity']) {
+                            $this->db->where('consumption', $consumption_id);
+                            $this->db->where('meal', $meal['id']);
+                            $this->db->where('product',$m_product['p_id']);
+                            $this->db->where('type',"sale");
+                            $this->db->where('unit_price', $quantity['unit_price']);
+                            $this->db->where('quantity>', 0);
+                            $q=$this->db->get("consumption_product");
 
-                                $this->model_product->updateQuantity($m_product['product'], $m_product['mp_quantity'] * $m_product['unitConvert'] * $quantityStep);
-                                $l_reponse = $this->model_product->updateLocalQuantity($m_product['product'], $m_product['mp_quantity'] * $m_product['unitConvert'] * $quantityStep);
-                            } else {
-                                $this->model_product->updateQuantity($m_product['product'], $m_product['mp_quantity'] * $m_product['unitConvert'] * $quantityStep, 'up');
-                                $l_reponse = $this->model_product->updateLocalQuantity($m_product['product'], $m_product['mp_quantity'] * $m_product['unitConvert'] * $quantityStep, 'up');
-                            }
-                            foreach ($l_reponse['quantities'] as $quantity) {
-                                // il faut modifier ces donnée pour prendre en considération l'utilisation de plusieurs quantités
-                                // l'ajout de consommation des produits doit etre fait apres la reduction de quantités produits
-                                // on renvoie la liste des  produit utilisé et on les insère dans la table consomation produit
-                                $consumption_product = array(
-                                    'consumption' => $consumption_id,
-                                    'meal' => $meal['id'],
-                                    'product' => $m_product['p_id'],
-                                    'quantity' => abs($quantity['quantity']),
-                                    'unit_price' => $quantity['unit_price'],
-                                    'total' => abs($quantity['quantity']) * $quantity['unit_price'],
-                                    'type' => $consumption_type
-                                );
-
-                                if (!isset($todayConsumption)) {
-                                    $this->db->insert('consumption_product', $consumption_product);
-                                }
+                            if ($q->num_rows() > 0) {
+                                $my_quantity= $q->row_array();
+                                $consumption_product["quantity"]+= $my_quantity["quantity"];
+                                $consumption_product["total"]+= $my_quantity["quantity"];
+                                $this->db->where('consumption', $consumption_id);
+                                $this->db->where('meal', $meal['id']);
+                                $this->db->where('product', $m_product['p_id']);
+                                $this->db->where('type', "sale");
+                                $this->db->where('unit_price', $quantity['unit_price']);
+                                $this->db->update('consumption_product', $consumption_product);
+                            }else{
+                                $this->db->insert('consumption_product', $consumption_product);
                             }
                         }
                     } else {
@@ -521,6 +537,11 @@ class model_meal extends CI_Model {
         }
         $profit= $meal['sellPrice']-$cost;
 
+        // le profit d un commentaire est 0
+        // le prix d un commentaire est 0
+        if($profit<0 && $meal['sellPrice']==="0.00"){
+            $profit=0;
+        }
 
         $data = array(
             'cost' => $cost,
@@ -544,7 +565,11 @@ class model_meal extends CI_Model {
         $cost=$meal['cost'];
 
 	    foreach ($products as $product){
-            $productCostRate=$product['mp_quantity']*$product['unitConvert']*$product['unit_price']/$cost;
+
+            $productCostRate=0;
+            if($cost>0){
+                $productCostRate = $product['mp_quantity'] * $product['unitConvert'] * $product['unit_price'] / $cost;
+            }
 
             $data = array(
                 'consumptionRate' => $productCostRate
@@ -562,4 +587,14 @@ class model_meal extends CI_Model {
 		$this->db->where('id', $meal_id);
 		$this->db->delete('meal');
 	}
+
+    public function getByName($productName)
+    {
+        $this->db->where('name', $productName);
+        return $this->db->get("meal")->result_array();
+    }
+    public function getMealsOnly()
+    {
+        return $this->db->get("meal")->result_array();
+    }
 }
