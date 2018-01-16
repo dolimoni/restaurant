@@ -13,8 +13,40 @@ class Config extends BaseController {
 	public function index()
 	{
         $this->log_begin();
-        $this->load->view('admin/config/index');
+        $data["user"]=$this->model_util->getUser(6);
+        $this->load->view('admin/config/index',$data);
 	}
+
+	public function editUser()
+	{
+        $this->log_begin();
+        $data["user"]=$this->model_util->getUser(6);
+        $this->load->view('admin/config/editUser',$data);
+	}
+
+    public function editUserForm()
+    {
+        $id = $this->input->post("id");
+        $last_name = $this->input->post("last_name");
+        $first_name = $this->input->post("first_name");
+        $email = $this->input->post("email");
+        $mobile = $this->input->post("mobile");
+        $address = $this->input->post("address");
+        $password = $this->input->post("password");
+
+        $user=array(
+            "last_name"=> $last_name,
+            "first_name"=> $first_name,
+            "email"=> $email,
+            "mobile"=> $mobile,
+            "address"=> $address,
+        );
+        if($password!=""){
+            $user["password"]=md5($password);
+        }
+        $this->model_util->editUser($id,$user);
+        redirect('/admin/config/');
+    }
 
 	public function delete()
 	{

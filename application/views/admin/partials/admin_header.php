@@ -161,6 +161,8 @@
                               <li><a href="<?= base_url('admin/agency'); ?>">Rapport des articles</a></li>
                           </ul>
                       </li>
+                      <li><a href="<?= base_url('admin/config'); ?>"><i class="fa fa-home"></i>Paramètres</a>
+                      </li>
 
 
                   <!--<li><a href="<?/*= base_url('admin/Cron/index'); */?>"><i class="fa fa-refresh"></i> Synchronisation des produits </a></li>-->

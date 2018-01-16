@@ -2,6 +2,15 @@
 
 class model_util extends CI_Model {
 
+    public function getUser($id){
+        $this->db->where("id",$id);
+        return $this->db->get("users")->row_array();
+    }
+
+    public function editUser($id,$data){
+        $this->db->where("id",$id);
+        $this->db->update("users",$data);
+    }
     public function isLastDayInMonth($day){
         $date = new DateTime('now');
         $date = $date->format('Y-m-d');

@@ -58,14 +58,14 @@ if (!isset($report['s_cost'])) {
                                   class="fa fa-sort-desc"></i>12% </i> From last Week</span>-->
                 </div>
                 <div class="col-md-2 col-sm-4 col-xs-12 tile_stats_count">
-                    <span class="count_top"><i class="fa fa-clock-o"></i> Quantitées vendu</span>
+                    <span class="count_top">Ventes</span>
                     <div class="count report_quantity"><?php echo number_format((float)$report['s_quantity'], 0, '.', ''); ?></div>
                     <!--<span class="count_bottom"><i class="green"><i
                                     class="fa fa-sort-asc"></i>3% </i> From last Week</span>-->
                 </div>
                 <div class="col-md-1 col-sm-4 col-xs-12 tile_stats_count">
-                    <span class="count_top">Produits</span>
-                    <div class="count report_products"><?php echo count($report['mealConsumptionRate']); ?></div>
+                    <span class="count_top">Pertes</span>
+                    <div class="count report_products"><?php echo number_format((float)$report['s_lost'], 0, '.', ''); ?></div>
                 </div>
 
                 <!--<div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
@@ -198,10 +198,10 @@ if (!isset($report['s_cost'])) {
                         </div>
                     </div>
                 </div>
-                <!--<div class="col-md-6 col-sm-6 col-xs-12">
+                <div class="col-md-6 col-sm-6 col-xs-12">
                     <h4 style="display: inline;">Déclarer une perte : </h4> <input type="number"name="lostQuantity"/>
                     <button class="btn btn-info lostQuantityButton">Confirmer</button>
-                </div>-->
+                </div>
 
             </div>
 
@@ -331,6 +331,12 @@ if (!isset($report['s_cost'])) {
                 type: "POST",
                 dataType: "json",
                 data: {'mealsList': mealsList},
+                beforeSend: function () {
+                    $('#loading').show();
+                },
+                complete: function () {
+                    $('#loading').hide();
+                },
                 success: function (data) {
                     if (data.status === 'success') {
                         swal({
@@ -340,6 +346,7 @@ if (!isset($report['s_cost'])) {
                             timer: 1500,
                             showConfirmButton: false
                         });
+                        location.reload();
                     }
                     else {
                         swal({

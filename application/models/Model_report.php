@@ -263,6 +263,18 @@ class model_report extends CI_Model
         $report['s_cost']=$s_cost;
 
 
+        $this->db->select('sum(c.quantity) as s_lost');
+        $this->db->from('consumption c');
+        $this->db->where('c.meal', $meal_id);
+        $this->db->where('c.type', 'lost');
+        if ($startDate) {
+            $this->db->where('DATE(c.report_date) >=', $startDate);
+            $this->db->where('DATE(c.report_date) <=', $endDate);
+        }
+        $s_lost = $this->db->get()->row()->s_lost;
+
+
+        $report['s_lost'] = $s_lost;
 
 
         $report['mealConsumptionRate'] = $this->mealConsumptionRate($meal_id,$startDate,$endDate);
