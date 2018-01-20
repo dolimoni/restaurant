@@ -415,6 +415,19 @@ class model_report extends CI_Model
         $this->db->where('c.type', 'sale');
         $s_cost = $this->db->get()->row()->s_cost;
 
+        $this->db->select('sum(c.quantity) as s_lost');
+        $this->db->from('consumption c');
+        $this->db->where('c.meal', $meal_id);
+        $this->db->where('c.type', 'lost');
+        if ($startDate) {
+            $this->db->where('DATE(c.createdAt) >=', $startDate);
+            $this->db->where('DATE(c.createdAt) <=', $endDate);
+        }
+        $s_lost = $this->db->get()->row()->s_lost;
+        if(!$s_lost){
+            $s_lost=0;
+        }
+        $evolution['s_lost']= $s_lost;
         $evolution['s_cost'] = array_sum(array_column($evolution, "s_cost"));;
         $evolution['s_total'] = array_sum(array_column($evolution,"total"));
         $evolution['s_quantity'] = array_sum(array_column($evolution,"s_quantity"));

@@ -142,7 +142,7 @@ class Department extends BaseController {
         $data['magazin'] = $this->model_department->getMagazinWithMeals($department,$magazin);
         $data['meals'] = $this->model_meal->getAllMealsByDepartment($department);
         $data['params'] = $this->getParams();
-        $this->parser->parse('admin/department/view_editMagazin', $data);
+        $this->parser->parse('admin/department/view_editmagazin', $data);
 	}
 
 
@@ -154,6 +154,21 @@ class Department extends BaseController {
             $this->output
                 ->set_content_type("application/json")
                 ->set_output(json_encode(array('status' => 'success','redirect'=>base_url('admin/department/show/'. $magazin['department']))));
+        } catch (Exception $e) {
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'error')));
+        }
+	}
+
+	public function apiBackToStock()
+	{
+        try {
+            $stock = $this->input->post('stock');
+            $this->model_department->backToStock($stock);
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'success')));
         } catch (Exception $e) {
             $this->output
                 ->set_content_type("application/json")

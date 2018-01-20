@@ -36,6 +36,7 @@ class model_product extends CI_Model {
 	    $this->db->from('stock_product sp');
 	    $this->db->join('department d','d.id=sp.department');
         $this->db->where("product",$id);
+        $this->db->where("quantity>",0);
         $this->db->order_by("sp.id","DESC");
 		$department =  $this->db->get()->result_array();
 

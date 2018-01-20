@@ -99,7 +99,7 @@
                                 <button data-id="<?php echo $department['id']; ?>" type="button"
                                         data-name="<?php echo $department['name'] ?>"
                                         class="btn btn-success btn-xs showDepartment">
-                                    <i class="fa fa-eye"> </i> modifier
+                                    <i class="fa fa-eye"> </i> Afficher
                                 </button>
 
                                 <button data-id="<?php echo $department['id']; ?>" type="button"
@@ -166,6 +166,7 @@
 
         $('#editDepartmentForm').on('submit', function (e) {
             e.preventDefault();
+            $('#loading').show();
             var formData = new FormData(this);
             $.ajax({
                 type: 'POST',
@@ -175,6 +176,7 @@
                 contentType: false,
                 processData: false,
                 success: function (data) {
+                    $('#loading').hide();
                     if (data.status === "success") {
                         swal({
                             title: "Success",
@@ -195,6 +197,7 @@
                             });
                             location.reload();
                         } else {
+                            $('#loading').hide();
                             swal({
                                 title: "Erreur",
                                 text: "Une erreur s'est produit",

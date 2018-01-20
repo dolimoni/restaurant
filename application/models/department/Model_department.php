@@ -34,7 +34,7 @@ class model_department extends CI_Model {
 
     // les articles prêts a etre vendu
     public function getReadyMeals($department){
-        $this->db->select('meal,m.name');
+        $this->db->select('sm.id,meal,m.name');
         $this->db->select('sum(quantityToSale) as quantityToSale');
         $this->db->from('stock_meal sm');
         $this->db->join('meal m','sm.meal=m.id');
@@ -42,6 +42,18 @@ class model_department extends CI_Model {
         $this->db->where('Date(sm.created_at)',date('Y-m-d'));
         $this->db->group_by('meal');
         return $this->db->get()->result_array();
+    }
+    public function backToStock($stock){
+        $this->db->where('id', $stock["id"]);
+        $db_stock= $this->db->get("stock_meal")->row_array();
+        $data=array(
+            "quantityToSale"=> 0,
+            "quantityInMagazin"=> $db_stock["quantityInMagazin"]+$stock["quantity"],
+        );
+
+        $this->db->where('id', $stock["id"]);
+        $this->db->update("stock_meal",$data);
+
     }
     public function getMealsHistory($department){
         $this->db->select('meal,m.name, Date(sm.created_at) as date');
@@ -186,11 +198,13 @@ class model_department extends CI_Model {
 
     public function updateLastStockQuantity($department, $magazin){
         $this->db->select('*');
-        $this->db->select('sum(quantityInMagazin) as lastStockQuantity');
+        $this->db->select('quantityInMagazin');
         $this->db->from('stock_meal');
         $this->db->where('department', $department);
         $this->db->where('magazin', $magazin);
         $this->db->where('Date(created_at)<', Date('Y-m-d'));
+        $this->db->where('status', "current");
+        $this->db->group_by('meal');
         $stocks=$this->db->get()->result_array();
 
         $this->db->select('id');
@@ -205,13 +219,15 @@ class model_department extends CI_Model {
                     'meal' => $stock['meal'],
                     'department' => $department,
                     'magazin' => $magazin,
-                    'quantityInMagazin' => $stock['lastStockQuantity'],
+                    'quantityInMagazin' => $stock['quantityInMagazin'],
                     'quantityToSale' => 0,
-                    'lastStockQuantity' => $stock['lastStockQuantity'],
+                    'lastStockQuantity' => $stock['quantityInMagazin'],
                 );
                 if($stock['meal']){
                     $this->db->insert('stock_meal', $data);
                 }
+                $this->db->where('Date(created_at)<', Date('Y-m-d'));
+                $this->db->update("stock_meal",array("status"=>"old"));
             }
 
         }
@@ -246,6 +262,7 @@ class model_department extends CI_Model {
 
             $this->db->where('meal', $mealItem['id']);
             $this->db->where('magazin', $magazin['id']);
+            $this->db->where('date(created_at)', date("Y-m-d"));
             $sm = $this->db->get('stock_meal');
 
             // metrre a jour l'article s'il existe déjà dans le magazin

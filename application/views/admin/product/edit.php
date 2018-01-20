@@ -31,22 +31,24 @@
                 </div>
                 <div class="x_content">
                     <h4>Quantité/Prix</h4>
-                    <table id="datatable-quantity" class="table table-striped table-bordered dt-responsive nowrap"
-                           cellspacing="0" width="100%" >
+                    <table id="datatable-quantityy" class="table table-striped table-bordered dt-responsive nowrap"
+                           cellspacing="0" width="100%">
                         <thead>
                         <tr>
                             <th>Quantité</th>
                             <th>Prix</th>
+                            <th>Fournisseur</th>
                             <th>Status</th>
-                            <th>Activer</th>
+                            <th>Action</th>
                         </tr>
                         </thead>
                         <tfoot>
                         <tr>
                             <th>Quantité</th>
                             <th>Prix</th>
+                            <th>Fournisseur</th>
                             <th>Status</th>
-                            <th>Activer</th>
+                            <th>Action</th>
                         </tr>
                         </tfoot>
                         <tbody>
@@ -59,18 +61,26 @@
                             <tr class="<?php echo $validate; ?>">
                                 <td><?php echo $quantity['quantity'] ?></td>
                                 <td><?php echo $quantity['unit_price'] ?></td>
-                                <td><?php echo $quantity['status'] ?></td>
+                                <td><?php echo ucfirst($quantity['pv_name']) ?></td>
+                                <td><?php echo ucfirst($quantity['status']) ?></td>
                                 <td width="10%">
                                     <?php if ($quantity['status'] !== "active") { ?>
                                         <button data-id="<?php echo $quantity['id'] ?>"
                                                 class="btn btn-default btn-xs action activate"><span
                                                     class="glyphicon glyphicon-ok"></span></button>
                                     <?php } ?>
+                                    <button data-id="<?php echo $quantity['id'] ?>"
+                                            data-quantity="<?php echo $quantity['unit_price'] ?>"
+                                            data-provider="<?php echo $quantity['pv_id'] ?>"
+                                            class="btn btn-success btn-xs action edit"><span
+                                                class="glyphicon glyphicon-edit"></span></button>
+
                                 </td>
                             </tr>
                         <?php } ?>
                         </tbody>
                     </table>
+                    <?php if ($params['department'] === "true") { ?>
                     <h4>Quantité/Département</h4>
                     <div class="row"></div>
                     <div class="row"></div>
@@ -102,58 +112,13 @@
                         </tr>-->
                         </tbody>
                     </table>
+                    <?php } ?>
 
                 </div> <!-- /content -->
             </div><!-- /x-panel -->
         </div>
 
-        <table id="datatable-quantityy" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
-            <thead>
-            <tr>
-                <th>Quantité</th>
-                <th>Prix</th>
-                <th>Fournisseur</th>
-                <th>Status</th>
-                <th>Action</th>
-            </tr>
-            </thead>
-            <tfoot>
-            <tr>
-                <th>Quantité</th>
-                <th>Prix</th>
-                <th>Fournisseur</th>
-                <th>Status</th>
-                <th>Action</th>
-            </tr>
-            </tfoot>
-            <tbody>
-            <?php foreach ($quantities as $quantity) {
-                    $validate="";
-                   /* if($quantity['status'] === "active"){
-                        $validate="validate";
-                    }*/
-            ?>
-                <tr class="<?php echo $validate; ?>">
-                    <td><?php echo $quantity['quantity']?></td>
-                    <td><?php echo $quantity['unit_price']?></td>
-                    <td><?php echo ucfirst($quantity['pv_name'])?></td>
-                    <td><?php echo ucfirst($quantity['status'])?></td>
-                    <td width="10%">
-                       <?php if($quantity['status']!=="active"){ ?>
-                           <button data-id="<?php echo $quantity['id'] ?>" class="btn btn-default btn-xs action activate"><span
-                                       class="glyphicon glyphicon-ok"></span></button>
-                       <?php } ?>
-                        <button data-id="<?php echo $quantity['id'] ?>"
-                                data-quantity="<?php echo $quantity['unit_price'] ?>"
-                                data-provider="<?php echo $quantity['pv_id'] ?>"
-                                class="btn btn-success btn-xs action edit"><span
-                                    class="glyphicon glyphicon-edit"></span></button>
 
-                    </td>
-                </tr>
-            <?php } ?>
-            </tbody>
-        </table>
 
         <div class="row productsListContent" id="productPanel">
             <div class="col-md-offset-3 col-md-6 col-sm-12 col-xs-12 productItem" data-id="1">
@@ -396,6 +361,7 @@
         }
         function activateEvent(event) {
             var id = $(this).attr('data-id');
+            $('#loading').show();
             $.ajax({
                     url: "<?php echo base_url('admin/product/apiActivateQuantity'); ?>",
                     type: "POST",
@@ -413,6 +379,7 @@
                             location.reload();
                         }
                         else {
+                            $('#loading').hide();
                             swal({
                                 title: "Erreur",
                                 text: "Erreur",
@@ -423,6 +390,7 @@
                         }
                     },
                     error: function (data) {
+                        $('#loading').hide();
                         swal({
                             title: "Erreur",
                             text: "Erreur",

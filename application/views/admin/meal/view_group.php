@@ -217,6 +217,7 @@
         $('#editGroupForm').on('submit', function (e) {
             e.preventDefault();
             var formData = new FormData(this);
+            $('#loading').show();
             $.ajax({
                 type: 'POST',
                 url: "<?php echo base_url('admin/meal/apiGroupEdit'); ?>",
@@ -225,6 +226,7 @@
                 contentType: false,
                 processData: false,
                 success: function (data) {
+                    $('#loading').hide();
                     if (data.status === "success") {
                         swal({
                             title: "Success",
@@ -256,6 +258,7 @@
                     }
                 },
                 error: function (data) {
+                    $('#loading').hide();
                     swal({
                         title: "Erreur",
                         text: "Une erreur s'est produit",

@@ -123,6 +123,8 @@ class model_util extends CI_Model {
                 $this->db->delete("product_composition");
                 $this->db->where("id >=", 1);
                 $this->db->delete("quantity");
+                $this->db->where("id >=", 1);
+                $this->db->delete("product_autoconsum");
             }else if ($table==="provider"){
                 $this->db->where("id >=",1);
                 $this->db->delete("provider");

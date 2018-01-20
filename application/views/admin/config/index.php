@@ -152,60 +152,67 @@
                         <div class="r-tabs-accordion-title r-tabs-state-active"><a href="#tab-1" class="r-tabs-anchor">
                                 Détails </a></div>
                         <div id="tab-1" class="r-tabs-panel r-tabs-state-active" style="display: block;">
-                            <div class="form-group">
-                                <div class="row">
-                                    <div class="col-md-2">
-                                        <label>Nom</label>
+                            <div class="row">
+                                <div class="col-md-6 col-sm-8 col-xs-12">
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <label>Nom</label>
+                                            </div>
+                                            <div class="col-md-8">
+                                                <?php echo $user['last_name']; ?>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="col-md-6">
-                                        <?php echo $user['last_name']; ?>
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <label>Prénom</label>
+                                            </div>
+                                            <div class="col-md-8">
+                                                <?php echo $user['first_name']; ?>
+                                            </div>
+                                        </div>
                                     </div>
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <label>Téléphone</label>
+                                            </div>
+                                            <div class="col-md-8">
+                                                <?php echo $user['mobile']; ?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <label>email</label>
+                                            </div>
+                                            <div class="col-md-8">
+                                                <?php echo $user['email']; ?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <label>adresse</label>
+                                            </div>
+                                            <div class="col-md-8">
+                                                <?php echo $user['address']; ?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-info btn-xs action"
+                                            onclick="window.location.href='<?php echo base_url("admin/config/editUser"); ?>'">
+                                        <span></span>Modifier
+                                    </button>
+                                </div>
+                                <div class="col-md-6 col-sm-4 col-xs-12">
+                                    <img src="<?= base_url('assets/images/' . $params['photo']); ?>" alt="icon">
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <div class="row">
-                                    <div class="col-md-2">
-                                        <label>Prénom</label>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <?php echo $user['first_name']; ?>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <div class="row">
-                                    <div class="col-md-2">
-                                        <label>Téléphone</label>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <?php echo $user['mobile']; ?>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <div class="row">
-                                    <div class="col-md-2">
-                                        <label>email</label>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <?php echo $user['email']; ?>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <div class="row">
-                                    <div class="col-md-2">
-                                        <label>adresse</label>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <?php echo $user['address']; ?>
-                                    </div>
-                                </div>
-                            </div>
-                            <button class="btn btn-info btn-xs action"
-                                    onclick="window.location.href='<?php echo base_url("admin/config/editUser"); ?>'">
-                                <span></span>Modifier
-                            </button>
                         </div>
                     </div>
                 </div> <!-- /content -->

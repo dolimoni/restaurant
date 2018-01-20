@@ -7,9 +7,6 @@
         <div class="bg"></div>
        <!-- <img src="<?php /*echo base_url('assets/images/' . $department['image']); */?>" />-->
         <div class="page-title">
-            <!--<pre>
-                <?php /*print_r($products); */?>
-            </pre>-->
             <div class="title_left">
                 <h3>Département <?php echo $department['name']; ?></h3>
             </div>
@@ -21,11 +18,11 @@
         <div class="clearfix"></div>
         <hr>
         <div class="row">
-            <div class="col-md-3 col-sm-3 col-xs-12">
+            <div class="col-md-2 col-sm-3 col-xs-12">
                 <a class="btn btn-primary" data-toggle="collapse" href="#collapseExample" aria-expanded="false"
                    aria-controls="collapseExample">Ajouter un magazin</a>
             </div>
-            <div class="col-md-4 col-sm-6 col-xs-12 collapse" id="collapseExample">
+            <div class="col-md-6 col-sm-6 col-xs-12 collapse" id="collapseExample">
                 <form id="addEmployeeForm" enctype="multipart/form-data">
                     <fieldset>
                         <div class="row">
@@ -43,6 +40,9 @@
                 </form>
                 <br>
             </div>
+        </div>
+
+        <div class="row">
             <div class="col-md-2 col-sm-6 col-xs-12">
                 <button type="submit" class="btn btn-success" name="new"
                         onclick="window.location.href='<?php echo base_url('admin/department/stockMeal/' . $department['id']); ?>'">
@@ -50,7 +50,6 @@
                 </button>
             </div>
         </div>
-
 
        <div class="row">
            <div class="col-xs-12">
@@ -197,19 +196,28 @@
                            <tr>
                                <th>Nom</th>
                                <th>Quantité</th>
+                               <th>Actions</th>
                            </tr>
                            </thead>
                            <tfoot>
                            <tr>
                                <th>Nom</th>
                                <th>Quantité</th>
+                               <th>Actions</th>
                            </tr>
                            </tfoot>
                            <tbody>
-                           <?php foreach ($readyMeals as $readyMeals) { ?>
+                           <?php foreach ($readyMeals as $readyMeal) { ?>
                                <tr>
-                                   <td><?php echo $readyMeals['name']; ?></td>
-                                   <td><?php echo $readyMeals['quantityToSale']?></td>
+                                   <td><?php echo $readyMeal['name']; ?></td>
+                                   <td><?php echo $readyMeal['quantityToSale']?></td>
+                                   <td>
+                                       <button data-id="<?php echo $readyMeal['id']; ?>" type="button"
+                                               data-quantity="<?php echo $readyMeal['quantityToSale'] ?>"
+                                               class="btn btn-info btn-xs backToStock">
+                                           <i class="fa fa-long-arrow-right"> </i> Renvoyer au stock
+                                       </button>
+                                   </td>
                                </tr>
                            <?php } ?>
                            </tbody>
@@ -330,6 +338,57 @@
                 cache: false,
                 contentType: false,
                 processData: false,
+                success: function (data) {
+                    $('#loading').hide();
+                    swal({
+                        title: "Success",
+                        text: "Le magazin a été bien ajouté",
+                        type: "success",
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                    location.reload();
+                },
+                error: function (data) {
+                    $('#loading').hide();
+                    swal({
+                        title: "Erreur",
+                        text: "Une erreur s'est produite",
+                        type: "error",
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                }
+            });
+
+        });
+
+
+
+        $('.profile_details-link').on('click', function () {
+            var id = $(this).attr('data-id');
+            document.location.href = "<?php echo base_url(); ?>admin/employee/show/" + id;
+        });
+    });
+
+</script>
+
+<script>
+
+    $(document).ready(function () {
+        $('button.backToStock').on('click', function (e) {
+
+            var stock={
+                "id":$(this).attr("data-id"),
+                "quantity":$(this).attr("data-quantity"),
+            };
+            console.log(stock);
+            $('#loading').show();
+            $.ajax({
+                url: "<?php echo base_url('admin/department/apiBackToStock'); ?>",
+                type: "POST",
+                dataType: "json",
+                data: {'stock': stock},
                 success: function (data) {
                     $('#loading').hide();
                     swal({

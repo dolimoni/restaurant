@@ -75,7 +75,15 @@
         <div class="col-md-3 left_col">
           <div class="left_col scroll-view">
             <div class="navbar nav_title" style="border: 0;">
-             <a href="<?= base_url('admin/dashboard'); ?>" class="site_title"><i class="fa fa-coffee"></i> <span><?php echo $params['name']; ?></span></a>
+                <?php
+                    $link="";
+                    if($this->session->userdata('type') == "admin"){
+                        $link= base_url('admin/dashboard');
+                    }else if($this->session->userdata('type') == "thrifty"){
+                        $link = base_url('admin/department/showProducts');
+                    }
+                ?>
+             <a href="<?= $link ?>" class="site_title"><i class="fa fa-coffee"></i> <span><?php echo $params['name']; ?></span></a>
             </div>
 
             <div class="clearfix"></div>
@@ -83,7 +91,7 @@
             <!-- menu profile quick info -->
             <div class="profile clearfix">
                 <div class="profile_pic">
-                    <img src="<?= base_url('assets/images/profile-default-male.png'); ?>" alt="..." class="img-circle profile_img">
+                    <img src="<?= base_url('assets/images/'.$params['photo']); ?>" alt="icon" class="img-circle profile_img">
                 </div>
                 <div class="profile_info">
                     <span>Bienvenu,</span>
@@ -100,7 +108,7 @@
               <div class="menu_section">
                 <ul class="nav side-menu">
                   <?php if($this->session->userdata('type') == "admin" ) : ?>
-                      <li><a href="<?= base_url('admin/dashboard/index'); ?>"><i class="fa fa-home"></i> Dashboard </a>
+                      <li><a href="<?= base_url('admin/report/statistic'); ?>"><i class="fa fa-home"></i> Dashboard </a>
                       </li>
                   <li><a><i class="fa fa-shopping-cart"></i> Fournisseurs <span
                                   class="fa fa-chevron-down"></span></a>
@@ -124,19 +132,16 @@
                       <li><a href="<?= base_url('admin/meal/index'); ?>">Liste des articles</a></li>
                     </ul>
                   </li>
-                  <li><a><i class="fa fa-shopping-cart"></i> Fournisseurs <span class="fa fa-chevron-down"></span></a>
-                    <ul class="nav child_menu">
-                      <li><a href="<?= base_url('admin/provider/index'); ?>">Liste des fournisseurs</a></li>
-                    </ul>
-                  </li>
+                    <?php if ($params['department'] === "true") { ?>
                   <li><a>
                   <i class="fa fa-users"></i> Départements <span
                                   class="fa fa-chevron-down"></span></a>
                       <ul class="nav child_menu">
-                          <li><a href="<?= base_url('admin/department'); ?>">Mes département</a></li>
+                          <li><a href="<?= base_url('admin/department'); ?>">Mes départements</a></li>
                           <li><a href="<?= base_url('admin/department/addProducts'); ?>">Stock produits</a></li>
                       </ul>
                   </li>
+                      <?php } ?>
                   <li>
                   <a>
                       <i class="fa fa-male"></i>Gestion du personnel <span class="fa fa-chevron-down"></span></a>
@@ -168,18 +173,19 @@
                         <li><a href="<?= base_url('admin/Main/index2'); ?>">Synchorinisation manuelle</a></li>
                     </ul>
                   </li>
+                    <?php if ($params['multi_site'] === "true") { ?>
                       <li>
-                          <a><i class="fa fa-bar-chart-o"></i>Mes agences<span class="fa fa-chevron-down"></span></a>
+                          <a><i class="fa fa-exchange"></i>Mes agences<span class="fa fa-chevron-down"></span></a>
                           <ul class="nav child_menu">
                               <li><a href="<?= base_url('admin/agency/statistic'); ?>">Statistiques</a></li>
                               <li><a href="<?= base_url('admin/agency'); ?>">Rapport des articles</a></li>
                           </ul>
                       </li>
-                      <li><a href="<?= base_url('admin/config'); ?>"><i class="fa fa-home"></i>Paramètres</a>
+                    <?php } ?>
+                      <li><a href="<?= base_url('admin/config'); ?>"><i class="fa fa-cogs"></i>Paramètres</a>
                       </li>
 
 
-                  <li><a href="<?= base_url('admin/Main/index'); ?>"><i class="fa fa-refresh"></i> Synchorinisation System </a></li>
                   <!--<li><a href="<?/*= base_url('admin/Cron/index'); */?>"><i class="fa fa-refresh"></i> Synchronisation des produits </a></li>-->
 
                     <?php endif; ?>
@@ -263,6 +269,7 @@
                   </ul>
                 </li>
                   <?php
+                  if ($this->session->userdata('type') == "admin") {
                       $activeAlert="passive-alert";
                       $alertes_count=0;
                       if (isset($params["alertes"]) and count($params["alertes"])>0) {
@@ -280,6 +287,7 @@
                     <li><a href="<?php echo base_url() . 'admin/budget/regular'; ?>"><i class="fa fa-eye pull-right"></i>Afficher les alertes</a></li>
                   </ul>
                 </li>
+                  <?php } ?>
               </ul>
             </nav>
           </div>

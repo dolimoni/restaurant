@@ -3,7 +3,7 @@
 class model_stock extends CI_Model {
 
     public function getProductById($product){
-        $this->db->where('product',$product['product']);
+        $this->db->where('product',$product['id']);
         $this->db->where('department',$product['department']);
         $result = $this->db->get('stock_product');
         return $result->row_array();

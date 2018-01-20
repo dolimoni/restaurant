@@ -14,6 +14,7 @@ class Config extends BaseController {
 	{
         $this->log_begin();
         $data["user"]=$this->model_util->getUser(6);
+        $data['params'] = $this->getParams();
         $this->load->view('admin/config/index',$data);
 	}
 
@@ -21,6 +22,7 @@ class Config extends BaseController {
 	{
         $this->log_begin();
         $data["user"]=$this->model_util->getUser(6);
+        $data['params'] = $this->getParams();
         $this->load->view('admin/config/editUser',$data);
 	}
 
@@ -51,7 +53,8 @@ class Config extends BaseController {
 	public function delete()
 	{
         $this->log_begin();
-        $this->load->view('admin/config/delete');
+        $data['params'] = $this->getParams();
+        $this->load->view('admin/config/delete',$data);
 	}
 
 	public function apiDelete()

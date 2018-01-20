@@ -55,9 +55,9 @@
                                        </div>
                                        <div class="row">
 
-                                         <div class="col-md-offset-3 col-md-4 col-sm-12 col-xs-12" style="margin-bottom:10px;">
+                                         <div class="col-md-6 col-sm-12 col-xs-12" style="margin-bottom:10px;">
                                              <select name="product" class="productSelect md-button-v"
-                                                     style="max-width:200px;">
+                                                     style="max-width:200px;" disabled>
                                                  <?php foreach ($meals as $meal) {
                                                      $selected = $meal['id'] == $mealItem['meal'] ? 'selected' : '';
                                                      ?>
@@ -68,36 +68,25 @@
                                              </select>
 
                                          </div>
-
-                                       </div>
-                                           <!--<div class="row quantity">
-                                               <div class="col-md-6 col-sm-12 col-xs-12">
-                                                   <span class="sm-hidden">Stock : </span> <input
-                                                           class="form-inline md-button-v" placeholder=""
-                                                           name="quantityInMagazin"
-                                                           type="text">
-                                               </div>
-                                               <div class="col-xs-6">
-                                                   Nouvelle quantité : <input type="checkbox" name="MagazinQuantityType"/>
-                                               </div>
-                                           </div>-->
-                                       <input type="hidden" name="quantityInMagazinNow"
-                                              value="<?php echo $mealItem['quantityInMagazin']; ?>"
-
-                                            <div class="row quantity">
-                                           <div class="col-md-6 col-sm-12 col-xs-12">
+                                           <div class="col-md-6">
                                                <span class="sm-hidden">Vente : </span> <input
                                                        class="form-inline md-button-v" placeholder=""
                                                        name="quantityToSale"
                                                        type="text">
                                            </div>
-                                                <div class="col-xs-6">
+
+                                       </div>
+
+                                       <input type="hidden" name="quantityInMagazinNow"
+                                              value="<?php echo $mealItem['quantityInMagazin']; ?>"
+
+                                            <div class="row quantity">
+                                                <div class="col-xs-6" hidden>
                                                     Nouvelle quantité : <input type="checkbox" name="saleQuantityType"/>
                                                 </div>
                                                 <input type="hidden" name="quantityInMagazinNow"
                                                        value="<?php echo $mealItem['quantityInMagazin']; ?>"
-
-                                       </div>
+                                            </div>
                                    </div>
                                </div>
 
@@ -105,9 +94,9 @@
             <?php } ?>
         </div> <!-- /row -->
 
-        <button type="submit" class="btn btn-info" name="addMeal">
+       <!-- <button type="submit" class="btn btn-info" name="addMeal">
             <span class="fa fa-plus"></span> Ajouter un article
-        </button>
+        </button>-->
 
         <div class="col-md-6  col-sm-6 col-xs-12 product productModel" hidden>
                             <div class="x_panel">
@@ -248,6 +237,7 @@
                                 timer: 1500,
                                 showConfirmButton: false
                             });
+                            location.reload();
                             //document.location.href = data.redirect;
                         }
                         else {

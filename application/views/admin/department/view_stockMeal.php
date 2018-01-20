@@ -47,7 +47,7 @@
                             </div>
                             <div class="col-md-6 col-sm-12 col-xs-12">
                                 <select name="product" data-name="magazin" class="productSelectNew md-button-v fullWidth">
-                                    <option value="0">Aucun</option>
+                                    <!--<option value="0">Aucun</option>-->
                                     <?php foreach ($magazins as $magazin) { ?>
                                         <option value="<?php echo $magazin['id']; ?>"
                                         ><?php echo $magazin['name']; ?></option>

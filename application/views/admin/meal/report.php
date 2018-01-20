@@ -62,10 +62,7 @@ if (!isset($report['s_cost'])) {
                     <div class="count report_quantity"><?php echo number_format((float)$report['s_quantity'], 0, '.', ''); ?>
                         /<?php echo($report['prepared_quantity']); ?></div>
                     <?php }?>
-                <div class="col-md-1 col-sm-4 col-xs-12 tile_stats_count">
-                    <span class="count_top">Pertes</span>
-                    <div class="count report_products"><?php echo number_format((float)$report['s_lost'], 0, '.', ''); ?></div>
-                </div>
+
                <!-- <div class="col-md-1 col-sm-4 col-xs-12 tile_stats_count">
                     <span class="count_top">Préparations</span>
                     <div class="count report_products"></div>
@@ -78,6 +75,7 @@ if (!isset($report['s_cost'])) {
                                 class="fa fa-sort-asc"></i>34% </i> From last Week</span>
                 </div>-->
             </div>
+
             <!-- /top tiles -->
 
             <div class="row tile_count">
@@ -200,6 +198,10 @@ if (!isset($report['s_cost'])) {
                             <div id="chartContainer" style="height:238px; width: 100%;"></div>
                         </div>
                     </div>
+                </div>
+                <div class="col-md-6 col-sm-12 col-xs-12 text-center">
+                    <h3 class="count_top" style="display:  inline-block;">Pertes</h3>
+                    <h3 class="count_top report_lost" style="display:  inline-block;"><?php echo number_format((float)$report['s_lost'], 0, '.', ''); ?></h3>
                 </div>
                 <div class="col-md-6 col-sm-6 col-xs-12">
                     <h4 style="display: inline;">Déclarer une perte : </h4> <input type="number"name="lostQuantity"/>
@@ -469,6 +471,21 @@ if (!isset($report['s_cost'])) {
         }
     }
     function flot_chart(data) {
+        console.log("data", data);
+        var evolutionLength=0;
+          $.each(data, function (key,element) {
+                if(element["id"]){
+                    evolutionLength++;
+                }
+            });
+          console.log(evolutionLength);
+        var a = moment(data[0]["createdAt"]);
+        var b = moment(data[evolutionLength-1]["createdAt"]);
+        c=b.diff(a, 'days');
+        daysMarks= Math.round(c/31);
+        if(daysMarks===0){
+            daysMarks=1;
+        }
         var chart_plot_01_settings = {
             series: {
                 lines: {
@@ -499,7 +516,7 @@ if (!isset($report['s_cost'])) {
             xaxis: {
                 tickColor: "rgba(51, 51, 51, 0.06)",
                 mode: "time",
-                tickSize: [1, "day"],
+                tickSize: [daysMarks, "day"],
                 tickLength: 10,
                 axisLabel: "Date",
                 axisLabelUseCanvas: true,
@@ -672,6 +689,7 @@ if (!isset($report['s_cost'])) {
                         l_squantity = data.evolution[0]['s_quantity'];
                     }
                     l_scost= data.evolution.s_cost;
+                    l_lost= data.evolution.s_lost;
                     l_squantity= data.evolution.s_quantity;
                     l_amount= data.evolution.s_total;
                     var reportData = {
@@ -680,6 +698,7 @@ if (!isset($report['s_cost'])) {
                         'prepared': parseInt(data.evolution[0]['prepared_quantity']),//productsCount,// mealConsumptionRateRange contains products and other variabls
                         'profit': parseFloat(l_amount - l_scost).toFixed(2),
                         'quantity': parseInt(l_squantity),
+                        'lost': parseInt(l_lost),
                     };
                     changeReportData(reportData);
                 }
@@ -693,9 +712,11 @@ if (!isset($report['s_cost'])) {
     };
 
     function changeReportData(data) {
+        console.log("reportData", data);
         $('.report_amount').html(data['amount']+'DH');
         $('.report_cost').html(data['cost']+'DH');
         $('.report_profit').html(data['profit']+'DH');
+        $('.report_lost').html(data['lost']);
         <?php if($params['department'] === "false"){ ?>
         $('.report_quantity').html(data['quantity']);
         <?php }else { ?>

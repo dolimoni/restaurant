@@ -45,12 +45,14 @@
         </div>
 
         <div class="article-title text-center row">
-           <div class="col-md-offset-1 col-md-5 col-sm-6 col-xs-12">
+           <div class="col-md-4 col-sm-6 col-xs-12">
                <h4 style="display: inline;">Nom de l'article : </h4> <input type="text" class="mealName" name="name"/>
            </div>
-            <div class="col-md-5 col-sm-6 col-xs-12">
-                <h4 style="display: inline;">Prix de vente : </h4> <input type="text" class="sellPrice"
-                                                                          name="sellPrice"/>
+            <div class="col-md-4 col-sm-6 col-xs-12">
+                <h4 style="display: inline;">Prix de vente : </h4> <input type="text" class="sellPrice" name="sellPrice"/>
+            </div>
+            <div class="col-md-4 col-sm-6 col-xs-12" hidden>
+                <h4 style="display: inline;">Nombre d'articles : </h4> <input value="1" type="number" class="mealQuantity"/>
             </div>
         </div>
         <div class="row mealComposition">
@@ -242,6 +244,7 @@
         var sellPrice=0;
         var productsCount=1;
         $(document).on('keyup','input[name="quantity"]',calulPrixTotal);
+        $(document).on('keyup', '.mealQuantity', calulPrixTotal);
         $("select").change(calulPrixTotal);
 
         $('.sellPrice').on('keyup', function () {
@@ -263,6 +266,7 @@
             var unit = panel.find('select[name="product"] option:selected').attr('data-unit');
             var price = parseFloat(panel.find('select[name="product"] option:selected').attr('data-price'));
             var productQuantity = parseFloat(panel.find('input[name="quantity"]').val());
+            var mealQuantity = $(".mealQuantity").val();
 
             updateOptions(false);
 
@@ -276,6 +280,7 @@
             for (var i = 1; i <= productsCount; i++) {
                 var row = $('.product[data-id=' + i + ']');
                 l_panel = row.closest('.product');
+                var title = l_panel.find("div.x_title h2");
                 var unit = l_panel.find('select[name="product"] option:selected').attr('data-unit');
                 var weightByunit = l_panel.find('select[name="product"] option:selected').attr('data-weightByunit');
                 var quantity = parseFloat(row.find('input[type="text"]').val().replace(',', '.'));
@@ -299,8 +304,11 @@
                     unitConvertName = parseFloat(l_panel.find('select[name="lUnitHidden"] option:selected').text());
                     unit_price *= unitConvert;
                 }
-                if (quantity > 0 && unit_price > 0)
-                    prixTotal += quantity * unit_price;
+                if (quantity > 0 && unit_price > 0){
+                    var productPrice = parseFloat(quantity * unit_price );
+                    title.html("Produit - " + productPrice.toFixed(4) + "dh");
+                    prixTotal += productPrice;
+                }
             }
 
             $('.cost').html(prixTotal.toFixed(2)+'DH');
@@ -333,6 +341,7 @@
             var productsList=[];
             var prixTotal=0;
             var name=$('input.mealName').val();
+            var mealQuantity = $(".mealQuantity").val();
             for (var i = 1; i <= productsCount; i++) {
 
                 var row = $('.product[data-id=' + i + ']');
@@ -360,7 +369,8 @@
                     productsList.push(product);
                 }
                 if(unit_price > 0){
-                    prixTotal += quantity * unit_price;
+                    var productPrice = parseFloat(quantity * unit_price );
+                    prixTotal += productPrice;
                 }
 
             }
@@ -376,28 +386,51 @@
                 'name': name,
                 'group': group,
                 'productsList': productsList,
+                'quantity': quantity,
                 'cost': prixTotal,
                 'sellPrice': sellPrice,
                 'profit': profit
             };
             if (validate(meal)) {
-                console.log(meal);
+                $('#loading').show();
                 $.ajax({
                     url: "<?php echo base_url(); ?>admin/meal/add",
                     type: "POST",
                     dataType: "json",
                     data: {'meal': meal},
                     success: function (data) {
+                        $('#loading').hide();
                         if (data.status === true) {
+                            swal({
+                                title: "Success",
+                                text: "Success",
+                                type: "success",
+                                timer: 1500,
+                                showConfirmButton: false
+                            });
                             document.location.href = data.redirect;
                         }
                         else {
+                            swal({
+                                title: "Erreur",
+                                text: "Erreur",
+                                type: "error",
+                                timer: 1500,
+                                showConfirmButton: false
+                            });
                             /*$('#show_id').html("<div style='border:1px solid red;font-size: 11px;margin:0 auto !important;'>" + response.error + "</div>");*/
                         }
 
                     },
                     error: function (data) {
-                        // do something
+                        $('#loading').hide();
+                        swal({
+                            title: "Erreur",
+                            text: "Erreur",
+                            type: "error",
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
                     }
                 });
             }

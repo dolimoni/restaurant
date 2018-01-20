@@ -406,7 +406,7 @@ class Meal extends BaseController {
     {
         //$data['meals'] = $this->Parse('uploads/a.prg');
         $data['params'] = $this->getParams();
-        $this->load->view('admin/meal/load');
+        $this->load->view('admin/meal/load',$data);
     }
     public function apiLoadFile()
     {

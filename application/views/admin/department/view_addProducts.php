@@ -313,13 +313,19 @@
                 'department': $('select[name="department"] option:selected').val()
             };
             if (true) {
-                console.log(stock);
                 $.ajax({
                     url: "<?php echo base_url('admin/department/apiAddStock'); ?>",
                     type: "POST",
                     dataType: "json",
                     data: {'stock': stock},
+                    beforeSend: function () {
+                        $('#loading').show();
+                    },
+                    complete: function () {
+                        $('#loading').hide();
+                    },
                     success: function (data) {
+                        $('#loading').hide();
                         if (data.status === 'success') {
                             //document.location.href = data.redirect;
                             swal({
@@ -337,6 +343,7 @@
 
                     },
                     error: function (data) {
+                        $('#loading').hide();
                         // do something
                     }
                 });
