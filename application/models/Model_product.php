@@ -269,6 +269,42 @@ class model_product extends CI_Model {
 
     }
 
+    public function addInventory($productsList)
+    {
+        foreach ($productsList as $product) {
+            $this->db->where("product",$product["product"]);
+            $this->db->where("inventory_date",date("Y-m-d"));
+            $inventory=$this->db->get("inventory")->row_array();
+            $quantity=$this->getActiveQuantityByProduct($product["product"]);
+            $delta= $product["delta"];
+            if($inventory){
+                $this->db->where("product", $product["product"]);
+                $this->db->where("inventory_date", date("Y-m-d"));
+                $delta= $product["final_stock"] - $inventory["initial_stock"];
+                $dataInventory=array(
+                    "final_stock"=> $product["final_stock"],
+                    "delta"=> $delta,
+                );
+                $this->db->update("inventory", $dataInventory);
+            }else{
+                $product["quantity"]= $quantity["id"];
+                $product["activeStockQuantity"]= $quantity["quantity"];
+                $this->db->insert("inventory",$product);
+            }
+
+            // la nouvelle quantity de stock est le stock courant + delta
+            $dataQuantity=array(
+                "quantity"=> $inventory["activeStockQuantity"]+$delta
+            );
+            $this->db->where("id", $inventory["quantity"]);
+            $this->db->update("quantity", $dataQuantity);
+
+            $this->db->where("id", $product["product"]);
+            $this->db->update("product",array("totalQuantity"=> $product["final_stock"]));
+        }
+
+    }
+
 	public function updateQuantity($product,$quantity,$direction="down")
 	{
 
@@ -571,6 +607,20 @@ class model_product extends CI_Model {
 		$result = $this->db->get();
 		return $result->row_array();
 	}
+
+	public function getProductInventory($id, $startDate=null, $endDate=null){
+        $this->db->select('*');
+        $this->db->from('inventory');
+        $this->db->where('product', $id);
+        if ($startDate) {
+            $this->db->where('inventory_date >=', $startDate);
+            $this->db->where('inventory_date <=', $endDate);
+        }
+        $this->db->order_by("inventory_date","asc");
+        $this->db->limit(30);
+        $result = $this->db->get();
+        return $result->result_array();
+    }
 
 
 	public function canBeDeleted($id)

@@ -42,7 +42,7 @@ class Meal extends BaseController {
         $data['meal'] = $this->model_meal->get($meal_id);
         $data['products'] = $this->model_meal->getProducts($meal_id);
         $data['report'] = $this->model_report->reportById($meal_id);
-        $start = date('Y-m-d', strtotime('-2 month'));
+        $start = date('Y-m-d', strtotime('-1 month'));
         $end = date('Y-m-d');
         $evolution = $this->model_report->evolutionRange($meal_id, $start, $end);
         if($this->session->userdata('startDate')){

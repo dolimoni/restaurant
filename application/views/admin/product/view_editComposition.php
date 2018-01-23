@@ -2,7 +2,7 @@
 <!-- page content -->
 <div class="right_col" role="main">
     <div class="productsList">
-       <!-- <pre>
+        <!--<pre>
             <?php /*print_r($composition); */?>
         </pre>-->
         <div class="page-title">
@@ -109,6 +109,13 @@
                                                     </option>
 
                                                 </select>
+                                            </div>
+                                            <div class="form-group">
+                                                Prix unitaire<span class="required">*</span> : <input
+                                                        class="form-control"
+                                                        value="<?php echo $composition['composition']['unit_price']; ?>"
+                                                        placeholder="Prix unitaire"
+                                                        name="unit_price">
                                             </div>
                                         </div>
                                 </div>
@@ -303,10 +310,41 @@
 
 
         $(document).on('change', '.productSelect,.productSelectNew,.kgUnitHidden,.lUnitHidden', calulPrixTotal);
-
+        $(document).on('keyup', 'input[name=quantity],input[name=productQuantity]', calulPrixTotal);
         function calulPrixTotal() {
+            console.log("here");
             var panel = $(this).closest('.product');
+            updateOptions(false);
             changeUnit(panel.find('select[name="product"] option:selected').attr('data-unit'), panel);
+            var prixTotal = 0;
+
+            for (var i = 1; i <= productsCount; i++) {
+
+                var row = $('.product[data-id=' + i + ']');
+                var l_panel = row.closest('.product');
+                var unit_price = parseFloat(row.find('select').find('option:selected').attr('data-price').replace(',', '.'));
+                var unit = l_panel.find('select[name="product"] option:selected').attr('data-unit');
+                var quantity = parseFloat(row.find('input[type="text"]').val().replace(',', '.'));
+                //conversion des unités
+                var unitConvertName = 'Pcs';
+                var unitConvert = 1;
+                if (unit === 'kg') {
+                    unitConvert = parseFloat(l_panel.find('select[name="kgUnitHidden"] option:selected').val());
+                    unitConvertName = l_panel.find('select[name="kgUnitHidden"] option:selected').text();
+                    unit_price *= unitConvert;
+                }
+                if (unit === 'L') {
+                    unitConvert = parseFloat(l_panel.find('select[name="lUnitHidden"] option:selected').val());
+                    unitConvertName = l_panel.find('select[name="lUnitHidden"] option:selected').text();
+                    unit_price *= unitConvert;
+                }
+                if (quantity > 0 && unit_price > 0) {
+                    prixTotal += quantity * unit_price;
+                }
+            }
+            prixTotal = prixTotal.toFixed(2);
+            $("input[name=unit_price]").val(prixTotal);
+
         };
 
         function changeUnit(value,panel) {
@@ -359,8 +397,7 @@
 
             }
 
-            prixTotal= parseFloat(prixTotal);
-            prixTotal=prixTotal.toFixed(2);
+            var compositionUnitPrice = $("input[name=unit_price]").val();
             var composition = {
                 'name': name,
                 'id': productId,
@@ -371,8 +408,8 @@
                 'status':'active',
                 'unit': productUnit,
                 'productsList': productsList,
-                'cost': prixTotal,
-                'unit_price': prixTotal,
+                'cost': compositionUnitPrice,
+                'unit_price': compositionUnitPrice,
                 'lostQuantity':0
             };
             if (validate(composition)) {
@@ -459,6 +496,40 @@
             productModel.attr('data-id', productsCount);
             $('.mealComposition').append(productModel);
             $('.productsCount').html(productsCount);
+            updateOptions(true);
+        }
+
+        function updateOptions(newProduct) {
+
+            var selectedProducts = [];
+            for (var i = 1; i <= productsCount; i++) {
+                var row = $('.product[data-id=' + i + ']');
+                var l_panel = row.closest('.product');
+                var optionValue = l_panel.find('select[name="product"] option:selected').val();
+                var unit = l_panel.find('select[name="product"] option:selected').attr('data-unit');
+                var price = l_panel.find('select[name="product"] option:selected').attr('data-price');
+                var option = {
+                    'unit': unit,
+                    'price': price,
+                    'value': optionValue,
+                }
+                selectedProducts.push(option);
+            }
+            for (var i = 1; i <= productsCount; i++) {
+                var row = $('.product[data-id=' + i + ']');
+                var l_panel = row.closest('.product');
+                l_panel.find('select[name="product"] option').removeAttr('hidden');
+                for (var j = 0; j < selectedProducts.length; j++) {
+                    var val = selectedProducts[j]['value'];
+                    var actualVal = l_panel.find('select[name="product"] option:selected').val();
+                    if (productsCount === i && newProduct) {
+                        l_panel.find('select[name="product"] option[value=' + val + ']').attr('hidden', 'hidden');
+                        l_panel.find('select[name="product"] option').not('[hidden]').first().attr('selected', 'selected');
+                    } else {
+                        l_panel.find('select[name="product"] option[value=' + val + ']').attr('hidden', 'hidden');
+                    }
+                }
+            }
         }
     });
 

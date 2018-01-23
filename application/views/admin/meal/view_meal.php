@@ -24,14 +24,14 @@
                     </tr>
                     </thead>
                     <tbody>
-                    {products}
+                    <?php foreach ($products as $product){ ?>
                     <tr>
                         <!--<th scope="row">{id}</th>-->
-                        <td>{name}</td>
-                        <td>{mp_quantity} {mp_unit}</td>
+                        <td><?php echo $product['name']?></td>
+                        <td><?php echo $product['mp_quantity']*$meal['quantity']." ". $product['mp_unit']; ?></td>
                        <!-- <td>{unit_price}</td>-->
                     </tr>
-                    {/products}
+                   <?php }?>
                     </tbody>
                 </table>
                 <div class="text-right">

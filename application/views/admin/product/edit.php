@@ -5,8 +5,8 @@
 <!-- page content -->
 <div class="right_col" role="main">
     <div class="productsList">
-      <!--  <pre>
-            <?php /*print_r($departments); */?>
+       <!-- <pre>
+            <?php /*print_r($report); */?>
         </pre>-->
         <div class="page-title">
             <div class="title_left">
@@ -121,97 +121,112 @@
 
 
         <div class="row productsListContent" id="productPanel">
-            <div class="col-md-offset-3 col-md-6 col-sm-12 col-xs-12 productItem" data-id="1">
-                <div class="x_panel">
-                    <div class="x_title">
-                        <h2>Produit</h2>
-                        <ul class="nav navbar-right panel_toolbox">
-                            <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
-                           <!-- <li><a class="close-link"><i class="fa fa-close"></i></a></li>-->
-                        </ul>
-                        <div class="clearfix"></div>
-                    </div>
-                    <div class="x_content">
-                        <label><?php /*echo $message;*/ ?></label>
-                        <form method="post" id="editProductForm">
-                            <fieldset>
-                                <input name="id" type="hidden" value="<?php echo $product['id']; ?>"/>
-                                <div class="form-group">
-                                    Produit : <input value="<?php echo $product['name'];?>" class="form-control" placeholder="Produit" name="name"
-                                                     id="username" type="text">
-                                </div>
-                                <div class="form-group">
-                                    Nouvelle quantité : <input class="form-control" placeholder="Quantité" name="quantity"
-                                                      type="text">
-                                </div>
-                                <div class="form-group">
-                                    Unité de mesure :
-                                    <select class="form-control" name="unit">
-                                        <option name="unit"
-                                                value="kg" <?php if ($product['unit'] === "kg") echo "selected"; ?>>Kg
-                                        </option>
-                                        <option name="unit" value="L" <?php if ($product['unit'] === "L") echo "selected"; ?>>L</option>
-                                        <option name="unit" value="pcs" <?php if ($product['unit'] === "pcs") echo "selected"; ?> >Pcs</option>
-                                    </select>
-                                </div>
-
-                                <div class="form-group">
-                                    Fournisseur :
-                                    <select class="form-control" name="provider">
-                                        <option value="0">Aucun</option>
-                                        <?php foreach ($providers as $provider) {
-                                            $selected='';
-                                            if($provider['id']=== $product['provider']){
-                                                $selected="selected";
-                                            }
-                                        ?>
-                                            <option name="provider"
-                                                    value="<?php echo $provider['id']; ?>" <?php echo $selected; ?>><?php echo $provider['name']; ?></option>
-                                        <?php } ?>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    Prix unitaire : <input value="<?php echo $product['unit_price']; ?>" class="form-control" placeholder="Prix unitaire"
-                                                           name="unit_price" type="text">
-                                    <div class="checkbox">
-                                        <label>
-                                            <input type="checkbox" checked="checked" name="newUserQuantity"> Créer
-                                            nouveau stock si le prix ou le fournisseur sont différents
-                                        </label>
+            <div class="row">
+                <div class="col-md-offset-3 col-md-6 col-sm-12 col-xs-12 productItem" data-id="1">
+                    <div class="x_panel">
+                        <div class="x_title">
+                            <h2>Produit</h2>
+                            <ul class="nav navbar-right panel_toolbox">
+                                <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
+                                <!-- <li><a class="close-link"><i class="fa fa-close"></i></a></li>-->
+                            </ul>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+                            <label><?php /*echo $message;*/ ?></label>
+                            <form method="post" id="editProductForm">
+                                <fieldset>
+                                    <input name="id" type="hidden" value="<?php echo $product['id']; ?>"/>
+                                    <div class="form-group">
+                                        Produit : <input value="<?php echo $product['name']; ?>" class="form-control"
+                                                         placeholder="Produit" name="name"
+                                                         id="username" type="text">
+                                    </div>
+                                    <div class="form-group">
+                                        Nouvelle quantité : <input class="form-control" placeholder="Quantité"
+                                                                   name="quantity"
+                                                                   type="text">
+                                    </div>
+                                    <div class="form-group">
+                                        Unité de mesure :
+                                        <select class="form-control" name="unit">
+                                            <option name="unit"
+                                                    value="kg" <?php if ($product['unit'] === "kg") echo "selected"; ?>>
+                                                Kg
+                                            </option>
+                                            <option name="unit"
+                                                    value="L" <?php if ($product['unit'] === "L") echo "selected"; ?>>L
+                                            </option>
+                                            <option name="unit"
+                                                    value="pcs" <?php if ($product['unit'] === "pcs") echo "selected"; ?> >
+                                                Pcs
+                                            </option>
+                                        </select>
                                     </div>
 
-                                </div>
-                                <div class="form-group">
-                                    Poid par unité(en gr)<input value="<?php echo $product['weightByUnit']; ?>" class="form-control" placeholder="Poid par unité"
-                                                         name="weightByUnit">
-                                </div>
-
-                                <div class="form-group">
-                                    Quantité minimum du stock : <input value="<?php echo $product['min_quantity']; ?>" class="form-control" placeholder="Prix unitaire"
-                                                                       name="min_quantity" type="text">
-                                </div>
-                                <div class="form-group">
-                                    Consomation par jour : <input value="<?php echo $product['daily_quantity']; ?>" class="form-control" placeholder="Quantité"
-                                                                  name="daily_quantity"
-                                                                  type="text">
-
-
-                                <div class="form-group">
-                                    Perte : <input  class="form-control" placeholder="Quantité"
-                                                                  name="lostQuantity"
-                                                                  type="number">
-                                </div>
-                                <br/>
-                                <!-- <input type="submit" name="buttonSubmit" value="Confirmer" class="btn btn-success" />
-                                 <div value="Nouveau produit" class="btn btn-info newProduct" >Nouveau produit</div>-->
-                                    <div class="text-center">
-                                        <input type="submit" name="buttonSubmit" value="Confirmer"
-                                               class="btn btn-success "/>
+                                    <div class="form-group">
+                                        Fournisseur :
+                                        <select class="form-control" name="provider">
+                                            <option value="0">Aucun</option>
+                                            <?php foreach ($providers as $provider) {
+                                                $selected = '';
+                                                if ($provider['id'] === $product['provider']) {
+                                                    $selected = "selected";
+                                                }
+                                                ?>
+                                                <option name="provider"
+                                                        value="<?php echo $provider['id']; ?>" <?php echo $selected; ?>><?php echo $provider['name']; ?></option>
+                                            <?php } ?>
+                                        </select>
                                     </div>
-                            </fieldset>
-                        </form>
-                    </div> <!-- /content -->
-                </div><!-- /x-panel -->
+                                    <div class="form-group">
+                                        Prix unitaire : <input value="<?php echo $product['unit_price']; ?>"
+                                                               class="form-control" placeholder="Prix unitaire"
+                                                               name="unit_price" type="text">
+                                        <div class="checkbox">
+                                            <label>
+                                                <input type="checkbox" checked="checked" name="newUserQuantity"> Créer
+                                                nouveau stock si le prix ou le fournisseur sont différents
+                                            </label>
+                                        </div>
+
+                                    </div>
+                                    <div class="form-group">
+                                        Poid par unité(en gr)<input value="<?php echo $product['weightByUnit']; ?>"
+                                                                    class="form-control" placeholder="Poid par unité"
+                                                                    name="weightByUnit">
+                                    </div>
+
+                                    <div class="form-group">
+                                        Quantité minimum du stock : <input
+                                                value="<?php echo $product['min_quantity']; ?>" class="form-control"
+                                                placeholder="Prix unitaire"
+                                                name="min_quantity" type="text">
+                                    </div>
+                                    <div class="form-group">
+                                        Consomation par jour : <input value="<?php echo $product['daily_quantity']; ?>"
+                                                                      class="form-control" placeholder="Quantité"
+                                                                      name="daily_quantity"
+                                                                      type="text">
+
+
+                                        <div class="form-group">
+                                            Perte : <input class="form-control" placeholder="Quantité"
+                                                           name="lostQuantity"
+                                                           type="number">
+                                        </div>
+                                        <br/>
+                                        <!-- <input type="submit" name="buttonSubmit" value="Confirmer" class="btn btn-success" />
+                                         <div value="Nouveau produit" class="btn btn-info newProduct" >Nouveau produit</div>-->
+                                        <div class="text-center">
+                                            <input type="submit" name="buttonSubmit" value="Confirmer"
+                                                   class="btn btn-success "/>
+                                        </div>
+                                </fieldset>
+                            </form>
+                        </div> <!-- /content -->
+                    </div><!-- /x-panel -->
+                </div>
             </div>
         </div>
 
@@ -401,5 +416,57 @@
                     }
                });
         }
+    });
+</script>
+
+<!-- bootstrap-daterangepicker -->
+<script src="<?php echo base_url('assets/vendors/moment/min/moment.min.js'); ?>"></script>
+<script src="<?php echo base_url('assets/vendors/bootstrap-daterangepicker/daterangepicker.js'); ?>"></script>
+<script>
+    var rangeLink = "<?php echo base_url('admin/report/apiRange'); ?>";
+</script>
+
+<script src="<?php echo base_url('assets/vendors/bootstrap-daterangepicker/daterangepicker.js'); ?>"></script>
+
+<script src="<?php echo base_url('assets/vendors/moment/min/moment.min.js'); ?>"></script>
+<script src="<?php echo base_url('assets/vendors/bootstrap-daterangepicker/daterangepicker.js'); ?>"></script>
+
+<!--Statistiques-->
+<script src="<?php echo base_url('assets/build/js/canvasjs.min.js'); ?>"></script>
+<script>
+    $(document).ready(function () {
+
+        <?php
+        $js_array = json_encode($report['productConsumptionRate']);
+        echo "var mealConsumptionRate = " . $js_array . ";\n";
+        ?>
+
+
+
+        var myDataPoints = [];
+        $.each(mealConsumptionRate, function (key, mealConsumptionRateProduct) {
+            var total=parseFloat(mealConsumptionRateProduct['avg_unit_price'] * mealConsumptionRateProduct['sum_quantity']);
+            var point = {
+                y: total,
+                label: mealConsumptionRateProduct['name'],
+                unit: 'DH',
+                yRound: total.toFixed(2)
+            };
+            myDataPoints.push(point);
+        });
+        var chart = new CanvasJS.Chart("chartContainer", {
+            animationEnabled: true,
+            data: [{
+                type: "doughnut",
+                startAngle: 60,
+                //innerRadius: 60,
+                indexLabelFontSize: 17,
+                indexLabel: "{label} - #percent%",
+                toolTipContent: "<b>{label}:</b> {yRound}{unit} (#percent%)",
+                dataPoints: myDataPoints
+            }]
+        });
+        chart.render();
+
     });
 </script>

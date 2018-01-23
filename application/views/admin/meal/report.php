@@ -199,6 +199,7 @@ if (!isset($report['s_cost'])) {
                         </div>
                     </div>
                 </div>
+
                 <div class="col-md-6 col-sm-12 col-xs-12 text-center">
                     <h3 class="count_top" style="display:  inline-block;">Pertes</h3>
                     <h3 class="count_top report_lost" style="display:  inline-block;"><?php echo number_format((float)$report['s_lost'], 0, '.', ''); ?></h3>

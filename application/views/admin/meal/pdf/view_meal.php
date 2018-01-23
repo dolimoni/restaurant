@@ -65,7 +65,7 @@
                     <tr class=".success">
                        <!-- <th scope="row"><?php /*echo $product['id']; */?></th>-->
                         <td><?php echo $product['name']; ?></td>
-                        <td><?php echo $product['mp_quantity']; ?></td>
+                        <td><?php echo $product['mp_quantity']* $meal['quantity'] . " " . $product['mp_unit']; ?></td>
                        <!-- <td><?php /*echo $product['unit_price']; */?></td>-->
                     </tr>
                    <?php } ?>

@@ -123,6 +123,7 @@
                       <li><a href="<?= base_url('admin/product/addComposition'); ?>">Ajouter un produit composé</a></li>
                       <li><a href="<?= base_url('admin/product/index'); ?>">Stock des produits</a></li>
                        <li><a href="<?= base_url('admin/product/toOrder'); ?>">Produits à commander</a></li>
+                       <li><a href="<?= base_url('admin/product/inventory'); ?>">Inventaire</a></li>
                     </ul>
                   </li>
                   <li><a><i class="fa fa-cutlery"></i> Gestion des articles <span class="fa fa-chevron-down"></span></a>

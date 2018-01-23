@@ -60,6 +60,50 @@ class Product extends BaseController {
        }
     }
 
+    public function inventory()
+    {
+       $this->log_begin();
+       try {
+           if (!$this->input->post('productsList')) {
+               $data['products'] = $this->model_product->getAll(false,true);
+               $data['productsName'] = array_column($data['products'], "name");
+               $data['params'] = $this->getParams();
+               $this->load->view('admin/product/view_inventory', $data);
+               $this->log_end($data);
+           } else {
+               $productsList = $this->input->post('productsList');
+               $this->log_middle($productsList);
+               $this->model_product->addProducts($productsList);
+               $this->output
+                   ->set_content_type("application/json")
+                   ->set_output(json_encode(array('status' => 'success', 'redirect' => base_url('admin/product/index'))));
+               $this->log_end(array('status' => 'success', 'redirect' => base_url('admin/product/index')));
+           }
+       } catch (Exception $e) {
+           $this->output
+               ->set_content_type("application/json")
+               ->set_output(json_encode(array('status' => 'error', 'redirect' => base_url('admin/product/index'))));
+       }
+    }
+
+    public function addInventory()
+    {
+       $this->log_begin();
+       try {
+           $productsList = $this->input->post('productsList');
+           $this->log_middle($productsList);
+           $this->model_product->addInventory($productsList);
+           $this->output
+               ->set_content_type("application/json")
+               ->set_output(json_encode(array('status' => 'success', 'redirect' => base_url('admin/product/index'))));
+           $this->log_end(array('status' => 'success', 'redirect' => base_url('admin/product/index')));
+       } catch (Exception $e) {
+           $this->output
+               ->set_content_type("application/json")
+               ->set_output(json_encode(array('status' => 'error', 'redirect' => base_url('admin/product/index'))));
+       }
+    }
+
 
     public function addComposition()
     {
@@ -160,10 +204,54 @@ class Product extends BaseController {
 		$data['product'] = $this->model_product->getById($id);
 		$data['quantities'] = $this->model_product->getQuantitiesToShow($id);
 		$data['departments'] = $this->model_product->getQuantitiesByDepartement($id);
+        $startDate = date('Y-m-d', strtotime('-1 month'));
+        $endDate = date('Y-m-d');
+        $data['report']=$this->report($id, $startDate, $endDate);
         $data['params'] = $this->getParams();
+        //report
 		$this->load->view('admin/product/edit',$data);
         $this->log_end($data);
 	}
+	public function statistic()
+	{
+        $this->log_begin();
+        $id = $this->uri->segment(4);
+		$data['product'] = $this->model_product->getById($id);
+        $startDate = date('Y-m-d', strtotime('-1 month'));
+        $endDate = date('Y-m-d');
+        $data['report']=$this->report($id, $startDate, $endDate);
+        $data['productInventory']=$this->model_product->getProductInventory($id);
+        $data['params'] = $this->getParams();
+        //report
+		$this->load->view('admin/product/view_statistic',$data);
+        $this->log_end($data);
+	}
+
+	public function apiStatistics(){
+        try {
+            $this->log_begin();
+            $id = $this->input->post('id');
+            $startDate = $this->input->post('startDate');
+            $endDate = $this->input->post('endDate');
+            $report = $this->report($id, $startDate, $endDate);
+            $report["productInventory"]= $this->model_product->getProductInventory($id, $startDate, $endDate);
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'success', 'report' => $report)));
+            $this->log_end($report);
+        } catch (Exception $e) {
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'error')));
+        }
+    }
+	private function report($product_id, $startDate,$endDate){
+        $this->load->model('model_report');
+        $product = $this->model_product->getById($product_id);
+        $report = $this->model_report->reportByProductId($product_id,$startDate, $endDate);
+        return $report;
+    }
+
 	public function apiEdit()
 	{
         try {
@@ -267,6 +355,8 @@ class Product extends BaseController {
                 ->set_output(json_encode(array('status' => 'error')));
         }
 	}
+
+
 
 	public function apiDelete()
 	{

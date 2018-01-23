@@ -148,6 +148,7 @@
                                                     <th>Quantité</th>
                                                     <th>Prix total</th>
                                                     <th>Taux de consomation</th>
+                                                    <th>Quantity</th>
                                                 </tr>
                                                 </thead>
                                                 <tfoot>
@@ -158,6 +159,7 @@
                                                     <th>Quantité</th>
                                                     <th>Prix total</th>
                                                     <th>Taux de consomation</th>
+                                                    <th>Quantity</th>
                                                 </tr>
                                                 </tfoot>
                                                 <tbody>
@@ -166,13 +168,10 @@
                                                         <td><?php echo $product['id']; ?></td>
                                                         <td><?php echo $product['name']; ?></td>
                                                         <td><?php echo $product['unit_price']; ?></td>
-                                                        <td><?php echo $product['mp_quantity'].' '.$product['mp_unit']; ?></td>
-                                                        <td><?php echo $product['mp_quantity'] * $product['unit_price']* $product['unitConvert']; ?></td>
+                                                        <td><?php echo $product['mp_quantity']* $meal['quantity'].' '.$product['mp_unit']; ?></td>
+                                                        <td><?php echo $product['mp_quantity'] * $product['unit_price']* $product['unitConvert'] * $meal['quantity']; ?></td>
                                                         <td><?php echo $product['consumptionRate'] * 100; ?>%</td>
-                                                       <!-- <td>
-                                                            <a href=" <?php /*echo base_url('admin/product/edit/'). $product['id']; */?>"
-                                                               class="btn btn-primary btn-xs">Edit</a>
-                                                        </td>-->
+                                                        <th><?php echo $meal['quantity']; ?></th>
                                                     </tr>
                                                 <?php } ?>
                                                 </tbody>

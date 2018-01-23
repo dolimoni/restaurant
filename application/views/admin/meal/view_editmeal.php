@@ -67,8 +67,8 @@
                 <h4 style="display: inline;">Prix de vente : </h4> <input value="<?php echo $meal['sellPrice']; ?>" type="text" class="sellPriceProduct" name="sellPrice"/>
             </div>
 
-            <div class="col-md-4 col-sm-6 col-xs-12" hidden>
-                <h4 style="display: inline;">Nombre d'articles : </h4> <input  value="1" type="number" class="mealQuantity"/>
+            <div class="col-md-4 col-sm-6 col-xs-12">
+                <h4 style="display: inline;">Nombre d'articles : </h4> <input  value="<?php echo $meal['quantity']; ?>" type="number" class="mealQuantity"/>
             </div>
         </div>
         <div class="row mealComposition">
@@ -77,7 +77,7 @@
                                 <div class="x_panel">
                                    <div class="x_title">
                                        <h2><?php echo $pc['name']; ?> -
-                                           <?php echo number_format((float)($pc['unit_price'] * $pc['unitConvert']* $pc['mp_quantity']), 2, '.', ''); ?>
+                                           <?php echo number_format((float)($pc['unit_price'] * $pc['unitConvert']* $pc['mp_quantity']*$meal['quantity']), 2, '.', ''); ?>
                                        </h2>
                                        <ul class="nav navbar-right panel_toolbox">
                                            <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
@@ -147,7 +147,7 @@
 
                                            <input class="form-inline md-button-v" placeholder="Quantité"
                                                   name="quantity"
-                                                  value="<?php echo $pc['mp_quantity']; ?>"
+                                                  value="<?php echo $pc['mp_quantity']* $meal['quantity']; ?>"
                                                   type="text">
 
                                        </div>
@@ -329,7 +329,7 @@
 
                 if (quantity > 0 && unit_price > 0){
                     var productPrice= parseFloat(quantity * unit_price/mealQuantity);
-                    title.html("Produit - " + productPrice.toFixed(4) + "dh");
+                    title.html("Produit - " + (quantity * unit_price).toFixed(3) + "dh");
                     prixTotal += productPrice;
                 }
 

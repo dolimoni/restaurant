@@ -63,6 +63,7 @@
                                 <td><?php echo $product['unit_price']; ?></td>
                                 <td>
                                     <a href=" <?php echo base_url('admin/product/edit/'. $product['product']); ?>" class="btn btn-primary btn-xs">Modifier</a>
+                                    <a href=" <?php echo base_url('admin/product/statistic/'. $product['product']); ?>" class="btn btn-warning btn-xs">Statistiques</a>
                                     <?php if($product['min_quantity'] > $product['totalQuantity'] && $product['provider']>0 ){?>
                                     <a href=" <?php echo base_url('admin/provider/show/'. $product['provider']); ?>" class="btn btn-primary btn-xs">Commander</a>
                                     <?php } ?>
@@ -147,9 +148,8 @@
                                 <td><?php echo $composition['unit_price']; ?></td>
                                 <td>
                                     <a href=" <?php echo base_url('admin/product/editComposition/'. $composition['product']); ?>" class="btn btn-primary btn-xs">Modifier</a>
-                                    <?php if($composition['min_quantity'] > $composition['totalQuantity'] && $composition['provider']>0 ){?>
-                                    <a href=" <?php echo base_url('admin/provider/show/'. $composition['provider']); ?>" class="btn btn-primary btn-xs">Commander</a>
-                                    <?php } ?>
+                                    <a href=" <?php echo base_url('admin/product/statistic/' . $composition['product']); ?>"
+                                       class="btn btn-warning btn-xs">Statistiques</a>
                                     <div class="btn btn-info btn-xs open">Articles</div>
                                     <a  class="btn btn-danger btn-xs deleteProduct" data-id="<?php echo $composition['product']; ?>">Supprimer</a>
                                 </td>

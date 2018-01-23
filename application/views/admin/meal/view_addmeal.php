@@ -51,7 +51,7 @@
             <div class="col-md-4 col-sm-6 col-xs-12">
                 <h4 style="display: inline;">Prix de vente : </h4> <input type="text" class="sellPrice" name="sellPrice"/>
             </div>
-            <div class="col-md-4 col-sm-6 col-xs-12" hidden>
+            <div class="col-md-4 col-sm-6 col-xs-12" >
                 <h4 style="display: inline;">Nombre d'articles : </h4> <input value="1" type="number" class="mealQuantity"/>
             </div>
         </div>
@@ -305,8 +305,8 @@
                     unit_price *= unitConvert;
                 }
                 if (quantity > 0 && unit_price > 0){
-                    var productPrice = parseFloat(quantity * unit_price );
-                    title.html("Produit - " + productPrice.toFixed(4) + "dh");
+                    var productPrice = parseFloat(quantity * unit_price / mealQuantity);
+                    title.html("Produit - " + parseFloat(quantity * unit_price).toFixed(3) + "dh");
                     prixTotal += productPrice;
                 }
             }
@@ -365,11 +365,11 @@
                     unit_price *= unitConvert;
                 }
                 if (quantity > 0){
-                    var product={'id':id,'quantity':quantity,'unit_price':unit_price,'profit': profit,'unit': unitConvertName,'unitConvert': unitConvert};
+                    var product={'id':id,'quantity':quantity/mealQuantity,'unit_price':unit_price,'profit': profit,'unit': unitConvertName,'unitConvert': unitConvert};
                     productsList.push(product);
                 }
                 if(unit_price > 0){
-                    var productPrice = parseFloat(quantity * unit_price );
+                    var productPrice = parseFloat(quantity * unit_price / mealQuantity);
                     prixTotal += productPrice;
                 }
 
@@ -391,6 +391,7 @@
                 'sellPrice': sellPrice,
                 'profit': profit
             };
+            console.log(meal);
             if (validate(meal)) {
                 $('#loading').show();
                 $.ajax({

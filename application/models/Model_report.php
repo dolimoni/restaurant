@@ -293,6 +293,36 @@ class model_report extends CI_Model
         return $report;
     }
 
+
+    public function reportByProductId($product_id,$startDate=null,$endDate=null)
+    {
+        $this->db->select('*');
+        $this->db->select('sum(c.quantity) as s_quantity');
+        $this->db->select('COUNT(DISTINCT DATE_FORMAT(c.createdAt, \'%Y-%m-%d\')) as days');
+        $this->db->select('sum(c.prepared_quantity) as prepared_quantity');
+        $this->db->from('product p');
+        $this->db->join('consumption_product cp', 'p.id = cp.product');
+        $this->db->join('consumption c', 'c.id = cp.consumption');
+        $this->db->join('meal m', 'm.id = cp.meal');
+        $this->db->where('p.id', $product_id);
+        $this->db->where('c.type', 'sale');
+        if($startDate){
+            $this->db->where('DATE(c.report_date) >=', $startDate);
+            $this->db->where('DATE(c.report_date) <=', $endDate);
+        }
+        $this->db->group_by('c.meal');
+        $report = $this->db->get()->result_array();
+
+        $report['productConsumptionRate'] = $this->productConsumptionRate($product_id, $startDate, $endDate);
+        $report['totalPrice'] = $report['productConsumptionRate']['totalPrice'];
+        $report['totalConsumptionQuantity'] = $report['productConsumptionRate']['totalQuantity'];
+        unset($report['productConsumptionRate']['totalPrice']);
+        unset($report['productConsumptionRate']['totalQuantity']);
+
+
+        return $report;
+    }
+
     public function evolution($meal_id)
     {
         $this->db->select('*,Date(c.report_date) as rd');
@@ -503,6 +533,7 @@ class model_report extends CI_Model
         return $meals;
     }
 
+    // taux d utilisation des produits dans un repas
     public function mealConsumptionRate($meal_id, $startDate, $endDate)
     {
         $this->db->select('*,avg(cp.unit_price) as avg_unit_price,sum(cp.quantity) as sum_quantity');
@@ -512,6 +543,36 @@ class model_report extends CI_Model
         $this->db->group_by('cp.product');
         $this->db->group_by('cp.meal');
         $this->db->where('cp.meal', $meal_id);
+        $this->db->where('cp.type', 'sale');
+        if($startDate){
+            $this->db->where('c.report_date >=', $startDate);
+            $this->db->where('c.report_date <=', $endDate);
+        }
+        $mealConsumptionRate = $this->db->get()->result_array();
+        $mealConsumptionTotal = 0; // total price
+        $mealConsumptionTotalQuantity = 0; // total quantity
+        if (!empty($mealConsumptionRate)) {
+            $mealConsumptionTotal = array_sum(array_column($mealConsumptionRate, 'avg_unit_price')); // somme des prix moyen
+            $quantitiesAvg = array_column($mealConsumptionRate, 'sum_quantity');// somme des quantitées
+            $mealConsumptionTotalQuantity = array_sum($quantitiesAvg);
+        }
+
+        $mealConsumptionRate['totalPrice'] = $mealConsumptionTotal;
+        $mealConsumptionRate['totalQuantity'] = $mealConsumptionTotalQuantity;
+        return $mealConsumptionRate;
+    }
+
+    // taux d utilisation des repas dans un produit
+    public function productConsumptionRate($product_id, $startDate, $endDate)
+    {
+        $this->db->select('cp.*,m.*,c.*,p.unit,avg(cp.unit_price) as avg_unit_price,sum(cp.quantity) as sum_quantity');
+        $this->db->from('consumption_product cp');
+        $this->db->join('meal m', 'm.id=cp.meal');
+        $this->db->join('product p', 'p.id=cp.product');
+        $this->db->join('consumption c', 'c.id=cp.consumption');
+        $this->db->group_by('cp.product');
+        $this->db->group_by('cp.meal');
+        $this->db->where('cp.product', $product_id);
         $this->db->where('cp.type', 'sale');
         if($startDate){
             $this->db->where('c.report_date >=', $startDate);
