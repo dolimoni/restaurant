@@ -7,16 +7,28 @@
  *
  */
 
-class Main extends BaseController
+class Main extends CI_Controller
 {
+
 
     public function __construct()
     {
+
         parent::__construct();
-        if (!$this->session->userdata('isLogin')) {
-            if(!$this->input->is_cli_request()){
-                redirect('login');
+
+        if (!$this->input->is_cli_request()) {
+            echo "Forbidden access";
+        }
+
+        // The path to the "application" folder
+        if (is_dir($application_folder)) {
+            define('APPPATH', $application_folder . '/');
+        } else {
+            if (!is_dir(BASEPATH . $application_folder . '/')) {
+                exit("Your application folder path does not appear to be set correctly. Please open the following file and correct this: " . SELF);
             }
+
+            define('APPPATH', BASEPATH . $application_folder . '/');
         }
 
         $this->load->model('model_product');
@@ -25,33 +37,6 @@ class Main extends BaseController
 
     }
 
-    /**
-     *
-     */
-    public function index()
-    {
-
-        //$data = $this->readSalesCSV('uploads/XAFUL.CSV');
-
-        $data['params'] = $this->getParams();
-
-        $this->load->view('admin/uniwell/index',$data);
-    }
-    public function index2()
-    {
-
-        //$data = $this->readSalesCSV('uploads/XAFUL.CSV');
-
-        $data['params'] = $this->getParams();
-        $this->load->model('model_report');
-        $this->load->model('model_meal');
-        $meals= $this->model_meal->getMealsOnly();
-        $data['mealsName']=array_column($meals,"name");
-        $data['meals']= $meals;
-        $data['mealsList'] = $this->model_meal->getAll();
-        $data["sales"]=$this->model_report->reportRange(Date("Y-m-d"), Date("Y-m-d"));
-        $this->load->view('admin/uniwell/index2',$data);
-    }
 
     private function readSalesCSV($file_name){
         $this->log_begin();
@@ -99,42 +84,13 @@ class Main extends BaseController
         $this->log_end($data);
         return $data;
     }
-    public function apiLoadFile()
-    {
-        try {
-            $this->log_begin();
-            $file_path = $this->uploadFile();
-            $data['sales'] = $this->readSalesCSV($file_path);
-
-            foreach ($data['sales']['rows'] as $key => $sale) {
-                $meal = $this->model_meal->getByExternalCode($sale['0']);
-                $quantity = $sale[2] / 1000;
-                $priceCSV= $sale['3'] / 100 / $quantity;
-                if($meal['name']=== $sale['1'] /*and $priceCSV == $meal['sellPrice']*/){
-                    $data['sales']['rows'][$key]['status']='valid';
-                }else{
-                    $data['sales']['rows'][$key]['status'] = 'Invalid';
-                    //$data['sales']['rows'][$key]['meal'] = $meal;
-                }
-            }
-            $this->output
-                ->set_content_type("application/json")
-                ->set_output(json_encode(array('status' => 'success', 'response' => $data)));
-            $this->log_end($data);
-        } catch (Exception $e) {
-            $this->output
-                ->set_content_type("application/json")
-                ->set_output(json_encode(array('status' => 'error')));
-        }
-    }
-
 
     public function ftp()
     {
         try {
             $this->log_begin();
             //$data['sales'] = $this->readSalesCSV(base_url('uploads/ftp/z-plu_1_0001001.csv'));
-            $data['sales'] = $this->readSalesCSV(base_url('uploads/ftp/z-plu_1_0001001.csv'));
+            $data['sales'] = $this->readSalesCSV(APPPATH.'../uploads/ftp/z-plu_1_0001001.csv');
             //$data['sales'] = $this->readSalesCSV('/var/www/html/dagino/uploads/ftp/x-plu_1_0001001.csv');
             //$data['sales'] = $this->readSalesCSV('/var/www/html/dagino/uploads/ftp/x-plu_1_0001001.csv');
             $mealsList=array();
@@ -161,8 +117,10 @@ class Main extends BaseController
             }
             $this->log_middle($mealsList);
             $this->clean();
-            $this->model_meal->consumption($mealsList);
-            $this->log_end(array('status' => 'error'));
+            $this->model_meal->consumption($mealsList,false,true);
+            $this->log_end(array('status' => 'success'));
+
+            echo "ftp done";
 
         } catch (Exception $e) {
 
@@ -203,23 +161,6 @@ class Main extends BaseController
         return $file_path;
     }
 
-    public function searchMeal()
-    {
-        $this->log_begin();
-        try {
-            $mealName = $this->input->post("mealName");
-            $meal=$this->model_meal->getByName($mealName);
-            $this->output
-                ->set_content_type("application/json")
-                ->set_output(json_encode(array('status' => 'success', 'meal' => $meal)));
-            $this->log_end($meal);
-        } catch (Exception $e) {
-            $this->output
-                ->set_content_type("application/json")
-                ->set_output(json_encode(array('status' => 'error')));
-        }
-
-    }
 
     public function clean()
     {
@@ -239,6 +180,23 @@ class Main extends BaseController
         $this->model_util->populate();
     }
 
+
+    public function log_begin()
+    {
+        log_message('info', "dolimoni=>Log_begin: " . $this->router->fetch_class() . " " . $this->router->fetch_method());
+        $data = print_r($this->input->post(NULL, TRUE), TRUE);
+        log_message('info', ($data));
+    }
+
+    public function log_middle($data)
+    {
+        log_message('info', "dolimoni=>Log_middle: " . json_encode($data));
+    }
+
+    public function log_end($data)
+    {
+        log_message('info', "dolimoni=>Log_end: " . json_encode($data));
+    }
 
 
 }

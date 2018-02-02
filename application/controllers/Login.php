@@ -11,10 +11,14 @@ class Login extends CI_Controller {
         } else {
             if ($this->session->userdata('type') == "admin") {
                 redirect('admin/dashboard/index');
+            } else if ($this->session->userdata('type') == "manager") {
+                redirect('admin/meal/index');
             } else if ($this->session->userdata('type') == "thrifty") {
                 redirect('admin/department/index');
             } else if ($this->session->userdata('type') == "department") {
                 redirect('admin/department/show');
+            } else if ($this->session->userdata('type') == "user") {
+                redirect('admin/employee/main');
             }
         }
 	}
@@ -29,12 +33,14 @@ class Login extends CI_Controller {
             $this->load->view('view_login');
         } 
         else {
-            if ($this->session->userdata('type') == "admin") {
+            if ($this->session->userdata('type') == "admin" or $this->session->userdata('type') == "manager") {
                 redirect('admin/dashboard/index');
             } else if ($this->session->userdata('type') == "thrifty") {
                 redirect('admin/department/addProducts');
             } else if ($this->session->userdata('type') == "department") {
                 redirect('admin/department/show');
+            } else if ($this->session->userdata('type') == "user") {
+                redirect('admin/employee/main');
             }
         }
     }

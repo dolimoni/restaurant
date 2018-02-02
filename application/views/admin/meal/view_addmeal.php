@@ -15,7 +15,7 @@
     <div class="productsList">
         <div class="page-title">
             <div class="title_left">
-                <h3>Ajouter un article</h3>
+                 <h3>Ajouter un article</h3>
             </div>
         </div>
 
@@ -374,7 +374,7 @@
                 }
 
             }
-            var profit = prixTotal * gainRate - prixTotal;
+            var profit = sellPrice-prixTotal;
             if(profit<0){
                 profit=0;
             }
@@ -386,7 +386,7 @@
                 'name': name,
                 'group': group,
                 'productsList': productsList,
-                'quantity': quantity,
+                'quantity': mealQuantity,
                 'cost': prixTotal,
                 'sellPrice': sellPrice,
                 'profit': profit
@@ -441,6 +441,7 @@
 
         function validate(meal) {
             var validate=true;
+            console.log("validate", meal);
             if(meal['name']===''){
                 swal({
                     title: "Attention",
@@ -459,7 +460,7 @@
                     showConfirmButton: false
                 });
                 validate = false;
-            }else if(meal['profit']< 0 && meal['sellPrice']>0){
+            }else if(parseFloat(meal['sellPrice']) < parseFloat(meal['cost']) && meal['sellPrice'] > 0){
                 swal({
                     title: "Attention",
                     text: "Le bénifice est négative",

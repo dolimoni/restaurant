@@ -152,14 +152,27 @@ class model_report extends CI_Model
         $sales_history = $this->db->get()->result_array();//Sales history
         $sales_history= array_reverse($sales_history);
 
+        /********************************************************************/
+        $this->db->select('sum(sh.total) as price');
+        $this->db->from('stock_history sh');
+        $this->db->join('order o','on o.id=sh.order_id and o.paid="true"');
+        $this->db->where('sh.type', 'in');
+        if ($startDate) {
+            $this->db->where('date(sh.created_at)>=', $startDate);
+            $this->db->where('date(sh.created_at)<=', $endDate);
+        }
+        $stock_history_orders = $this->db->get()->row("price");
+
         $this->db->select('sum(sh.total) as price');
         $this->db->from('stock_history sh');
         $this->db->where('sh.type', 'in');
+        $this->db->where('order_id IS NULL',NULL,false);
         if ($startDate) {
             $this->db->where('date(created_at)>=', $startDate);
             $this->db->where('date(created_at)<=', $endDate);
         }
-        $stock_history = $this->db->get()->row_array();
+        $stock_history = $this->db->get()->row("price")+ $stock_history_orders;
+        /********************************************************************/
 
 
         //Sales history by month
@@ -168,8 +181,8 @@ class model_report extends CI_Model
         $this->db->from('consumption c');
         $this->db->where('c.type', 'sale');
         if ($startDate) {
-            $this->db->where('c.report_date>=', $startDate);
-            $this->db->where('c.report_date<=', $endDate);
+            /*$this->db->where('c.report_date>=', $startDate);
+            $this->db->where('c.report_date<=', $endDate);*/
         }
         $this->db->group_by('MONTH(report_date)');
         $this->db->order_by('report_date', 'DESC');
@@ -227,7 +240,7 @@ class model_report extends CI_Model
         $global['repair']= $repair;
         $global['salary']= $salary;
         $global['stock_history']= $stock_history;
-        $global["charges"]= $global['stock_history']['price'] + $global['purchase']['price'] + $global['repair']['price'] + $global['salary']['salary'];
+        $global["charges"]= $global['stock_history'] + $global['purchase']['price'] + $global['repair']['price'] + $global['salary']['salary'];
 
 
         return $global;

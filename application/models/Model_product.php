@@ -397,6 +397,7 @@ class model_product extends CI_Model {
                 }else if($direction === "up"){
                     $data['status'] = 'active';
                     $data['quantity'] = $l_quantity;
+                    $usedQuantity['quantity'] = $quantity;
                 }
 
                 $usedQuantity['unit_price'] = $quantityItem['unit_price'];
@@ -413,7 +414,8 @@ class model_product extends CI_Model {
         return $response;
     }
 
-	public function updateQuantities($productsList, $direction="down", $provider_id){
+    //$oder_id: id de la commande
+	public function updateQuantities($productsList, $direction="down", $provider_id,$order_id=null){
         foreach ($productsList as $product) {
             $this->updateQuantity($product['id'], $product['quantity'], $direction);
 
@@ -425,6 +427,7 @@ class model_product extends CI_Model {
                     'price' => $product['unit_price'],
                     'unit' => $product['unit'],
                     'provider' => $provider_id,
+                    'order_id' => $order_id,
                 );
                 $this->addStockHistory($productHistory, 'in');
                 $this->newQuantity($product['id'], $product['quantity'], $provider_id,$product["idQuantity"]);
@@ -672,6 +675,9 @@ class model_product extends CI_Model {
 
     public function addStockHistory($product, $type, $department = null)
     {
+        if(!isset($product['order_id'])){
+            $product['order_id']=0;
+        }
         $data = array(
             'product' => $product['id'],
             'quantity' => $product['quantity'],
@@ -680,6 +686,7 @@ class model_product extends CI_Model {
             'unit_price' => $product['price'],
             'total' => $product['price']*$product['quantity'],
             'provider' => $product['provider'],
+            'order_id' => $product['order_id'],
         );
         $this->db->insert('stock_history', $data);
     }

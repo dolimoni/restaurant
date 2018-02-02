@@ -6,9 +6,11 @@ class Dashboard extends BaseController {
 	public function __construct()
 	{
 		parent::__construct();
+
         if ( ! $this->session->userdata('isLogin')) { 
             redirect('login');
         }
+
         $this->load->model('model_group');
         $this->load->model('model_product');
 

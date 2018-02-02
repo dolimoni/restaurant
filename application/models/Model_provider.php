@@ -8,22 +8,6 @@ class model_provider extends CI_Model {
 
         $this->load->model('model_quotation');
     }
-	public function insert($u_email,$f_name,$l_name,$u_bday,$u_position,$u_type,$u_pass,$u_mobile,$u_gender,$u_address)
-	{
-		$data = array(
-			   'email' => $u_email,
-               'first_name' => $f_name,
-               'last_name' => $l_name,
-               'birthday' => $u_bday,
-			   'position' => $u_position,
-			   'type' => $u_type,
-			   'password' => $u_pass,
-			   'mobile' => $u_mobile,
-			   'gender' => $u_gender,
-			   'address' => $u_address
-            );
-		$this->db->insert('users', $data); 
-	}
 
 	public function add($provider)
 	{
@@ -113,9 +97,38 @@ class model_provider extends CI_Model {
 
 	public function getAll()
 	{
-		$result = $this->db->get('provider');
+	    $this->db->select("p.*,pg.title,pg.id as pg_id");
+	    $this->db->from("provider p");
+	    $this->db->join("providergroups pg","pg.id=p.title","left");
+		$result = $this->db->get();
 		return $result->result_array();
 	}
+
+	public function getByGroup($id_group)
+	{
+	    $this->db->select("p.*,pg.title,pg.id as pg_id");
+	    $this->db->from("provider p");
+	    $this->db->join("providergroups pg","pg.id=p.title","left");
+	    $this->db->where("pg.id", $id_group);
+		$result = $this->db->get();
+		return $result->result_array();
+	}
+
+	public function getGroups()
+	{
+		$result = $this->db->get('providergroups');
+		return $result->result_array();
+	}
+
+	public function addGroup($group)
+	{
+		$this->db->insert('providergroups', $group);
+	}
+    public function editGroup($id,$group)
+    {
+        $this->db->where('id',$id);
+        $this->db->update('providergroups', $group);
+    }
 
 	public function getAllProducts()
 	{
@@ -156,9 +169,12 @@ class model_provider extends CI_Model {
 
 	public function get($id)
 	{
-		$this->db->where('id', $id);
-		$result = $this->db->get('provider');
-		return $result->row_array();
+        $this->db->select("p.*,pg.title,pg.id as pg_id");
+        $this->db->from("provider p");
+        $this->db->join("providergroups pg", "pg.id=p.title", "left");
+        $this->db->where("p.id",$id);
+        $result = $this->db->get();
+        return $result->row_array();
 	}
 
 	public function getOrders($id)
@@ -180,6 +196,7 @@ class model_provider extends CI_Model {
 		$this->db->where('q.provider', $id);
 		$this->db->where('p.status', "active");
 		$this->db->where('q.visibility', $visibility);
+		$this->db->order_by("p.name","asc");
 		$result = $this->db->get();
 		return $result->result_array();
 	}
@@ -197,12 +214,6 @@ class model_provider extends CI_Model {
 	}
 
 
-	public function delete($u_id)
-	{
-		$this->db->where('id', $u_id);
-		$this->db->where("(su != 1)");
-		$this->db->delete('users'); 
-	}
 
     public function getStatistics($id){
         // od : order details : liste des produits par commande
@@ -241,6 +252,12 @@ class model_provider extends CI_Model {
     {
         $this->db->where('id', $provider_id);
         $this->db->delete('provider');
+    }
+
+    public function payOrder($id)
+    {
+        $this->db->where('id', $id);
+        $this->db->update('order',array("paid"=>"true"));
     }
 
     public function deleteProduct($product_id, $quantity_id)

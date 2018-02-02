@@ -7,6 +7,8 @@ class Config extends BaseController {
         parent::__construct();
 
         $this->load->model('model_util');
+        $this->load->model('model_ACL');
+        $this->load->model('department/model_department');
 	}
 
 
@@ -14,40 +16,91 @@ class Config extends BaseController {
 	{
         $this->log_begin();
         $data["user"]=$this->model_util->getUser(6);
+        $data["allUsers"] = $this->model_util->allUsers();
         $data['params'] = $this->getParams();
         $this->load->view('admin/config/index',$data);
 	}
 
-	public function editUser()
+	public function createUser()
 	{
         $this->log_begin();
-        $data["user"]=$this->model_util->getUser(6);
         $data['params'] = $this->getParams();
+        $data['departments'] = $this->model_department->getAll();
+        $data["controllers"]=$this->model_ACL->getDefaultControllers(1, $data['params']["department"], "default");
+        $this->load->view('admin/config/createUser',$data);
+	}
+
+    public function apiCreateUser()
+    {
+        try {
+            $user = $this->input->post("user");
+            $actions = $this->input->post("actions");
+            $password = $this->input->post("password");
+            $user["password"] = md5($password);
+            $this->model_util->createUser($user, $actions);
+
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'success')));
+            $this->log_end(array('status' => 'success'));
+            redirect('/admin/config/', 'refresh');
+        } catch (Exception $e) {
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'error')));
+        }
+    }
+
+	public function editUser($id)
+	{
+        $this->log_begin();
+        $data['params'] = $this->getParams();
+        $data['departments'] = $this->model_department->getAll();
+        $data["user"]=$this->model_util->getUser($id);
+        $data["controllers"]=$this->model_ACL->getDefaultControllers($id, $data['params']["department"], $data["user"]["type"]);
         $this->load->view('admin/config/editUser',$data);
 	}
 
-    public function editUserForm()
+    public function apiEditUser()
     {
-        $id = $this->input->post("id");
-        $last_name = $this->input->post("last_name");
-        $first_name = $this->input->post("first_name");
-        $email = $this->input->post("email");
-        $mobile = $this->input->post("mobile");
-        $address = $this->input->post("address");
-        $password = $this->input->post("password");
 
-        $user=array(
-            "last_name"=> $last_name,
-            "first_name"=> $first_name,
-            "email"=> $email,
-            "mobile"=> $mobile,
-            "address"=> $address,
-        );
-        if($password!=""){
-            $user["password"]=md5($password);
+        try {
+            $id = $this->input->post("id");
+            $user = $this->input->post("user");
+            $password = $this->input->post("password");
+            $actions = $this->input->post("actions");
+            if ($password != "") {
+                $user["password"] = md5($password);
+            }
+            $this->model_util->editUser($id, $user, $actions);
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'success')));
+            $this->log_end(array('status' => 'success'));
+            //redirect('/admin/config/', 'refresh');
+        } catch (Exception $e) {
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'error')));
         }
-        $this->model_util->editUser($id,$user);
-        redirect('/admin/config/');
+    }
+
+    public function apiDeleteUser()
+    {
+        $this->log_begin();
+        try {
+            $user_id = $this->input->post('user_id');
+            $this->model_util->deleteUser($user_id);
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'success')));
+            $this->log_end(array('status' => 'success'));
+        } catch (Exception $e) {
+
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'error')));
+        }
     }
 
 	public function delete()

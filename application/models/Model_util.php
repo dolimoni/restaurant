@@ -7,9 +7,35 @@ class model_util extends CI_Model {
         return $this->db->get("users")->row_array();
     }
 
-    public function editUser($id,$data){
-        $this->db->where("id",$id);
+    public function allUsers(){
+        $this->db->order_by("id","asc");
+        $this->db->where("status", "enabled");
+        return $this->db->get("users")->result_array();
+    }
+
+    public function createUser($data,$actions){
+        $this->load->model('model_ACL');
+        $this->db->insert("users",$data);
+        $user_id = $this->db->insert_id();
+        $this->model_ACL->createDefaultAclForUser($user_id, $data["type"]);
+        $this->model_ACL->updateUserAcl($user_id,$actions, $data["type"]);
+
+    }
+    public function editUser($user_id,$data,$actions){
+        $this->load->model('model_ACL');
+        $this->db->where("id", $user_id);
+
         $this->db->update("users",$data);
+        $this->model_ACL->updateUserAcl($user_id, $actions, "user");
+    }
+
+    public function deleteUser($user_id)
+    {
+        $this->db->where('user', $user_id);
+        $this->db->delete('acl');
+
+        $this->db->where('id', $user_id);
+        $this->db->delete('users');
     }
     public function isLastDayInMonth($day){
         $date = new DateTime('now');

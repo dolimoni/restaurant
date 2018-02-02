@@ -289,13 +289,14 @@ class model_meal extends CI_Model {
         return $meals;
     }
 
-    public function consumption($mealList,$lost=false){
+    public function consumption($mealList,$lost=false,$ftp=false){
         $this->load->model('model_product');
         $this->load->model('model_report');
         $response = array();
         $response['status'] = "success";
         $productsErrorList=array();
         $response['productsList']="";
+        $zReport=true;
 
         foreach ($mealList as $meal) {
 
@@ -323,7 +324,14 @@ class model_meal extends CI_Model {
                 //$todayConsumption['quantity'] : quantité de la base de donnée
 
                 //$quantityStep va être utilisé pour reduire la quantité des produits du stock
-                $quantityStep = abs($meal['quantity'] - $todayConsumption['quantity']);
+                if(!$ftp){
+                    $quantityStep = abs($meal['quantity'] - $todayConsumption['quantity']);
+                }else{
+                    // if ftp then
+                    $data["quantity"]= $todayConsumption['quantity']+ $meal['quantity'];
+                    $data["total"]+= $todayConsumption["total"];
+                    $data["amount"]= $data["total"]/$data["quantity"];
+                }
                 $this->db->where('id', $todayConsumption['id']);
                 $this->db->update('consumption', $data);
                 // si la vente du jour n'existe pas on va la créer simplement
@@ -333,7 +341,6 @@ class model_meal extends CI_Model {
             }
 
 
-            $this->params['department'] === "false";
             if ($this->params['department'] === "false") {
                 $this->db->select('*,mp.quantity as mp_quantity,p.id as p_id');
                 $this->db->from('meal_product mp');
@@ -364,13 +371,19 @@ class model_meal extends CI_Model {
                                 $consumption_type = "lost";
                             }
                             $l_reponse = '';
-                            if ($meal['quantity'] >= $todayConsumption['quantity']) {
+                            if($ftp){
                                 $this->model_product->updateQuantity($m_product['product'], $m_product['mp_quantity'] * $m_product['unitConvert'] * $quantityStep);
                                 $l_reponse = $this->model_product->updateLocalQuantity($m_product['product'], $m_product['mp_quantity'] * $m_product['unitConvert'] * $quantityStep);
-                            } else {
-                                $this->model_product->updateQuantity($m_product['product'], $m_product['mp_quantity'] * $m_product['unitConvert'] * $quantityStep, 'up');
-                                $l_reponse = $this->model_product->updateLocalQuantity($m_product['product'], $m_product['mp_quantity'] * $m_product['unitConvert'] * $quantityStep, 'up');
+                            }else{
+                                if ($meal['quantity'] >= $todayConsumption['quantity']) {
+                                    $this->model_product->updateQuantity($m_product['product'], $m_product['mp_quantity'] * $m_product['unitConvert'] * $quantityStep);
+                                    $l_reponse = $this->model_product->updateLocalQuantity($m_product['product'], $m_product['mp_quantity'] * $m_product['unitConvert'] * $quantityStep);
+                                } else {
+                                    $this->model_product->updateQuantity($m_product['product'], $m_product['mp_quantity'] * $m_product['unitConvert'] * $quantityStep, 'up');
+                                    $l_reponse = $this->model_product->updateLocalQuantity($m_product['product'], $m_product['mp_quantity'] * $m_product['unitConvert'] * $quantityStep, 'up');
+                                }
                             }
+
 
                             // consommation des produits selon la quantité de la fiche technique et leurs prix selon le stock
                             foreach ($l_reponse['quantities'] as $quantity) {

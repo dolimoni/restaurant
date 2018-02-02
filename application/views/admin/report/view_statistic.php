@@ -9,9 +9,7 @@
 <!-- page content -->
 <div class="right_col" role="main">
     <div class="">
-            <!--<pre>
-                <?php /*print_r($report['sales_history']); */?>
-            </pre>-->
+
         <div class="page-title">
           <!--  <div class="title_left">
                 <h3>Articles</h3>
@@ -24,6 +22,9 @@
 
         </div>
         <div class="clearfix"></div>
+        <!--<pre>
+                <?php /*print_r($report); */?>
+            </pre>-->
         <hr>
         <div class="row tile_count">
             <div class="col-md-3 col-sm-6 col-xs-12 tile_stats_count">
@@ -114,10 +115,31 @@
                 <div id="graph_bar_group2" style="background:#fff; height:300px;"></div>
             </div>
         </div>
+
+        <div class="row" style="margin-top: 10px;">
+            <div class="col-md-6 col-sm-6 col-xs-12">
+                <div class="x_panel tile ">
+                    <div class="x_title">
+                        <h2>Détails des dépenses</h2>
+                        <ul class="nav navbar-right panel_toolbox">
+                            <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                            </li>
+                            <li><a class="close-link"><i class="fa fa-close"></i></a>
+                            </li>
+                        </ul>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content">
+                        <div id="spendingContainer" style="height:238px; width: 100%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
 <?php $this->load->view('admin/partials/admin_footer'); ?>
+<script src="<?php echo base_url('assets/build2/js/besystem.js'); ?>"></script>
 
 <!-- bootstrap-daterangepicker -->
 <script src="<?php echo base_url('assets/vendors/moment/min/moment.min.js'); ?>"></script>
@@ -167,7 +189,7 @@
     var mealReportLink = "<?php echo base_url('admin/meal/report/'); ?>";
 </script>
 <script src="<?php echo base_url('assets/build2/js/dateRangePickerStatistics.js'); ?>"></script>
-
+<script src="<?php echo base_url('assets/build/js/canvasjs.min.js'); ?>"></script>
 
 <script type="text/javascript">
     var params = {
@@ -177,6 +199,11 @@
             'max': 6
         }
     };
+    <?php
+    $js_array = json_encode($report);
+    echo "var report = " . $js_array . ";\n";
+    ?>
+    updateSpendingGraph(report);
     $(document).ready(function () {
         $.ajax({
             url: "<?php echo base_url(); ?>admin/report/apiReport",
@@ -188,7 +215,6 @@
                     var amount = [];
                     var quantity = [];
                     var profit = [];
-                    console.log('--->!',data);
                     $.each(data.articles, function (key, article) {
                         var amountData = {y: parseInt(article['s_amount']), label: article['name']};
                         var quantityData = {y: parseInt(article['s_quantity']), label: article['name']};
@@ -198,9 +224,6 @@
                         quantity.push(quantityData);
                         profit.push(profitData);
                     });
-
-                    console.log(amount);
-
 
                     var chart = new CanvasJS.Chart("chartContainer", {
                         animationEnabled: true,

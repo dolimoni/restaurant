@@ -46,6 +46,7 @@
                                    required>
                         </div>
 
+                        <?php if ($params['department'] === "true") { ?>
                         <div class="col-md-4 col-sm-6 col-xs-12">
                             <br>
                             <label for="name">Département :</label>
@@ -58,6 +59,7 @@
                                 <?php } ?>
                             </select>
                         </div>
+                        <?php } ?>
 
                         <div class="col-md-4 col-xs-6">
                             <br>
@@ -90,6 +92,7 @@
                                    required>
                         </div>
 
+                        <?php if ($params['department'] === "true") { ?>
                         <div class="col-md-4 col-sm-6 col-xs-12">
                             <br>
                             <label for="name">Département :</label>
@@ -102,6 +105,7 @@
                                 <?php } ?>
                             </select>
                         </div>
+                        <?php } ?>
 
                         <div class="col-xs-6 col-md-4">
                             <br>

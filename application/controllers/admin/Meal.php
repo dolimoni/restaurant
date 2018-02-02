@@ -5,7 +5,7 @@ class Meal extends BaseController {
 	public function __construct()
 	{
 		parent::__construct();
-	    if ( ! $this->session->userdata('isLogin') || ($this->session->userdata('type') != "admin" )) { 
+	    if ( ! $this->session->userdata('isLogin')) {
 	        redirect('login');
 	    }
 
@@ -198,7 +198,7 @@ class Meal extends BaseController {
         $this->parser->parse('admin/meal/view_editmeal', $data);
         $this->log_end($data);
 	}
-	public function editApi()
+	public function apiEdit()
 	{
         $this->log_begin();
         $meal = $this->input->post('meal');
@@ -443,7 +443,7 @@ class Meal extends BaseController {
             log_message('error', $e->getMessage());
             $this->output
                 ->set_content_type("application/json")
-                ->set_output(json_encode(array('status' => 'error', 'response' => $data)));
+                    ->set_output(json_encode(array('status' => 'error', 'response' => $data)));
         }
     }
     public function loadFileGroup()

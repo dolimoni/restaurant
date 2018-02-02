@@ -6,7 +6,7 @@ class Provider extends BaseController
     public function __construct()
     {
         parent::__construct();
-        if (!$this->session->userdata('isLogin') || ($this->session->userdata('type') != "admin")) {
+        if (!$this->session->userdata('isLogin')) {
             redirect('login');
         }
 
@@ -28,6 +28,7 @@ class Provider extends BaseController
         if (!$this->input->post('addProvider')) {
             $data['message'] = '';
             $data['providers'] = $this->model_provider->getAll();
+            $data["providerGroups"] = $this->model_provider->getGroups();
             $data['products'] = $this->model_provider->getAllProducts();
             $data['params'] = $this->getParams();
             $this->parser->parse('admin/provider/add', $data);
@@ -52,15 +53,29 @@ class Provider extends BaseController
 
     }
 
-    public function view()
+
+    public function groups()
     {
         $this->log_begin();
-        $meal_id = $this->uri->segment(4);
-        $data['meal'] = $this->model_meal->get($meal_id);
-        $data['products'] = $this->model_meal->getProducts($meal_id);
-        $this->parser->parse('admin/meal/view_meal', $data);
+        $data["providerGroups"]=$this->model_provider->getGroups();
+        $data['params'] = $this->getParams();
+        $this->parser->parse('admin/provider/view_groups', $data);
         $this->log_end($data);
     }
+
+    public function group($id_group)
+    {
+        $this->log_begin();
+        $data['message'] = '';
+        $data["providers"] = $this->model_provider->getByGroup($id_group);
+        $data["providerGroups"] = $this->model_provider->getGroups();
+        $data['products'] = $this->model_provider->getAllProducts();
+        $data['params'] = $this->getParams();
+        $this->parser->parse('admin/provider/add', $data);
+        $this->log_end($data);
+    }
+
+
 
     public function mypdfTest()
     {
@@ -133,6 +148,23 @@ class Provider extends BaseController
                 ->set_output(json_encode(array('status' => 'error')));
         }
 
+    }
+
+    public function apiPayOrder(){
+        $this->log_begin();
+        try {
+            $id = $this->input->post('id');
+            $this->model_provider->payOrder($id);
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'success')));
+            $this->log_end(array('status' => 'success'));
+        } catch (Exception $e) {
+
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'error')));
+        }
     }
 
     public function apiAddProducts()
@@ -217,6 +249,44 @@ class Provider extends BaseController
             ->set_content_type("application/json")
             ->set_output(json_encode(array('status' => true, 'order' => $order, 'orderStatus' => $orderStatus)));
         $this->log_end(array('status' => true, 'order' => $order, 'orderStatus' => $orderStatus));
+    }
+
+    public function apiAddGroup()
+    {
+
+        try {
+            $this->log_begin();
+            $group = $this->input->post('group');
+            $this->log_middle($group);
+            $this->model_provider->addGroup($group);
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => "success")));
+            $this->log_end(array('status' => "success"));
+        } catch (Exception $e) {
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => "error")));
+        }
+    }
+    public function apiEditGroup()
+    {
+
+        try {
+            $this->log_begin();
+            $group = $this->input->post('group');
+            $id = $this->input->post('id');
+            $this->log_middle($group);
+            $this->model_provider->editGroup($id,$group);
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => "success")));
+            $this->log_end(array('status' => "success"));
+        } catch (Exception $e) {
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => "error")));
+        }
     }
 
 
@@ -358,7 +428,7 @@ class Provider extends BaseController
             } else {
                 $order['status'] = 'received';
                 $this->model_order->update($order);
-                $this->model_product->updateQuantities($order['productsList'], 'up', $provider_id);
+                $this->model_product->updateQuantities($order['productsList'], 'up', $provider_id, $order['id']);
                 if ($order['oldStatus'] === "pending") {
                    // $this->model_product->updateQuantities($order['productsList'], 'up');
                 }
@@ -408,7 +478,7 @@ class Provider extends BaseController
             $this->output
                 ->set_content_type("application/json")
                 ->set_output(json_encode(array('status' => 'success')));
-            $this->log_end($data);
+            $this->log_end($provider);
         } catch (Exception $e) {
             $this->output
                 ->set_content_type("application/json")

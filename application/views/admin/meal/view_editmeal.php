@@ -416,7 +416,7 @@
 
             if(validate(meal)){
                 $.ajax({
-                    url: "<?php echo base_url(); ?>admin/meal/editApi",
+                    url: "<?php echo base_url(); ?>admin/meal/apiEdit",
                     type: "POST",
                     dataType: "json",
                     data: {'meal': meal},

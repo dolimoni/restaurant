@@ -3,8 +3,8 @@
 <div class="right_col" role="main">
     <div class="">
         <div class="page-title">
-           <!-- <pre>
-                <?php /*print_r($productsComposition); */?>
+            <!--<pre>
+                <?php /*print_r($params["acl_page"]); */?>
             </pre>-->
             <div class="title_left">
                 <h3>Produits</h3>
@@ -58,17 +58,33 @@
                             <tr class="productsList <?php echo $status; ?>">
                                 <td><?php echo $product['product'];?></td>
                                 <td><?php echo $product['name']; ?></td>
-                                <td><?php echo $product['totalQuantity']; ?></td>
+                                <td>
+                                    <?php echo number_format((float)($product['totalQuantity']), 2, '.', ''); ?>
+                                </td>
                                 <td><?php echo $product['unit']; ?></td>
                                 <td><?php echo $product['unit_price']; ?></td>
                                 <td>
+                                    <?php if($params["acl_page"]["acl_write"] or $this->session->userdata('type') === "admin") :?>
                                     <a href=" <?php echo base_url('admin/product/edit/'. $product['product']); ?>" class="btn btn-primary btn-xs">Modifier</a>
-                                    <a href=" <?php echo base_url('admin/product/statistic/'. $product['product']); ?>" class="btn btn-warning btn-xs">Statistiques</a>
-                                    <?php if($product['min_quantity'] > $product['totalQuantity'] && $product['provider']>0 ){?>
-                                    <a href=" <?php echo base_url('admin/provider/show/'. $product['provider']); ?>" class="btn btn-primary btn-xs">Commander</a>
-                                    <?php } ?>
+                                    <?php endif; ?>
+
+                                    <?php if ($params["acl_page"]["acl_delete"] or $this->session->userdata('type') === "admin") : ?>
                                     <div class="btn btn-info btn-xs open">Articles</div>
+                                    <?php endif; ?>
+
+                                    <?php if ($params["acl_page"]["statistic"] or $this->session->userdata('type') === "admin") : ?>
+                                        <a href=" <?php echo base_url('admin/product/statistic/' . $product['product']); ?>"
+                                           class="btn btn-warning btn-xs">Statistiques</a>
+                                    <?php endif; ?>
+
+                                    <?php if ($params["acl_page"]["acl_delete"] or $this->session->userdata('type') === "admin") : ?>
                                     <a  class="btn btn-danger btn-xs deleteProduct" data-id="<?php echo $product['product']; ?>">Supprimer</a>
+                                    <?php endif; ?>
+
+                                    <?php if ($product['min_quantity'] > $product['totalQuantity'] && $product['provider'] > 0 && ($params["acl_page"]["acl_write"] or $this->session->userdata('type') === "admin")) { ?>
+                                        <a href=" <?php echo base_url('admin/provider/show/' . $product['provider']); ?>"
+                                           class="btn btn-success btn-xs">Commander</a>
+                                    <?php } ?>
                                 </td>
                             </tr>
                                 <tr class="productsRow">
@@ -143,15 +159,25 @@
                             <tr class="productsList <?php echo $status; ?>">
                                 <td><?php echo $composition['product'];?></td>
                                 <td><?php echo $composition['name']; ?></td>
-                                <td><?php echo $composition['totalQuantity']; ?></td>
+                                <td>
+                                    <?php echo number_format((float)($composition['totalQuantity']), 2, '.', ''); ?>
+                                </td>
                                 <td><?php echo $composition['unit']; ?></td>
                                 <td><?php echo $composition['unit_price']; ?></td>
                                 <td>
+                                <?php if ($params["acl_page"]["acl_write"] or $this->session->userdata('type') === "admin") : ?>
                                     <a href=" <?php echo base_url('admin/product/editComposition/'. $composition['product']); ?>" class="btn btn-primary btn-xs">Modifier</a>
+                                <?php endif; ?>
+                                <?php if ($params["acl_page"]["statistic"] or $this->session->userdata('type') === "admin") : ?>
                                     <a href=" <?php echo base_url('admin/product/statistic/' . $composition['product']); ?>"
                                        class="btn btn-warning btn-xs">Statistiques</a>
+                                <?php endif; ?>
+                                <?php if ($params["acl_page"]["acl_read"] or $this->session->userdata('type') === "admin") : ?>
                                     <div class="btn btn-info btn-xs open">Articles</div>
+                                <?php endif; ?>
+                                <?php if ($params["acl_page"]["acl_delete"] or $this->session->userdata('type') === "admin") : ?>
                                     <a  class="btn btn-danger btn-xs deleteProduct" data-id="<?php echo $composition['product']; ?>">Supprimer</a>
+                                <?php endif; ?>
                                 </td>
                             </tr>
                                 <tr class="productsRow">

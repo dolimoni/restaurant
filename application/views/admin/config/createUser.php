@@ -4,6 +4,7 @@
 <link href="<?php echo base_url("assets/build2/css/kendo.common.min.css"); ?>" rel="stylesheet"/>
 <link href="<?php echo base_url("assets/build2/css/kendo.default.min.css"); ?>" rel="stylesheet"/>
 <link href="<?php echo base_url("assets/build2/css/kendo.mobile.all.min.css"); ?>" rel="stylesheet"/>
+<link href="<?php echo base_url("assets/build2/css/font-awesome.min.css"); ?>" rel="stylesheet"/>
 
 <!-- page content -->
 <div class="right_col" role="main">
@@ -28,13 +29,12 @@
                     <div class="form-horizontal form-label-left" novalidate>
                         <span class="section">Information</span>
 
-                        <input type="hidden" name="id" value="<?php echo $user['id']; ?>"/>
                         <div class="item form-group">
                             <label class="control-label col-md-3 col-sm-3 col-xs-12" for="name">Nom <span
                                         class="required">*</span>
                             </label>
                             <div class="col-md-6 col-sm-6 col-xs-12">
-                                <input id="last_name" value="<?php echo $user['last_name']; ?>" class="form-control col-md-7 col-xs-12" data-validate-length-range="6"
+                                <input id="last_name" class="form-control col-md-7 col-xs-12" data-validate-length-range="6"
                                        data-validate-words="2" name="last_name" placeholder="Nom"
                                        required="required" type="text">
                             </div>
@@ -44,7 +44,7 @@
                                         class="required">*</span>
                             </label>
                             <div class="col-md-6 col-sm-6 col-xs-12">
-                                <input id="first_name" value="<?php echo $user['first_name']; ?>" class="form-control col-md-7 col-xs-12" data-validate-length-range="6"
+                                <input id="first_name" class="form-control col-md-7 col-xs-12" data-validate-length-range="6"
                                        data-validate-words="2" name="first_name" placeholder="Prénom"
                                        required="required" type="text">
                             </div>
@@ -54,7 +54,7 @@
                                         class="required">*</span>
                             </label>
                             <div class="col-md-6 col-sm-6 col-xs-12">
-                                <input type="email" value="<?php echo $user['email']; ?>" id="email" name="email" required="required"
+                                <input type="email" id="email" name="email" required="required"
                                        class="form-control col-md-7 col-xs-12">
                             </div>
                         </div>
@@ -63,7 +63,7 @@
                                         class="required">*</span>
                             </label>
                             <div class="col-md-6 col-sm-6 col-xs-12">
-                                <input type="tel" value="<?php echo $user['mobile']; ?>" id="number" name="mobile" required="required"
+                                <input type="tel"id="number" name="mobile" required="required"
                                        data-validate-minmax="10,100" class="form-control col-md-7 col-xs-12">
                             </div>
                         </div>
@@ -72,8 +72,35 @@
                                         class="required">*</span>
                             </label>
                             <div class="col-md-6 col-sm-6 col-xs-12">
-                                <input type="text" value="<?php echo $user['address']; ?>" id="address" name="address" required="required"
+                                <input type="text" id="address" name="address" required="required"
                                        data-validate-minmax="10,100" class="form-control col-md-7 col-xs-12">
+                            </div>
+                        </div>
+                        <div class="item form-group">
+                            <label class="control-label col-md-3 col-sm-3 col-xs-12" for="number">Role <span
+                                        class="required">*</span>
+                            </label>
+                            <div class="col-md-6 col-sm-6 col-xs-12">
+                               <select name="role" class="form-control col-md-7 col-xs-12">
+                                   <option data-role="user">User</option>
+                                   <?php if($params["department"]==="true") :?>
+                                   <option data-role="department">Département</option>
+                                   <option data-role="econome">Econome</option>
+                                   <?php endif; ?>
+                                   <option data-role="admin">Admin</option>
+                               </select>
+                            </div>
+                        </div>
+                        <div class="item form-group selectDepartment" hidden>
+                            <label class="control-label col-md-3 col-sm-3 col-xs-12" for="number">Département <span
+                                        class="required">*</span>
+                            </label>
+                            <div class="col-md-6 col-sm-6 col-xs-12">
+                               <select name="department" class="form-control col-md-7 col-xs-12">
+                                   <?php foreach ($departments as $department) { ?>
+                                   <option data-role="<?php echo $department["id"]?>"><?php echo $department["name"] ?></option>
+                                   <?php } ?>
+                               </select>
                             </div>
                         </div>
                         <div class="item form-group">
@@ -94,12 +121,7 @@
 
                         <div class="ln_solid"></div>
 
-                        <?php
-                        $hidden="";
-                        if($user["position"]==="Super Admin")
-                            $hidden="hidden";
-                        ?>
-                        <div class="item form-group" <?php echo $hidden ?>>
+                        <div class="item form-group aclList">
                             <label for="password2"
                                    class="control-label col-md-3 col-sm-3 col-xs-12">Droits d accèss</label>
                             <div class="col-md-6 col-sm-6 col-xs-12">
@@ -114,7 +136,7 @@
 
                         <div class="form-group">
                             <div class="col-md-6 col-md-offset-3">
-                                <!--<button type="submit" class="btn btn-primary">Annuler</button>-->
+                                <button type="submit" class="btn btn-primary">Annuler</button>
                                 <button id="send" class="btn btn-success">Envoyer</button>
                             </div>
                         </div>
@@ -135,6 +157,21 @@
 <script>
     $(document).ready(function () {
 
+        var role="user";
+        $("select[name=role]").on("change",function(){
+            var role = $(this).find("option:selected").attr("data-role");
+            if(role==="department"){
+                $(".selectDepartment").fadeIn();
+            }else{
+                $(".selectDepartment").fadeOut();
+            }
+
+            if(role==="user"){
+                $(".aclList").fadeIn();
+            }else{
+                $(".aclList").fadeOut();
+            }
+        });
 
         <?php
         $js_array = json_encode($controllers);
@@ -142,15 +179,7 @@
         ?>
 
         var dataSource = [];
-        console.log(controllers);
         $.each(controllers, function (key, controller) {
-              $.each(controller["actions"], function (key, action) {
-                if(action["checked"]==="false") {
-                    action["checked"] = false;
-                }else{
-                    action["checked"] = true;
-                }
-             });
             var dataSourceElement = {
                 text: controller["controller_label"],
                 items: controller["actions"]
@@ -236,16 +265,17 @@
             var treeView = $("#treeview").data("kendoTreeView");
             var actions = getCheckedItems(treeView);
 
-            var myActions = [];
+            console.log(actions);
+            var myActions=[];
             $.each(actions, function (key, action) {
-                var l_action = {};
-                if (!action["hasChildren"]) {
-                    l_action["action"] = action["action"];
-                    l_action["controller"] = action["controller"];
+                var l_action={};
+                if(!action["hasChildren"]){
+                    l_action["action"]= action["action"];
+                    l_action["controller"]= action["controller"];
                     myActions.push(l_action);
                 }
             });
-
+            console.log(myActions);
             var id = $("input[name=id]").val();
             var password = $("input[name=password]").val();
             var user = {
@@ -254,6 +284,7 @@
                 "email": $("input[name=email]").val(),
                 "mobile": $("input[name=mobile]").val(),
                 "address": $("input[name=address]").val(),
+                "type": role
             }
             var myData = {
                 "id": id,
@@ -261,8 +292,9 @@
                 "password": password,
                 "actions": myActions,
             }
+            console.log(myData);
             $.ajax({
-                url: "<?php echo base_url('admin/config/apiEditUser'); ?>",
+                url: "<?php echo base_url('admin/config/apiCreateUser'); ?>",
                 type: "POST",
                 dataType: "json",
                 data: myData,
@@ -290,15 +322,17 @@
                             showConfirmButton: false
                         });
                     }
+                    document.location.href = "<?php echo base_url("admin/config"); ?>";
                 },
                 error: function (data) {
-                    swal({
+                    document.location.href = "<?php echo base_url("admin/config"); ?>";
+                    /*swal({
                         title: "Erreur",
                         text: "Une erreur s'est produite",
-                        type: "warning",
+                        type: "error",
                         timer: 1500,
                         showConfirmButton: false
-                    });
+                    });*/
                 }
             });
 

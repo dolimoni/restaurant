@@ -173,9 +173,14 @@
                                                 if ($provider['id'] === $product['provider']) {
                                                     $selected = "selected";
                                                 }
+                                                $providerName = $provider['name'];
+                                                if ($providerName === "") {
+                                                    $providerName = $provider['title'];
+                                                }
+                                                ?>
                                                 ?>
                                                 <option name="provider"
-                                                        value="<?php echo $provider['id']; ?>" <?php echo $selected; ?>><?php echo $provider['name']; ?></option>
+                                                        value="<?php echo $provider['id']; ?>" <?php echo $selected; ?>><?php echo $providerName; ?></option>
                                             <?php } ?>
                                         </select>
                                     </div>
@@ -221,6 +226,8 @@
                                         <div class="text-center">
                                             <input type="submit" name="buttonSubmit" value="Confirmer"
                                                    class="btn btn-success "/>
+                                           <!-- <input type="submit" name="buttonSubmit" value="Confirmer et passer au suivant"
+                                                   class="btn btn-info"/>-->
                                         </div>
                                 </fieldset>
                             </form>
@@ -340,7 +347,8 @@
                             timer: 1500,
                             showConfirmButton: false
                         });
-                        window.location.href = data.redirect;
+                        var nextId= parseInt(id) + parseInt(1);
+                        window.location.href = "<?php echo base_url("admin/product/edit/"); ?>"+nextId;
                     }
                 },
                 error: function (data) {

@@ -76,9 +76,9 @@
                                     <tr>
                                         <td class="md-hidden-only"><?php echo $meal['m_id']; ?></td>
                                         <td><?php echo $meal['meal_name']; ?></td>
-                                        <td><?php echo $meal['sellPrice']; ?></td>
-                                        <td class="danger"><?php echo $meal['cost']; ?></td>
-                                        <td class="benefit"><?php echo $meal['profit']; ?></td>
+                                        <td><?php echo number_format((float)($meal['sellPrice']), 2, '.', ''); ?></td>
+                                        <td class="danger"><?php echo number_format((float)($meal['cost']), 2, '.', ''); ?></td>
+                                        <td class="benefit"><?php echo number_format((float)($meal['profit']), 2, '.', ''); ?></td>
                                         <td>
                                             <a href=" <?php echo base_url(); ?>admin/meal/edit/<?php echo $meal['m_id']; ?>"
                                                class="btn btn-primary btn-xs "><i class="fa fa-pencil"></i></a>
@@ -86,8 +86,10 @@
                                             <a href=" <?php echo base_url(); ?>admin/meal/view/<?php echo $meal['m_id']; ?>"
                                                class="btn btn-primary btn-xs "><i class="fa fa-eye"></i></a>
 
+                                    <?php if ($params["acl_page"]["statistic"] or $this->session->userdata('type') === "admin") : ?>
                                             <a href=" <?php echo base_url(); ?>admin/meal/report/<?php echo $meal['m_id']; ?>"
                                                class="btn btn-success btn-xs "><i class="fa fa-line-chart"></i></a>
+                                    <?php endif; ?>
 
                                             <div class="btn btn-primary btn-xs  open"><i class="fa fa-plus-square"></i>
                                             </div>
@@ -126,7 +128,7 @@
                                                     <tr class="success">
                                                         <td><?php echo $product['id']; ?></td>
                                                         <td><?php echo $product['name']; ?></td>
-                                                        <td><?php echo $product['unit_price']; ?></td>
+                                                        <td><?php echo number_format((float)($product['unit_price']), 2, '.', ''); ?></td>
                                                         <td><?php echo $product['mp_quantity']*$meal['quantity'] . ' ' . $product['mp_unit']; ?></td>
                                                         <td><?php echo $product['mp_quantity'] * $product['unit_price']* $product['unitConvert']* $meal['quantity']; ?></td>
                                                         <td><?php echo $product['consumptionRate'] * 100; ?>%</td>

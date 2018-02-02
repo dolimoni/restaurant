@@ -113,7 +113,7 @@
     }
 
     .right_col{
-        min-height: 1250px !important;
+        min-height: 950px !important;
     }
 
     /* Accordion responsive breakpoint */
@@ -132,6 +132,7 @@
 <!-- page content -->
 <div class="right_col" role="main">
     <div class="productsList">
+
         <div class="page-title">
             <div class="title_left">
                 <h3>Configuration générale</h3>
@@ -209,10 +210,6 @@
                                         </div>
                                     </div>
                                     <br/>
-                                    <button class="btn btn-info action"
-                                            onclick="window.location.href='<?php echo base_url("admin/config/editUser/". $user['id']); ?>'">
-                                        <span></span>Modifier
-                                    </button>
                                 </div>
                                 <div class="col-md-6 col-sm-4 col-xs-12">
                                     <img src="<?= base_url('assets/images/' . $params['photo']); ?>" alt="icon">
@@ -221,60 +218,6 @@
                         </div>
                     </div>
                 </div> <!-- /content -->
-            </div>
-
-            <div class="x_panel">
-                <div class="x_title">
-                    Liste des utilisateurs
-                </div>
-                <div class="x_content">
-                    <table id="datatable-users" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
-                        <thead>
-                        <tr>
-                            <th>Nom</th>
-                            <th>Prénom</th>
-                            <th>Téléphone</th>
-                            <th>Email</th>
-                            <th>Role</th>
-                            <th>Actions</th>
-                        </tr>
-                        </thead>
-                        <tfoot>
-                        <tr>
-                            <th>Nom</th>
-                            <th>Prénom</th>
-                            <th>Téléphone</th>
-                            <th>Email</th>
-                            <th>Role</th>
-                            <th>Actions</th>
-                        </tr>
-                        </tfoot>
-                        <tbody>
-                            <?php foreach ($allUsers as $user){ ?>
-                            <tr>
-                                <td><?php echo  $user["first_name"]; ?></td>
-                                <td><?php echo  $user["last_name"]; ?></td>
-                                <td><?php echo  $user["mobile"]; ?></td>
-                                <td><?php echo  $user["email"]; ?></td>
-                                <td><?php echo  $user["type"]; ?></td>
-                                <td>
-                                    <a href=" <?php echo base_url(); ?>admin/config/editUser/<?php echo $user['id']; ?>"
-                                       class="btn btn-primary  btn-xs"><i class="fa fa-pencil"></i></a>
-                                    <?php if($user["type"]!=="admin") :?>
-                                    <a data-id="<?php echo $user['id']; ?>" class="btn btn-danger btn-xs deleteUser"><i class="fa fa-trash"></i></a>
-                                    <?php endif; ?>
-                                </td>
-                            </tr>
-                            <?php } ?>
-                        </tbody>
-                    </table>
-                </div> <!-- /content -->
-                <?php if($params["addUsers"]==="true") :?>
-                <button class="btn btn-info action"
-                        onclick="window.location.href='<?php echo base_url("admin/config/createUser"); ?>'">
-                    <span></span>Nouveau
-                </button>
-                <?php endif; ?>
             </div><!-- /x-panel -->
         </div>
     </div>
@@ -307,72 +250,6 @@
         }();
 
         TableManageButtons.init();
-    });
-</script>
-
-
-<script>
-    $(document).ready(function () {
-        $('a.deleteUser').on('click', deleteUser);
-
-
-        function deleteUser() {
-            var user_id = $(this).attr('data-id');
-            $(this).closest('tr').hide();
-            swal({
-                    title: "Attention ! ",
-                    text: "Vous voulez vraiment supprimer cet utilisateur ?",
-                    type: "warning",
-                    showConfirmButton: true,
-                    showCancelButton: true,
-                    cancelButtonText: 'Non',
-                    confirmButtonText: 'Oui'
-                },
-                function () {
-                    $('#loading').show();
-                    $.ajax({
-                        url: "<?php echo base_url('admin/config/apiDeleteUser'); ?>",
-                        type: "POST",
-                        dataType: "json",
-                        data: {'user_id': user_id},
-                        success: function (data) {
-                            $('#loading').hide();
-                            if (data.status === 'success') {
-                                swal({
-                                    title: "Success",
-                                    text: "L'utilisateur a été bien supprimé",
-                                    type: "success",
-                                    timer: 1500,
-                                    showConfirmButton: false
-                                });
-                                location.reload();
-                            }
-                            else {
-                                swal({
-                                    title: "Erreur",
-                                    text: "Une erreur s'est produite",
-                                    type: "error",
-                                    timer: 1500,
-                                    showConfirmButton: false
-                                });
-                            }
-                        },
-                        error: function (data) {
-                            $('#loading').hide();
-                            swal({
-                                title: "Erreur",
-                                text: "Une erreur s'est produite",
-                                type: "error",
-                                timer: 1500,
-                                showConfirmButton: false
-                            });
-                        }
-                    });
-
-                });
-
-
-        }
     });
 </script>
 

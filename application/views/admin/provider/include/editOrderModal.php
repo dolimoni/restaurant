@@ -10,7 +10,7 @@
                     <span class="sr-only">Close</span>
                 </button>
                 <h4 class="modal-title" id="myModalLabel">
-                    Modifier la commande
+                    <span></span>
                 </h4>
             </div>
 
@@ -201,6 +201,9 @@
                 <button type="button" class="btn btn-default"
                         data-dismiss="modal">
                     Annuler
+                </button>
+                <button type="button" class="btn btn-success payOrder">
+                    Payer la commande
                 </button>
                 <button type="submit" class="btn btn-warning" name="editPrint">
                     <span class="fa fa-print"></span> Imprimer

@@ -35,12 +35,16 @@
                     <label>Titre</label>
                     <input type="text" class="form-control" name="title" required value="<?php echo $report["title"] ?>" placeholder="Ajouter titre" />
                 </div>
-                <div class="form-group col-md-11">
-                    <label>Envoyer à </label>
-                    <input id="email_to" type="email" class="form-control" name="email" placeholder="Ajouter l'adresse e-mail" />
-                </div>
-                <div class="form-group col-md-1">
-                    <a id="add_email" href="#" class="btn btn-primary">Ajouter</a>
+                <div clss="row">
+                    <div class="form-group col-md-11">
+                        <label>Envoyer à </label>
+                        <input id="email_to" type="email" class="form-control" name="email"
+                               placeholder="Ajouter l'adresse e-mail"/>
+                    </div>
+                    <div class="form-group col-md-1">
+                        <label style=" height:18px;"></label>
+                        <a id="add_email" href="#" class="btn btn-primary">Ajouter</a>
+                    </div>
                 </div>
                 <div class="form-group col-md-12" id="display_emails"></div>
                 <div class="form-group col-md-12">

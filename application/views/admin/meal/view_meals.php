@@ -117,8 +117,8 @@
                                         <td><?php echo $meal['meal_name']; ?></td>
                                         <td class="sm-hidden"><?php echo $meal['g_name']; ?></td>
                                         <td><?php echo $meal['sellPrice']; ?></td>
-                                        <td class="danger"><?php echo $meal['cost']; ?></td>
-                                        <td class="benefit"><?php echo $meal['profit']; ?></td>
+                                        <td class="danger"><?php echo number_format((float)($meal['cost']), 2, '.', ''); ?></td>
+                                        <td class="benefit"><?php echo number_format((float)($meal['profit']), 2, '.', ''); ?></td>
                                         <td>
                                             <a href=" <?php echo base_url(); ?>admin/meal/edit/<?php echo $meal['meal_id']; ?>"
                                                class="btn btn-primary  btn-xs"><i class="fa fa-pencil"></i></a>
@@ -126,8 +126,10 @@
                                             <a href=" <?php echo base_url(); ?>admin/meal/view/<?php echo $meal['meal_id']; ?>"
                                                class="btn btn-primary btn-xs"><i class="fa fa-eye"></i></a>
 
+                                    <?php if ($params["acl_page"]["statistic"] or $this->session->userdata('type') === "admin") : ?>
                                             <a href=" <?php echo base_url(); ?>admin/meal/report/<?php echo $meal['meal_id']; ?>"
                                                class="btn btn-success btn-xs"><i class="fa fa-line-chart"></i></a>
+                                    <?php endif; ?>
 
                                             <div class="btn btn-primary btn-xs open"><i class="fa fa-plus-square"></i></div>
 

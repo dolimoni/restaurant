@@ -58,9 +58,14 @@
                                         Fournisseur :
                                         <select class="form-control" name="provider">
                                             <option value="0">Aucun</option>
-                                            <?php foreach ($providers as $provide) { ?>
+                                            <?php foreach ($providers as $provide) {
+                                                $providerName= $provide['name'];
+                                                if($providerName===""){
+                                                    $providerName= $provide['title'];
+                                                }
+                                                ?>
                                                 <option
-                                                        value="<?php echo $provide['id']; ?>"><?php echo $provide['name']; ?></option>
+                                                        value="<?php echo $provide['id']; ?>"><?php echo $providerName; ?></option>
                                             <?php } ?>
                                         </select>
                                     </div>
