@@ -13,6 +13,9 @@
         <div class="page-title">
             <div class="title_left">
                 <h3>Liste des fournisseurs</h3>
+                <label for="exampleInputName2">Rechercher</label>
+                <input type="text" placeholder="Nom du fournisseur" class="form-control" id="searchInput"
+                       onkeyup="myFunction()">
             </div>
         </div>
         <div class="clearfix"></div>
@@ -20,6 +23,7 @@
         <div class="article-title">
             <a class="btn btn-primary" data-toggle="collapse" href="#collapseExample" aria-expanded="false"
                aria-controls="collapseExample">Nouveau</a>
+            <a class="btn btn-info" href="<?php echo base_url("admin/provider/allOrders");?>">Toutes les commandes</a>
         </div>
         <div class="collapse" id="collapseExample">
             <?php echo validation_errors(); ?>
@@ -185,7 +189,8 @@
        <div class="container">
            <div class="row">
                <?php foreach ($providers as $provider) { ?>
-                   <div class="col-md-4 col-sm-4 col-xs-12 profile_details" data-id="<?php echo $provider['id']; ?>">
+                   <div class="col-md-4 col-sm-4 col-xs-12 profile_details"
+                        data-name="<?php echo $provider['name'] . " " . $provider['prenom']; ?>" data-id="<?php echo $provider['id']; ?>">
                        <div class="well profile_view">
                            <div class="col-sm-12 showProvider" data-id="<?php echo $provider['id']; ?>">
                                <h4 class="brief"><i> <?php echo $provider['title']; ?> </i></h4>
@@ -455,4 +460,25 @@
 
         }
     });
+</script>
+
+
+<!--Search in table-->
+<script>
+    function myFunction() {
+        var input, filter, table, tr, td, i;
+        input = document.getElementById("searchInput");
+        filter = input.value.toUpperCase();
+        profiles = document.getElementsByClassName("profile_details");
+        for (i = 0; i < profiles.length; i++) {
+            profile = profiles[i].getAttribute("data-name");
+            if (profile) {
+                if (profile.toUpperCase().indexOf(filter) > -1) {
+                    profiles[i].style.display = "";
+                } else {
+                    profiles[i].style.display = "none";
+                }
+            }
+        }
+    }
 </script>

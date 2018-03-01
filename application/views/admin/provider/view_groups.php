@@ -24,7 +24,7 @@
                     <div class="row">
                         <div class="col-xs-4">
                             <br>
-                            <label for="title">Article :</label>
+                            <label for="title">Groupe :</label>
                             <input type="text" class="form-control" name="title"
                                    placeholder="Titre"
                                    required>
@@ -47,7 +47,7 @@
                     <div class="row">
                         <div class="col-xs-4">
                             <br>
-                            <label for="title">Article :</label>
+                            <label for="title">Groupe :</label>
                             <input type="text" class="form-control" name="title"
                                    placeholder="Titre"
                                    required>
@@ -69,14 +69,14 @@
             <table id="datatable-reparation" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
                 <thead>
                 <tr>
-                    <th>Article</th>
+                    <th>Groupe</th>
                     <th>Date de création</th>
                     <th>Actions</th>
                 </tr>
                 </thead>
                 <tfoot>
                 <tr>
-                    <th>Article</th>
+                    <th>Groupe</th>
                     <th>Date de création</th>
                     <th>Actions</th>
                 </tr>

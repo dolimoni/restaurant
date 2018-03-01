@@ -1,13 +1,23 @@
 <?php $this->load->view('admin/partials/admin_header.php'); ?>
+<style>
+    tr{
+        white-space: nowrap;
+    }
+</style>
 <!-- page content -->
 <div class="right_col" role="main">
     <div class="">
         <div class="page-title">
-            <!--<pre>
-                <?php /*print_r($params["acl_page"]); */?>
-            </pre>-->
-            <div class="title_left">
-                <h3>Produits</h3>
+            <div class="row">
+                <div class="col-xs-12 col-sm-12">
+                    <a href="<?php echo base_url("admin/product/consumption"); ?>" class="btn btn-info" name="printSalesReport">
+                        <span class="fa fa-print"></span>Historique de consommation
+                    </a>
+                    <a href="<?php echo base_url("admin/product/inventoryHistory"); ?>" class="btn btn-success" name="printSalesReport">
+                        <span class="fa fa-print"></span>Historique d'inventaire
+                    </a>
+                </div>
+
             </div>
         </div>
         <div class="clearfix"></div>
@@ -32,10 +42,10 @@
                     <div class="x_content table-responsive">
                         <table class="table table-striped" id="searchTable">
                             <tr>
-                                <th>
+                                <th width="15%">
                                     Id
                                 </th>
-                                <th>
+                                <th width="20%">
                                     Produit
                                 </th>
                                 <th>
@@ -47,7 +57,13 @@
                                 <th>
                                     Prix unitaire
                                 </th>
-                                <th colspan="2">
+                                <th width="5%">
+                                    Prix total
+                                </th>
+                                <th width="5%">
+                                    %
+                                </th>
+                                <th width="40%">
                                     Actions
                                 </th>
                             </tr>
@@ -63,6 +79,8 @@
                                 </td>
                                 <td><?php echo $product['unit']; ?></td>
                                 <td><?php echo $product['unit_price']; ?></td>
+                                <td><?php echo $product['sitting_money']; ?></td>
+                                <td><?php echo number_format($product['sitting_money'] / $sittingMoney * 100, 2); ?>%</td>
                                 <td>
                                     <?php if($params["acl_page"]["acl_write"] or $this->session->userdata('type') === "admin") :?>
                                     <a href=" <?php echo base_url('admin/product/edit/'. $product['product']); ?>" class="btn btn-primary btn-xs">Modifier</a>
@@ -88,7 +106,7 @@
                                 </td>
                             </tr>
                                 <tr class="productsRow">
-                                    <td colspan="6">
+                                    <td colspan="8">
                                         <table class="table">
                                             <thead>
                                             <tr class="info">
@@ -146,9 +164,9 @@
                                     Unité
                                 </th>
                                 <th>
-                                    Prix unitaire
+                                    Prix unitair
                                 </th>
-                                <th colspan="2">
+                                <th colspan="4">
                                     Actions
                                 </th>
                             </tr>
@@ -164,7 +182,8 @@
                                 </td>
                                 <td><?php echo $composition['unit']; ?></td>
                                 <td><?php echo $composition['unit_price']; ?></td>
-                                <td>
+                                </td>
+                                <td colspan="4">
                                 <?php if ($params["acl_page"]["acl_write"] or $this->session->userdata('type') === "admin") : ?>
                                     <a href=" <?php echo base_url('admin/product/editComposition/'. $composition['product']); ?>" class="btn btn-primary btn-xs">Modifier</a>
                                 <?php endif; ?>
@@ -207,7 +226,7 @@
                                             <?php foreach ($composition['meals'] as $meal) { ?>
                                                 <tr class="success">
                                                     <td><?php echo $meal['name']; ?></td>
-                                                    <td>Test</td>
+                                                    <td></td>
                                                     <td><?php echo $meal['quantity'] . ' ' . $meal['mp_unit']; ?></td>
                                                     <td><?php echo $meal['quantity'] * $product['unit_price'] * $meal['unitConvert']; ?></td>
                                                     <td><?php echo $meal['consumptionRate'] * 100; ?>%</td>
@@ -265,12 +284,17 @@
             var myData={
                 'id':data['id']
             };
-            console.log(myData);
             $.ajax({
                 url: "<?php echo base_url('admin/product/apiDelete')?>",
                 type: "POST",
                 dataType: "json",
                 data: myData,
+                beforeSend: function () {
+                    $('#loading').show();
+                },
+                complete: function () {
+                    $('#loading').hide();
+                },
                 success: function (data) {
                     if (data.status === "success") {
                         swal({

@@ -14,13 +14,17 @@
 
             <div class="title_left">
                 <h3>Liste des employés</h3>
+                <label for="exampleInputName2">Rechercher</label>
+                <input type="text" placeholder="Nom de l'employé" class="form-control" id="searchInput"
+                       onkeyup="myFunction()">
             </div>
         </div>
         <div class="clearfix"></div>
         <hr>
         <div class="article-title">
             <a class="btn btn-primary" data-toggle="collapse" href="#collapseExample" aria-expanded="false"
-               aria-controls="collapseExample">Ajouter</a>
+               aria-controls="collapseExample">Nouveau employée</a>
+            <a class="btn btn-info" href="<?php echo base_url("admin/employee/all"); ?>">Liste des employées</a>
         </div>
         <div class="collapse" id="collapseExample">
             <form id="addEmployeeForm" enctype="multipart/form-data">
@@ -175,7 +179,7 @@
         </div>
         <div class="row">
             <?php foreach ($employees as $employee) { ?>
-                <div class="col-md-4 col-sm-4 col-xs-12 profile_details" data-id="<?php echo $employee['id']; ?>">
+                <div class="col-md-4 col-sm-4 col-xs-12 profile_details" data-name="<?php echo $employee['name']." ". $employee['prenom']; ?>" data-id="<?php echo $employee['id']; ?>">
                     <div class="well profile_view">
                         <div class="col-sm-12 profile_details-link" data-id="<?php echo $employee['id']; ?>">
                             <h4 class="brief"><i> <?php echo $employee['workType']; ?> </i></h4>
@@ -434,3 +438,23 @@
     });
 </script>
 
+
+<!--Search in table-->
+<script>
+    function myFunction() {
+        var input, filter, table, tr, td, i;
+        input = document.getElementById("searchInput");
+        filter = input.value.toUpperCase();
+        profiles = document.getElementsByClassName("profile_details");
+        for (i = 0; i < profiles.length; i++) {
+            profile = profiles[i].getAttribute("data-name");
+            if (profile) {
+                if (profile.toUpperCase().indexOf(filter) > -1) {
+                    profiles[i].style.display = "";
+                } else {
+                    profiles[i].style.display = "none";
+                }
+            }
+        }
+    }
+</script>

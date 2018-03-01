@@ -15,7 +15,7 @@
     .orderImpaid span{
         color:white;
         background:red;
-        padding: 5px 20px;
+        padding: 5px 8px;
         border-radius: 5px;
     }
 
@@ -209,9 +209,9 @@
                                     <!-- required for floating -->
                                     <!-- Nav tabs -->
                                     <ul class="nav nav-tabs tabs-left">
-                                        <li class=""><a href="#tab_products" data-toggle="tab" aria-expanded="true">Produits</a>
+                                        <li class="active"><a href="#tab_products" data-toggle="tab" aria-expanded="true">Produits</a>
                                         </li>
-                                        <li class="active"><a href="#tab_productsToOrder" data-toggle="tab" aria-expanded="true">Produits
+                                        <li class=""><a href="#tab_productsToOrder" data-toggle="tab" aria-expanded="true">Produits
                                                 à commander</a>
                                         </li>
                                         <li class=""><a href="#tab_orders" data-toggle="tab" aria-expanded="false">Historique
@@ -327,7 +327,8 @@
                                                 <tr>
                                                     <th>#</th>
                                                     <th>Montant</th>
-                                                    <th>Date</th>
+                                                    <th>Date commande</th>
+                                                    <th>Date paiement</th>
                                                     <th>Status</th>
                                                     <th>Paiement</th>
                                                     <th>Actions</th>
@@ -337,7 +338,8 @@
                                                 <tr>
                                                     <th>#</th>
                                                     <th>Montant</th>
-                                                    <th>Date</th>
+                                                    <th>Date commande</th>
+                                                    <th>Date paiement</th>
                                                     <th>Status</th>
                                                     <th>Paiement</th>
                                                     <th>Actions</th>
@@ -348,20 +350,30 @@
                                                     $orderStatus = "En attente";
                                                     $paid = "Non payée";
                                                     $paidClass="orderImpaid";
+                                                    $datetime = $order['paymentDate'];
+                                                    $paymentDateTime = strtotime($datetime);
+                                                    $paymentDate="";
                                                     if ($order['status'] === "canceled") {
                                                         $orderStatus = "Annulée";
                                                     } else if ($order['status'] === "received") {
                                                         $orderStatus = "Reçue";
                                                     }
+
                                                     if($order['paid']==="true"){
                                                         $paid="Payée";
                                                         $paidClass="orderPaid";
+                                                        $paymentDate=date("d-m-Y", $paymentDateTime);
                                                     }
+                                                    $datetime = $order['created_at'];
+                                                    $created_at = strtotime($datetime);
+
+
                                                     ?>
                                                     <tr data-id="<?php echo $order['id']; ?>">
                                                         <td><?php echo $order['id']; ?></td>
                                                         <td><?php echo $order['ttc']; ?></td>
-                                                        <td><?php echo $order['created_at']; ?></td>
+                                                        <td><?php echo date("d-m-Y", $created_at); ?></td>
+                                                        <td data-paymentDate><?php echo $paymentDate; ?></td>
                                                         <td><?php echo $orderStatus; ?></td>
                                                         <td data-paid class="<?php echo $paidClass; ?>"><span><?php echo $paid; ?></span></td>
                                                         <td class="vertical-align-mid">
@@ -570,6 +582,27 @@
 <script src="<?php echo base_url('assets/vendors/moment/min/moment.min.js'); ?>"></script>
 
 
+<!--Search in table-->
+<script>
+    function myFunction() {
+        var input, filter, table, tr, td, i;
+        input = document.getElementById("searchInput");
+        filter = input.value.toUpperCase();
+        productsOrder = document.getElementById("productsOrder");
+        profiles = productsOrder.getElementsByClassName("product");
+        for (i = 0; i < profiles.length; i++) {
+            profile = profiles[i].getAttribute("data-name");
+            console.log(profile);
+            if (profile) {
+                if (profile.toUpperCase().indexOf(filter) > -1) {
+                    profiles[i].style.display = "";
+                } else {
+                    profiles[i].style.display = "none";
+                }
+            }
+        }
+    }
+</script>
 
 
 
@@ -759,6 +792,12 @@
             type: "POST",
             dataType: "json",
             data: {'id': $(this).attr('data-id')},
+            beforeSend: function () {
+                $('#loading').show();
+            },
+            complete: function () {
+                $('#loading').hide();
+            },
             success: function (data) {
                 if (data.status === true) {
                     $(".orderId").val(data.order['o_id']);
@@ -789,10 +828,16 @@
                         $("#editOrderModal .modal-title span").html("Commande impayée");
                         $("#editOrderModal .modal-title").addClass("orderImpaid");
                         $("#editOrderModal .modal-title").removeClass("orderPaid");
+                        $("#editOrderModal .payOrder").prop('value', 'Payer la commande');
+                        $("#editOrderModal .payOrder").addClass("btn-success");
+                        $("#editOrderModal .payOrder").removeClass("btn-danger");
                     } else {
                         $("#editOrderModal .modal-title span").html("Commande payée");
                         $("#editOrderModal .modal-title").addClass("orderPaid");
                         $("#editOrderModal .modal-title").removeClass("orderImpaid");
+                        $("#editOrderModal .payOrder").prop('value', 'Annuler le paiement');
+                        $("#editOrderModal .payOrder").removeClass("btn-success");
+                        $("#editOrderModal .payOrder").addClass("btn-danger");
                     }
                 }
                 else {
@@ -827,12 +872,24 @@
                               timer: 1500,
                               showConfirmButton: false
                           });
-                          $("#tab_orders table tbody tr[data-id=" + $('.orderId').val() + "] td[data-paid] span").html("Payée");
-                          $("#tab_orders table tbody tr[data-id=" + $('.orderId').val() + "] td[data-paid]").addClass("orderPaid");
-                          $("#tab_orders table tbody tr[data-id=" + $('.orderId').val() + "] td[data-paid]").removeClass("orderImpaid");
-                          $("#editOrderModal .modal-title span").html("Commande payée");
-                          $("#editOrderModal .modal-title").addClass("orderPaid");
-                          $("#editOrderModal .modal-title").removeClass("orderImpaid");
+                          if(data.paid==="true"){
+                              $("#tab_orders table tbody tr[data-id=" + $('.orderId').val() + "] td[data-paid] span").html("Payée");
+                              $("#tab_orders table tbody tr[data-id=" + $('.orderId').val() + "] td[data-paymentDate]").html(data.paymentDate);
+                              $("#tab_orders table tbody tr[data-id=" + $('.orderId').val() + "] td[data-paid]").addClass("orderPaid");
+                              $("#tab_orders table tbody tr[data-id=" + $('.orderId').val() + "] td[data-paid]").removeClass("orderImpaid");
+                              $("#editOrderModal .modal-title span").html("Commande payée");
+                              $("#editOrderModal .modal-title").addClass("orderPaid");
+                              $("#editOrderModal .modal-title").removeClass("orderImpaid");
+                          }else{
+                              $("#tab_orders table tbody tr[data-id=" + $('.orderId').val() + "] td[data-paid] span").html("Non payée");
+                              $("#tab_orders table tbody tr[data-id=" + $('.orderId').val() + "] td[data-paymentDate]").html("");
+                              $("#tab_orders table tbody tr[data-id=" + $('.orderId').val() + "] td[data-paid]").removeClass("orderPaid");
+                              $("#tab_orders table tbody tr[data-id=" + $('.orderId').val() + "] td[data-paid]").addClass("orderImpaid");
+                              $("#editOrderModal .modal-title span").html("Commande impayée");
+                              $("#editOrderModal .modal-title").removeClass("orderPaid");
+                              $("#editOrderModal .modal-title").addClass("orderImpaid");
+                          }
+                          $('#editOrderModal').modal('toggle');
                       }else{
                               swal({
                                   title: "Erreur",

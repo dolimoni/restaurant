@@ -202,9 +202,8 @@
                         data-dismiss="modal">
                     Annuler
                 </button>
-                <button type="button" class="btn btn-success payOrder">
-                    Payer la commande
-                </button>
+                <input type="button" class="btn btn-success payOrder" value="Payer la commande">
+                </input>
                 <button type="submit" class="btn btn-warning" name="editPrint">
                     <span class="fa fa-print"></span> Imprimer
                 </button>

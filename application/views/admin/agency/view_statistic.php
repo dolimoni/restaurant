@@ -26,8 +26,9 @@
         </div>
         <div  class="pull-right">
             <select id="agencies" class="form-control">
-                <option value="1">GAUTIER</option>
-                <option value="2">ANFA</option>
+                <?php foreach ($agencies as $agency){ ?>
+                    <option value="<?php echo $agency["id"] ?>"><?php echo $agency["name"] ?></option>
+                <?php } ?>
                 <option value="all">Toutes les agences</option>
             </select>
         </div>
@@ -60,7 +61,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-xs-12">
                 <div class="x_panel">
                     <div class="x_title">
                         <h2>Historique
@@ -85,7 +86,7 @@
                 </div>
             </div>
         </div>
-        <div class="row">
+        <div class="row" hidden>
             <div class="col-md-6 col-sm-6 col-xs-12" id="chartContainer" style="height: 300px;"></div>
             <div class="col-md-6 col-sm-6 col-xs-12" style="height: 300px;">
                 <div id="graph_bar_group2" style="background:#fff; height:300px;"></div>
@@ -95,6 +96,7 @@
 </div>
 
 <?php $this->load->view('admin/partials/admin_footer'); ?>
+<script src="<?php echo base_url('assets/build2/js/besystem.js'); ?>"></script>
 
 <!-- bootstrap-daterangepicker -->
 <script src="<?php echo base_url('assets/vendors/moment/min/moment.min.js'); ?>"></script>
@@ -233,13 +235,21 @@
         if ($("#chart_plot_05").length) {
             <?php
             $js_array = json_encode($report['sales_history']);
+            $js_array_charge = json_encode($report['charges_history']);
             echo "var sales = " . $js_array . ";\n";
+            echo "var charges = " . $js_array_charge . ";\n";
             ?>
             var chart_plot_05_data = [];
+            var chart_plot_charge_data = [];
 
             $.each(sales, function (key, sale) {
                 chart_plot_05_data.push([new Date(sale['report_date']), sale['s_amount']]);
             });
+
+            $.each(charges, function (key, charge) {
+                chart_plot_charge_data.push([new Date(charge['paymentDate']), charge['price']]);
+            });
+
             timeformat = "%d-%m-%y";
             if($(document).width()<= 450){
                 timeformat = "%m-%y";
@@ -284,7 +294,7 @@
                     width: 40,
                     height: 1
                 },
-                colors: ['#96CA59', '#3F97EB', '#72c380', '#6f7a8a', '#f7cb38', '#5a8022', '#2c7282'],
+                colors: ['#96CA59', '#FF7070','#3F97EB', '#72c380', '#6f7a8a', '#f7cb38', '#5a8022', '#2c7282'],
                 shadowSize: 0,
                 tooltip: true,
                 tooltipOpts: {
@@ -314,6 +324,15 @@
                     data: chart_plot_05_data,
                     lines: {
                         fillColor: "rgba(150, 202, 89, 0.12)"
+                    },
+                    points: {
+                        fillColor: "#fff"
+                    }
+                }, {
+                    label: "Dépense",
+                    data: chart_plot_charge_data,
+                    lines: {
+                        fill: false,
                     },
                     points: {
                         fillColor: "#fff"
@@ -391,11 +410,9 @@
 
 
 <script>
-    var mainAgencyLink = "<?php echo base_url(''); ?>";
-    var agency1Link = "https://fiori.ga";
-    var rangeAgencyLink="";
+    var statisticLink = "<?php echo base_url('admin/api/agency/apiStatistic'); ?>";
 </script>
-<script src="<?php echo base_url('assets/dist/js/agence/statistics.js'); ?>"></script>
+<script src="<?php echo base_url('assets/build2/js/agency/statistics.js'); ?>"></script>
 
 
 

@@ -20,6 +20,7 @@ class Meal extends BaseController {
 	{
         $this->log_begin();
         $data['meals'] = $this->model_meal->getAll();
+        $data['hasAtLeasOneProduct'] = $this->model_meal->hasAtLeasOneProduct();
         $data['groups'] = $this->model_group->getAll();
         $data['params'] = $this->getParams();
         $this->parser->parse('admin/meal/view_meals', $data);
@@ -372,8 +373,18 @@ class Meal extends BaseController {
     {
        try {
            $this->log_begin();
-           $productsList = $this->input->post('mealsList');
-           $response = $this->model_meal->consumption($productsList);
+           $response=array(
+               "status"=>"success",
+               "productsList"=>array(),
+           );
+           $mealsList = $this->input->post('mealsList');
+           $params = $this->input->post('params');
+           if($params["deleteSales"]==="true"){
+               $this->model_meal->deleteConsumption($params);
+           }
+           if($mealsList){
+               $response = $this->model_meal->consumption($mealsList);
+           }
            $this->output
                ->set_content_type("application/json")
                ->set_output(json_encode(array('status' => $response['status'],'productsList'=>$response['productsList'])));

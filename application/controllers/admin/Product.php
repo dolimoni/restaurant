@@ -2,6 +2,7 @@
 
 class Product extends BaseController {
 
+    private $slaveAgencies="";
 	public function __construct()
 	{
 		parent::__construct();
@@ -12,17 +13,62 @@ class Product extends BaseController {
 		//$this->load->database();
 		$this->load->model('model_product');
 		$this->load->model('model_provider');
+		$this->load->model('model_agency');
+		
+		$this->slaveAgencies= $this->model_agency->getSlaves();
 
 	}
 	public function index()
 	{
         $this->log_begin();
         $data['products'] = $this->model_product->getAll(true,false);//param1: get Meals,param2:get compositions
+        $data['sittingMoney'] = $this->model_product->getSittingMoney();
         $data['productsComposition'] = $this->model_product->getCompositions(true);//true: get Meals
         $data['providers'] = $this->model_provider->getAll();
        /* $this->control();*/
         $data['params'] = $this->getParams();
         $this->parser->parse('admin/product/view_products', $data);
+        $this->log_end($data);
+    }
+
+    public function consumption()
+	{
+	    $this->load->model("model_report");
+        $this->log_begin();
+        $start = date('Y-m-d', strtotime('-1 month'));
+        $end = date('Y-m-d');
+        $data['products'] = $this->model_report->consumptionProduct($start,$end);
+        $data['params'] = $this->getParams();
+        $this->parser->parse('admin/product/view_consumption', $data);
+        $this->log_end($data);
+    }
+
+    public function apiConsumption()
+	{
+        $this->log_begin();
+
+        try {
+            $this->load->model("model_report");
+            $startDate = $this->input->post('startDate');
+            $endDate = $this->input->post('endDate');
+            $products = $this->model_report->consumptionProduct($startDate, $endDate);
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'success', 'products' => $products)));
+            $this->log_end($data);
+
+        } catch (Exception $e) {
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'error', 'redirect' => base_url('admin/product/index'))));
+        }
+
+    }
+    public function inventoryHistory(){
+        $this->log_begin();
+        $data['products'] = $this->model_product->getInventory();
+        $data['params'] = $this->getParams();
+        $this->parser->parse('admin/product/view_inventory_history', $data);
         $this->log_end($data);
     }
     public function toOrder()
@@ -37,17 +83,24 @@ class Product extends BaseController {
     public function add()
     {
        $this->log_begin();
+       $data['params'] = $this->getParams();
        try {
            if (!$this->input->post('productsList')) {
                $data['products'] = $this->model_product->getAll();
                $data['providers'] = $this->model_provider->getAll();
-               $data['params'] = $this->getParams();
                $this->load->view('admin/product/add', $data);
                $this->log_end($data);
            } else {
                $productsList = $this->input->post('productsList');
                $this->log_middle($productsList);
-               $this->model_product->addProducts($productsList);
+               $inserted_products=$this->model_product->addProducts($productsList);
+               if ($data["params"]["multi_site"] === "true") {
+                   foreach ($this->slaveAgencies as $slaveAgency) {
+                       $this->model_product->setCurrentDb($slaveAgency["id"]);
+                       $this->model_product->addProducts($productsList, $inserted_products, "remote");
+                       $this->model_product->setCurrentDb(0);
+                   }
+               }
                $this->output
                    ->set_content_type("application/json")
                    ->set_output(json_encode(array('status' => 'success', 'redirect' => base_url('admin/product/index'))));
@@ -118,6 +171,18 @@ class Product extends BaseController {
                $composition = $this->input->post('composition');
                $this->log_middle($composition);
                $this->model_product->addComposition($composition);
+
+
+               if ($data["params"]["multi_site"] === "true") {
+                   foreach ($this->slaveAgencies as $slaveAgency) {
+                       $this->model_product->setCurrentDb($slaveAgency["id"]);
+                       $slave_product = $this->model_product->getProductByMasterId($product['id']);
+                       $product["id"] = $slave_product["id"];
+                       $this->model_product->edit($product, true);
+                   }
+                   $this->model_product->setCurrentDb(0);
+               }
+
                $this->output
                    ->set_content_type("application/json")
                    ->set_output(json_encode(array('status' => 'success', 'redirect' => base_url('admin/product/index'))));
@@ -202,6 +267,9 @@ class Product extends BaseController {
         $id = $this->uri->segment(4);
         $data['providers'] = $this->model_provider->getAll();
 		$data['product'] = $this->model_product->getById($id);
+		if(!$data['product']){
+            redirect('/admin/product/index');
+        }
 		$data['quantities'] = $this->model_product->getQuantitiesToShow($id);
 		$data['departments'] = $this->model_product->getQuantitiesByDepartement($id);
         $startDate = date('Y-m-d', strtotime('-1 month'));
@@ -256,21 +324,56 @@ class Product extends BaseController {
 	{
         try {
             $this->log_begin();
+            $data['params'] = $this->getParams();
+            $this->load->model('model_provider');
             $product = $this->input->post('product');
             $db_product = $this->model_product->getById($product['id']);
-            $data = array();
 
             $this->log_middle($db_product);
             if ($db_product['unit_price'] !== $product['unit_price'] or $db_product['provider'] !== $product['provider']) {
                 $this->model_product->edit($product,true);
+
+                if ($data["params"]["multi_site"] === "true") {
+                    foreach ($this->slaveAgencies as $slaveAgency) {
+                        $this->model_product->setCurrentDb($slaveAgency["id"]);
+                        $this->model_provider->setCurrentDb($slaveAgency["id"]);
+                        $slaveProvider = $this->model_provider->getProviderByMasterId($product["provider"]);
+                        $slave_product = $this->model_product->getProductByMasterId($product['id']);
+                        if($slaveProvider==NULL){
+                            $slaveProvider["id"]=0;
+                        }
+                        $product["provider"] = $slaveProvider["id"];
+                        $product["id"] = $slave_product["id"];
+                        $this->model_product->edit($product,true);
+                    }
+                    $this->model_product->setCurrentDb(0);
+                    $this->model_provider->setCurrentDb(0);
+                }
             } else {
                 $data['product'] = $this->model_product->edit($product);
+
+                if ($data["params"]["multi_site"] === "true") {
+                    foreach ($this->slaveAgencies as $slaveAgency) {
+                        $this->model_product->setCurrentDb($slaveAgency["id"]);
+                        $this->model_provider->setCurrentDb($slaveAgency["id"]);
+                        $slaveProvider = $this->model_provider->getProviderByMasterId($product["provider"]);
+                        $slave_product = $this->model_product->getProductByMasterId($product['id']);
+                        if($slaveProvider==NULL){
+                            $slaveProvider["id"]=0;
+                        }
+                        $product["id"] = $slave_product["id"];
+                        $product["provider"] = $slaveProvider["id"];
+                        $this->model_product->edit($product);
+                    }
+                    $this->model_product->setCurrentDb(0);
+                    $this->model_provider->setCurrentDb(0);
+                }
             }
 
             //add stock history
             $this->load->model('department/model_stock');
             $products=array('products'=> $product);
-            $this->model_stock->addStockHistory($products,'in');
+            //$this->model_stock->addStockHistory($products,'in');
             $this->output
                 ->set_content_type("application/json")
                 ->set_output(json_encode(array('status' => 'success', 'redirect' => base_url('admin/product/index'))));
@@ -328,9 +431,9 @@ class Product extends BaseController {
             $data = array(
                 'status'=>'stock'
             );
-            if($activeQuantity['quantity']<=0){
+            /*if($activeQuantity['quantity']<=0){
                 $data['status']="sold_out";
-            }
+            }*/
 
 
             // update actual active quantity to be a stock quantity
@@ -343,6 +446,7 @@ class Product extends BaseController {
             // activate new quantity
             $this->model_product->updateActiveQuantity($quantity_id,$data);
 
+            $this->model_product->updateMealsCostByProduct($quantity['product']);
 
             $this->output
                 ->set_content_type("application/json")
@@ -363,11 +467,21 @@ class Product extends BaseController {
 
         try {
             $this->log_begin();
+            $data['params'] = $this->getParams();
             $status="success";
             $message="success";
             $id = $this->input->post('id');
             if($this->model_product->canBeDeleted($id)){
                 $this->model_product->delete($id);
+
+                if ($data["params"]["multi_site"] === "true") {
+                    foreach ($this->slaveAgencies as $slaveAgency) {
+                        $this->model_product->setCurrentDb($slaveAgency["id"]);
+                        $slave_product = $this->model_product->getProductByMasterId($id);
+                        $this->model_product->delete($slave_product["id"]);
+                    }
+                    $this->model_product->setCurrentDb(0);
+                }
                 $this->log_middle("deleted");
             }else{
                 $status = "warning";
@@ -400,6 +514,11 @@ class Product extends BaseController {
             $this->model_product->update($product['id'], $data);
         }
         $products = $this->model_product->controlQuantity();
+    }
+
+    public function test(){
+        $data['params'] = $this->getParams();
+        $time = date('H:i:s');
     }
 
 

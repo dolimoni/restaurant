@@ -42,14 +42,24 @@
                                    <div class="x_content oldContent" style="margin-top:30px;">
 
                                        <div class="row tile_count" style="margin-bottom:10px;">
-                                           <div class="col-md-offset-3 col-md-3 col-sm-6 col-xs-12 tile_stats_count">
+                                           <div class="col-md-3 col-sm-6 col-xs-12 tile_stats_count">
                                                <span class="count_top"><i class=""></i>Quantité stock</span>
                                                <div class="count"><?php echo $mealItem['quantityInMagazin']; ?></div>
                                                <!--<span class="count_bottom"><i class="green">4% </i> From last Week</span>-->
                                            </div>
-                                           <div class="col-md-4 col-sm-6 col-xs-12 tile_stats_count">
+                                           <div class="col-md-3 col-sm-6 col-xs-12 tile_stats_count">
                                                <span class="count_top"><i class=""></i>Quantité vente</span>
-                                               <div class="count"><?php echo $mealItem['quantityToSale']; ?></div>
+                                               <div class="count green"><?php echo $mealItem['sm_prepared_quantity']-$mealItem['quantityInMagazin']-$mealItem['c_quantity']; ?></div>
+                                               <!--<span class="count_bottom"><i class="green">4% </i> From last Week</span>-->
+                                           </div>
+                                           <div class="col-md-3 col-sm-6 col-xs-12 tile_stats_count">
+                                               <span class="count_top"><i class=""></i>Cassée</span>
+                                               <div class="count red"><?php echo $mealItem['quantityInMagazin']; ?></div>
+                                               <!--<span class="count_bottom"><i class="green">4% </i> From last Week</span>-->
+                                           </div>
+                                           <div class="col-md-3 col-sm-6 col-xs-12 tile_stats_count">
+                                               <span class="count_top"><i class=""></i>Non vendu</span>
+                                               <div class="count"><?php echo $mealItem['sm_prepared_quantity']-$mealItem['quantityInMagazin']-$mealItem['c_quantity']; ?></div>
                                                <!--<span class="count_bottom"><i class="green">4% </i> From last Week</span>-->
                                            </div>
                                        </div>
@@ -87,6 +97,29 @@
                                                 <input type="hidden" name="quantityInMagazinNow"
                                                        value="<?php echo $mealItem['quantityInMagazin']; ?>"
                                             </div>
+
+                                       <div class="x_panel">
+                                           <div class="x_title">
+                                               <h2>Pertes</h2>
+                                               <ul class="nav navbar-right panel_toolbox">
+                                                   <li><a class="collapse-link" aria-expanded="false"><i class="fa fa-chevron-down"></i></a>
+                                                   </li>
+                                                   </li>
+                                               </ul>
+                                               <div class="clearfix"></div>
+                                           </div>
+                                           <div class="x_content" style="display: none;">
+                                               <div>
+                                                   Qunatité de casse : <input type="input" class="form-control"
+                                                                              name="brokenQuantity"/>
+                                               </div>
+                                               <div>
+                                                   Qunatité non vendu : <input type="input" class="form-control"
+                                                                              name="notSoldQuantity"/>
+                                               </div>
+                                           </div>
+                                       </div>
+
                                    </div>
                                </div>
 
@@ -190,6 +223,10 @@
 
                 var quantityToSale = parseFloat(row.find('input[name="quantityToSale"]').val().replace(',', '.'));
                 var quantityInMagazinNow = parseFloat(row.find('input[name="quantityInMagazinNow"]').val());
+
+                var brokenQuantity = parseFloat(row.find('input[name="brokenQuantity"]').val());
+                var notSoldQuantity = parseFloat(row.find('input[name="notSoldQuantity"]').val());
+
                 var quantity= quantityInMagazin+ quantityToSale;
                 var id= row.find('select').find('option:selected').val();
                 var mealName= row.find('select').find('option:selected').text();
@@ -205,7 +242,7 @@
                     });
                     break;
                 }
-                if (quantityInMagazin || quantityToSale){
+                if (quantityInMagazin || quantityToSale || brokenQuantity || notSoldQuantity){
                     var meal = {
                         'id': id,
                         'quantityInMagazin': quantityInMagazin,
@@ -213,6 +250,8 @@
                         //'quantity': quantity,
                         'magazinQuantityType': row.find("input[name='MagazinQuantityType']").is(':checked'),
                         'saleQuantityType': row.find("input[name='saleQuantityType']").is(':checked'),
+                        'brokenQuantity': brokenQuantity,
+                        'notSoldQuantity': notSoldQuantity,
                     };
                     mealsList.push(meal);
                 }
@@ -220,8 +259,8 @@
             }
 
             var magazin={'name':name,'id':<?php echo $magazin['id']; ?>,'department':<?php echo $magazin['department']; ?>,'mealsList': mealsList};
-            //console.log(magazin);
-            if(true){
+            console.log(magazin);
+            if(false){
                 $.ajax({
                     url: "<?php echo base_url('admin/department/apiEditMagazin'); ?>",
                     type: "POST",

@@ -289,9 +289,54 @@ class model_meal extends CI_Model {
         return $meals;
     }
 
+    public function deleteConsumption($params){
+        $report_date=$params["report_date"];
+        $this->load->model('model_params');
+        $db_params = $this->model_params->config();
+        $this->db->where("report_date",$report_date);
+        $consumptions=$this->db->get("consumption")->result_array();
+        foreach ($consumptions as $consumption) {
+            $this->db->select('*');
+            $this->db->from('consumption_product cp');
+            $this->db->where('cp.consumption', $consumption['id']);
+            $consumption_products=$this->db->get()->result_array();
+
+            foreach ($consumption_products as $consumption_product) {
+                    $this->db->where("id", $consumption_product["id"]);
+                    //$this->db->update("consumption_product", array("quantity" => 0, "total" => 0));
+                    $this->db->delete("consumption_product");
+
+                    if ($db_params["used_stock"] === "principal") {
+                        $this->db->where("id", $consumption_product["id_quantity"]);
+                        $quantity_product = $this->db->get("quantity")->row_array();
+                        $data = array("quantity" => $quantity_product["quantity"] + $consumption_product["quantity"]);
+                        $this->db->where("id", $quantity_product["id"]);
+                        $this->db->update("quantity", $data);
+                    } else {
+                        $this->db->where("id_quantity", $consumption_product["id_quantity"]);
+                        $stock_product = $this->db->get("stock_product")->row_array();
+                        $data = array("quantity" => $stock_product["quantity"] + $consumption_product["quantity"]);
+                        $this->db->where("id", $stock_product["id"]);
+                        $this->db->update("stock_product", $data);
+                    }
+            }
+        }
+        $consumptionData = array(
+            "quantity" => 0,
+            "amount" => 0,
+            "total" => 0,
+        );
+        $this->db->where("report_date", $report_date);
+        //$this->db->update("consumption",$consumptionData);
+        $this->db->delete("consumption");
+
+    }
+
     public function consumption($mealList,$lost=false,$ftp=false){
         $this->load->model('model_product');
         $this->load->model('model_report');
+        $this->load->model('model_params');
+        $params = $this->model_params->config();
         $response = array();
         $response['status'] = "success";
         $productsErrorList=array();
@@ -302,6 +347,7 @@ class model_meal extends CI_Model {
 
             // vente d'un article par date
             $todayConsumption = $this->model_report->reportMealDate($meal['id'], $meal['date'][0]);
+            $db_meal=$this->get($meal['id']);
             $consumption_type = "sale";
             if ($lost) {
                 $consumption_type = "lost";
@@ -341,7 +387,7 @@ class model_meal extends CI_Model {
             }
 
 
-            if ($this->params['department'] === "false") {
+            if ($this->params['department'] === "false" or true) {
                 $this->db->select('*,mp.quantity as mp_quantity,p.id as p_id');
                 $this->db->from('meal_product mp');
                 $this->db->join('product p', 'mp.product = p.id');
@@ -371,57 +417,107 @@ class model_meal extends CI_Model {
                                 $consumption_type = "lost";
                             }
                             $l_reponse = '';
+                            $needed_quantity = $m_product['mp_quantity'] * $m_product['unitConvert'] * $quantityStep;
                             if($ftp){
-                                $this->model_product->updateQuantity($m_product['product'], $m_product['mp_quantity'] * $m_product['unitConvert'] * $quantityStep);
-                                $l_reponse = $this->model_product->updateLocalQuantity($m_product['product'], $m_product['mp_quantity'] * $m_product['unitConvert'] * $quantityStep);
+                                    $l_reponse = $this->model_product->updateLocalQuantity($m_product['product'], $needed_quantity,"down", $params["used_stock"]);
                             }else{
+
                                 if ($meal['quantity'] >= $todayConsumption['quantity']) {
-                                    $this->model_product->updateQuantity($m_product['product'], $m_product['mp_quantity'] * $m_product['unitConvert'] * $quantityStep);
-                                    $l_reponse = $this->model_product->updateLocalQuantity($m_product['product'], $m_product['mp_quantity'] * $m_product['unitConvert'] * $quantityStep);
+                                    $l_reponse = $this->model_product->updateLocalQuantity($m_product['product'], $needed_quantity, "down", $params["used_stock"],$db_meal);
+                                    // consommation des produits selon la quantité de la fiche technique et leurs prix selon le stock
+                                    // l_response : liste des stock utilisé apres apdate du stock
+                                    foreach ($l_reponse['quantities'] as $quantity) {
+                                        // il faut modifier ces donnée pour prendre en considération l'utilisation de plusieurs quantités
+                                        // l'ajout de consommation des produits doit etre fait apres la reduction de quantités produits
+                                        // on renvoie la liste des  produit utilisé et on les insère dans la table consomation produit
+                                        $consumption_product = array(
+                                            'quantity' => abs($quantity['quantity']),
+                                            'total' => abs($quantity['quantity']) * $quantity['unit_price'],
+                                        );
+
+                                        $this->db->where('consumption', $consumption_id);
+                                        $this->db->where('meal', $meal['id']);
+                                        $this->db->where('product', $m_product['p_id']);
+                                        $this->db->where('type', "sale");
+                                        $this->db->where('unit_price', $quantity['unit_price']);
+                                        $this->db->where('quantity>', 0);
+                                        $q = $this->db->get("consumption_product");
+
+                                        if ($q->num_rows() > 0) {
+                                            $my_quantity = $q->row_array();
+                                            $consumption_product["quantity"] += $my_quantity["quantity"];
+                                            $consumption_product["total"] += $my_quantity["total"];
+                                            $this->db->where('consumption', $consumption_id);
+                                            $this->db->where('meal', $meal['id']);
+                                            $this->db->where('product', $m_product['p_id']);
+                                            $this->db->where('type', "sale");
+                                            $this->db->where('id_quantity', $quantity['id']);
+                                            $this->db->update('consumption_product', $consumption_product);
+                                        } else {
+                                            $consumption_product["consumption"]= $consumption_id;
+                                            $consumption_product["meal"]= $meal['id'];
+                                            $consumption_product["product"]= $m_product['p_id'];
+                                            $consumption_product["unit_price"]= $quantity['unit_price'];
+                                            $consumption_product["provider"]= $quantity['provider'];
+                                            $consumption_product["id_quantity"]= $quantity['id'];
+                                            $consumption_product["type"]= $consumption_type;
+                                            $this->db->insert('consumption_product', $consumption_product);
+                                        }
+                                    }
                                 } else {
-                                    $this->model_product->updateQuantity($m_product['product'], $m_product['mp_quantity'] * $m_product['unitConvert'] * $quantityStep, 'up');
-                                    $l_reponse = $this->model_product->updateLocalQuantity($m_product['product'], $m_product['mp_quantity'] * $m_product['unitConvert'] * $quantityStep, 'up');
+
+                                    // retour des article ex:10artcile to 9 articles
+                                    $this->db->select("cp.*,cp.id as cp_id");
+                                    $this->db->from("consumption_product cp");
+                                    $this->db->join("consumption c","c.id=cp.consumption");
+                                    $this->db->where("c.id", $consumption_id);
+                                    $this->db->where("cp.product", $m_product["p_id"]);
+                                    $this->db->where("cp.quantity>", 0);
+                                    $this->db->order_by("cp.created_at", "desc");
+                                    $consumption_products=$this->db->get()->result_array();
+                                    foreach ($consumption_products as $consumption_product) {
+                                        if($consumption_product["quantity"]> $needed_quantity){
+                                            $correction = array(
+                                                "quantity" => $consumption_product["quantity"] - $needed_quantity,
+                                                "total" => ($consumption_product["quantity"] - $needed_quantity) * $consumption_product["unit_price"]
+                                            );
+                                            $this->db->where("id", $consumption_product["cp_id"]);
+                                            $this->db->update("consumption_product", $correction);
+
+
+                                            $this->db->where("id", $consumption_product["id_quantity"]);
+
+                                            if($params["used_stock"]==="principal"){
+                                                $quantity_product = $this->db->get("quantity")->row_array();
+                                                $this->db->where("id", $quantity_product["id"]);
+                                                $this->db->update("quantity", array("quantity" => $quantity_product["quantity"] + $needed_quantity));
+                                            }else{
+                                                $stock_product = $this->db->get("stock_product")->row_array();
+                                                $this->db->where("id", $stock_product["id"]);
+                                                $this->db->update("stock_product", array("quantity" => $stock_product["quantity"] + $needed_quantity));
+                                            }
+                                            break;
+                                        }else{
+                                            $needed_quantity-= $consumption_product["quantity"];
+                                            $this->db->where("id", $consumption_product["cp_id"]);
+                                            $this->db->update("consumption_product", array("quantity" => 0,"total"=>0));
+
+                                            if ($params["used_stock"] === "principal") {
+                                                $this->db->where("id", $consumption_product["id_quantity"]);
+                                                $quantity_product = $this->db->get("quantity")->row_array();
+                                                $this->db->where("id", $quantity_product["id"]);
+                                                $this->db->update("quantity", array("quantity" => $quantity_product["quantity"] + $consumption_product["quantity"]));
+                                            } else {
+                                                $this->db->where("id_quantity", $consumption_product["id_quantity"]);
+                                                $stock_product = $this->db->get("stock_product")->row_array();
+                                                $this->db->where("id", $stock_product["id"]);
+                                                $this->db->update("stock_product", array("quantity" => $stock_product["quantity"] + $consumption_product["quantity"]));
+                                            }
+                                        }
+                                    }
                                 }
                             }
 
-
-                            // consommation des produits selon la quantité de la fiche technique et leurs prix selon le stock
-                            foreach ($l_reponse['quantities'] as $quantity) {
-                                // il faut modifier ces donnée pour prendre en considération l'utilisation de plusieurs quantités
-                                // l'ajout de consommation des produits doit etre fait apres la reduction de quantités produits
-                                // on renvoie la liste des  produit utilisé et on les insère dans la table consomation produit
-                                $consumption_product = array(
-                                    'consumption' => $consumption_id,
-                                    'meal' => $meal['id'],
-                                    'product' => $m_product['p_id'],
-                                    'quantity' => abs($quantity['quantity']),
-                                    'unit_price' => $quantity['unit_price'],
-                                    'total' => abs($quantity['quantity']) * $quantity['unit_price'],
-                                    'type' => $consumption_type
-                                );
-
-                                $this->db->where('consumption', $consumption_id);
-                                $this->db->where('meal', $meal['id']);
-                                $this->db->where('product', $m_product['p_id']);
-                                $this->db->where('type', "sale");
-                                $this->db->where('unit_price', $quantity['unit_price']);
-                                $this->db->where('quantity>', 0);
-                                $q = $this->db->get("consumption_product");
-
-                                if ($q->num_rows() > 0) {
-                                    $my_quantity = $q->row_array();
-                                    $consumption_product["quantity"] += $my_quantity["quantity"];
-                                    $consumption_product["total"] += $my_quantity["quantity"];
-                                    $this->db->where('consumption', $consumption_id);
-                                    $this->db->where('meal', $meal['id']);
-                                    $this->db->where('product', $m_product['p_id']);
-                                    $this->db->where('type', "sale");
-                                    $this->db->where('unit_price', $quantity['unit_price']);
-                                    $this->db->update('consumption_product', $consumption_product);
-                                } else {
-                                    $this->db->insert('consumption_product', $consumption_product);
-                                }
-                            }
                         } else {
                             $response['status'] = "error";
                             $productsErrorList[] = $m_product;
@@ -433,9 +529,63 @@ class model_meal extends CI_Model {
             }
 
         }
+
+        $this->consumptionPart($mealList[0]['date'][0]);
         return $response;
     }
 
+    public function consumptionPart($report_date=null){
+        $this->load->model('model_params');
+        $params = $this->model_params->config();
+
+        $time = date('H:i:s');
+        if(!$report_date){
+            $report_date = date('Y-m-d');
+        }
+
+        $this->db->select("c.*,sum(total) s_total");
+        $this->db->select("c.*,sum(quantity) s_quantity");
+        $this->db->from("consumption c");
+        $this->db->where("report_date",$report_date);
+        $todayConsumptionQuery=$this->db->get();
+        $todayConsumption= $todayConsumptionQuery->row_array();
+        //$todayConsumption["quantity"]>0 : pour éviter de mettre une quanité 0 dans lors de passage de cron
+        if($todayConsumptionQuery->num_rows() and $todayConsumption["s_quantity"]>0){
+
+            $this->db->where("report_date", $report_date);
+            $consumption_historyQuery=$this->db->get("consumption_history");
+            $consumption_history= $consumption_historyQuery->row_array();
+            $dataConsumptionHistory = array(
+                "quantity" => $todayConsumption["s_quantity"],
+                "total" => $todayConsumption["s_total"],
+            );
+            $parts = number_format($params["parts"]);
+            if($consumption_historyQuery->num_rows()){
+                $rd_part=number_format($consumption_history["rd_part"],0);
+                $nd_part=number_format($consumption_history["nd_part"],0);
+                $st_part=number_format($consumption_history["st_part"],0);
+                if ($rd_part === "0" and $time > $params["rd_part"] and $parts>2) {
+                    $dataConsumptionHistory["rd_part"] = $todayConsumption["s_total"]- $nd_part;
+                } else if ($nd_part === "0" and $time > $params["nd_part"]) {
+                    $dataConsumptionHistory["nd_part"] = $todayConsumption["s_total"]- $st_part;
+                } else if ($st_part === "0" and $time > $params["st_part"]) {
+                    $dataConsumptionHistory["st_part"] = $todayConsumption["s_total"];
+                }
+                $dataConsumptionHistory["report_date"] = $report_date;
+                $this->db->update("consumption_history", $dataConsumptionHistory);
+            }else{
+                $dataConsumptionHistory["report_date"] = $report_date;
+                if ($time > $params["rd_part"] and $parts > 2) {
+                    $dataConsumptionHistory["rd_part"] = $todayConsumption["s_total"];
+                } else if ($time > $params["nd_part"]) {
+                    $dataConsumptionHistory["nd_part"] = $todayConsumption["s_total"];
+                } else if ($time > $params["st_part"]) {
+                    $dataConsumptionHistory["st_part"] = $todayConsumption["s_total"];
+                }
+                $this->db->insert("consumption_history", $dataConsumptionHistory);
+            }
+        }
+    }
 
 	public function getAll()
 	{
@@ -452,7 +602,6 @@ class model_meal extends CI_Model {
         $this->db->join('quantity q', 'q.product = p.id');
         $this->db->where('q.status', 'active');
         $this->db->where('mp.status', 'current');
-
         $products = $this->db->get()->result_array();
 
 		foreach ($meals as $key => $meal){
@@ -467,6 +616,45 @@ class model_meal extends CI_Model {
         unset($meal);
 		return $meals;
 	}
+
+	public function recalculate($id){
+        // recalculate cost and benefits only
+
+        $this->db->where("id",$id);
+        $meal=$this->db->get("meal")->row_array();
+
+        $this->db->select('*,mp.quantity as mp_quantity,mp.unit as mp_unit');
+        $this->db->from('meal_product mp');
+        $this->db->join('product p', 'mp.product = p.id');
+        $this->db->join('quantity q', 'q.product = p.id');
+        $this->db->where('q.status', 'active');
+        $this->db->where('mp.status', 'current');
+        $this->db->where('mp.meal', $id);
+        $products = $this->db->get()->result_array();
+
+
+        $data=array(
+            "cost"=>0,
+        );
+        foreach ($products as $product) {
+            $data["cost"]+= $product["mp_quantity"]*$product["unitConvert"]*$product["unit_price"];
+        }
+        if(isset($meal) and $meal["sellPrice"]> $meal["cost"]){
+            $data["profit"] = $meal["sellPrice"]-$data["cost"];
+        }
+
+        $this->db->where("id", $id);
+        $this->db->update("meal", $data);
+
+    }
+	public function hasAtLeasOneProduct(){
+        $this->db->select("*");
+        $this->db->from("meal m");
+        $this->db->join("meal_product mp","mp.meal=m.id");
+        $this->db->where("mp.status","current");
+        $this->db->group_by("m.id");
+        return $this->db->get()->result_array();
+    }
 
 	//getting meals without products
 	public function getAllMeals()
@@ -484,9 +672,9 @@ class model_meal extends CI_Model {
 		return $meals;
 	}
 
-	public function get($u_id)
+	public function get($id)
 	{
-		$this->db->where('id', $u_id);
+		$this->db->where('id', $id);
 		$result = $this->db->get('meal');
 		return $result->row_array();
 	}

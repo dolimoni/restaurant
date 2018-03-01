@@ -2,6 +2,8 @@
 
 class model_provider extends CI_Model {
 
+    private $current_db = 0;
+
     public function __construct()
     {
         parent::__construct();
@@ -9,7 +11,7 @@ class model_provider extends CI_Model {
         $this->load->model('model_quotation');
     }
 
-	public function add($provider)
+	public function add($provider,$master_id=0,$database="local")
 	{
 		$data = array(
 			   'title' => $provider['title'],
@@ -21,7 +23,11 @@ class model_provider extends CI_Model {
                'tva' => $provider['tva'],
                'image' => $provider['image'],
             );
+		if($database === "remote"){
+            $data["id_master"]= $master_id;
+        }
 		$this->db->insert('provider', $data);
+		return $this->db->insert_id();
 	}
     public function addProducts($productsList, $quotation=null)
 	{
@@ -114,6 +120,13 @@ class model_provider extends CI_Model {
 		return $result->result_array();
 	}
 
+    public function getProviderByMasterId($id)
+    {
+        $this->db->where("id_master", $id);
+        $result= $this->db->get("provider")->row_array();
+        return $result;
+    }
+
 	public function getGroups()
 	{
 		$result = $this->db->get('providergroups');
@@ -183,6 +196,16 @@ class model_provider extends CI_Model {
         $this->db->from('order o');
         //$this->db->join('orderdetails od', 'o.id = od.order_id');
         $this->db->where('provider',$id);
+        $this->db->order_by('id',"asc");
+		$result = $this->db->get();
+		return $result->result_array();
+	}
+
+	public function getAllOrders()
+	{
+        $this->db->select('o.id,pv.name as pv_name,o.ttc as amount,o.paid,o.status,o.created_at');
+        $this->db->from('order o');
+        $this->db->join('provider pv',"pv.id=o.provider");
 		$result = $this->db->get();
 		return $result->result_array();
 	}
@@ -228,6 +251,8 @@ class model_provider extends CI_Model {
         $this->db->where('o.provider', $id);
         $this->db->where('o.status', "received");
         $this->db->group_by('od.product');
+        $this->db->order_by('s_od_quantity',"desc");
+        $this->db->limit(10);
         $result = $this->db->get()->result_array();
         $s_od_totalPrices = array_column($result, 's_od_totalPrice');
         $result['totalBuy']=array_sum($s_od_totalPrices);// total des achats chez un fournisseur
@@ -257,7 +282,24 @@ class model_provider extends CI_Model {
     public function payOrder($id)
     {
         $this->db->where('id', $id);
-        $this->db->update('order',array("paid"=>"true"));
+
+        $db_order=$this->db->get('order')->row_array();
+        $paymentDate= strtotime(date("Y-m-d H:i:s"));
+        $paid="false";
+        if($db_order["paid"]==="true"){
+            $this->db->where('id', $id);
+            $this->db->update('order', array("paid" => "false", "paymentDate" => null));
+        }else{
+            $this->db->where('id', $id);
+            $this->db->update('order', array("paid" => "true", "paymentDate" => date("Y-m-d H:i:s")));
+            $paymentDate = strtotime(date("Y-m-d H:i:s"));
+            $paid = "true";
+        }
+        $order=array(
+            "paid"=> $paid,
+            "paymentDate"=> date("d-m-Y", $paymentDate),
+        );
+        return $order;
     }
 
     public function deleteProduct($product_id, $quantity_id)
@@ -265,5 +307,26 @@ class model_provider extends CI_Model {
         $this->db->where('id', $quantity_id);
         $this->db->where('product', $product_id);
         $this->db->update('quantity',array("visibility"=>"hidden"));
+    }
+
+    /**
+     * @return int
+     */
+    public function getCurrentDb()
+    {
+        return $this->current_db;
+    }
+
+    /**
+     * @param int $current_db
+     */
+    public function setCurrentDb($current_db)
+    {
+        $this->current_db = $current_db;
+        if ($this->current_db === 0) {
+            $this->db = $this->load->database('default', TRUE);
+        } else {
+            $this->db = $this->load->database('remote_' . $current_db, TRUE);
+        }
     }
 }

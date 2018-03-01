@@ -11,6 +11,10 @@
                 </button>
                 <h4 class="modal-title" id="myModalLabel">
                     Nouvelle commande
+                    <div class="pull-right" style="margin-right:5px">
+                        <input type="text" placeholder="Rechercher" class="form-control" id="searchInput"
+                               onkeyup="myFunction()">
+                    </div>
                 </h4>
             </div>
 
@@ -20,7 +24,7 @@
                 <form class="form-horizontal" role="form">
                     <div class="form-group" id="productsOrder">
                         <?php foreach ($products as $key => $product) { ?>
-                        <div class="row product" data-index="<?php echo $key; ?>">
+                        <div class="row product" data-name="<?php echo $product['name']; ?>" data-index="<?php echo $key; ?>">
 
                             <label class="col-md-2 col-sm-2 col-xs-12 control-label">Produit</label>
                             <div class="col-md-4 col-sm-4 col-xs-12">

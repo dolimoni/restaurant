@@ -9,6 +9,7 @@ class model_budget extends CI_Model {
     }
     public function addPurchase($purchase)
     {
+
         $this->db->insert('purchase', $purchase);
     }
 
@@ -63,6 +64,15 @@ class model_budget extends CI_Model {
         $this->db->where('id',$id);
         $this->db->update('regularcost', $data);
     }
+    public function updatePurchase($id,$data){
+        $this->db->where('id', $id);
+        $db_purchase=$this->db->get("purchase")->row_array();
+        if($db_purchase["paid"]==="false" and $data["paid"]==="true"){
+            $data["paymentDate"]=date("Y-m-d H-i-s");
+        }
+        $this->db->where('id',$id);
+        $this->db->update('purchase', $data);
+    }
     public function updateReparation($id,$data){
         $this->db->where('id',$id);
         $this->db->update('reparation', $data);
@@ -70,6 +80,10 @@ class model_budget extends CI_Model {
     public function deleteAlert($id){
             $this->db->where('id',$id);
             $this->db->delete('regularcost');
+    }
+    public function deletePurchase($id){
+            $this->db->where('id',$id);
+            $this->db->delete('purchase');
     }
     public function deleteReparation($id){
             $this->db->where('id',$id);

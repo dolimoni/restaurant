@@ -201,6 +201,63 @@ class model_util extends CI_Model {
         $this->query($sql);
     }
 
+    public function diffDate($start, $end){
+        // Date d'aujourd'hui
+        $endDateTime = new DateTime($end);
+
+        $startDateTime = new DateTime($start);
+
+
+        $interval = date_diff($startDateTime, $endDateTime);
+        $diffJours = $interval->format('%R%a');
+
+        return $diffJours;
+    }
+
+    function date_fct($a, $b)
+    {
+        return strtotime($a) - strtotime($b);
+    }
+
+    public function sortDate($data, $columnName)
+    {
+        $columnArray = array_column($data, $columnName);
+
+
+        usort($columnArray, array($this, "date_fct"));
+
+        $response = array();
+
+        foreach ($columnArray as $columnElement) {
+            foreach ($data as $dataElement) {
+                if ($columnElement === $dataElement[$columnName]) {
+                    $response[] = $dataElement;
+                }
+            }
+        }
+
+        return $response;
+    }
+
+    public function mergeDateArray($a1,$a2){
+        $sums = array();
+        $sums= $a1;
+        foreach ($a2 as $key2 => $item2) {
+            $date_exists = false;
+            foreach ($a1 as $key1 => $item1) {
+                if($item1["paymentDate"]=== $item2["paymentDate"]){
+                    $sums[$key1]["price"] += $item2["price"];
+                    $date_exists = true;
+                    break;
+                }
+            }
+            if (!$date_exists) {
+                $sums[]= $item2;
+            }
+        }
+        return $sums;
+    }
+
 
 
 

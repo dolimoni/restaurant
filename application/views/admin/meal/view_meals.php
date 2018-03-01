@@ -13,6 +13,10 @@
         background: #6cc;
         color: white;
     }
+
+    .selectGroup {
+        min-height: 160px;
+    }
 </style>
     <!-- page content -->
     <div class="right_col" role="main">
@@ -42,7 +46,7 @@
                     ?>
                 <a href="<?php echo base_url('admin/meal/groupMeals/' . $group['g_id']); ?>">
                     <div class="col-md-<?php echo $bootstrapColWidth; ?> col-sm-4 col-xs-<?php echo $bootstrapColSMWidth; ?>">
-                        <div class="well" data-id="<?php echo $group['id'] ?>">
+                        <div class="well selectGroup" data-id="<?php echo $group['id'] ?>">
                             <img src="<?php echo base_url(); ?>assets/images/<?php echo $group['image'] ?>" alt=""
                                  class="img-responsive">
                             <h4 class="brief text-center"><?php echo $group['g_name'] ?></h4>
@@ -82,6 +86,10 @@
                                 <label for="exampleInputName2">Rechercher</label>
                                 <input type="text" placeholder="Nom du produit" class="form-control" id="searchInput"
                                        onkeyup="myFunction()">
+                            </div>
+                            <div class="col-md-offset-5 col-md-4 col-sm-6 col-xs-12 text-center">
+                                <label for="exampleInputName2">Fiches Techniques complétés</label>
+                                <b><div style="font-size: 20px;"><?php echo count($hasAtLeasOneProduct) . "/" . count($meals); ?></div></b>
                             </div>
                         </div>
                         <div class="x_content table-responsive">

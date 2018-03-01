@@ -1,6 +1,13 @@
-<?php $this->load->view('admin/partials/admin_header.php');
-
+<?php $this->load->view('admin/partials/admin_header.php');?>
+<?php
+$totalQuantity=0;
 ?>
+<style>
+    .scroll {
+        overflow-y: scroll;
+        height: 260px;
+    }
+</style>
 
 <!-- page content -->
 <div class="right_col" role="main">
@@ -42,13 +49,15 @@
                         </div>
                         <div class="x_content scroll productsConsomationList">
                             <h4>Quantité des produits utitlisés</h4>
-                            <?php foreach ($report['productConsumptionRate'] as $productConsumptionRate) { ?>
+                            <?php foreach ($report['productConsumptionRate'] as $productConsumptionRate) {
+                                $totalQuantity += $productConsumptionRate['sum_quantity'];
+                                ?>
 
                                 <div class="widget_summary product-quantity"
                                      id="quantity_<?php echo $productConsumptionRate['meal'] ?>">
-                                    <div class="w_left w_25">
+                                    <a href="<?php echo base_url("admin/meal/report/" . $productConsumptionRate["meal"]); ?>" class="w_left w_25">
                                         <?php echo $productConsumptionRate['name']; ?>
-                                    </div>
+                                    </a>
                                     <div class="w_center w_55">
                                         <div class="progress">
                                             <div class="progress-bar bg-green" role="progressbar"
@@ -75,6 +84,36 @@
                                     <div class="clearfix"></div>
                                 </div>
                             <?php } ?>
+                            <div class="widget_summary product-quantity-total">
+                                <div class="w_left w_25">
+                                    TOTAL
+                                </div>
+                                <div class="w_center w_55">
+                                    <div class="progress">
+                                        <div class="progress-bar bg-green" role="progressbar"
+                                             style="width:100%">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="w_right w_20">
+
+                                    <?php if($totalQuantity>0){ ?>
+                                    <span><?php
+                                        if ($productConsumptionRate['unit'] === 'pcs') {
+                                            $totalQuantity = number_format((float)$l_quantity, 0, '.', '');
+                                        }
+                                        echo $totalQuantity . ' ';
+                                        ?>
+                                    </span>
+                                    <span>
+                                        <?php
+                                        echo $productConsumptionRate['unit'];
+                                        ?>
+                                    </span>
+                                    <?php } ?>
+                                </div>
+                                <div class="clearfix"></div>
+                            </div>
                             <div class="product-quantity product-quantity-model" hidden>
                                 <div class="w_left w_25"></div>
                                 <div class="w_center w_55">
@@ -393,7 +432,10 @@
                     var myDataPoints = [];
                     var mealConsumptionRateRange = data.report.productConsumptionRate;
                     inventory(data.report.productInventory);
+                    var totalQuantity=0;
                     $.each(mealConsumptionRateRange, function (key, mealConsumptionRateProduct) {
+                        totalQuantity+= parseFloat(mealConsumptionRateProduct['sum_quantity']);
+                        console.log(totalQuantity);
                         if (mealConsumptionRateProduct['avg_unit_price']) {
                             var total = parseFloat(mealConsumptionRateProduct['avg_unit_price'] * mealConsumptionRateProduct['sum_quantity']);
                             var point = {
@@ -420,6 +462,8 @@
                             $('#quantity_' + mealConsumptionRateProduct['meal'] + ' .w_right span:nth-child(1)').html(mealConsumptionRateProduct['sum_quantity']);
                         }
                     });
+                    $(".product-quantity-total").find(' .w_right span:nth-child(1)').html(parseFloat(totalQuantity).toFixed(2));
+
 
                     var chart = new CanvasJS.Chart("chartContainer", {
                         animationEnabled: true,

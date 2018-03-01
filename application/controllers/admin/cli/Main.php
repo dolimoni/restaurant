@@ -16,19 +16,19 @@ class Main extends CI_Controller
 
         parent::__construct();
 
-        if (!$this->input->is_cli_request()) {
+        /*if (!$this->input->is_cli_request()) {
             echo "Forbidden access";
-        }
+        }*/
 
         // The path to the "application" folder
         if (is_dir($application_folder)) {
-            define('APPPATH', $application_folder . '/');
+            define('FCPATH', $application_folder . '/');
         } else {
-            if (!is_dir(BASEPATH . $application_folder . '/')) {
+            if (!is_dir(FCPATH . $application_folder . '/')) {
                 exit("Your application folder path does not appear to be set correctly. Please open the following file and correct this: " . SELF);
             }
 
-            define('APPPATH', BASEPATH . $application_folder . '/');
+            define('FCPATH', FCPATH . $application_folder . '/');
         }
 
         $this->load->model('model_product');
@@ -79,6 +79,9 @@ class Main extends CI_Controller
             }
             fclose($handle);
         }
+        $destination= FCPATH . 'uploads/ftp/old/z-' . date("Y-m-d-H-i-s") . '.csv';
+        rename($file_name, $destination);
+        echo "destination".$destination."destination";
         $data['rows'] = $rows;
         $data['dateTime'] = $dateTime;
         $this->log_end($data);
@@ -90,7 +93,7 @@ class Main extends CI_Controller
         try {
             $this->log_begin();
             //$data['sales'] = $this->readSalesCSV(base_url('uploads/ftp/z-plu_1_0001001.csv'));
-            $data['sales'] = $this->readSalesCSV(APPPATH.'../uploads/ftp/z-plu_1_0001001.csv');
+            $data['sales'] = $this->readSalesCSV(FCPATH.'uploads/ftp/z-plu_1_0001001.csv');
             //$data['sales'] = $this->readSalesCSV('/var/www/html/dagino/uploads/ftp/x-plu_1_0001001.csv');
             //$data['sales'] = $this->readSalesCSV('/var/www/html/dagino/uploads/ftp/x-plu_1_0001001.csv');
             $mealsList=array();
@@ -118,9 +121,11 @@ class Main extends CI_Controller
             $this->log_middle($mealsList);
             $this->clean();
             $this->model_meal->consumption($mealsList,false,true);
+            //$this->model_meal->consumptionPart();
             $this->log_end(array('status' => 'success'));
 
             echo "ftp done";
+            echo FCPATH;
 
         } catch (Exception $e) {
 

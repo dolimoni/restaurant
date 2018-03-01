@@ -93,6 +93,8 @@ class Budget extends BaseController {
            $provider = $this->input->post('provider');
            $tel = $this->input->post('tel');
            $comment = $this->input->post('comment');
+           $paid = $this->input->post('paid');
+           $paymentDate=date("Y-m-d H-m-s");
 
            $purchase = array(
                'article' => $article,
@@ -101,6 +103,8 @@ class Budget extends BaseController {
                'provider' => $provider,
                'tel' => $tel,
                'comment' => $comment,
+               'paid' => $paid,
+               'paymentDate' => $paymentDate,
            );
            $this->log_middle($purchase);
            $this->model_budget->addPurchase($purchase);
@@ -216,6 +220,27 @@ class Budget extends BaseController {
         }
 
     }
+
+    public function apiEditPurchase(){
+        try {
+            $this->log_begin();
+            $purchase = $this->input->post('purchase');
+            $id = $this->input->post('id');
+            $this->log_middle($purchase);
+            $this->model_budget->updatePurchase($id, $purchase);
+
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'success')));
+
+            $this->log_end(array('status' => 'success'));
+        } catch (Exception $e) {
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'error')));
+        }
+
+    }
     public function apiEditReparation(){
         try {
             $this->log_begin();
@@ -242,6 +267,25 @@ class Budget extends BaseController {
             $alert_id = $this->input->post('alert_id');
             $this->model_budget->deleteAlert($alert_id);
             $this->model_budget->activeAlerts(); // change passive alerte to active aletes
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'success')));
+
+            $this->log_end(array('status' => 'success'));
+
+        } catch (Exception $e) {
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'error')));
+        }
+
+    }
+
+    public function apiDeletePurchase(){
+        try {
+            $this->log_begin();
+            $purchase_id = $this->input->post('purchase_id');
+            $this->model_budget->deletePurchase($purchase_id);
             $this->output
                 ->set_content_type("application/json")
                 ->set_output(json_encode(array('status' => 'success')));

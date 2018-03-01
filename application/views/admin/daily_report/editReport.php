@@ -86,7 +86,7 @@
         $( "#email_to" ).autocomplete({
             source: function( request, response ) {
                 $.ajax({
-                    url: './getReportByName',
+                    url: './../getReportByName',
                     type: "POST",
                     dataType: "json",
                     data: {

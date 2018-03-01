@@ -84,4 +84,20 @@ class model_stock extends CI_Model {
         return $result->result_array();
     }
 
+    public function accumulateQuantity($quantityData)
+    {
+
+        $this->db->where('product', $quantityData['product']);
+        $this->db->where('unit_price', $quantityData['unit_price']);
+        $db_quantity = $this->db->get('stock_product_price')->row_array();
+        if ($db_quantity) {
+            $quantityData['quantity'] += $db_quantity['quantity'];
+            $this->db->where('product', $quantityData['product']);
+            $this->db->where('unit_price', $quantityData['unit_price']);
+            $this->db->update('price_stock_product', $quantityData);
+        } else {
+            $this->db->insert('stock_product_price', $quantityData);
+        }
+    }
+
 }

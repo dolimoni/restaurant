@@ -87,8 +87,8 @@
                                    <td><?php echo $magazin['name']; ?></td>
                                    <td>
                                        <a href=" <?php echo base_url(); ?>admin/department/editMagazin/<?php echo $magazin['department'] . '/' . $magazin['id']; ?>"
-                                          class="btn btn-primary btn-xs"><i class="fa fa-pencil"></i></a>
-                                       <div class="btn btn-primary btn-xs open"><i class="fa fa-plus-square"></i></div>
+                                          class="btn btn-warning btn-xs"><i class="fa fa-pencil"></i> Modifier</a>
+                                       <div class="btn btn-primary btn-xs open"><i class="fa fa-plus-square"></i> Afficher</div>
                                    </td>
                                </tr>
                                <tr class="productsRow">
@@ -132,6 +132,7 @@
        </div>
 
 
+        <?php if($params["department"]==="true"){ ?>
         <div class="row">
            <div class="col-xs-12">
                <div class="x_panel">
@@ -176,12 +177,13 @@
                </div><!-- /x-panel -->
            </div>
        </div>
-         <!-- /row -->
+        <?php } ?>
+        <!-- /row -->
         <div class="row">
            <div class="col-xs-12">
                <div class="x_panel">
                    <div class="x_title">
-                       <h2>Mes articles en vente</h2>
+                       <h2>Stock des articles</h2>
                        <ul class="nav navbar-right panel_toolbox">
                            <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
                            <li><a class="close-link"><i class="fa fa-close"></i></a></li>
@@ -195,28 +197,50 @@
                            <thead>
                            <tr>
                                <th>Nom</th>
-                               <th>Quantité</th>
+                               <th>Quantité préparée</th>
+                               <th>Quantité vendu</th>
+                               <th>Quantité restante</th>
+                               <th>En Stock</th>
+                               <th>Perte</th>
                                <th>Actions</th>
                            </tr>
                            </thead>
                            <tfoot>
                            <tr>
                                <th>Nom</th>
-                               <th>Quantité</th>
+                               <th>Quantité préparée</th>
+                               <th>Quantité vendu</th>
+                               <th>Quantité restante</th>
+                               <th>En Stock</th>
+                               <th>Perte</th>
                                <th>Actions</th>
                            </tr>
                            </tfoot>
                            <tbody>
-                           <?php foreach ($readyMeals as $readyMeal) { ?>
+                           <?php foreach ($readyMeals as $readyMeal) {
+
+
+                            $remainingQuantity= number_format((float)$readyMeal['prepared_quantity'], 0, '.', '')- number_format((float)$readyMeal['consumption_quantity'], 0, '.', '');
+                            $saleRemainingQuantity= number_format((float)($readyMeal['prepared_quantity']-$readyMeal['lost_quantity']), 0, '.', '');
+                            if($remainingQuantity<0){
+                                $remainingQuantity=0;
+                            }
+                            ?>
                                <tr>
                                    <td><?php echo $readyMeal['name']; ?></td>
-                                   <td><?php echo $readyMeal['quantityToSale']?></td>
+                                   <td><?php echo number_format((float)$readyMeal['prepared_quantity'], 0, '.', '') ?></td>
+                                   <td><?php echo number_format((float)$readyMeal['consumption_quantity'], 0, '.', '')?></td>
+                                   <td><?php echo $remainingQuantity?></td>
+                                   <td><?php echo number_format((float)$readyMeal['quantityInMagazin'], 0, '.', '')?></td>
+                                   <td><?php echo $readyMeal['lost_quantity'] ?></td>
                                    <td>
-                                       <button data-id="<?php echo $readyMeal['id']; ?>" type="button"
-                                               data-quantity="<?php echo $readyMeal['quantityToSale'] ?>"
+                                       <?php if ($saleRemainingQuantity > 0){ ?>
+                                       <button data-id="<?php echo $readyMeal['meal']; ?>" type="button"
+                                               data-quantity="<?php echo $saleRemainingQuantity; ?>"
                                                class="btn btn-info btn-xs backToStock">
                                            <i class="fa fa-long-arrow-right"> </i> Renvoyer au stock
                                        </button>
+                                       <?php } ?>
                                    </td>
                                </tr>
                            <?php } ?>
@@ -242,7 +266,7 @@
                     <div class="x_title">
                         <h2>Mes fiches techniques</h2>
                         <ul class="nav navbar-right panel_toolbox">
-                            <li><a class="collapse-link" aria-expanded="false"><i class="fa fa-chevron-up"></i></a></li>
+                            <li><a class="collapse-link" aria-expanded="false"><i class="fa fa-chevron-down"></i></a></li>
                             <li><a class="close-link"><i class="fa fa-close"></i></a></li>
                         </ul>
                         <div class="clearfix"></div>

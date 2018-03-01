@@ -222,7 +222,6 @@
                     var amount = [];
                     var quantity = [];
                     var profit = [];
-                    console.log('--->!',data);
                     $.each(data.articles, function (key, article) {
                         var amountData = {y: parseInt(article['s_amount']), label: article['name']};
                         var quantityData = {y: parseInt(article['s_quantity']), label: article['name']};
@@ -233,7 +232,6 @@
                         profit.push(profitData);
                     });
 
-                    console.log(amount);
 
 
                     var chart = new CanvasJS.Chart("chartContainer", {

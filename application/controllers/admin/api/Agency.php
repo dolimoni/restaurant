@@ -3,6 +3,7 @@ header('Access-Control-Allow-Origin: *');
 class Agency extends BaseController
 {
 
+
     public function __construct()
     {
         parent::__construct();
@@ -10,6 +11,7 @@ class Agency extends BaseController
         $this->load->model('model_product');
         $this->load->model('model_meal');
         $this->load->model('model_report');
+
 
 
     }
@@ -114,11 +116,34 @@ class Agency extends BaseController
 
     public function apiStatistic()
     {
+        try{
        $this->log_begin();
-       try {
+           $this->load->model("model_agency");
            $startDate = $this->input->post('startDate');
            $endDate = $this->input->post('endDate');
-           $report = $this->model_report->global_report($startDate, $endDate);
+           $agency_id = $this->input->post('agency_id');
+            $report=array();
+           if($agency_id==="1"){
+               $agency_id=0;
+           }
+           if($agency_id==="all"){
+               $this->load->model("model_agency");
+               $agencies=$this->model_agency->getAll(true);
+               foreach ($agencies as $agency) {
+                   if($agency["id"]==="1"){
+                       $this->model_report->setCurrentDb(0);
+                   }else{
+                       $this->model_report->setCurrentDb($agency["id"]);
+                   }
+                   $local_report = $this->model_report->global_report($startDate, $endDate);
+                   $report=$this->merge($report, $local_report);
+                   $this->model_report->setCurrentDb(0);
+               }
+           }else{
+               $this->model_report->setCurrentDb($agency_id);
+               $report = $this->model_report->global_report($startDate, $endDate);
+               $this->model_report->setCurrentDb(0);
+           }
            $this->output
                ->set_content_type("application/json")
                ->set_output(json_encode(array('status' => "success", 'report' => $report)));
@@ -128,6 +153,142 @@ class Agency extends BaseController
                ->set_content_type("application/json")
                ->set_output(json_encode(array('status' => "success", 'report' => $report)));
        }
+    }
+
+    private function merge($array_one,$array_two){
+        $array = array();
+        foreach (array_keys($array_two) as $key) {
+            switch ($key) {
+                case "charges":
+                    $charges1 = isset($array_one[$key]) ? $array_one[$key] : 0;
+                    $charges2 = isset($array_two[$key]) ? $array_two[$key] : 0;
+                    $array[$key] = $charges1+ $charges2;
+                    break;
+
+                case "stock_history":
+                    $charges1 = isset($array_one[$key]) ? $array_one[$key] : 0;
+                    $charges2 = isset($array_two[$key]) ? $array_two[$key] : 0;
+                    $array[$key] = $charges1+ $charges2;
+                    break;
+                case "consumption":
+                    $quantity1 = isset($array_one[$key]["turnover"]) ? $array_one[$key]["turnover"] : 0;
+                    $quantity2 = isset($array_two[$key]["turnover"]) ? $array_two[$key]["turnover"] : 0;
+                    $array[$key]["turnover"] = ($quantity1) + ($quantity2);
+                    break;
+
+                case "salary":
+                    $salary1 = isset($array_one[$key]["salary"]) ? $array_one[$key]["salary"] : 0;
+                    $salary2 = isset($array_two[$key]["salary"]) ? $array_two[$key]["salary"] : 0;
+                    $array[$key]["salary"] = ($salary1) + ($salary2);
+                    break;
+
+                case "purchase":
+                    $purchase1 = isset($array_one[$key]["price"]) ? (float)($array_one[$key]["price"]) : 0;
+                    $purchase2 = isset($array_two[$key]["price"]) ? (float)($array_two[$key]["price"]) : 0;
+                    $array[$key]["price"] = ($purchase1) + ($purchase2);
+                    break;
+
+                case "repair":
+                    $repair1 = isset($array_one[$key]["price"]) ? (float)($array_one[$key]["price"]) : 0;
+                    $repair2 = isset($array_two[$key]["price"]) ? (float)($array_two[$key]["price"]) : 0;
+                    $array[$key]["price"] = ($repair1) + ($repair2);
+                    break;
+
+                case "consumption_history":
+                    $st_part1 = isset($array_one[$key]["st_part1"]) ? $array_one[$key]["st_part1"] : 0;
+                    $st_part2 = isset($array_two[$key]["st_part2"]) ? $array_two[$key]["st_part2"] : 0;
+                    $array[$key]["st_part"] = ($st_part1) + ($st_part2);
+
+                    $nd_part1 = isset($array_one[$key]["nd_part1"]) ? $array_one[$key]["nd_part1"] : 0;
+                    $nd_part2 = isset($array_two[$key]["nd_part2"]) ? $array_two[$key]["nd_part2"] : 0;
+                    $array[$key]["nd_part"] = ($nd_part1) + ($nd_part2);
+
+                    $rd_part1 = isset($array_one[$key]["rd_part1"]) ? $array_one[$key]["rd_part1"] : 0;
+                    $rd_part2 = isset($array_two[$key]["rd_part2"]) ? $array_two[$key]["rd_part2"] : 0;
+                    $array[$key]["rd_part"] = ($rd_part1) + ($rd_part2);
+                    break;
+
+                case "sales_history":
+                    $array[$key] = $array_two[$key];
+                         if (isset($array_one[$key])) {
+                             foreach ($array_one[$key] as $sub_key1 => $item1) {
+                                 $date_exists=false;
+                                 foreach ($array[$key] as $sub_key2 => $item2) {
+                                     $aa= $item1["report_date"];
+                                     $bb= $item2["report_date"];
+                                     if ($aa === $bb) {
+                                         $s_amount1 = $item1["s_amount"];
+                                         $array[$key][$sub_key2]["s_amount"] += $s_amount1;
+                                         $date_exists = true;
+                                         break;
+                                     }
+                                 }
+                                 if(!$date_exists){
+                                     $data=array(
+                                         "report_date"=> $item1["report_date"],
+                                         "s_amount"=> $item1["s_amount"],
+                                     );
+                                     $array[$key][] = $data;
+                                 }
+                             }
+                        }
+                        $array[$key]=$this->sortDate($array[$key],"report_date");
+                    break;
+
+                    case "charges_history":
+                    $array[$key] = $array_two[$key];
+                         if (isset($array_one[$key])) {
+                             foreach ($array_one[$key] as $sub_key1 => $item1) {
+                                 $date_exists=false;
+                                 foreach ($array[$key] as $sub_key2 => $item2) {
+                                     $aa= $item1["paymentDate"];
+                                     $bb= $item2["paymentDate"];
+                                     if ($aa === $bb) {
+                                         $s_amount1 = $item1["price"];
+                                         $array[$key][$sub_key2]["price"] += $s_amount1;
+                                         $date_exists = true;
+                                         break;
+                                     }
+                                 }
+                                 if(!$date_exists){
+                                     $data=array(
+                                         "paymentDate"=> $item1["paymentDate"],
+                                         "price"=> $item1["price"],
+                                     );
+                                     $array[$key][] = $data;
+                                 }
+                             }
+                        }
+                        $array[$key]=$this->sortDate($array[$key],"paymentDate");
+                    break;
+            }
+        }
+        return $array;
+    }
+
+    function date_fct($a, $b)
+    {
+        return strtotime($a) - strtotime($b);
+    }
+
+    private function sortDate($data,$columnName)
+    {
+        $columnArray = array_column($data, $columnName);
+
+
+        usort($columnArray, array($this,"date_fct"));
+
+        $response=array();
+
+            foreach ($columnArray as $columnElement) {
+                foreach ($data as $dataElement) {
+                    if ($columnElement === $dataElement[$columnName]) {
+                        $response[] = $dataElement;
+                    }
+                }
+            }
+
+        return $response;
     }
     public function apiReport()
     {

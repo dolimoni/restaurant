@@ -4,6 +4,9 @@ class model_group extends CI_Model {
 
 	public function add($group)
 	{
+	    if(!$group['department']){
+            $group['department']=1;
+        }
 		$data = array(
 			   'name' => $group['name'],
 			   'image' => $group['image'],

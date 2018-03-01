@@ -30,6 +30,10 @@ class Department extends BaseController {
         if($this->department>0){
             $id= $this->department;
         }
+        $data['params'] = $this->getParams();
+        if($data['params']["department"]==="false"){
+            $id=1;
+        }
         $data['department'] = $this->model_department->getDepartment($id);
         $data['magazins'] = $this->model_department->getMagazinsWithMeals($id);
         $data['readyMeals'] = $this->model_department->getReadyMeals($id);
@@ -99,6 +103,23 @@ class Department extends BaseController {
         $data['params'] = $this->getParams();
         $this->parser->parse('admin/department/view_addProducts', $data);
 	}
+
+    public function apiAddLostQuantity()
+    {
+        try {
+            $this->log_begin();
+            $meal = $this->input->post('meal');
+            $response = $this->model_department->addLostQuantity($meal);
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'success')));
+            $this->log_end(array('status' => 'success'));
+        } catch (Exception $e) {
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'error')));
+        }
+    }
 
 	public function apiAddStock()
 	{

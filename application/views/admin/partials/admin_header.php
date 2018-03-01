@@ -63,6 +63,11 @@
               top: 20%;
               z-index: 10000;
           }
+
+          .img-circle.profile_img{
+              width:65px !important;
+              height:65px !important;
+          }
       </style>
   </head>
 
@@ -167,7 +172,10 @@
                                  <li><a href="<?= base_url('admin/Meal/add'); ?>">Ajouter un article</a></li>
                               <?php endif; ?>
                               <?php if (isset($params["acl"]["Meal"]["index"]) or $this->session->userdata('type') === "admin"): ?>
-                                <li><a href="<?= base_url('admin/Meal/index'); ?>">Liste des articles</a></li>
+                                <li><a href="<?= base_url('admin/Meal/index'); ?>">Mes fiches techniques</a></li>
+                              <?php endif; ?>
+                                <?php if (isset($params["acl"]["department"]["show"]) or $this->session->userdata('type') === "admin"): ?>
+                                <!--<li><a href="<?/*= base_url('admin/department/show/1'); */?>">Stock des articles</a></li>-->
                               <?php endif; ?>
                             </ul>
                           </li>
@@ -199,6 +207,7 @@
                         <i class="fa fa-male"></i>Gestion du personnel <span class="fa fa-chevron-down"></span></a>
                         <ul class="nav child_menu">
                           <li><a href="<?= base_url('admin/employee/add'); ?>">Liste des employés</a></li>
+                          <!--<li><a href="<?/*= base_url('admin/employee/statistic'); */?>">Statistiques</a></li>-->
                         </ul>
                       </li>
                       <?php endif; ?>
@@ -268,13 +277,22 @@
                       <!-----------------------------------------Begin-------------------------------------------------->
                     <?php if ($params['multi_site'] === "true" and (isset($params["acl"]["Agency"]) or $this->session->userdata('type') === "admin")) { ?>
                       <li>
-                          <a><i class="fa fa-exchange"></i>Mes agences<span class="fa fa-chevron-down"></span></a>
+                          <a><i class="fa fa-exchange"></i>Agences<span class="fa fa-chevron-down"></span></a>
                           <ul class="nav child_menu">
+                          <?php if (isset($params["acl"]["Agency"]["index"]) or $this->session->userdata('type') === "admin"): ?>
+                              <li><a href="<?= base_url('admin/agency/index'); ?>">Mes agences</a></li>
+                          <?php endif; ?>
+
                           <?php if (isset($params["acl"]["Agency"]["index"]) or $this->session->userdata('type') === "admin"): ?>
                               <li><a href="<?= base_url('admin/agency/statistic'); ?>">Statistiques</a></li>
                           <?php endif; ?>
-                          <?php if (isset($params["acl"]["Agency"]["index"]) or $this->session->userdata('type') === "admin"): ?>
-                              <li><a href="<?= base_url('admin/agency'); ?>">Rapport des articles</a></li>
+
+                          <?php if (isset($params["acl"]["Agency"]["addProducts"]) or $this->session->userdata('type') === "admin"): ?>
+                              <li><a href="<?= base_url('admin/agency/addProducts'); ?>">Envoyer un stock</a></li>
+                          <?php endif; ?>
+
+                          <?php if (isset($params["acl"]["Agency"]["historyProducts"]) or $this->session->userdata('type') === "admin"): ?>
+                              <li><a href="<?= base_url('admin/agency/historyProducts'); ?>">Historique</a></li>
                           <?php endif; ?>
                           </ul>
                       </li>

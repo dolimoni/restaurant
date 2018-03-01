@@ -168,6 +168,7 @@
 
             console.log(productsList);
            if(productsList.length>0){
+               $('#loading').show();
                $.ajax({
                    url: "<?php echo base_url(); ?>admin/product/addInventory",
                    type: "POST",

@@ -9,6 +9,10 @@
         width: 130px;
         height: 126px;
     }
+
+    .selectGroup {
+        min-height: 160px;
+    }
 </style>
 <!-- page content -->
 <div class="right_col" role="main">
@@ -45,15 +49,25 @@
         </div>
 
         <div class="article-title text-center row">
-           <div class="col-md-4 col-sm-6 col-xs-12">
-               <h4 style="display: inline;">Nom de l'article : </h4> <input type="text" class="mealName" name="name"/>
-           </div>
             <div class="col-md-4 col-sm-6 col-xs-12">
-                <h4 style="display: inline;">Prix de vente : </h4> <input type="text" class="sellPrice" name="sellPrice"/>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6"><h4 style="display: inline;">Nom de l'article : </h4></div>
+                    <div class="col-xs-12 col-sm-6"><input type="text" class="mealName" name="name"/></div>
+                </div>
             </div>
-            <div class="col-md-4 col-sm-6 col-xs-12" >
-                <h4 style="display: inline;">Nombre d'articles : </h4> <input value="1" type="number" class="mealQuantity"/>
+             <div class="col-md-4 col-sm-6 col-xs-12">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6"><h4 style="display: inline;">Prix de vente : </h4></div>
+                    <div class="col-xs-12 col-sm-6"><input type="text" class="sellPrice" name="sellPrice"/></div>
+                </div>
             </div>
+             <div class="col-md-4 col-sm-6 col-xs-12">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6"><h4 style="display: inline;">Nombre d'articles : </h4></div>
+                    <div class="col-xs-12 col-sm-6"><input value="1" type="number" class="mealQuantity"/></div>
+                </div>
+            </div>
+
         </div>
         <div class="row mealComposition">
             <div class="col-md-6 col-sm-6 col-xs-12 product" data-id="1">
@@ -195,7 +209,7 @@
                         <?php
                         //Columns must be a factor of 12 (1,2,3,4,6,12)
                         $numOfCols = 6;
-                        $numOfSMCols = 3;
+                        $numOfSMCols = 2;
                         $rowCount = 0;
                         $bootstrapColMDWidth = 12 / $numOfCols;
                         $bootstrapColSMWidth = 12 / $numOfSMCols;

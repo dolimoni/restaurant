@@ -22,6 +22,7 @@ if (!isset($report['s_cost'])) {
         <div class="right_col" role="main">
             <!-- top tiles -->
             <div class="row">
+
                 <div class="col-md-12">
                     <div id="reportrange1" class="pull-right"
                          style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc">
@@ -129,9 +130,10 @@ if (!isset($report['s_cost'])) {
 
                                 <div class="widget_summary product-quantity"
                                      id="quantity_<?php echo $mealConsumptionRate['product'] ?>">
-                                    <div class="w_left w_25">
-                                        <?php echo $mealConsumptionRate['name']; ?>
-                                    </div>
+                                    <a class="w_left w_25" href="<?php echo base_url("admin/product/statistic/" . $mealConsumptionRate["product"]); ?>">
+                                            <?php echo $mealConsumptionRate['name']; ?>
+                                    </a>
+
                                     <div class="w_center w_55">
                                         <div class="progress">
                                             <div class="progress-bar bg-green" role="progressbar"
@@ -486,6 +488,9 @@ if (!isset($report['s_cost'])) {
         daysMarks= Math.round(c/31);
         if(daysMarks===0){
             daysMarks=1;
+        }
+        if ($(document).width() <= 768) {
+            daysMarks = 10;
         }
         var chart_plot_01_settings = {
             series: {

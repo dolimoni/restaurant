@@ -20,6 +20,29 @@ class Employee extends BaseController {
         $this->parser->parse('admin/employee/list', $data);
         $this->log_end($data);
     }
+    public function statistic()
+    {
+        $this->log_begin();
+        $data['params'] = $this->getParams();
+        $start = date('Y-m-d', strtotime('-1 month'));
+        $end = date('Y-m-d');
+        $data["report"]=$this->model_employee->getReport($start,$end)["report"];
+        $this->parser->parse('admin/employee/view_statistic', $data);
+        $this->log_end(null);
+    }
+
+    public function apiStatistic()
+    {
+        $this->log_begin();
+        $data['params'] = $this->getParams();
+        $start = $this->input->post('startDate');
+        $end = $this->input->post('endDate');
+        $report=$this->model_employee->getReport($start,$end);
+        $this->output
+            ->set_content_type("application/json")
+            ->set_output(json_encode($report));
+        $this->log_end($report);
+    }
 
 	public function add()
     {
@@ -91,6 +114,15 @@ class Employee extends BaseController {
 			}
 		}
 	}
+
+	public function all(){
+        $this->log_begin();
+        $id = $this->uri->segment(4);
+        $data['salaries'] = $this->model_employee->getMonthSalaries();
+        $data['params'] = $this->getParams();
+        $this->load->view('admin/employee/all_view', $data);
+        $this->log_end($data);
+    }
 
     public function apiEditMainEmployee()
     {

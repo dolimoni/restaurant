@@ -14,11 +14,36 @@
           <!--  <div class="title_left">
                 <h3>Articles</h3>
             </div>-->
-        <div id="reportrange" class="pull-right"
-             style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc">
-            <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
-            <span>December 30, 2014 - January 28, 2015</span> <b class="caret"></b>
-        </div>
+           <div class="row">
+               <div class="col-xs-12 col-sm-12">
+                   <a class="btn btn-warning" name="printSpendingReport">
+                       <span class="fa fa-print"></span>Rapport des dépenses
+                   </a>
+                   <a class="btn btn-success" name="printSalesReport">
+                       <span class="fa fa-print"></span>Rapport des ventes
+                   </a>
+                   <a href="<?php echo base_url("admin/report"); ?>" class="btn btn-info" name="printSalesReport">
+                       <span class="fa fa-print"></span>Rapport des articles
+                   </a>
+               </div>
+              <!-- <div class="col-xs-12 col-sm-3">
+                   <a class="btn btn-success" name="printSalesReport">
+                       <span class="fa fa-print"></span>Rapport des ventes
+                   </a>
+               </div>
+               <div class="col-xs-12 col-sm-3">
+                   <a href="<?php /*echo base_url("admin/report"); */?>" class="btn btn-success" name="printSalesReport">
+                       <span class="fa fa-print"></span>Rapport des articles
+                   </a>
+               </div>-->
+               <div class="col-xs-8 col-sm-12">
+                   <div id="reportrange" class="pull-right"
+                        style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc">
+                       <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
+                       <span>December 30, 2014 - January 28, 2015</span> <b class="caret"></b>
+                   </div>
+               </div>
+           </div>
 
         </div>
         <div class="clearfix"></div>
@@ -29,20 +54,36 @@
         <div class="row tile_count">
             <div class="col-md-3 col-sm-6 col-xs-12 tile_stats_count">
                 <span class="count_top"><i class="fa fa-user"></i>Chiffre d'affaire</span>
-                <div class="count report_amount"><?php echo number_format((float)$report['consumption']['turnover'], 2, '.', ''); ?>
+                <div class="count report_amount"><?php echo number_format((float)$report['consumption']['turnover'], 1, '.', ''); ?>
                     DH
                 </div>
+                <?php if(number_format($params["parts"],0)=="2"){ ?>
+                <div class="count_top"><i class="fa fa-dollar"></i> <span>Matin:</span> <span class="st_part"><?php echo number_format((float)$report['consumption_history']['st_part'], 1, '.', ''); ?></span> DH</div>
+                <div class="count_top"><i class="fa fa-dollar"></i> <span style="margin-right: 7px;">Soir:</span> <span class="nd_part"><?php echo number_format((float)$report['consumption_history']['nd_part'], 1, '.', ''); ?></span> DH</div>
+                <?php }?>
+                <?php if (number_format($params["parts"], 0) == "3") { ?>
+                    <div class="count_top"><i class="fa fa-dollar"></i>
+                        <span style="margin-right: 35px;">Matin</span>: <span class="st_part"><?php echo number_format((float)$report['consumption_history']['st_part'], 2, '.', ''); ?></span>
+                        DH
+                    </div>
+                    <div class="count_top"><i class="fa fa-dollar"></i> <span>Après-midi</span>
+                        : <span class="nd_part"><?php echo number_format((float)$report['consumption_history']['nd_part'], 1, '.', ''); ?></span> DH
+                    </div>
+                    <div class="count_top"><i class="fa fa-dollar"></i> <span style="margin-right: 39px;">Soir</span>
+                        : <span class="rd_part"><?php echo number_format((float)$report['consumption_history']['rd_part'], 1, '.', ''); ?></span> DH
+                    </div>
+                <?php } ?>
                 <!-- <span class="count_bottom"><i class="green">4% </i> From last Week</span>-->
             </div>
             <div class="col-md-3 col-sm-6 col-xs-12 tile_stats_count">
                 <span class="count_top"><i class="fa fa-user"></i> Dépenses</span>
-                <div class="count red report_cost"><?php echo number_format((float)($report["charges"]), 2, '.', ''); ?>
+                <div class="count red report_cost"><?php echo number_format((float)($report["charges"]), 1, '.', ''); ?>
                     DH
                 </div>
             </div>
             <div class="col-md-3 col-sm-6 col-xs-12 tile_stats_count">
                 <span class="count_top">Bénéfices</span>
-                <div class="count green report_profit"><?php echo number_format((float)($report['consumption']['turnover'] - $report["charges"]), 2, '.', ''); ?></div>
+                <div class="count green report_profit"><?php echo number_format((float)($report['consumption']['turnover'] - $report["charges"]), 1, '.', ''); ?></div>
             </div>
             <div class="col-md-3 col-sm-6 col-xs-12 tile_stats_count">
                 <span class="count_top"><i class="fa fa-user"></i>Nombre de vente</span>
@@ -82,7 +123,7 @@
                                     <?php foreach ($report['products_cost'] as $key=>$products_cost){ ?>
                                     <li class="media event">
                                         <div class="media-body">
-                                            <a class="title" href="#"><?php echo $products_cost['name']; ?></a>
+                                            <a class="title" href="<?php echo base_url("admin/product/statistic/". $products_cost["id"]); ?>"><?php echo $products_cost['name']; ?></a>
                                             <p>Consommation <strong><?php echo $products_cost['s_cost']; ?>DH</strong></p>
                                             <p>
                                                 <small>Nombre d'utilisations : <?php echo $products_cost['s_meal']; ?> fois</small>
@@ -187,6 +228,8 @@
 <script>
     var rangeLink = "<?php echo base_url('admin/report/apiStatistic'); ?>";
     var mealReportLink = "<?php echo base_url('admin/meal/report/'); ?>";
+    var myStartDate;
+    var myEndDate;
 </script>
 <script src="<?php echo base_url('assets/build2/js/dateRangePickerStatistics.js'); ?>"></script>
 <script src="<?php echo base_url('assets/build/js/canvasjs.min.js'); ?>"></script>
@@ -210,6 +253,12 @@
             type: "POST",
             dataType: "json",
             data: params,
+            beforeSend: function () {
+                $('#loading').show();
+            },
+            complete: function () {
+                $('#loading').hide();
+            },
             success: function (data) {
                 if (data.status === true) {
                     var amount = [];
@@ -302,13 +351,21 @@
         if ($("#chart_plot_05").length) {
             <?php
             $js_array = json_encode($report['sales_history']);
+            $js_array_charge = json_encode($report['charges_history']);
             echo "var sales = " . $js_array . ";\n";
+            echo "var charges = " . $js_array_charge . ";\n";
             ?>
             var chart_plot_05_data = [];
+            var chart_plot_charge_data = [];
 
             $.each(sales, function (key, sale) {
                 chart_plot_05_data.push([new Date(sale['report_date']), sale['s_amount']]);
             });
+
+            $.each(charges, function (key, charge) {
+                chart_plot_charge_data.push([new Date(charge['paymentDate']), charge['price']]);
+            });
+
             timeformat = "%d-%m-%y";
             if($(document).width()<= 450){
                 timeformat = "%m-%y";
@@ -353,7 +410,7 @@
                     width: 40,
                     height: 1
                 },
-                colors: ['#96CA59', '#3F97EB', '#72c380', '#6f7a8a', '#f7cb38', '#5a8022', '#2c7282'],
+                colors: ['#96CA59', '#FF7070','#3F97EB', '#72c380', '#6f7a8a', '#f7cb38', '#5a8022', '#2c7282'],
                 shadowSize: 0,
                 tooltip: true,
                 tooltipOpts: {
@@ -370,6 +427,7 @@
                 },
                 xaxis: {
                     mode: "time",
+                    labelAngle:60,
                     minTickSize: [2, "day"],
                     timeformat: timeformat,
                     min: chart_plot_05_data[0][0],
@@ -379,7 +437,7 @@
 
             $.plot($("#chart_plot_05"),
                 [{
-                    label: "Historique",
+                    label: "Vente",
                     data: chart_plot_05_data,
                     lines: {
                         fillColor: "rgba(150, 202, 89, 0.12)"
@@ -387,9 +445,20 @@
                     points: {
                         fillColor: "#fff"
                     }
+                },{
+                    label: "Dépense",
+                    data: chart_plot_charge_data,
+                    lines: {
+                        fill:false,
+                    },
+                    points: {
+                        fillColor: "#fff"
+                    }
                 }], chart_plot_05_settings);
 
         }
+
+        console.log("chart_plot_charge_data", chart_plot_charge_data);
 
         /************************Tooltip begin**************************/
         function showChartTooltip(x, y, contents) {
@@ -454,6 +523,60 @@
 
         }
 
+    });
+</script>
+<script>
+    $(document).ready(function () {
+
+        $("a[name=printSpendingReport]").on("click", {url: "admin/report/printSpendingReport"}, printReportEvent);
+        $("a[name=printSalesReport]").on("click", {url: "admin/report/printSalesReport"}, printReportEvent);
+        function printReportEvent(event){
+            var myData = {
+                "startDate": $('#reportrange').data('daterangepicker').startDate.format('YYYY-MM-DD'),
+                "endDate": $('#reportrange').data('daterangepicker').endDate.format('YYYY-MM-DD'),
+            };
+            $.ajax({
+                url: "<?php echo base_url(); ?>"+event.data.url,
+                type: "POST",
+                dataType: "json",
+                data: myData,
+                beforeSend: function () {
+                    $('#loading').show();
+                },
+                complete: function () {
+                    $('#loading').hide();
+                },
+                success: function (data) {
+                    if (data.status === "success") {
+                        swal({
+                            title: "Success",
+                            text: "L'opération a été bien effecuté",
+                            type: "success",
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+                        window.open("<?=base_url()?>" + data.filepath);
+                    } else {
+                        swal({
+                            title: "Erreur",
+                            text: "Une erreur s'est produite",
+                            type: "warning",
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+                    }
+                },
+                error: function (data) {
+                    swal({
+                        title: "Erreur",
+                        text: "Une erreur s'est produite",
+                        type: "warning",
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                }
+            });
+        }
     });
 </script>
 <script src="<?php echo base_url('assets/build/js/canvasjs.min.js'); ?>"></script>

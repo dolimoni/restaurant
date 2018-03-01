@@ -10,7 +10,7 @@
         </pre>-->
         <div class="page-title">
             <div class="title_left">
-                <h3>Modifier le produit</h3>
+                <h3>Modifier le produit : <?php echo $product['name']; ?></h3>
             </div>
         </div>
         <div class="clearfix"></div>
@@ -31,55 +31,60 @@
                 </div>
                 <div class="x_content">
                     <h4>Quantité/Prix</h4>
-                    <table id="datatable-quantityy" class="table table-striped table-bordered dt-responsive nowrap"
-                           cellspacing="0" width="100%">
-                        <thead>
-                        <tr>
-                            <th>Quantité</th>
-                            <th>Prix</th>
-                            <th>Fournisseur</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                        </tr>
-                        </thead>
-                        <tfoot>
-                        <tr>
-                            <th>Quantité</th>
-                            <th>Prix</th>
-                            <th>Fournisseur</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                        </tr>
-                        </tfoot>
-                        <tbody>
-                        <?php foreach ($quantities as $quantity) {
-                            $validate = "";
-                            /* if($quantity['status'] === "active"){
-                                 $validate="validate";
-                             }*/
-                            ?>
-                            <tr class="<?php echo $validate; ?>">
-                                <td><?php echo $quantity['quantity'] ?></td>
-                                <td><?php echo $quantity['unit_price'] ?></td>
-                                <td><?php echo ucfirst($quantity['pv_name']) ?></td>
-                                <td><?php echo ucfirst($quantity['status']) ?></td>
-                                <td width="10%">
-                                    <?php if ($quantity['status'] !== "active") { ?>
-                                        <button data-id="<?php echo $quantity['id'] ?>"
-                                                class="btn btn-default btn-xs action activate"><span
-                                                    class="glyphicon glyphicon-ok"></span></button>
-                                    <?php } ?>
-                                    <button data-id="<?php echo $quantity['id'] ?>"
-                                            data-quantity="<?php echo $quantity['unit_price'] ?>"
-                                            data-provider="<?php echo $quantity['pv_id'] ?>"
-                                            class="btn btn-success btn-xs action edit"><span
-                                                class="glyphicon glyphicon-edit"></span></button>
-
-                                </td>
+                    <div class="table-responsive">
+                        <table id="datatable-quantityy" class="table table-striped table-bordered dt-responsive nowrap"
+                               cellspacing="0" width="100%">
+                            <thead>
+                            <tr>
+                                <th>Quantité</th>
+                                <th>Prix</th>
+                                <th>Fournisseur</th>
+                                <th>Status</th>
+                                <th>Action</th>
                             </tr>
-                        <?php } ?>
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tfoot>
+                            <tr>
+                                <th>Quantité</th>
+                                <th>Prix</th>
+                                <th>Fournisseur</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                            </tfoot>
+                            <tbody>
+                            <?php foreach ($quantities as $quantity) {
+                                $validate = "";
+                                /* if($quantity['status'] === "active"){
+                                     $validate="validate";
+                                 }*/
+                                ?>
+                                <tr class="<?php echo $validate; ?>">
+                                    <td><?php echo $quantity['quantity'] ?></td>
+                                    <td><?php echo $quantity['unit_price'] ?></td>
+                                    <td><?php echo ucfirst($quantity['pv_name']) ?></td>
+                                    <td><?php echo ucfirst($quantity['status']) ?></td>
+                                    <td width="13%">
+                                        <?php if ($quantity['status'] !== "active") { ?>
+                                            <button data-id="<?php echo $quantity['id'] ?>"
+                                                    class="btn btn-info btn-xs action activate"><span
+                                                        class="glyphicon glyphicon-ok"></span></button>
+                                        <?php } ?>
+                                        <button data-id="<?php echo $quantity['id'] ?>"
+                                                data-quantity="<?php echo $quantity['unit_price'] ?>"
+                                                data-provider="<?php echo $quantity['pv_id'] ?>"
+                                                class="btn btn-warning btn-xs action edit"><span
+                                                    class="glyphicon glyphicon-edit"></span></button>
+                                        <a href="<?php echo base_url("admin/provider/show/". $quantity["pv_id"]); ?>" class="btn btn-success btn-xs action edit"><span
+                                                    class="glyphicon glyphicon-shopping-cart"></span></a>
+
+                                    </td>
+                                </tr>
+                            <?php } ?>
+                            </tbody>
+                        </table>
+                    </div>
+
                     <?php if ($params['department'] === "true") { ?>
                     <h4>Quantité/Département</h4>
                     <div class="row"></div>
@@ -120,9 +125,9 @@
 
 
 
-        <div class="row productsListContent" id="productPanel">
+        <div class="row productsListContent">
             <div class="row">
-                <div class="col-md-offset-3 col-md-6 col-sm-12 col-xs-12 productItem" data-id="1">
+                <div class="col-md-offset-3 col-md-6 col-sm-12 col-xs-12 productItem" id="productPanel" data-id="1">
                     <div class="x_panel">
                         <div class="x_title">
                             <h2>Produit</h2>
@@ -142,10 +147,10 @@
                                                          placeholder="Produit" name="name"
                                                          id="username" type="text">
                                     </div>
-                                    <div class="form-group">
+                                    <div class="form-group" hidden>
                                         Nouvelle quantité : <input class="form-control" placeholder="Quantité"
                                                                    name="quantity"
-                                                                   type="text">
+                                                                   type="text" >
                                     </div>
                                     <div class="form-group">
                                         Unité de mesure :
@@ -224,8 +229,10 @@
                                         <!-- <input type="submit" name="buttonSubmit" value="Confirmer" class="btn btn-success" />
                                          <div value="Nouveau produit" class="btn btn-info newProduct" >Nouveau produit</div>-->
                                         <div class="text-center">
-                                            <input type="submit" name="buttonSubmit" value="Confirmer"
+                                            <input type="submit" name="buttonSubmit" value="Enregistrer"
                                                    class="btn btn-success "/>
+                                            <input type="button" name="saveAndGo" value="Enregistrer et passer au suivant"
+                                                   class="btn btn-info "/>
                                            <!-- <input type="submit" name="buttonSubmit" value="Confirmer et passer au suivant"
                                                    class="btn btn-info"/>-->
                                         </div>
@@ -302,10 +309,12 @@
 <script>
 
     $(document).ready(function () {
-        $('#editProductForm').submit(function (e) {
-            e.preventDefault();
+        $("input[name=saveAndGo]").on("click", {saveType: "saveAndGo"},save)
+        $('#editProductForm').submit({saveType:"simple"},save);
 
-            var newUserQuantity="true";
+        function save(e) {
+            e.preventDefault();
+            var newUserQuantity = "true";
             var id = $('input[name="id"]').val();
             var name = $('input[name="name"]').val();
             var quantity = $('input[name="quantity"]').val();
@@ -316,10 +325,10 @@
             var min_quantity = $('input[name="min_quantity"]').val();
             var lostQuantity = $('input[name="lostQuantity"]').val();
             newUserQuantity = $('input[name="newUserQuantity"]').is(':checked');
-            if(lostQuantity=="")lostQuantity= 0;
+            if (lostQuantity == "") lostQuantity = 0;
             var provider = $('select[name=provider]').val();
             var product = {
-                'id':id,
+                'id': id,
                 'name': name,
                 'quantity': quantity,
                 'unit': unit,
@@ -338,6 +347,12 @@
                 type: "POST",
                 dataType: "json",
                 data: {"product": product},
+                beforeSend: function () {
+                    $('#loading').show();
+                },
+                complete: function () {
+                    $('#loading').hide();
+                },
                 success: function (data) {
                     if (data.status = "success") {
                         swal({
@@ -347,15 +362,19 @@
                             timer: 1500,
                             showConfirmButton: false
                         });
-                        var nextId= parseInt(id) + parseInt(1);
-                        window.location.href = "<?php echo base_url("admin/product/edit/"); ?>"+nextId;
+                        var nextId = parseInt(id) + parseInt(1);
+                        if(e.data.saveType==="saveAndGo"){
+                            window.location.href = "<?php echo base_url("admin/product/edit/"); ?>" + nextId;
+                        }else{
+                            window.location.href = "<?php echo base_url("admin/product/index/"); ?>";
+                        }
                     }
                 },
                 error: function (data) {
 
                 }
             });
-        });
+        }
 
     });
 
@@ -391,6 +410,8 @@
                     dataType: "json",
                     data: {'quantity_id':id},
                     success: function (data) {
+
+                        $('#loading').hide();
                         if (data.status === 'success') {
                             swal({
                                 title: "Success",

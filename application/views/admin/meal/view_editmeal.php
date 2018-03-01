@@ -9,6 +9,16 @@
         width: 130px;
         height: 126px;
     }
+    .selectGroup{
+        min-height: 160px;
+    }
+
+    @media (max-width: 767px) {
+        .page-title .title_left {
+            width: 100% !important;
+            text-align:center;
+        }
+    }
 </style>
 <!-- page content -->
 <div class="right_col" role="main">
@@ -61,14 +71,27 @@
         </div>
         <div class="row article-title text-center">
             <div class="col-md-4 col-sm-6 col-xs-12">
-                 <h4 style="display: inline;">Nom de l'article : </h4> <input type="text" class="mealName" name="name" value="<?php echo $meal['name'];?>"/>
-            </div>
-            <div class="col-md-4 col-sm-6 col-xs-12">
-                <h4 style="display: inline;">Prix de vente : </h4> <input value="<?php echo $meal['sellPrice']; ?>" type="text" class="sellPriceProduct" name="sellPrice"/>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6"><h4 style="display: inline;">Nom de l'article : </h4></div>
+                    <div class="col-xs-12 col-sm-6"><input type="text" class="mealName" name="name"
+                                                   value="<?php echo $meal['name']; ?>"/></div>
+                </div>
             </div>
 
             <div class="col-md-4 col-sm-6 col-xs-12">
-                <h4 style="display: inline;">Nombre d'articles : </h4> <input  value="<?php echo $meal['quantity']; ?>" type="number" class="mealQuantity"/>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6"><h4 style="display: inline;">Prix de vente : </h4></div>
+                    <div class="col-xs-12 col-sm-6"><input value="<?php echo $meal['sellPrice']; ?>" type="text"
+                                                          class="sellPriceProduct" name="sellPrice"/></div>
+                </div>
+            </div>
+
+            <div class="col-md-4 col-sm-6 col-xs-12">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6"><h4 style="display: inline;">Nombre d'articles : </h4></div>
+                    <div class="col-xs-12 col-sm-6"><input value="<?php echo $meal['quantity']; ?>" type="number"
+                                                          class="mealQuantity"/></div>
+                </div>
             </div>
         </div>
         <div class="row mealComposition">
@@ -196,7 +219,7 @@
                                         ?>
 
                                         <select name="kgUnitHidden"
-                                                class="kgUnitHidden" <?php echo $KgUnitHidden ?>>
+                                                class="kgUnitHidden md-button-v" <?php echo $KgUnitHidden ?>>
                                             <option value="1" name="Kilogramme">Kilogramme</option>
                                             <option value="0.001" name="Gramme">Gramme</option>
                                             <option value="0.000001" name="Milligramme">Milligramme</option>
@@ -237,7 +260,7 @@
                     <?php
                     //Columns must be a factor of 12 (1,2,3,4,6,12)
                     $numOfCols = 6;
-                    $numOfSMCols = 3;
+                    $numOfSMCols = 2;
                     $rowCount = 0;
                     $bootstrapColMDWidth = 12 / $numOfCols;
                     $bootstrapColSMWidth = 12 / $numOfSMCols;
@@ -431,6 +454,8 @@
                                 showConfirmButton: false
                             });
                             document.location.href = data.redirect;
+                            var nextId = parseInt(<?php echo $meal['id']; ?>) + parseInt(1);
+                            window.location.href = "<?php echo base_url("admin/meal/edit/"); ?>" + nextId;
                         }
                         else {
                             /*$('#show_id').html("<div style='border:1px solid red;font-size: 11px;margin:0 auto !important;'>" + response.error + "</div>");*/

@@ -185,6 +185,7 @@
                             </table>
                         </div>
                     </div>
+                    <a class="btn btn-info" href="<?php echo base_url("admin/employee/all"); ?>">Liste des employées</a>
                 </div>
             </div>
         </div>

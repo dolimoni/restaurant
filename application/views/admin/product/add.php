@@ -41,11 +41,11 @@
                                                                                     placeholder="Produit" name="name"
                                                                                     id="username" type="text" required>
                                     </div>
-                                    <div class="form-group">
+                                   <!-- <div class="form-group">
                                         Quantité<span class="required">*</span> : <input class="form-control"
                                                                                          placeholder="Quantité"
                                                                                          name="quantity">
-                                    </div>
+                                    </div>-->
                                     <div class="form-group">
                                         Unité de mesure :
                                         <select class="form-control" name="unit">
@@ -114,9 +114,9 @@
                                     Nom<span class="required">*</span> : <input class="form-control" placeholder="Produit" name="name"
                                                      id="username" type="text">
                                 </div>
-                                <div class="form-group">
+                              <!--  <div class="form-group">
                                     Quantité<span class="required">*</span> : <input class="form-control" placeholder="Quantité" name="quantity">
-                                </div>
+                                </div>-->
                                 <div class="form-group">
                                     Unité de mesure :
                                     <select class="form-control" name="unit">
@@ -192,14 +192,14 @@
                 var row = $('.productItem[data-id=' + i + ']');
 
                 var name = row.find('input[name="name"]').val();
-                var quantity = parseFloat(row.find('input[name="quantity"]').val().replace(',', '.'));
+                //var quantity = parseFloat(row.find('input[name="quantity"]').val().replace(',', '.'));
                 var unit = row.find('select[name="unit"]').val();
                 var unit_price = row.find('input[name="unit_price"]').val();
                 var weightByUnit = row.find('input[name="weightByUnit"]').val();
                 var daily_quantity = row.find('input[name="daily_quantity"]').val();
                 var min_quantity = row.find('input[name="min_quantity"]').val();
                 var provider = row.find('select[name=provider]').val();
-                var product1 = {'name': name, 'quantity': quantity, 'unit': unit, 'unit_price': unit_price,'weightByUnit': weightByUnit,'provider': provider, 'min_quantity': min_quantity, 'daily_quantity': daily_quantity,'status':'active'};
+                var product1 = {'name': name, 'quantity': 0, 'unit': unit, 'unit_price': unit_price,'weightByUnit': weightByUnit,'provider': provider, 'min_quantity': min_quantity, 'daily_quantity': daily_quantity,'status':'active'};
                if(name!==""){
                    productsList.push(product1);
                }
@@ -211,6 +211,12 @@
                    type: "POST",
                    dataType: "json",
                    data: {"productsList": productsList},
+                   beforeSend: function () {
+                       $('#loading').show();
+                   },
+                   complete: function () {
+                       $('#loading').hide();
+                   },
                    success: function (data) {
                        if (data.status = "success") {
                            swal({

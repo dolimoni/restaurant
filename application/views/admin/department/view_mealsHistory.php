@@ -21,40 +21,64 @@
                                cellspacing="0" width="100%">
                            <thead>
                                <tr>
-                                   <th>
-                                       Article
-                                   </th>
-                                   <th>
-                                       Quantité
-                                   </th>
-                                   <th>
-                                       Date
-                                   </th>
+                                   <th>Nom</th>
+                                   <th>Quantité préparée</th>
+                                   <th>Quantité vendu</th>
+                                   <th>Quantité restante</th>
+                                   <th>En Stock</th>
+                                   <th>En vente</th>
+                                   <th>Perte</th>
+                                   <th>Date</th>
+                                   <th>Actions</th>
                                </tr>
                            </thead>
                             <tfoot>
                                <tr>
-                                   <th>
-                                       Article
-                                   </th>
-                                   <th>
-                                       Quantité
-                                   </th>
-                                   <th>
-                                       Date
-                                   </th>
+                                   <th>Nom</th>
+                                   <th>Quantité préparée</th>
+                                   <th>Quantité vendu</th>
+                                   <th>Quantité restante</th>
+                                   <th>En Stock</th>
+                                   <th>En vente</th>
+                                   <th>Perte</th>
+                                   <th>Date</th>
+                                   <th>Actions</th>
                                </tr>
                            </tfoot>
 
-                           <tbody>
-                           <?php foreach ($mealsHistory as $meal) {?>
-                               <tr class="success">
-                                   <td><?php echo $meal['name']; ?></td>
-                                   <td><?php echo $meal['quantityToSale'] ?></td>
-                                   <td><?php echo $meal['date'] ?></td>
-                               </tr>
-                           <?php } ?>
                            </tbody>
+                            <tbody>
+                            <?php foreach ($mealsHistory as $meal) {
+
+
+                                $remainingQuantity = number_format((float)$meal['prepared_quantity'], 0, '.', '') - number_format((float)$meal['consumption_quantity'], 0, '.', '');
+                                $saleRemainingQuantity = number_format((float)($remainingQuantity - $meal['quantityInMagazin'] - $meal['lost_quantity']), 0, '.', '');
+                                if ($remainingQuantity < 0) {
+                                    $remainingQuantity = 0;
+                                }
+                                ?>
+                                <tr>
+                                    <td><?php echo $meal['name']; ?></td>
+                                    <td><?php echo number_format((float)$meal['prepared_quantity'], 0, '.', '') ?></td>
+                                    <td><?php echo number_format((float)$meal['consumption_quantity'], 0, '.', '') ?></td>
+                                    <td><?php echo $remainingQuantity ?></td>
+                                    <td><?php echo number_format((float)$meal['quantityInMagazin'], 0, '.', '') ?></td>
+                                    <td><?php echo $saleRemainingQuantity ?></td>
+                                    <td><?php echo $meal['lost_quantity'] ?></td>
+                                    <td><?php echo $meal["date"]; ?></td>
+                                    <td>
+                                        <?php if($saleRemainingQuantity>0){ ?>
+                                        <button data-id="<?php echo $meal['meal']; ?>" type="button"
+                                                data-quantity="<?php echo $meal['quantityInMagazin']+$saleRemainingQuantity; ?>"
+                                                data-report-date="<?php echo $meal["date"]; ?>"
+                                                class="btn btn-danger btn-xs lostMeal">
+                                            <i class="fa fa-long-arrow-right"> </i> Déclarer comme pertes
+                                        </button>
+                                        <?php } ?>
+                                    </td>
+                                </tr>
+                            <?php } ?>
+                            </tbody>
                         </table>
                     </div> <!-- /content -->
                 </div><!-- /x-panel -->
@@ -89,5 +113,82 @@
         }();
 
         TableManageButtons.init();
+    });
+</script>
+
+
+<script>
+    $(document).ready(function () {
+        $('button.lostMeal').on('click', lostMeal);
+
+
+        function lostMeal() {
+            var meal_id = $(this).attr('data-id');
+            var report_date = $(this).attr('data-report-date');
+            var quantity = $(this).attr('data-quantity');
+            swal({
+                    title: "Attention ! ",
+                    text: "Vous voulez vraiment déclarer cette quantité comme une perte ?",
+                    type: "warning",
+                    showConfirmButton: true,
+                    showCancelButton: true,
+                    cancelButtonText: 'Non',
+                    confirmButtonText: 'Oui'
+                },
+                function () {
+                    $('#loading').show();
+                    var meal= {
+                        'meal_id': meal_id,
+                        'report_date': report_date,
+                        'quantity': quantity,
+                    };
+                    console.log(meal);
+                    $.ajax({
+                        url: "<?php echo base_url('admin/department/apiAddLostQuantity'); ?>",
+                        type: "POST",
+                        dataType: "json",
+                        data: {'meal': meal},
+                        success: function (data) {
+                            if (data.status === 'success') {
+                                swal({
+                                    title: "Success",
+                                    text: "L'opération a été bien effecutées",
+                                    type: "success",
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                });
+                                location.reload();
+                                $(this).closest('tr').hide();
+                            }
+                            else {
+                                $('#loading').hide();
+                                swal({
+                                    title: "Erreur",
+                                    text: "Une erreur s'est produite",
+                                    type: "error",
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                });
+                            }
+                        },
+                        error: function (data) {
+                            $('#loading').hide();
+                            swal({
+                                title: "Erreur",
+                                text: "Une erreur s'est produite",
+                                type: "error",
+                                timer: 1500,
+                                showConfirmButton: false
+                            });
+                        },
+                        complete: function () {
+
+                        }
+                    });
+
+                });
+
+
+        }
     });
 </script>
