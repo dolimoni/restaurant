@@ -38,7 +38,7 @@
             <form id="addGroupForm" enctype="multipart/form-data">
                 <fieldset>
                     <div class="row">
-                        <div class="col-xs-6">
+                        <div class="col-xs-6 col-md-4">
                             <br>
                             <label for="name">Nom :</label>
                             <input type="text" step="any" class="form-control" name="groupName"
@@ -46,7 +46,22 @@
                                    required>
                         </div>
 
-                        <div class="col-xs-6">
+                        <?php if ($params['department'] === "true") { ?>
+                        <div class="col-md-4 col-sm-6 col-xs-12">
+                            <br>
+                            <label for="name">Département :</label>
+                            <select name="department" class="form-control departmentSelect  md-button-v">
+                                <option value="0">Aucun</option>
+                                <?php foreach ($departments as $department) { ?>
+                                    <option value="<?php echo $department['id'] ?>">
+                                        <?php echo $department['name'] ?>
+                                    </option>
+                                <?php } ?>
+                            </select>
+                        </div>
+                        <?php } ?>
+
+                        <div class="col-md-4 col-xs-6">
                             <br>
                             <label for="image">Image :</label>
                             <input type="file" class="form-control" name="image" size="10485760">
@@ -69,7 +84,7 @@
                 <fieldset>
                     <div class="row">
                         <input type="hidden" name="id"/>
-                        <div class="col-xs-6">
+                        <div class="col-xs-6 col-md-4">
                             <br>
                             <label for="name">Nom :</label>
                             <input type="text" step="any" class="form-control" name="groupNameEdit"
@@ -77,7 +92,22 @@
                                    required>
                         </div>
 
-                        <div class="col-xs-6">
+                        <?php if ($params['department'] === "true") { ?>
+                        <div class="col-md-4 col-sm-6 col-xs-12">
+                            <br>
+                            <label for="name">Département :</label>
+                            <select name="department" class="form-control departmentSelect  md-button-v">
+                                <option value="0">Aucun</option>
+                                <?php foreach ($departments as $department) { ?>
+                                    <option value="<?php echo $department['id'] ?>">
+                                        <?php echo $department['name'] ?>
+                                    </option>
+                                <?php } ?>
+                            </select>
+                        </div>
+                        <?php } ?>
+
+                        <div class="col-xs-6 col-md-4">
                             <br>
                             <label for="image">Image :</label>
                             <input type="file" class="form-control" name="image" size="10485760">
@@ -118,7 +148,7 @@
                         </a>
                         <div class="col-xs-12 bottom">
                             <button aria-expanded="false" data-id="<?php echo $group['g_id'] ?>"
-                                    data-name="<?php echo $group['g_name'] ?>" type="button"
+                                    data-name="<?php echo $group['g_name'] ?>" data-department="<?php echo $group['department'] ?>" type="button"
                                     class="btn btn-info btn-xs editGroup">
                                 <i class="fa fa-edit"> </i> Modifier
                             </button>
@@ -163,7 +193,6 @@
                             timer: 1500,
                             showConfirmButton: false
                         });
-
                         location.reload();
                     } else {
                         $('#loading').hide();
@@ -192,6 +221,7 @@
         $('#editGroupForm').on('submit', function (e) {
             e.preventDefault();
             var formData = new FormData(this);
+            $('#loading').show();
             $.ajax({
                 type: 'POST',
                 url: "<?php echo base_url('admin/meal/apiGroupEdit'); ?>",
@@ -200,6 +230,7 @@
                 contentType: false,
                 processData: false,
                 success: function (data) {
+                    $('#loading').hide();
                     if (data.status === "success") {
                         swal({
                             title: "Success",
@@ -210,16 +241,28 @@
                         });
                         location.reload();
                     } else {
-                        swal({
-                            title: "Erreur",
-                            text: "Une erreur s'est produit",
-                            type: "error",
-                            timer: 1500,
-                            showConfirmButton: false
-                        });
+                        if (data.status === "success") {
+                            swal({
+                                title: "Success",
+                                text: "La modification a été bien effectuée",
+                                type: "success",
+                                timer: 1500,
+                                showConfirmButton: false
+                            });
+                            location.reload();
+                        } else {
+                            swal({
+                                title: "Erreur",
+                                text: "Une erreur s'est produit",
+                                type: "error",
+                                timer: 1500,
+                                showConfirmButton: false
+                            });
+                        }
                     }
                 },
                 error: function (data) {
+                    $('#loading').hide();
                     swal({
                         title: "Erreur",
                         text: "Une erreur s'est produit",
@@ -246,6 +289,7 @@
 
             $('input[name="groupNameEdit"]').val($(this).attr('data-name'));
             $('input[name="id"]').val($(this).attr('data-id'));
+            $('#editGroupForm select[name="department"]').val($(this).attr('data-department'));
             scroll("editGroup");
         }
 

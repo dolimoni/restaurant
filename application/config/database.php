@@ -48,10 +48,10 @@
 $active_group = 'default';
 $active_record = TRUE;
 
-$db['default']['hostname'] = 'localhost';
-$db['default']['username'] = 'root';
-$db['default']['password'] = '';
-$db['default']['database'] = 'restaurant_tmp';
+$db['default']['hostname'] = 'localhost';//localhost ou 149.91.80.68
+$db['default']['username'] = 'root';//root ou lhpastry
+$db['default']['password'] = ''; // ou lhpastry
+$db['default']['database'] = 'restaurant_test';//restaurant_tmp ou restaurant_test
 $db['default']['dbdriver'] = 'mysqli';
 $db['default']['dbprefix'] = '';
 $db['default']['pconnect'] = TRUE;
@@ -63,6 +63,23 @@ $db['default']['dbcollat'] = 'utf8_general_ci';
 $db['default']['swap_pre'] = '';
 $db['default']['autoinit'] = TRUE;
 $db['default']['stricton'] = FALSE;
+
+
+$db['remote_2']['hostname'] = '149.91.80.68';//localhost ou 149.91.80.68
+$db['remote_2']['username'] = 'lhpastry';//root ou lhpastry
+$db['remote_2']['password'] = 'lhpastry'; // ou lhpastry
+$db['remote_2']['database'] = 'restaurant_test';//restaurant_tmp ou restaurant_test
+$db['remote_2']['dbdriver'] = 'mysqli';
+$db['remote_2']['dbprefix'] = '';
+$db['remote_2']['pconnect'] = TRUE;
+$db['remote_2']['db_debug'] = TRUE;
+$db['remote_2']['cache_on'] = FALSE;
+$db['remote_2']['cachedir'] = '';
+$db['remote_2']['char_set'] = 'utf8';
+$db['remote_2']['dbcollat'] = 'utf8_general_ci';
+$db['remote_2']['swap_pre'] = '';
+$db['remote_2']['autoinit'] = TRUE;
+$db['remote_2']['stricton'] = FALSE;
 
 
 

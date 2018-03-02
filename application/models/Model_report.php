@@ -3,6 +3,8 @@
 class model_report extends CI_Model
 {
 
+    private $current_db = 0;
+
     public function report($params = null)
     {
         //regular report: used in table in admin/report/index
@@ -13,6 +15,7 @@ class model_report extends CI_Model
             $this->db->select('sum(c.quantity) as s_quantity');
             $this->db->select('sum(c.quantity)*c.amount as s_amount');
             $this->db->select('sum(c.quantity)*profit as s_profit');
+            $this->db->select('sum(c.prepared_quantity) as prepared_quantity');
             $this->db->from('meal m');
             $this->db->where('c.type', 'sale');
             $this->db->join('consumption c', 'm.id = c.meal');
@@ -105,6 +108,114 @@ class model_report extends CI_Model
         }
     }
 
+    public function getChargesHistory($startDate = null, $endDate = null){
+        $this->load->model("model_util");
+
+        $response=array();
+        $this->db->select('sum(sh.total) as price');
+        $this->db->select('date(o.paymentDate) as paymentDate');
+        $this->db->from('stock_history sh');
+        $this->db->join('order o', 'o.id=sh.order_id and o.paid="true"');
+        $this->db->where('sh.type', 'in');
+        if ($startDate) {
+            $this->db->where('date(o.paymentDate)>=', $startDate);
+            $this->db->where('date(o.paymentDate)<=', $endDate);
+        }
+        $this->db->group_by("date(o.paymentDate)");
+        $stock_history_orders = $this->db->get()->result_array();
+
+        /*$this->db->select('date(created_at) as paymentDate');
+        $this->db->select('sum(sh.total) as price');
+        $this->db->from('stock_history sh');
+        $this->db->where('sh.type', 'in');
+        $this->db->where('(order_id IS NULL or order_id=0)', NULL, false);
+        if ($startDate) {
+            $this->db->where('date(created_at)>=', $startDate);
+            $this->db->where('date(created_at)<=', $endDate);
+        }
+        $stock_history = $this->db->get()->result_array();*/
+
+        $this->db->select('date(paymentDate) as paymentDate');
+        $this->db->select('sum(price) as price');
+        if ($startDate) {
+            $this->db->where('date(paymentDate)>=', $startDate);
+            $this->db->where('date(paymentDate)<=', $endDate);
+        }
+        $this->db->where('paid', "true");
+        $this->db->group_by("date(paymentDate)");
+        $purchase = $this->db->get('purchase')->result_array();
+
+        $this->db->select('date(created_at) as paymentDate');
+        $this->db->select('sum(price) as price');
+        if ($startDate) {
+            $this->db->where('date(created_at)>=', $startDate);
+            $this->db->where('date(created_at)<=', $endDate);
+        }
+        $this->db->group_by("date(created_at)");
+        $repair = $this->db->get('reparation')->result_array();
+
+
+        $this->db->select('date(paymentDate) as paymentDate');
+        $this->db->select('sum(salary)-sum(substraction) as price');
+        if ($startDate) {
+            $this->db->where('date(paymentDate)>=', $startDate);
+            $this->db->where('date(paymentDate)<=', $endDate);
+        }
+        $this->db->where('paid', "true");
+        $this->db->group_by("date(paymentDate)");
+        $salary = $this->db->get('salary')->result_array();
+
+
+        $this->db->select("remarque,date(day) as paymentDate");
+        $this->db->from("salary s");
+        $this->db->join("employee_event ee", "ee.employee=s.employee and date(ee.paymentDate)=date(s.paymentDate)");
+        $this->db->where('date(day)>=', $startDate);
+        $this->db->where('date(day)<=', $endDate);
+        $this->db->where('paid', "false");
+        $this->db->like('remarque', 'avance');
+        $advancesData = $this->db->get()->result_array();
+        foreach ($advancesData as $key=> $advance) {
+            $avanceAmount = explode(' ', $advance['remarque']);
+            $advancesData[$key]["price"] = $avanceAmount[1];
+        }
+
+
+        if($purchase){
+            $response = $this->model_util->mergeDateArray($stock_history_orders, $purchase);
+        }
+        if($repair){
+            $response = $this->model_util->mergeDateArray($response, $repair);
+        }
+        if($salary){
+            $response = $this->model_util->mergeDateArray($response, $salary);
+        }
+        if($advancesData){
+            $advancesDataGroup = array();
+
+            foreach ($advancesData as $key => $item) {
+                $advancesDataGroup[$item['paymentDate']][$key] = $item;
+            }
+
+            ksort($advancesDataGroup, SORT_NUMERIC);
+
+            $arraySum=array();
+            reset($advancesDataGroup);
+            foreach ($advancesDataGroup as $key => $advanceDataGroup) {
+                reset($advanceDataGroup);
+                $paymentDate= current($advanceDataGroup)["paymentDate"];
+                $arraySum[]= array("paymentDate"=> $paymentDate,"price"=> array_sum(array_column($advanceDataGroup, "price")));
+            }
+
+            $response = $this->model_util->mergeDateArray($response, $arraySum);
+        }
+
+
+        $response=$this->model_util->sortDate($response, "paymentDate");
+        return $response;
+
+
+
+    }
     public function global_report($startDate=null, $endDate=null){
         $global=array();
 
@@ -121,6 +232,19 @@ class model_report extends CI_Model
             $this->db->where('c.report_date<=', $endDate);
         }
         $consumption = $this->db->get()->row_array();
+
+        $this->db->select('*');
+        $this->db->select('sum(ch.quantity) as s_quantity');
+        $this->db->select('sum(ch.total) as turnover');
+        $this->db->select('sum(ch.st_part) as st_part');
+        $this->db->select('sum(ch.nd_part) as nd_part');
+        $this->db->select('sum(ch.rd_part) as rd_part');
+        $this->db->from('consumption_history ch');
+        if($startDate){
+            $this->db->where('ch.report_date>=', $startDate);
+            $this->db->where('ch.report_date<=', $endDate);
+        }
+        $consumption_history = $this->db->get()->row_array();
 
         //costs
         $this->db->select('cp.*');
@@ -151,14 +275,31 @@ class model_report extends CI_Model
         $sales_history = $this->db->get()->result_array();//Sales history
         $sales_history= array_reverse($sales_history);
 
+        //charges history
+
+        $charges_history=$this->getChargesHistory($startDate,$endDate);
+
+        /********************************************************************/
+        $this->db->select('sum(sh.total) as price');
+        $this->db->from('stock_history sh');
+        $this->db->join('order o','o.id=sh.order_id and o.paid="true"');
+        $this->db->where('sh.type', 'in');
+        if ($startDate) {
+            $this->db->where('date(o.paymentDate)>=', $startDate);
+            $this->db->where('date(o.paymentDate)<=', $endDate);
+        }
+        $stock_history_orders = $this->db->get()->row("price");
+
         $this->db->select('sum(sh.total) as price');
         $this->db->from('stock_history sh');
         $this->db->where('sh.type', 'in');
+        $this->db->where('(order_id IS NULL or order_id=0)',NULL,false);
         if ($startDate) {
             $this->db->where('date(created_at)>=', $startDate);
             $this->db->where('date(created_at)<=', $endDate);
         }
-        $stock_history = $this->db->get()->row_array();
+        $stock_history = $this->db->get()->row("price")+ $stock_history_orders;
+        /********************************************************************/
 
 
         //Sales history by month
@@ -167,8 +308,8 @@ class model_report extends CI_Model
         $this->db->from('consumption c');
         $this->db->where('c.type', 'sale');
         if ($startDate) {
-            $this->db->where('c.report_date>=', $startDate);
-            $this->db->where('c.report_date<=', $endDate);
+            /*$this->db->where('c.report_date>=', $startDate);
+            $this->db->where('c.report_date<=', $endDate);*/
         }
         $this->db->group_by('MONTH(report_date)');
         $this->db->order_by('report_date', 'DESC');
@@ -176,7 +317,7 @@ class model_report extends CI_Model
         $sales_history_month = $this->db->get()->result_array();
 
         //products costs
-        $this->db->select('p.name');
+        $this->db->select('p.name,p.id');
         $this->db->select('sum(cp.total) as s_cost');
         $this->db->select('count(cp.product) as s_meal');
         $this->db->from('consumption_product cp');
@@ -196,9 +337,10 @@ class model_report extends CI_Model
 
         $this->db->select('sum(price) as price');
         if ($startDate) {
-            $this->db->where('date(created_at)>=', $startDate);
-            $this->db->where('date(created_at)<=', $endDate);
+            $this->db->where('date(paymentDate)>=', $startDate);
+            $this->db->where('date(paymentDate)<=', $endDate);
         }
+        $this->db->where('paid', "true");
         $purchase = $this->db->get('purchase')->row_array();
 
         $this->db->select('sum(price) as price');
@@ -208,18 +350,156 @@ class model_report extends CI_Model
         }
         $repair = $this->db->get('reparation')->row_array();
 
+        /****************************EMPLOYEES****************************************/
+        $salary=$this->getEmployeesCost($startDate,$endDate);
+        /*****************************************************************************/
+
 
         $global['consumption']= $consumption;
+        $global['consumption_history']= $consumption_history;
         $global['cp']= $consumption_product;
         $global['sales_history']= $sales_history;
+        $global['charges_history']= $charges_history;
         $global['products_cost']= $products_cost;
         $global['sales_history_month']= $sales_history_month;
         $global['purchase']= $purchase;
         $global['repair']= $repair;
+        $global['salary']= $salary;
         $global['stock_history']= $stock_history;
+        $global['stock_history']= $stock_history;
+        $global["charges"]= $global['stock_history'] + $global['purchase']['price'] + $global['repair']['price'] + $global['salary']['salary'];
 
 
         return $global;
+    }
+
+    public function getEmployeesCost($startDate, $endDate){
+
+        $this->db->select('sum(salary) as salary');
+        $this->db->select('sum(substraction) as substraction');
+        if ($startDate) {
+            $this->db->where('date(paymentDate)>=', $startDate);
+            $this->db->where('date(paymentDate)<=', $endDate);
+        }
+        $this->db->where('paid', "true");
+        $salary = $this->db->get('salary')->row_array();
+
+
+        $this->db->select("remarque");
+        $this->db->from("salary s");
+        $this->db->join("employee_event ee","ee.employee=s.employee and date(ee.paymentDate)=date(s.paymentDate)");
+        $this->db->where('date(day)>=', $startDate);
+        $this->db->where('date(day)<=', $endDate);
+        $this->db->where('paid', "false");
+        $this->db->like('remarque', 'avance');
+        $advancesData= $this->db->get()->result_array();
+        $avancesAmount = 0;
+        foreach ($advancesData as $advance) {
+            $avanceAmount = explode(' ', $advance['remarque']);
+            $avancesAmount += $avanceAmount[1];
+        }
+
+        $salary["salary"]+= $avancesAmount;
+        $salary["salary"] -= $salary["substraction"];
+        return $salary;
+    }
+
+
+    //SHOULD BE UPDATED WHEN ABOVE FUNCTION IS CHANGED
+    public function global_report_detail($startDate, $endDate){
+        $this->db->select('sh.*,p.name,pv.name as pv_name,o.paid,o.status,date(sh.created_at) as date_commande');
+        $this->db->from('stock_history sh');
+        $this->db->join('order o', 'o.id=sh.order_id');
+        $this->db->join('product p', 'p.id=sh.product');
+        $this->db->join('provider pv', 'pv.id=sh.provider');
+        $this->db->where('sh.type', 'in');
+        if ($startDate) {
+            $this->db->where('date(o.paymentDate)>=', $startDate);
+            $this->db->where('date(o.paymentDate)<=', $endDate);
+        }
+        $this->db->order_by("date_commande","desc");
+        $stocks_history_order = $this->db->get()->result_array();
+
+        $this->db->select('sh.*,p.name,pv.name as pv_name,date(sh.created_at) as date_commande');
+        $this->db->from('stock_history sh');
+        $this->db->join('product p', 'p.id=sh.product');
+        $this->db->join('provider pv', 'pv.id=sh.provider',"left");
+        $this->db->where('sh.type', 'in');
+        $this->db->where('sh.unit_price>0');
+        $this->db->where('(order_id IS NULL or order_id=0)', NULL, false);
+        if ($startDate) {
+            $this->db->where('date(sh.created_at)>=', $startDate);
+            $this->db->where('date(sh.created_at)<=', $endDate);
+        }
+        $this->db->order_by("date_commande", "desc");
+        $stocks_history = $this->db->get()->result_array();
+
+        $this->db->select('*,date(created_at) as date');
+        if ($startDate) {
+            $this->db->where('date(paymentDate)>=', $startDate);
+            $this->db->where('date(paymentDate)<=', $endDate);
+        }
+        $purchase = $this->db->get('purchase')->result_array();
+
+
+        $this->db->select('*,date(created_at) as date');
+        if ($startDate) {
+            $this->db->where('date(created_at)>=', $startDate);
+            $this->db->where('date(created_at)<=', $endDate);
+        }
+        $reparation = $this->db->get('reparation')->result_array();
+
+
+        $this->db->select('*,m.id as m_id');
+        $this->db->select('sum(c.quantity) as s_quantity');
+        $this->db->select('sum(c.quantity)*c.amount as s_amount');
+        $this->db->from('meal m');
+        $this->db->join('consumption c', 'm.id = c.meal');
+        $this->db->where('c.report_date >=', $startDate);
+        $this->db->where('c.report_date <=', $endDate);
+        $this->db->where('c.type', 'sale');
+        $this->db->where('c.amount>', '0');
+        $this->db->group_by('c.meal');
+        $meals_sale = $this->db->get()->result_array();
+
+        $this->db->select('*,s.salary as s_salary');
+        $this->db->from('salary s');
+        $this->db->join("employee e", "e.id=s.employee","left");
+        if ($startDate) {
+            $this->db->where('date(paymentDate)>=', $startDate);
+            $this->db->where('date(paymentDate)<=', $endDate);
+        }
+        $this->db->where('paid', "true");
+        $salaries = $this->db->get()->result_array();
+
+
+        $this->db->select("*,e.salary as e_salary");
+        $this->db->from("salary s");
+        $this->db->join("employee e","e.id=s.employee");
+        $this->db->join("employee_event ee", "ee.employee=s.employee and date(ee.paymentDate)=date(s.paymentDate)","left");
+        $this->db->where('date(day)>=', $startDate);
+        $this->db->where('date(day)<=', $endDate);
+        $this->db->where('paid', "false");
+        $this->db->like('remarque', 'avance');
+        $advancesData = $this->db->get()->result_array();
+        $avancesAmount = 0;
+        foreach ($advancesData as $key=> $advance) {
+            $avanceAmount = explode(' ', $advance['remarque']);
+            $avancesAmount += $avanceAmount[1];
+            $advancesData[$key]["advance_amount"]= $avanceAmount[1];
+        }
+
+
+
+        $global['stocks_history_order'] = $stocks_history_order;
+        $global['stocks_history'] = $stocks_history;
+        $global['purchases'] = $purchase;
+        $global['reparations'] = $reparation;
+        $global['meals_sale'] = $meals_sale;
+        $global['advances'] = $advancesData;
+        $global['salaries'] = $salaries;
+        return $global;
+
     }
 
     public function reportById($meal_id,$startDate=null,$endDate=null)
@@ -227,6 +507,7 @@ class model_report extends CI_Model
         $this->db->select('*');
         $this->db->select('sum(c.quantity) as s_quantity');
         $this->db->select('COUNT(DISTINCT DATE_FORMAT(c.createdAt, \'%Y-%m-%d\')) as days');
+        $this->db->select('sum(c.prepared_quantity) as prepared_quantity');
         $this->db->from('meal m');
         $this->db->join('consumption c', 'm.id = c.meal');
         $this->db->where('m.id', $meal_id);
@@ -253,6 +534,18 @@ class model_report extends CI_Model
         $report['s_cost']=$s_cost;
 
 
+        $this->db->select('sum(c.quantity) as s_lost');
+        $this->db->from('consumption c');
+        $this->db->where('c.meal', $meal_id);
+        $this->db->where('c.type', 'lost');
+        if ($startDate) {
+            $this->db->where('DATE(c.report_date) >=', $startDate);
+            $this->db->where('DATE(c.report_date) <=', $endDate);
+        }
+        $s_lost = $this->db->get()->row()->s_lost;
+
+
+        $report['s_lost'] = $s_lost;
 
 
         $report['mealConsumptionRate'] = $this->mealConsumptionRate($meal_id,$startDate,$endDate);
@@ -266,6 +559,36 @@ class model_report extends CI_Model
             $s_quantity = array_sum(array_column($report, 'c_quantity'));
         }
         $report['s_quantity'] = $s_quantity;*/
+        return $report;
+    }
+
+
+    public function reportByProductId($product_id,$startDate=null,$endDate=null)
+    {
+        $this->db->select('*');
+        $this->db->select('sum(c.quantity) as s_quantity');
+        $this->db->select('COUNT(DISTINCT DATE_FORMAT(c.createdAt, \'%Y-%m-%d\')) as days');
+        $this->db->select('sum(c.prepared_quantity) as prepared_quantity');
+        $this->db->from('product p');
+        $this->db->join('consumption_product cp', 'p.id = cp.product');
+        $this->db->join('consumption c', 'c.id = cp.consumption');
+        $this->db->join('meal m', 'm.id = cp.meal');
+        $this->db->where('p.id', $product_id);
+        $this->db->where('c.type', 'sale');
+        if($startDate){
+            $this->db->where('DATE(c.report_date) >=', $startDate);
+            $this->db->where('DATE(c.report_date) <=', $endDate);
+        }
+        $this->db->group_by('c.meal');
+        $report = $this->db->get()->result_array();
+
+        $report['productConsumptionRate'] = $this->productConsumptionRate($product_id, $startDate, $endDate);
+        $report['totalPrice'] = $report['productConsumptionRate']['totalPrice'];
+        $report['totalConsumptionQuantity'] = $report['productConsumptionRate']['totalQuantity'];
+        unset($report['productConsumptionRate']['totalPrice']);
+        unset($report['productConsumptionRate']['totalQuantity']);
+
+
         return $report;
     }
 
@@ -391,6 +714,19 @@ class model_report extends CI_Model
         $this->db->where('c.type', 'sale');
         $s_cost = $this->db->get()->row()->s_cost;
 
+        $this->db->select('sum(c.quantity) as s_lost');
+        $this->db->from('consumption c');
+        $this->db->where('c.meal', $meal_id);
+        $this->db->where('c.type', 'lost');
+        if ($startDate) {
+            $this->db->where('DATE(c.createdAt) >=', $startDate);
+            $this->db->where('DATE(c.createdAt) <=', $endDate);
+        }
+        $s_lost = $this->db->get()->row()->s_lost;
+        if(!$s_lost){
+            $s_lost=0;
+        }
+        $evolution['s_lost']= $s_lost;
         $evolution['s_cost'] = array_sum(array_column($evolution, "s_cost"));;
         $evolution['s_total'] = array_sum(array_column($evolution,"total"));
         $evolution['s_quantity'] = array_sum(array_column($evolution,"s_quantity"));
@@ -407,6 +743,17 @@ class model_report extends CI_Model
         $this->db->join('consumption c', 'm.id = c.meal');
         $this->db->where('m.id', $meal_id);
         $this->db->where('c.type', 'sale');
+        $this->db->where('report_date =', $date);
+        return $this->db->get()->row_array();
+    }
+
+    public function reportPreparedMealDate($meal_id, $date)
+    {
+        $this->db->select('*');
+        $this->db->from('meal m');
+        $this->db->join('consumption c', 'm.id = c.meal');
+        $this->db->where('m.id', $meal_id);
+        $this->db->where('c.type', 'prepared');
         $this->db->where('report_date =', $date);
         return $this->db->get()->row_array();
     }
@@ -455,6 +802,7 @@ class model_report extends CI_Model
         return $meals;
     }
 
+    // taux d utilisation des produits dans un repas
     public function mealConsumptionRate($meal_id, $startDate, $endDate)
     {
         $this->db->select('*,avg(cp.unit_price) as avg_unit_price,sum(cp.quantity) as sum_quantity');
@@ -464,6 +812,37 @@ class model_report extends CI_Model
         $this->db->group_by('cp.product');
         $this->db->group_by('cp.meal');
         $this->db->where('cp.meal', $meal_id);
+        $this->db->where('cp.type', 'sale');
+        $this->db->where('cp.quantity>', 0);
+        if($startDate){
+            $this->db->where('c.report_date >=', $startDate);
+            $this->db->where('c.report_date <=', $endDate);
+        }
+        $mealConsumptionRate = $this->db->get()->result_array();
+        $mealConsumptionTotal = 0; // total price
+        $mealConsumptionTotalQuantity = 0; // total quantity
+        if (!empty($mealConsumptionRate)) {
+            $mealConsumptionTotal = array_sum(array_column($mealConsumptionRate, 'avg_unit_price')); // somme des prix moyen
+            $quantitiesAvg = array_column($mealConsumptionRate, 'sum_quantity');// somme des quantitées
+            $mealConsumptionTotalQuantity = array_sum($quantitiesAvg);
+        }
+
+        $mealConsumptionRate['totalPrice'] = $mealConsumptionTotal;
+        $mealConsumptionRate['totalQuantity'] = $mealConsumptionTotalQuantity;
+        return $mealConsumptionRate;
+    }
+
+    // taux d utilisation des repas dans un produit
+    public function productConsumptionRate($product_id, $startDate, $endDate)
+    {
+        $this->db->select('cp.*,m.*,c.*,p.unit,avg(cp.unit_price) as avg_unit_price,sum(cp.quantity) as sum_quantity');
+        $this->db->from('consumption_product cp');
+        $this->db->join('meal m', 'm.id=cp.meal');
+        $this->db->join('product p', 'p.id=cp.product');
+        $this->db->join('consumption c', 'c.id=cp.consumption');
+        $this->db->group_by('cp.product');
+        $this->db->group_by('cp.meal');
+        $this->db->where('cp.product', $product_id);
         $this->db->where('cp.type', 'sale');
         if($startDate){
             $this->db->where('c.report_date >=', $startDate);
@@ -717,5 +1096,41 @@ class model_report extends CI_Model
             $data[] = $price;
         }
         return $data;
+    }
+
+    public function consumptionProduct($startDate,$endDate){
+        $this->db->select("cp.*,pt.name,pt.id as p_id");
+        $this->db->select("sum(cp.quantity) as cp_quantity");
+        $this->db->from("consumption_product cp");
+        $this->db->join("consumption c","c.id=cp.consumption");
+        $this->db->join("product pt","pt.id=cp.product");
+        if ($startDate) {
+            $this->db->where('c.report_date>=', $startDate);
+            $this->db->where('c.report_date<=', $endDate);
+        }
+        $this->db->group_by("cp.product");
+
+        return $this->db->get()->result_array();
+    }
+
+    /**
+     * @return int
+     */
+    public function getCurrentDb()
+    {
+        return $this->current_db;
+    }
+
+    /**
+     * @param int $current_db
+     */
+    public function setCurrentDb($current_db)
+    {
+        $this->current_db = $current_db;
+        if ($this->current_db === 0) {
+            $this->db = $this->load->database('default', TRUE);
+        } else {
+            $this->db = $this->load->database('remote_' . $current_db, TRUE);
+        }
     }
 }

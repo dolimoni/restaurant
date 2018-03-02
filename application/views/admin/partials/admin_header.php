@@ -32,7 +32,7 @@
     <link href="<?php echo base_url("assets/vendors/font-awesome/css/font-awesome.min.css"); ?>" rel="stylesheet">
     <!-- NProgress -->
     <link href="<?php echo base_url("assets/vendors/nprogress/nprogress.css"); ?>" rel="stylesheet">
-    <!-- sweet-alert --> 
+    <!-- sweet-alert -->
     <link href="<?php echo base_url("assets/vendors/sweetalert/sweetalert.css"); ?>" rel="stylesheet">
 
 
@@ -63,6 +63,11 @@
               top: 20%;
               z-index: 10000;
           }
+
+          .img-circle.profile_img{
+              width:65px !important;
+              height:65px !important;
+          }
       </style>
   </head>
 
@@ -75,7 +80,15 @@
         <div class="col-md-3 left_col">
           <div class="left_col scroll-view">
             <div class="navbar nav_title" style="border: 0;">
-             <a href="<?= base_url('admin/dashboard'); ?>" class="site_title"><i class="fa fa-coffee"></i> <span><?php echo $params['name']; ?></span></a>
+                <?php
+                    $link="";
+                    if($this->session->userdata('type') == "admin"){
+                        $link= base_url('admin/dashboard');
+                    }else if($this->session->userdata('type') == "thrifty"){
+                        $link = base_url('admin/department/showProducts');
+                    }
+                ?>
+             <a href="<?= $link ?>" class="site_title"><i class="fa fa-coffee"></i> <span><?php echo $params['name']; ?></span></a>
             </div>
 
             <div class="clearfix"></div>
@@ -83,7 +96,7 @@
             <!-- menu profile quick info -->
             <div class="profile clearfix">
                 <div class="profile_pic">
-                    <img src="<?= base_url('assets/images/profile-default-male.png'); ?>" alt="..." class="img-circle profile_img">
+                    <img src="<?= base_url('assets/images/'.$params['photo']); ?>" alt="icon" class="img-circle profile_img">
                 </div>
                 <div class="profile_info">
                     <span>Bienvenu,</span>
@@ -99,96 +112,243 @@
             <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
               <div class="menu_section">
                 <ul class="nav side-menu">
-                  <li><a href="<?= base_url('admin/report/statistic'); ?>"><i class="fa fa-home"></i> Dashboard </a></li>
-                  <?php if($this->session->userdata('type') == "admin" ) : ?>
+                  <?php if($this->session->userdata('type') == "admin" || $this->session->userdata('type') == "manager" || $this->session->userdata('type') == "user") : ?>
+
+                      <?php if(isset($params["acl"]["Report"]) or $this->session->userdata('type') === "admin"):
+                  ?>
+                  <li>
+                      <a href="<?= base_url('admin/report/statistic'); ?>"><i class="fa fa-home"></i> Dashboard </a>
+                  </li>
+                  <?php endif; ?>
+
+                      <!-----------------------------------------Begin-------------------------------------------------->
+                    <?php if (isset($params["acl"]["Provider"]) or $this->session->userdata('type') === "admin"):?>
                   <li><a><i class="fa fa-shopping-cart"></i> Fournisseurs <span
                                   class="fa fa-chevron-down"></span></a>
                       <ul class="nav child_menu">
+                          <?php if (isset($params["acl"]["Provider"]["index"]) or $this->session->userdata('type') === "admin"): ?>
                           <li><a href="<?= base_url('admin/provider'); ?>">Liste des fournisseurs</a></li>
+                          <?php endif; ?>
+                          <?php if (isset($params["acl"]["Provider"]["compaire"]) or $this->session->userdata('type') === "admin"): ?>
                           <li><a href="<?= base_url('admin/provider/compare'); ?>">Comparaison</a></li>
+                          <?php endif; ?>
+                          <li><a href="<?= base_url('admin/provider/groups'); ?>">Groupes des fournisseurs</a></li>
                       </ul>
                   </li>
-                  <li><a><i class="fa fa-coffee"></i> Gestion des produits <span class="fa fa-chevron-down"></span></a>
-                    <ul class="nav child_menu">
-                      <li><a href="<?= base_url('admin/product/add'); ?>">Ajouter des produits</a></li>
-                      <li><a href="<?= base_url('admin/product/addComposition'); ?>">Ajouter un produit composé</a></li>
-                      <li><a href="<?= base_url('admin/product/index'); ?>">Stock des produits</a></li>
-                       <li><a href="<?= base_url('admin/product/toOrder'); ?>">Produits à commander</a></li>
-                    </ul>
-                  </li>
-                  <li><a><i class="fa fa-cutlery"></i> Gestion des articles <span class="fa fa-chevron-down"></span></a>
-                    <ul class="nav child_menu">
-                      <li><a href="<?= base_url('admin/meal/group'); ?>">Mes familles</a></li>
-                      <li><a href="<?= base_url('admin/meal/add'); ?>">Ajouter un article</a></li>
-                      <li><a href="<?= base_url('admin/meal/index'); ?>">Liste des articles</a></li>
-                    </ul>
-                  </li>
-                  <li>
-                  <a>
-                      <i class="fa fa-male"></i>Gestion du personnel <span class="fa fa-chevron-down"></span></a>
-                    <ul class="nav child_menu">
-                      <li><a href="<?= base_url('admin/employee/add'); ?>">Liste des employés</a></li>
-                    </ul>
-                  </li>
+                    <?php endif; ?>
+                      <!-----------------------------------------End---------------------------------------------------->
+
+                      <!-----------------------------------------Begin-------------------------------------------------->
+                      <?php if (isset($params["acl"]["Product"]) or $this->session->userdata('type') === "admin"): ?>
+                          <li><a><i class="fa fa-coffee"></i> Gestion des produits <span class="fa fa-chevron-down"></span></a>
+                            <ul class="nav child_menu">
+                          <?php if (isset($params["acl"]["Product"]["add"]) or $this->session->userdata('type') === "admin"): ?>
+                              <li><a href="<?= base_url('admin/product/add'); ?>">Ajouter des produits</a></li>
+                          <?php endif; ?>
+                          <?php if (isset($params["acl"]["Product"]["addComposition"]) or $this->session->userdata('type') === "admin"): ?>
+                              <li><a href="<?= base_url('admin/product/addComposition'); ?>">Ajouter un produit composé</a></li>
+                          <?php endif; ?>
+                          <?php if (isset($params["acl"]["Product"]["index"]) or $this->session->userdata('type') === "admin"): ?>
+                              <li><a href="<?= base_url('admin/product/index'); ?>">Stock des produits</a></li>
+                          <?php endif; ?>
+                          <?php if (isset($params["acl"]["Product"]["toOrder"]) or $this->session->userdata('type') === "admin"): ?>
+                               <li><a href="<?= base_url('admin/product/toOrder'); ?>">Produits à commander</a></li>
+                          <?php endif; ?>
+                          <?php if (isset($params["acl"]["Product"]["inventory"]) or $this->session->userdata('type') === "admin"): ?>
+                               <li><a href="<?= base_url('admin/product/inventory'); ?>">Inventaire</a></li>
+                          <?php endif; ?>
+                            </ul>
+                          </li>
+                      <?php endif; ?>
+
+                      <!-----------------------------------------Begin-------------------------------------------------->
+                    <?php if (isset($params["acl"]["Meal"]) or $this->session->userdata('type') === "admin"): ?>
+                          <li><a><i class="fa fa-cutlery"></i> Gestion des articles <span class="fa fa-chevron-down"></span></a>
+                            <ul class="nav child_menu">
+                              <?php if (isset($params["acl"]["Meal"]["group"]) or $this->session->userdata('type') === "admin"): ?>
+                                  <li><a href="<?= base_url('admin/meal/group'); ?>">Mes familles</a></li>
+                              <?php endif; ?>
+                              <?php if (isset($params["acl"]["Meal"]["add"]) or $this->session->userdata('type') === "admin"): ?>
+                                 <li><a href="<?= base_url('admin/Meal/add'); ?>">Ajouter un article</a></li>
+                              <?php endif; ?>
+                              <?php if (isset($params["acl"]["Meal"]["index"]) or $this->session->userdata('type') === "admin"): ?>
+                                <li><a href="<?= base_url('admin/Meal/index'); ?>">Mes fiches techniques</a></li>
+                              <?php endif; ?>
+                                <?php if (isset($params["acl"]["department"]["show"]) or $this->session->userdata('type') === "admin"): ?>
+                                <!--<li><a href="<?/*= base_url('admin/department/show/1'); */?>">Stock des articles</a></li>-->
+                              <?php endif; ?>
+                            </ul>
+                          </li>
+                      <?php endif; ?>
+                      <!-----------------------------------------End---------------------------------------------------->
+
+                      <!-----------------------------------------Begin-------------------------------------------------->
+                    <?php if ($params['department'] === "true" and (isset($params["acl"]["department"]) or $this->session->userdata('type') === "admin")) { ?>
+                      <li><a>
+                      <i class="fa fa-users"></i> Départements <span
+                                      class="fa fa-chevron-down"></span></a>
+                          <ul class="nav child_menu">
+                          <?php if (isset($params["acl"]["Report"]["statistic"]) or $this->session->userdata('type') === "admin"):?>
+                              <li><a href="<?= base_url('admin/department'); ?>">Mes départements</a></li>
+                          <?php endif; ?>
+                          <?php if (isset($params["acl"]["Report"]["statistic"]) or $this->session->userdata('type') === "admin"):?>
+                              <li><a href="<?= base_url('admin/department/addProducts'); ?>">Stock produits</a></li>
+                          <?php endif; ?>
+                          </ul>
+                      </li>
+                      <?php } ?>
+
+                      <!-----------------------------------------Begin-------------------------------------------------->
+                      <?php
+
+                      if (isset($params["acl"]["Employee"]) or $this->session->userdata('type') === "admin"):?>
+                      <li>
+                      <a>
+                        <i class="fa fa-male"></i>Gestion du personnel <span class="fa fa-chevron-down"></span></a>
+                        <ul class="nav child_menu">
+                          <li><a href="<?= base_url('admin/employee/add'); ?>">Liste des employés</a></li>
+                          <!--<li><a href="<?/*= base_url('admin/employee/statistic'); */?>">Statistiques</a></li>-->
+                        </ul>
+                      </li>
+                      <?php endif; ?>
+                      <!-----------------------------------------End---------------------------------------------------->
+
+                      <!-----------------------------------------Begin-------------------------------------------------->
+                    <?php
+
+                    if (isset($params["acl"]["Report"]) or $this->session->userdata('type') === "admin"):?>
                   <li>
                       <a><i class="fa fa-bar-chart-o"></i> Rapports <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
+                    <?php if (isset($params["acl"]["Report"]["statistic"]) or $this->session->userdata('type') === "admin"): ?>
                       <li><a href="<?= base_url('admin/report/statistic'); ?>">Statistiques</a></li>
+                    <?php endif; ?>
+                    <?php if (isset($params["acl"]["Report"]["index"]) or $this->session->userdata('type') === "admin"): ?>
                       <li><a href="<?= base_url('admin/report'); ?>">Rapport des articles</a></li>
+                    <?php endif; ?>
+                    <?php if (isset($params["acl"]["reports"]["index"]) or $this->session->userdata('type') === "admin"): ?>
                       <li><a href="<?= base_url('admin/reports'); ?>">Rapport du jour</a></li>
+                    <?php endif; ?>
                     </ul>
                   </li>
+                        <?php endif; ?>
+                      <!-----------------------------------------End---------------------------------------------------->
+
+                      <!-----------------------------------------Begin-------------------------------------------------->
+                    <?php if (isset($params["acl"]["Budget"]) or $this->session->userdata('type') === "admin"): ?>
                   <li>
                       <a><i class="fa fa-dollar"></i>Gestion des charges<span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
+                      <?php if (isset($params["acl"]["Product"]["inventory"]) or $this->session->userdata('type') === "admin"): ?>
                       <li><a href="<?= base_url('admin/budget/regular'); ?>">Alertes</a></li>
+                      <?php endif; ?>
+
+                      <?php if (isset($params["acl"]["Product"]["inventory"]) or $this->session->userdata('type') === "admin"): ?>
                       <li><a href="<?= base_url('admin/budget/reparation'); ?>">Mes réparations</a></li>
+                      <?php endif; ?>
+
+                      <?php if (isset($params["acl"]["Product"]["inventory"]) or $this->session->userdata('type') === "admin"): ?>
                       <li><a href="<?= base_url('admin/budget/productPurchase'); ?>">Achats produits</a></li>
-                      <li><a href="<?= base_url('admin/budget/variousPurchase'); ?>">Achats divers</a></li>
+                      <?php endif; ?>
+                      <?php if (isset($params["acl"]["Product"]["inventory"]) or $this->session->userdata('type') === "admin"): ?>
+                      <li><a href="<?= base_url('admin/budget/variousPurchase'); ?>">Achats divers</a>
+                      <?php endif; ?>
                     </ul>
                   </li>
-                  <li>
-                      <a><i class="fa fa-refresh"></i>Synchorinisation<span class="fa fa-chevron-down"></span></a>
-                    <ul class="nav child_menu">
-                        <li><a href="<?= base_url('admin/Main/index'); ?>">Synchorinisation par fichier </a></li>
-                        <li><a href="<?= base_url('admin/Main/index2'); ?>">Synchorinisation manuelle</a></li>
-                    </ul>
-                  </li>
+                      <?php endif; ?>
+                      <!-----------------------------------------End---------------------------------------------------->
+
+                      <!-----------------------------------------Begin-------------------------------------------------->
+                      <?php if (isset($params["acl"]["Main"]) or $this->session->userdata('type') === "admin"): ?>
                       <li>
-                          <a><i class="fa fa-bar-chart-o"></i>Mes agences<span class="fa fa-chevron-down"></span></a>
+                          <a><i class="fa fa-refresh"></i>Synchorinisation<span class="fa fa-chevron-down"></span></a>
+                        <ul class="nav child_menu">
+                          <?php if (isset($params["acl"]["Main"]["index"]) or $this->session->userdata('type') === "admin"): ?>
+                            <li><a href="<?= base_url('admin/Main/index'); ?>">Synchorinisation par fichier </a></li>
+                          <?php endif; ?>
+                          <?php if (isset($params["acl"]["Main"]["index2"]) or $this->session->userdata('type') === "admin"): ?>
+                            <li><a href="<?= base_url('admin/Main/index2'); ?>">Synchorinisation manuelle</a></li>
+                          <?php endif; ?>
+                        </ul>
+                      </li>
+                     <?php endif; ?>
+                      <!-----------------------------------------End---------------------------------------------------->
+
+                      <!-----------------------------------------Begin-------------------------------------------------->
+                    <?php if ($params['multi_site'] === "true" and (isset($params["acl"]["Agency"]) or $this->session->userdata('type') === "admin")) { ?>
+                      <li>
+                          <a><i class="fa fa-exchange"></i>Agences<span class="fa fa-chevron-down"></span></a>
                           <ul class="nav child_menu">
+                          <?php if (isset($params["acl"]["Agency"]["index"]) or $this->session->userdata('type') === "admin"): ?>
+                              <li><a href="<?= base_url('admin/agency/index'); ?>">Mes agences</a></li>
+                          <?php endif; ?>
+
+                          <?php if (isset($params["acl"]["Agency"]["index"]) or $this->session->userdata('type') === "admin"): ?>
                               <li><a href="<?= base_url('admin/agency/statistic'); ?>">Statistiques</a></li>
-                              <li><a href="<?= base_url('admin/agency'); ?>">Rapport des articles</a></li>
+                          <?php endif; ?>
+
+                          <?php if (isset($params["acl"]["Agency"]["addProducts"]) or $this->session->userdata('type') === "admin"): ?>
+                              <li><a href="<?= base_url('admin/agency/addProducts'); ?>">Envoyer un stock</a></li>
+                          <?php endif; ?>
+
+                          <?php if (isset($params["acl"]["Agency"]["historyProducts"]) or $this->session->userdata('type') === "admin"): ?>
+                              <li><a href="<?= base_url('admin/agency/historyProducts'); ?>">Historique</a></li>
+                          <?php endif; ?>
                           </ul>
                       </li>
+                    <?php } ?>
+                      <!-----------------------------------------End---------------------------------------------------->
+
+
+                      <!-----------------------------------------Begin-------------------------------------------------->
+                    <?php
+
+                    if (isset($params["acl"]["config"]) or $this->session->userdata('type') === "admin"):?>
+                      <li><a href="<?= base_url('admin/config'); ?>"><i class="fa fa-cogs"></i>Paramètres</a>
+                      </li>
+                    <?php endif; ?>
+                      <!-----------------------------------------End---------------------------------------------------->
+
 
 
                   <!--<li><a href="<?/*= base_url('admin/Cron/index'); */?>"><i class="fa fa-refresh"></i> Synchronisation des produits </a></li>-->
 
-                   <!-- <li>
-                        <a><i class="fa fa-desktop"></i>Manufacturers &amp; Model <span class="fa fa-chevron-down"></span></a>
-
-                        <ul class="nav child_menu">
-                          <li><a href="<?php /*echo base_url() . 'admin/manufacturers';*/?>">Add Manufacturer</a></li>
-                          <li><a href="<?php /*echo base_url() . 'admin/car_model';*/?>">Add Model</a></li>
-                        </ul>
-                    </li>-->
                     <?php endif; ?>
-                  <li><!--<a><i class="fa fa-table"></i> Voitures <span class="fa fa-chevron-down"></span></a>
-                    <ul class="nav child_menu">
-                      <li><a href="<?/*= base_url('admin/vehicles/newCar'); */?>">Ajouter une voiture</a></li>
-                      <li><a>Mes modèles</a>
-                          <ul class="nav child_menu">
-                              <?php /*foreach ($manufacturers as $manufacturer) : */?>
-                                  <li>
-                                      <a href="<?/*= base_url('admin/vehicles'); */?>?manufacturer=<?php /*echo $manufacturer['id']; */?>"><?php /*echo $manufacturer['manufacturer_name']; */?> (5)</a>
-                                  </li>
-                              <?php /*endforeach; */?>
-                          </ul>
-                      </li>
-                      <li><a href="<?/*= base_url('admin/vehicles/soldlist'); */?>">Voitures louées</a></li>
-                    </ul>
-                  --></li>
+
+                    <?php if ($this->session->userdata('type') == "thrifty") : ?>
+
+                        <li>
+                            <a href="<?= base_url('admin/department/showProducts'); ?>"><i class="fa fa-home"></i>Mon stock</a>
+                        </li>
+                        <li>
+                            <a href="<?= base_url('admin/department/addProducts'); ?>"><i class="fa fa-arrow-circle-o-right"></i>Sortir des produits</a>
+                        </li><li>
+                            <a href="<?= base_url('admin/department/historyProducts'); ?>"><i class="fa fa-history"></i>Historique</a>
+                        </li>
+
+                    <?php endif; ?>
+
+
+                    <?php if ($this->session->userdata('type') == "department") : ?>
+
+                        <li>
+                            <a href="<?= base_url('admin/department/show'); ?>"><i class="fa fa-user"></i>Mon département</a>
+                        </li>
+
+                        <li>
+                            <a href="<?= base_url('admin/department/showDepartmentStock'); ?>"><i class="fa fa-coffee"></i>Stock des produits</a>
+                        </li>
+
+                        <li>
+                            <a href="<?= base_url('admin/department/meals'); ?>"><i
+                                        class="fa fa-file-text-o"></i>Mes fiches techniques</a>
+                        </li>
+
+                    <?php endif; ?>
+
+
+                  <li>
+                 </li>
                 </ul>
               </div>
             </div>
@@ -234,6 +394,7 @@
                   </ul>
                 </li>
                   <?php
+                  if ($this->session->userdata('type') == "admin") {
                       $activeAlert="passive-alert";
                       $alertes_count=0;
                       if (isset($params["alertes"]) and count($params["alertes"])>0) {
@@ -251,6 +412,7 @@
                     <li><a href="<?php echo base_url() . 'admin/budget/regular'; ?>"><i class="fa fa-eye pull-right"></i>Afficher les alertes</a></li>
                   </ul>
                 </li>
+                  <?php } ?>
               </ul>
             </nav>
           </div>

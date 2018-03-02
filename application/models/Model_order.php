@@ -213,7 +213,39 @@ class model_order extends CI_Model {
 
 	public function delete($order_id)
 	{
-		$this->db->where('id', $order_id);
+	    $this->db->select("q.id as q_id,p.id as p_id,q.quantity,od.quantity as od_quantity,totalQuantity");
+	    $this->db->from("order o");
+	    $this->db->join("orderdetails od","od.order_id=o.id");
+	    $this->db->join("product p","p.id=od.product");
+	    $this->db->join("quantity q","p.id=q.product");
+	    $this->db->where("o.id",$order_id);
+        $this->db->where("od.od_price=q.unit_price");
+	    $products=$this->db->get()->result_array();
+
+
+        foreach ($products as $product) {
+            $data=array(
+                "quantity"=> $product["quantity"]-$product["od_quantity"]
+            );
+            $this->db->where("id",$product["q_id"]);
+            $this->db->update("quantity", $data);
+
+            $data=array(
+                "totalQuantity"=> $product["totalQuantity"]-$product["od_quantity"]
+            );
+            $this->db->where("id",$product["p_id"]);
+            $this->db->update("product", $data);
+
+	    }
+	    $this->db->where('id', $order_id);
 		$this->db->delete('order');
+
+
+        $this->db->where('order_id', $order_id);
+        $this->db->delete('orderdetails');
+
+        $this->db->where('order_id', $order_id);
+        $this->db->delete('stock_history');
+
 	}
 }

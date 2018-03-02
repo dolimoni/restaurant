@@ -56,6 +56,10 @@
                                     <a href=" <?php echo base_url('admin/product/edit/'. $product['id']); ?>" class="btn btn-primary btn-xs">Modifier</a>
                                     <a class="btn btn-danger btn-xs deleteProduct"
                                        data-id="<?php echo $product['id']; ?>">Supprimer</a>
+                                    <?php if ($product['provider'] > 0 && ($params["acl_page"]["acl_write"] or $this->session->userdata('type') === "admin")) { ?>
+                                        <a href=" <?php echo base_url('admin/provider/show/' . $product['provider']); ?>"
+                                           class="btn btn-success btn-xs">Commander</a>
+                                    <?php } ?>
                                 </td>
                             </tr>
                             <?php } ?>

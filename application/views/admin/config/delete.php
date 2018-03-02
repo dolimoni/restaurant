@@ -22,8 +22,8 @@
                     <option value="order" selected>Commandes</option>
                     <option value="charges" selected>Achats</option>
                     <option value="history" selected>Historique d'achats</option>
-                    <option>Produits</option>
-                    <option>Articles</option>
+                    <option value="product">Produits</option>
+                    <option value="meal">Articles</option>
                 </select>
             </div>
             <input type="submit" value="supprimer"/>

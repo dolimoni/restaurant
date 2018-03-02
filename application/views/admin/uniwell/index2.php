@@ -185,6 +185,7 @@
         function addNewMealEvent(){
             var mealModel=$(".mealModel").clone().removeAttr("hidden");
             mealModel.removeClass("mealModel");
+            mealModel.addClass("invalidate");
             $("#productBody").append(mealModel);
             $(mealModel.find("div[data-type=meal]")).focus();
             $(mealModel.find("div[data-type=meal]")).autocomplete({
@@ -238,7 +239,57 @@
 <script>
     $(document).ready(function () {
 
-
+        $('#single_cal3').daterangepicker({
+            singleDatePicker: true,
+            singleClasses: "picker_3"
+        }, function (start, end, label) {
+            var startDate= start.format("YYYY-MM-DD");
+            var endDate= startDate;
+            var myData={
+                "startDate":startDate,
+                "endDate":endDate,
+            }
+            $.ajax({
+                url: "<?php echo base_url('admin/report/apiRange'); ?>",
+                type: "POST",
+                dataType: "json",
+                data: myData,
+                beforeSend: function () {
+                    $('#loading').show();
+                },
+                complete: function () {
+                    $('#loading').hide();
+                },
+                success: function (data) {
+                    if (data.status === true) {
+                        console.log(data);
+                        if (data.articles.length) {
+                            $("#productBody tr.validate,#productBody tr.invalidate").remove();
+                              $.each(data.articles, function (key, article) {
+                                  console.log(key);
+                                  $(".newMeal").trigger("click");
+                                  var tr = $('#productBody tr:last');
+                                  tr.addClass("validate");
+                                  tr.find("div[data-type=externalCode]").html(article.externalCode);
+                                  tr.find("div[data-type=meal]").html(article.name);
+                                  tr.find("div[data-type=quantity]").html(article.quantity);
+                                  tr.find("div[data-type=amount]").html(article.total);
+                                  tr.find("div[data-type=id]").html(article.m_id);
+                              });
+                        }
+                    }
+                },
+                error: function (data) {
+                    swal({
+                        title: "Erreur",
+                        text: "Une erreur s'est produite",
+                        type: "warning",
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                }
+            })
+        });
         $('button[name="validate"]').on('click', function () {
             var report_date = moment($("#single_cal3").val()).format("YYYY-MM-DD") + "T10";
             var mealsList = [];

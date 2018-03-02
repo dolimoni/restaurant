@@ -94,12 +94,12 @@
                             <div>Nom : <span><?php echo $order['provider']['firstName'] . ' ' . $order['provider']['lastName']; ?></span></div>
                             <div>Entreprise : <span>-</span></div>
                             <div>Adresse : <span><?php echo $order['provider']['address'];?></span></div>
-                            <div>Téléphone : <span>"<?php echo $order['provider']['phone'];?>"</span></div>
+                            <div>Téléphone : <span><?php echo $order['provider']['phone'];?></span></div>
                         </div>
                         <div style="margin-top: -80px;margin-left: 500px;" >
-                            <div>Nom : <span>Ruban d'or</span></div>
-                            <div>Entreprise : <span>Ruban d'or</span></div>
-                            <div>Adresse : <span>Rue Al Amal, El Jadida, Maroc</span></div>
+                            <div>Nom : <span>Crousti pain</span></div>
+                            <div>Entreprise : <span>Crousti pain</span></div>
+                            <div>Adresse : <span>Casablanca</span></div>
                             <div>Téléphone : <span>+212 5233-70656</span></div>
                         </div>
                 </div>

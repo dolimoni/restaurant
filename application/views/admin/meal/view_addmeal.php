@@ -9,13 +9,17 @@
         width: 130px;
         height: 126px;
     }
+
+    .selectGroup {
+        min-height: 160px;
+    }
 </style>
 <!-- page content -->
 <div class="right_col" role="main">
     <div class="productsList">
         <div class="page-title">
             <div class="title_left">
-                <h3>Ajouter un article</h3>
+                 <h3>Ajouter un article</h3>
             </div>
         </div>
 
@@ -45,13 +49,25 @@
         </div>
 
         <div class="article-title text-center row">
-           <div class="col-md-offset-1 col-md-5 col-sm-6 col-xs-12">
-               <h4 style="display: inline;">Nom de l'article : </h4> <input type="text" class="mealName" name="name"/>
-           </div>
-            <div class="col-md-5 col-sm-6 col-xs-12">
-                <h4 style="display: inline;">Prix de vente : </h4> <input type="text" class="sellPrice"
-                                                                          name="sellPrice"/>
+            <div class="col-md-4 col-sm-6 col-xs-12">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6"><h4 style="display: inline;">Nom de l'article : </h4></div>
+                    <div class="col-xs-12 col-sm-6"><input type="text" class="mealName" name="name"/></div>
+                </div>
             </div>
+             <div class="col-md-4 col-sm-6 col-xs-12">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6"><h4 style="display: inline;">Prix de vente : </h4></div>
+                    <div class="col-xs-12 col-sm-6"><input type="text" class="sellPrice" name="sellPrice"/></div>
+                </div>
+            </div>
+             <div class="col-md-4 col-sm-6 col-xs-12">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6"><h4 style="display: inline;">Nombre d'articles : </h4></div>
+                    <div class="col-xs-12 col-sm-6"><input value="1" type="number" class="mealQuantity"/></div>
+                </div>
+            </div>
+
         </div>
         <div class="row mealComposition">
             <div class="col-md-6 col-sm-6 col-xs-12 product" data-id="1">
@@ -193,7 +209,7 @@
                         <?php
                         //Columns must be a factor of 12 (1,2,3,4,6,12)
                         $numOfCols = 6;
-                        $numOfSMCols = 3;
+                        $numOfSMCols = 2;
                         $rowCount = 0;
                         $bootstrapColMDWidth = 12 / $numOfCols;
                         $bootstrapColSMWidth = 12 / $numOfSMCols;
@@ -242,6 +258,7 @@
         var sellPrice=0;
         var productsCount=1;
         $(document).on('keyup','input[name="quantity"]',calulPrixTotal);
+        $(document).on('keyup', '.mealQuantity', calulPrixTotal);
         $("select").change(calulPrixTotal);
 
         $('.sellPrice').on('keyup', function () {
@@ -263,6 +280,7 @@
             var unit = panel.find('select[name="product"] option:selected').attr('data-unit');
             var price = parseFloat(panel.find('select[name="product"] option:selected').attr('data-price'));
             var productQuantity = parseFloat(panel.find('input[name="quantity"]').val());
+            var mealQuantity = $(".mealQuantity").val();
 
             updateOptions(false);
 
@@ -276,6 +294,7 @@
             for (var i = 1; i <= productsCount; i++) {
                 var row = $('.product[data-id=' + i + ']');
                 l_panel = row.closest('.product');
+                var title = l_panel.find("div.x_title h2");
                 var unit = l_panel.find('select[name="product"] option:selected').attr('data-unit');
                 var weightByunit = l_panel.find('select[name="product"] option:selected').attr('data-weightByunit');
                 var quantity = parseFloat(row.find('input[type="text"]').val().replace(',', '.'));
@@ -299,8 +318,11 @@
                     unitConvertName = parseFloat(l_panel.find('select[name="lUnitHidden"] option:selected').text());
                     unit_price *= unitConvert;
                 }
-                if (quantity > 0 && unit_price > 0)
-                    prixTotal += quantity * unit_price;
+                if (quantity > 0 && unit_price > 0){
+                    var productPrice = parseFloat(quantity * unit_price / mealQuantity);
+                    title.html("Produit - " + parseFloat(quantity * unit_price).toFixed(3) + "dh");
+                    prixTotal += productPrice;
+                }
             }
 
             $('.cost').html(prixTotal.toFixed(2)+'DH');
@@ -333,6 +355,7 @@
             var productsList=[];
             var prixTotal=0;
             var name=$('input.mealName').val();
+            var mealQuantity = $(".mealQuantity").val();
             for (var i = 1; i <= productsCount; i++) {
 
                 var row = $('.product[data-id=' + i + ']');
@@ -356,15 +379,16 @@
                     unit_price *= unitConvert;
                 }
                 if (quantity > 0){
-                    var product={'id':id,'quantity':quantity,'unit_price':unit_price,'profit': profit,'unit': unitConvertName,'unitConvert': unitConvert};
+                    var product={'id':id,'quantity':quantity/mealQuantity,'unit_price':unit_price,'profit': profit,'unit': unitConvertName,'unitConvert': unitConvert};
                     productsList.push(product);
                 }
                 if(unit_price > 0){
-                    prixTotal += quantity * unit_price;
+                    var productPrice = parseFloat(quantity * unit_price / mealQuantity);
+                    prixTotal += productPrice;
                 }
 
             }
-            var profit = prixTotal * gainRate - prixTotal;
+            var profit = sellPrice-prixTotal;
             if(profit<0){
                 profit=0;
             }
@@ -376,28 +400,52 @@
                 'name': name,
                 'group': group,
                 'productsList': productsList,
+                'quantity': mealQuantity,
                 'cost': prixTotal,
                 'sellPrice': sellPrice,
                 'profit': profit
             };
+            console.log(meal);
             if (validate(meal)) {
-                console.log(meal);
+                $('#loading').show();
                 $.ajax({
                     url: "<?php echo base_url(); ?>admin/meal/add",
                     type: "POST",
                     dataType: "json",
                     data: {'meal': meal},
                     success: function (data) {
+                        $('#loading').hide();
                         if (data.status === true) {
+                            swal({
+                                title: "Success",
+                                text: "Success",
+                                type: "success",
+                                timer: 1500,
+                                showConfirmButton: false
+                            });
                             document.location.href = data.redirect;
                         }
                         else {
+                            swal({
+                                title: "Erreur",
+                                text: "Erreur",
+                                type: "error",
+                                timer: 1500,
+                                showConfirmButton: false
+                            });
                             /*$('#show_id').html("<div style='border:1px solid red;font-size: 11px;margin:0 auto !important;'>" + response.error + "</div>");*/
                         }
 
                     },
                     error: function (data) {
-                        // do something
+                        $('#loading').hide();
+                        swal({
+                            title: "Erreur",
+                            text: "Erreur",
+                            type: "error",
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
                     }
                 });
             }
@@ -407,6 +455,7 @@
 
         function validate(meal) {
             var validate=true;
+            console.log("validate", meal);
             if(meal['name']===''){
                 swal({
                     title: "Attention",
@@ -425,7 +474,7 @@
                     showConfirmButton: false
                 });
                 validate = false;
-            }else if(meal['profit']< 0 && meal['sellPrice']>0){
+            }else if(parseFloat(meal['sellPrice']) < parseFloat(meal['cost']) && meal['sellPrice'] > 0){
                 swal({
                     title: "Attention",
                     text: "Le bénifice est négative",

@@ -13,7 +13,7 @@ class Main extends BaseController
     public function __construct()
     {
         parent::__construct();
-        if (!$this->session->userdata('isLogin') || ($this->session->userdata('type') != "admin")) {
+        if (!$this->session->userdata('isLogin')) {
             if(!$this->input->is_cli_request()){
                 redirect('login');
             }
@@ -133,15 +133,17 @@ class Main extends BaseController
     {
         try {
             $this->log_begin();
-            //$data['sales'] = $this->readSalesCSV(base_url('uploads/ftp/x-plu_1_0001001.csv'));
-            $data['sales'] = $this->readSalesCSV('/var/www/html/fiori/uploads/ftp/x-plu_1_0001001.csv');
+            //$data['sales'] = $this->readSalesCSV(base_url('uploads/ftp/z-plu_1_0001001.csv'));
+            $data['sales'] = $this->readSalesCSV(base_url('uploads/ftp/z-plu_1_0001001.csv'));
+            //$data['sales'] = $this->readSalesCSV('/var/www/html/dagino/uploads/ftp/x-plu_1_0001001.csv');
+            //$data['sales'] = $this->readSalesCSV('/var/www/html/dagino/uploads/ftp/x-plu_1_0001001.csv');
             $mealsList=array();
             $this->log_middle($data['sales']);
             foreach ($data['sales']['rows'] as $key => $sale) {
                 $meal = $this->model_meal->getByExternalCode($sale['0']);
                 $quantity = $sale[2] / 1000;
                 $priceCSV= $sale['3'] / 100 / $quantity;
-                $date=explode('T', $data['sales']['dateTime'])[0];
+                $date=explode('T', $data['sales']['dateTime']);
                 $mealItem=array(
                     'id'=>$meal['id'],
                     'externalCode'=>$sale['0'],

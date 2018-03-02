@@ -6,13 +6,15 @@ class Agency extends BaseController
     public function __construct()
     {
         parent::__construct();
-        if (!$this->session->userdata('isLogin') || ($this->session->userdata('type') != "admin")) {
+        if (!$this->session->userdata('isLogin')) {
             redirect('login');
         }
 
+        $this->load->model('model_agency');
         $this->load->model('model_product');
         $this->load->model('model_meal');
         $this->load->model('model_report');
+        $this->load->model('department/model_department');
 
 
     }
@@ -20,16 +22,130 @@ class Agency extends BaseController
     public function index()
     {
         $this->log_begin();
-        $data['articles']=$this->model_report->report();
+        $data['agencies'] = $this->model_agency->getAll();
         $data['params'] = $this->getParams();
-        $this->load->view('admin/agency/article', $data);
+        $this->load->view('admin/agency/view_agencies', $data);
         $this->log_end($data);
     }
+
+     public function addProducts(){
+        $this->log_begin();
+        $data['agencies']=$this->model_agency->getAll();
+        $data['products'] = $this->model_product->getAll();
+        $data['params'] = $this->getParams();
+        $this->load->view('admin/agency/view_addProducts', $data);
+        $this->log_end($data);
+    }
+
+    public function historyProducts()
+    {
+        $this->load->model('department/model_stock');
+        $data['products'] = $this->model_agency->getProductsHistory();
+        $data['productsList'] = $this->model_product->getAll(false, true);
+        $data['productsList'] = $this->sortListByName($data['productsList']);
+        $data['params'] = $this->getParams();
+        $this->parser->parse('admin/agency/view_historyProducts', $data);
+    }
+
+    public function show($id)
+    {
+        $data['params'] = $this->getParams();
+        $agency= $this->model_agency->getAgency($id);
+        $data["agency"]= $agency;
+        // si on est dans le stock interne
+        if($agency["type"]==="master"){
+            //selectionner la liste des produits dans le departement principal de la production
+            $data['products'] = $this->model_agency->getProducts($id);
+        }else{
+            //selectionner la liste des produits actuels dans une agence
+            $this->model_product->setCurrentDb($id);
+            $data['products'] = $this->model_product->getAll();
+            $this->model_product->setCurrentDb(0);
+        }
+        $this->parser->parse('admin/agency/view_agency', $data);
+    }
+
+    public function apiAddStock(){
+
+        try {
+            $stock = $this->input->post('stock');
+            $this->model_agency->addStock($stock);
+
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'success')));
+        } catch (Exception $e) {
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'error')));
+        }
+    }
+
+    public function apiEditAgency()
+    {
+        try {
+            $name = $this->input->post('agencyNameEdit');
+            $id = $this->input->post('id');
+            $image = $_FILES['image']['name'];
+            $agency = array('name' => $name);
+            if ($image !== "") {
+                $agency['image'] = $image;
+                $this->uploadFile();
+            }
+            $this->model_agency->editAgency($id, $agency);
+
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'success')));
+        } catch (Exception $e) {
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'error')));
+        }
+
+    }
+
+    public function apiEditStockHistory()
+    {
+        try {
+            $stock_history = $this->input->post('stock_history');
+            $response = $this->model_agency->editStockHistory($stock_history["id"], $stock_history["quantity"]);
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode($response));
+        } catch (Exception $e) {
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'error')));
+        }
+
+    }
+
+    public function apiDeleteStock()
+    {
+        try {
+            $stock_history_id = $this->input->post('stock_history_id');
+            $response = $this->model_agency->deleteStockHistory($stock_history_id);
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode($response));
+        } catch (Exception $e) {
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'error')));
+        }
+
+    }
+
+
     public function statistic()
     {
         $this->log_begin();
         $data['articles']=$this->model_report->report();
-        $data['report'] = $this->model_report->global_report();
+        $data['agencies'] = $this->model_agency->getAll(true);
+        $start = date('Y-m-d', strtotime('-1 month'));
+        $end = date('Y-m-d');
+        $data['report'] = $this->model_report->global_report($start,$end);
         $this->load->model('model_budget');
         $data['alertes'] = $this->model_budget->getActiveAlerts();
         $data['params'] = $this->getParams();
@@ -92,94 +208,6 @@ class Agency extends BaseController
         $this->log_end(array('status' => 'success', 'prices' => $prices, 'providers' => $providers));
     }
 
-    public function view()
-    {
-        $this->log_begin();
-        $meal_id = $this->uri->segment(4);
-        $data['meal'] = $this->model_meal->get($meal_id);
-        $data['products'] = $this->model_meal->getProducts($meal_id);
-
-        $this->parser->parse('admin/meal/view_meal', $data);
-        $this->log_end($data);
-    }
-
-    public function mypdfTest()
-    {
-        $meal_id = $this->uri->segment(4);
-        $data['meal'] = $this->model_meal->get($meal_id);
-        $data['products'] = $this->model_meal->getProducts($meal_id);
-
-        $this->parser->parse('admin/meal/pdf/view_meal', $data);
-    }
-
-    function mypdf()
-    {
-        $id = $this->input->post('id');
-        //$id=1;
-
-        $data['meal'] = $this->model_meal->get($id);
-        $data['products'] = $this->model_meal->getProducts($id);
-
-        $this->load->library('pdf');
-        $pdf = $this->pdf->load();
-
-        $html = $this->load->view('admin/meal/pdf/view_meal', $data, true);
-        $pdf->WriteHTML($html);
-        $output = 'itemreport' . date('Y_m_d_H_i_s') . '_.pdf';
-        $pdf->Output("$output", 'I');
-    }
-
-    public function add()
-    {
-
-        $this->log_begin();
-        if (!$this->input->post('addProvider')) {
-            $data['message'] = '';
-            $data['providers'] = $this->model_provider->getAll();
-            $this->parser->parse('admin/provider/add', $data);
-            $this->log_end($data);
-        } else {
-            $title = $this->input->post('title');
-            $name = $this->input->post('name');
-            $prenom = $this->input->post('prenom');
-            $address = $this->input->post('address');
-            $phone = $this->input->post('phone');
-            $mail = $this->input->post('mail');
-            $image = $_FILES['image']['name'];
-            $this->uploadFile();
-            $provider = array('title' => $title, 'name' => $name, 'prenom' => prenom, 'address' => $address, 'phone' => $phone, 'mail' => $mail, 'image' => $image);
-            $this->log_middle($provider);
-            $this->model_provider->add($provider);
-            $this->output
-                ->set_content_type("application/json")
-                ->set_output(json_encode(array('status' => true)));
-            $this->log_end(array('status' => true));
-
-        }
-
-    }
-
-    public function apiAddProducts()
-    {
-        $this->log_begin();
-        $productsList = $this->input->post('productsList');
-        $this->model_provider->addProducts($productsList);
-        $this->output
-            ->set_content_type("application/json")
-            ->set_output(json_encode(array('status' => true)));
-        $this->log_end(array('status' => true));
-    }
-
-    public function show()
-    {
-        $this->log_begin();
-        $id = $this->uri->segment(4);
-        $data['provider'] = $this->model_provider->get(1)[0];
-        $data['products'] = $this->model_provider->getProducts(1);
-        $this->load->view('admin/provider/show', $data);
-        $this->log_end($data);
-    }
-
     private function uploadFile()
     {
         $valid_file = true;
@@ -211,89 +239,18 @@ class Agency extends BaseController
         $save_path = base_url() . $file_path;
     }
 
-    function apiPrintOrder()
+    private function sortListByName($data)
     {
-        $this->log_begin();
-        $order = $this->input->post('order');
-        $data['order'] = $order;
-        $output = $this->createPDF($data);
-        $this->output
-            ->set_content_type("application/json")
-            ->set_output(json_encode(array('status' => true, 'filepath' => $output)));
-        $this->log_end(array('status' => true, 'filepath' => $output));
-    }
-
-    function order()
-    {
-        $this->log_begin();
-        $order = $this->input->post('order');
-        $data['order'] = $order;
-        $output = $this->createPDF($data);
-        $this->output
-            ->set_content_type("application/json")
-            ->set_output(json_encode(array('status' => true, 'filepath' => $output)));
-        $this->log_end(array('status' => true, 'filepath' => $output));
-    }
-
-    function createPDF($data)
-    {
-
-        $this->load->library('pdf');
-        $pdf = $this->pdf->load();
-        $html = $this->load->view('admin/provider/pdf/order', $data, true);
-        $pdf->WriteHTML($html);
-        $output = 'uploads/pdf/itemreport' . date('Y_m_d_H_i_s') . '_.pdf';
-        $pdf->Output(FCPATH . "$output", 'F');
-        return $output;
-
-    }
-
-    function orderTest()
-    {
-        //$order = $this->input->post('order');
-        $this->load->view('admin/provider/pdf/order', true);
-
-    }
-
-
-    public function edit($cid)
-    {
-        $this->log_begin();
-        if (!$this->input->post('buttonSubmit')) {
-            $data['message'] = '';
-            $userRow = $this->model_employee->get($cid);
-            $data['userRow'] = $userRow;
-            $this->load->view('admin/view_editemployee', $data);
-            $this->log_end($data);
-        } else {
-            if ($this->form_validation->run('editemp')) {
-                $f_name = $this->input->post('f_name');
-                $l_name = $this->input->post('l_name');
-                $u_bday = $this->input->post('u_bday');
-                $u_position = $this->input->post('u_position');
-                $u_type = $this->input->post('u_type');
-                $u_pass = md5($this->input->post('u_pass'));
-                $u_mobile = $this->input->post('u_mobile');
-                $u_gender = $this->input->post('u_gender');
-                $u_address = $this->input->post('u_address');
-                $u_id = $this->input->post('u_id');
-                $this->model_employee->update($f_name, $l_name, $u_bday, $u_position, $u_type, $u_pass, $u_mobile, $u_gender, $u_address, $u_id);
-                redirect(base_url('admin/employee'));
-            } else {
-                $data['message'] = validation_errors();  //data ta message name er lebel er kase pathay
-                $this->load->view('view_employee', $data);
-                $this->log_end($data);
-            }
+        function cmpList($a, $b)
+        {
+            if ($a == $b)
+                return 0;
+            return ($a['name'] < $b['name']) ? -1 : 1;
         }
-    }
 
-    public function delete($cid)
-    {
-        $this->log_begin();
-        $this->model_employee->delete($cid);
-        $this->session->set_flashdata('message', 'Employee Successfully deleted.');
-        $this->log_end(array('status' => true));
-        redirect(base_url('admin/employee'));
+        usort($data, "cmpList");
+        return $data;
+
     }
 }
 

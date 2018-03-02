@@ -207,7 +207,7 @@
                                 </div>
                                 <!-- <button class="btn btn-info btn-xs action validationButton" data-type="mute"><span
                                              class="glyphicon fa fa-bell-slash-o"></span></button>-->
-                               <!--<div >
+                               <div >
                                    <button class="btn btn-warning btn-xs action dayResport small-button" data-type="day"><span
                                                class="glyphicon "></span>+1J
                                    </button>
@@ -217,7 +217,7 @@
                                    <button class="btn btn-warning btn-xs action monthResport small-button" data-type="month"><span
                                                class="glyphicon"></span>+1M
                                    </button>
-                               </div>-->
+                               </div>
 
                             </td>
                         </tr>

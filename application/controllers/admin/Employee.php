@@ -5,9 +5,9 @@ class Employee extends BaseController {
 	public function __construct()
 	{
 		parent::__construct();
-	    if ( ! $this->session->userdata('isLogin') || ($this->session->userdata('type') != "admin" )) { 
-	        redirect('login');
-	    }
+        if (!$this->session->userdata('isLogin')) {
+            redirect('login');
+        }
 
 		//$this->load->database();
 		$this->load->model('model_employee');
@@ -19,6 +19,29 @@ class Employee extends BaseController {
         $data['emp'] = $this->model_employee->getAll();
         $this->parser->parse('admin/employee/list', $data);
         $this->log_end($data);
+    }
+    public function statistic()
+    {
+        $this->log_begin();
+        $data['params'] = $this->getParams();
+        $start = date('Y-m-d', strtotime('-1 month'));
+        $end = date('Y-m-d');
+        $data["report"]=$this->model_employee->getReport($start,$end)["report"];
+        $this->parser->parse('admin/employee/view_statistic', $data);
+        $this->log_end(null);
+    }
+
+    public function apiStatistic()
+    {
+        $this->log_begin();
+        $data['params'] = $this->getParams();
+        $start = $this->input->post('startDate');
+        $end = $this->input->post('endDate');
+        $report=$this->model_employee->getReport($start,$end);
+        $this->output
+            ->set_content_type("application/json")
+            ->set_output(json_encode($report));
+        $this->log_end($report);
     }
 
 	public function add()
@@ -43,8 +66,8 @@ class Employee extends BaseController {
             $workType = $this->input->post('workType');
             $image = "profile-default-male.png";
             if ($_FILES['image']['name']) {
-                $image = $_FILES['image']['name'];
-                $this->uploadFile();
+                $imageName = $this->uploadFile();
+                $image = $imageName;
             }
             $worker = array('name' => $name, 'prenom' => $prenom, 'cin' => $cin, 'address' => $address, 'phone' => $phone, 'salary' => $salary, 'workType' => $workType, 'image' => $image);
             $this->model_employee->add($worker);
@@ -91,6 +114,73 @@ class Employee extends BaseController {
 			}
 		}
 	}
+
+	public function all(){
+        $this->log_begin();
+        $id = $this->uri->segment(4);
+        $data['salaries'] = $this->model_employee->getMonthSalaries();
+        $data['params'] = $this->getParams();
+        $this->load->view('admin/employee/all_view', $data);
+        $this->log_end($data);
+    }
+
+    public function apiAll()
+    {
+        $this->log_begin();
+        try {
+            $startDate = $this->input->post('startDate');
+            $salaries = $this->model_employee->getMonthSalaries($startDate);
+            $this->log_middle($salaries);
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'success',"salaries"=> $salaries)));
+            $this->log_end(array('status' => 'success'));
+        } catch (Exception $e) {
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'error')));
+        }
+    }
+
+    public function apiEditMainEmployee()
+    {
+        $this->log_begin();
+        try {
+            $id = $this->input->post('id');
+            $name = $this->input->post('name');
+            $prenom = $this->input->post('prenom');
+            $cin = $this->input->post('cin');
+            $address = $this->input->post('address');
+            $phone = $this->input->post('phone');
+            $salary = $this->input->post('salary');
+            $workType = $this->input->post('workType');
+            $image = $_FILES['image']['name'];
+            $employee = array('name' => $name, "prenom" => $prenom,"cin"=>$cin, "address" => $address, "phone" => $phone, "salary" => $salary, "workType" => $workType);
+            if ($image !== "") {
+                $imageName = $this->uploadFile();
+                $employee['image'] = $imageName;
+            }
+
+            $this->model_employee->updateEmployee($id, $employee);
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'success')));
+            $this->log_end($employee);
+        } catch (Exception $e) {
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'error')));
+        }
+    }
+
+    public function main()
+    {
+        $this->load->model('model_util');
+        $this->log_begin();
+        $data["user"] = $this->model_util->getUser($this->session->userdata('id'));
+        $data['params'] = $this->getParams();
+        $this->load->view('admin/config/main', $data);
+    }
 
     public function show()
     {
@@ -198,15 +288,17 @@ class Employee extends BaseController {
 
     private function uploadFile()
     {
-        $this->log_begin();
         $valid_file = true;
         $message = '';
         //if they DID upload a file...
         if ($_FILES['image']['name']) {
             //if no errors...
             if (!$_FILES['image']['error']) {
+                $path = $_FILES['image']['name'];
+                $ext = pathinfo($path, PATHINFO_EXTENSION);
                 //now is the time to modify the future file name and validate the file
-                $new_file_name = strtolower($_FILES['image']['name']); //rename file
+                $new_file_name = strtolower(bin2hex(openssl_random_pseudo_bytes(16))); //rename file
+                $new_file_name .= '.' . $ext;
                 if ($_FILES['image']['size'] > (20024000)) //can't be larger than 20 MB
                 {
                     $valid_file = false;
@@ -226,6 +318,9 @@ class Employee extends BaseController {
             }
         }
         $save_path = base_url() . $file_path;
+        $this->log_end($file_path);
+        return $new_file_name;
+
     }
 
 }

@@ -3,10 +3,11 @@
 class Provider extends BaseController
 {
 
+    private $slaveAgencies = "";
     public function __construct()
     {
         parent::__construct();
-        if (!$this->session->userdata('isLogin') || ($this->session->userdata('type') != "admin")) {
+        if (!$this->session->userdata('isLogin')) {
             redirect('login');
         }
 
@@ -15,6 +16,10 @@ class Provider extends BaseController
         $this->load->model('model_meal');
         $this->load->model('model_group');
         $this->load->model('model_provider');
+
+        $this->load->model('model_agency');
+
+        $this->slaveAgencies = $this->model_agency->getSlaves();
 
     }
 
@@ -28,6 +33,7 @@ class Provider extends BaseController
         if (!$this->input->post('addProvider')) {
             $data['message'] = '';
             $data['providers'] = $this->model_provider->getAll();
+            $data["providerGroups"] = $this->model_provider->getGroups();
             $data['products'] = $this->model_provider->getAllProducts();
             $data['params'] = $this->getParams();
             $this->parser->parse('admin/provider/add', $data);
@@ -52,15 +58,37 @@ class Provider extends BaseController
 
     }
 
-    public function view()
+
+    public function groups()
     {
         $this->log_begin();
-        $meal_id = $this->uri->segment(4);
-        $data['meal'] = $this->model_meal->get($meal_id);
-        $data['products'] = $this->model_meal->getProducts($meal_id);
-        $this->parser->parse('admin/meal/view_meal', $data);
+        $data["providerGroups"]=$this->model_provider->getGroups();
+        $data['params'] = $this->getParams();
+        $this->parser->parse('admin/provider/view_groups', $data);
         $this->log_end($data);
     }
+
+    public function group($id_group)
+    {
+        $this->log_begin();
+        $data['message'] = '';
+        $data["providers"] = $this->model_provider->getByGroup($id_group);
+        $data["providerGroups"] = $this->model_provider->getGroups();
+        $data['products'] = $this->model_provider->getAllProducts();
+        $data['params'] = $this->getParams();
+        $this->parser->parse('admin/provider/add', $data);
+        $this->log_end($data);
+    }
+    public function allOrders()
+    {
+        $this->log_begin();
+        $data["orders"] = $this->model_provider->getAllOrders();
+        $data['params'] = $this->getParams();
+        $this->parser->parse('admin/provider/allOrders_view', $data);
+        $this->log_end($data);
+    }
+
+
 
     public function mypdfTest()
     {
@@ -93,8 +121,9 @@ class Provider extends BaseController
     {
 
         $this->log_begin();
+        $data['params'] = $this->getParams();
         try {
-            if (!$this->input->post('title')) {
+            if (!$this->input->post('name')) {
                 $data['message'] = '';
                 $data['providers'] = $this->model_provider->getAll();
                 $this->parser->parse('admin/provider/add', $data);
@@ -120,7 +149,16 @@ class Provider extends BaseController
                 }
                 $provider = array('title' => $title, 'name' => $name, 'prenom' => $prenom, 'address' => $address, 'phone' => $phone,'tva'=>$tva, 'mail' => $mail, 'image' => $image);
                 $this->log_middle($provider);
-                $this->model_provider->add($provider);
+                $master_id=$this->model_provider->add($provider);
+
+                if ($data["params"]["multi_site"] === "true") {
+                    foreach ($this->slaveAgencies as $slaveAgency) {
+                        $this->model_provider->setCurrentDb($slaveAgency["id"]);
+                        $this->model_provider->add($provider, $master_id, "remote");
+                        $this->model_provider->setCurrentDb(0);
+                    }
+                }
+
                 $this->output
                     ->set_content_type("application/json")
                     ->set_output(json_encode(array('status' => 'success')));
@@ -133,6 +171,23 @@ class Provider extends BaseController
                 ->set_output(json_encode(array('status' => 'error')));
         }
 
+    }
+
+    public function apiPayOrder(){
+        $this->log_begin();
+        try {
+            $id = $this->input->post('id');
+            $order=$this->model_provider->payOrder($id);
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'success', 'paymentDate' => $order["paymentDate"],"paid"=>$order["paid"])));
+            $this->log_end(array('status' => 'success'));
+        } catch (Exception $e) {
+
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'error')));
+        }
     }
 
     public function apiAddProducts()
@@ -164,6 +219,9 @@ class Provider extends BaseController
         $this->log_begin();
         $id = $this->uri->segment(4);
         $data['provider'] = $this->model_provider->get($id);
+        if (!$data['provider']) {
+            redirect('/admin/provider');
+        }
         $data['products'] = $this->model_provider->getProducts($id,"active");
         $data['productsToOrder'] = $this->model_product->getToOrderFromProvider($id);
         $data['quotations'] = $this->model_provider->getQuotations($id);
@@ -217,6 +275,44 @@ class Provider extends BaseController
             ->set_content_type("application/json")
             ->set_output(json_encode(array('status' => true, 'order' => $order, 'orderStatus' => $orderStatus)));
         $this->log_end(array('status' => true, 'order' => $order, 'orderStatus' => $orderStatus));
+    }
+
+    public function apiAddGroup()
+    {
+
+        try {
+            $this->log_begin();
+            $group = $this->input->post('group');
+            $this->log_middle($group);
+            $this->model_provider->addGroup($group);
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => "success")));
+            $this->log_end(array('status' => "success"));
+        } catch (Exception $e) {
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => "error")));
+        }
+    }
+    public function apiEditGroup()
+    {
+
+        try {
+            $this->log_begin();
+            $group = $this->input->post('group');
+            $id = $this->input->post('id');
+            $this->log_middle($group);
+            $this->model_provider->editGroup($id,$group);
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => "success")));
+            $this->log_end(array('status' => "success"));
+        } catch (Exception $e) {
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => "error")));
+        }
     }
 
 
@@ -358,7 +454,7 @@ class Provider extends BaseController
             } else {
                 $order['status'] = 'received';
                 $this->model_order->update($order);
-                $this->model_product->updateQuantities($order['productsList'], 'up', $provider_id);
+                $this->model_product->updateQuantities($order['productsList'], 'up', $provider_id, $order['id']);
                 if ($order['oldStatus'] === "pending") {
                    // $this->model_product->updateQuantities($order['productsList'], 'up');
                 }
@@ -405,10 +501,20 @@ class Provider extends BaseController
             $id= $provider['id'];
             unset($provider['id']);
             $this->model_provider->update($id,$provider);
+
+            if ($data["params"]["multi_site"] === "true") {
+                foreach ($this->slaveAgencies as $slaveAgency) {
+                    $this->model_provider->setCurrentDb($slaveAgency["id"]);
+                    $slaveProvider=$this->model_provider->getProviderByMasterId($id);
+                    $this->model_provider->update($slaveProvider["id"], $provider);
+                    $this->model_provider->setCurrentDb(0);
+                }
+            }
+
             $this->output
                 ->set_content_type("application/json")
                 ->set_output(json_encode(array('status' => 'success')));
-            $this->log_end($data);
+            $this->log_end($provider);
         } catch (Exception $e) {
             $this->output
                 ->set_content_type("application/json")
@@ -420,6 +526,7 @@ class Provider extends BaseController
     {
         $this->log_begin();
         try {
+            $data['params'] = $this->getParams();
             $name = $this->input->post('name');
             $title = $this->input->post('title');
             $prenom = $this->input->post('prenom');
@@ -436,6 +543,16 @@ class Provider extends BaseController
             }
 
             $this->model_provider->update($id,$provider);
+
+            if ($data["params"]["multi_site"] === "true") {
+                foreach ($this->slaveAgencies as $slaveAgency) {
+                    $this->model_provider->setCurrentDb($slaveAgency["id"]);
+                    $slaveProvider = $this->model_provider->getProviderByMasterId($id);
+                    $this->model_provider->update($slaveProvider["id"], $provider);
+                    $this->model_provider->setCurrentDb(0);
+                }
+            }
+
             $this->output
                 ->set_content_type("application/json")
                 ->set_output(json_encode(array('status' => 'success')));

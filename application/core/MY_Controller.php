@@ -5,6 +5,10 @@ class BaseController extends CI_Controller
 
     private $params;
 
+    private $acl;
+
+
+
 
     public function __construct()
     {
@@ -12,8 +16,43 @@ class BaseController extends CI_Controller
 
         $this->load->model('model_params');
         $this->load->model('model_budget');
+        $controller = $this->router->fetch_class();
+        $action = $this->router->fetch_method();
+        $user_id = $this->session->userdata('id');
+        $user_role = $this->session->userdata('type');
+        $this->acl = $this->pageControlle($controller, $action, $user_id);
+
+        // ne pas vérifier l appel au web service
+        /*if(strpos($action, 'api') === false and  strpos($action, 'logout') === false and strpos($action, 'order') === false and strpos($action, 'add') === false ){
+            if (!$this->acl and $user_role !== "admin") {
+                redirect('/admin/employee/main');
+            }
+        }*/
         $this->params = $this->model_params->config(); // getting user configuration
-        $this->params['alertes'] = $this->model_budget->getActiveAlerts();
+        $this->params['alertes'] = $this->model_budget->getActiveAlerts();//gestion des alertes
+        $this->params["acl"]= $this->model_params->enabledPages($user_id);// gestion des droits d accèss global
+        $this->params["acl_page"]= $this->acl;// gestion des droits d accèss d une page
+    }
+
+    public function pageControlle($controller,$action,$user_id){
+        $this->acl = $this->model_params->acl($controller, $action,$user_id);
+        return $this->acl;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAcl()
+    {
+        return $this->acl;
+    }
+
+    /**
+     * @param mixed $acl
+     */
+    public function setAcl($acl)
+    {
+        $this->acl = $acl;
     }
 
     /**
@@ -36,17 +75,18 @@ class BaseController extends CI_Controller
     public function log_begin()
     {
         log_message('info', "dolimoni=>Log_begin: " . $this->router->fetch_class() . " " . $this->router->fetch_method());
-        log_message('info', print_r($this->input->post(NULL, TRUE), TRUE));
+        $data= print_r($this->input->post(NULL, TRUE), TRUE);
+        log_message('info', ($data));
     }
 
     public function log_middle($data)
     {
-        log_message('info', "dolimoni=>Log_middle: " . print_r($data, TRUE));
+        log_message('info', "dolimoni=>Log_middle: " . json_encode($data));
     }
 
     public function log_end($data)
     {
-        log_message('info', "dolimoni=>Log_end: " . print_r($data, TRUE));
+        log_message('info', "dolimoni=>Log_end: " . json_encode($data));
     }
 
 

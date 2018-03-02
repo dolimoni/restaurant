@@ -5,9 +5,9 @@ class Customer extends BaseController {
 	public function __construct()
 	{
 		parent::__construct();
-	    if ( ! $this->session->userdata('isLogin') || ($this->session->userdata('type') != "admin" )) { 
-	        redirect('login');
-	    }
+        if (!$this->session->userdata('isLogin')) {
+            redirect('login');
+        }
 
 		//$this->load->database();
 		$this->load->model('model_customer');

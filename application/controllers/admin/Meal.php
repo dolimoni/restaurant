@@ -5,7 +5,7 @@ class Meal extends BaseController {
 	public function __construct()
 	{
 		parent::__construct();
-	    if ( ! $this->session->userdata('isLogin') || ($this->session->userdata('type') != "admin" )) { 
+	    if ( ! $this->session->userdata('isLogin')) {
 	        redirect('login');
 	    }
 
@@ -20,6 +20,7 @@ class Meal extends BaseController {
 	{
         $this->log_begin();
         $data['meals'] = $this->model_meal->getAll();
+        $data['hasAtLeasOneProduct'] = $this->model_meal->hasAtLeasOneProduct();
         $data['groups'] = $this->model_group->getAll();
         $data['params'] = $this->getParams();
         $this->parser->parse('admin/meal/view_meals', $data);
@@ -42,7 +43,7 @@ class Meal extends BaseController {
         $data['meal'] = $this->model_meal->get($meal_id);
         $data['products'] = $this->model_meal->getProducts($meal_id);
         $data['report'] = $this->model_report->reportById($meal_id);
-        $start = date('Y-m-d', strtotime('-2 month'));
+        $start = date('Y-m-d', strtotime('-1 month'));
         $end = date('Y-m-d');
         $evolution = $this->model_report->evolutionRange($meal_id, $start, $end);
         if($this->session->userdata('startDate')){
@@ -198,7 +199,7 @@ class Meal extends BaseController {
         $this->parser->parse('admin/meal/view_editmeal', $data);
         $this->log_end($data);
 	}
-	public function editApi()
+	public function apiEdit()
 	{
         $this->log_begin();
         $meal = $this->input->post('meal');
@@ -214,9 +215,11 @@ class Meal extends BaseController {
         $this->log_begin();
 
         if (!$this->input->post('groupName')) {
+            $this->load->model('department/model_department');
             $data['message'] = '';
             $data['groups'] = $this->model_group->getAll();
             $data['productsToOrder'] = $this->model_product->getToOrder();
+            $data['departments'] = $this->model_department->getAll();
             $this->load->model('model_budget');
             $data['alertes'] = $this->model_budget->getActiveAlerts();
             $data['params'] = $this->getParams();
@@ -225,8 +228,9 @@ class Meal extends BaseController {
         }else{
 
             $name = $this->input->post('groupName');
+            $department = $this->input->post('department');
             $image = $_FILES['image']['name'];
-            $group=array('name'=>$name,'image'=>$image);
+            $group=array('name'=>$name,'image'=>$image,'department'=> $department);
             $this->log_middle($group);
             $this->uploadFile();
             $this->model_group->add($group);
@@ -246,8 +250,9 @@ class Meal extends BaseController {
             $this->log_begin();
             $name = $this->input->post('groupNameEdit');
             $id = $this->input->post('id');
+            $department = $this->input->post('department');
             $image = $_FILES['image']['name'];
-            $group = array('name' => $name);
+            $group = array('name' => $name,'department'=>$department);
             if($image!==""){
                 $group['image']=$image;
                 $this->uploadFile();
@@ -368,8 +373,18 @@ class Meal extends BaseController {
     {
        try {
            $this->log_begin();
-           $productsList = $this->input->post('mealsList');
-           $response = $this->model_meal->consumption($productsList);
+           $response=array(
+               "status"=>"success",
+               "productsList"=>array(),
+           );
+           $mealsList = $this->input->post('mealsList');
+           $params = $this->input->post('params');
+           if($params["deleteSales"]==="true"){
+               $this->model_meal->deleteConsumption($params);
+           }
+           if($mealsList){
+               $response = $this->model_meal->consumption($mealsList);
+           }
            $this->output
                ->set_content_type("application/json")
                ->set_output(json_encode(array('status' => $response['status'],'productsList'=>$response['productsList'])));
@@ -402,7 +417,7 @@ class Meal extends BaseController {
     {
         //$data['meals'] = $this->Parse('uploads/a.prg');
         $data['params'] = $this->getParams();
-        $this->load->view('admin/meal/load');
+        $this->load->view('admin/meal/load',$data);
     }
     public function apiLoadFile()
     {
@@ -439,7 +454,7 @@ class Meal extends BaseController {
             log_message('error', $e->getMessage());
             $this->output
                 ->set_content_type("application/json")
-                ->set_output(json_encode(array('status' => 'error', 'response' => $data)));
+                    ->set_output(json_encode(array('status' => 'error', 'response' => $data)));
         }
     }
     public function loadFileGroup()

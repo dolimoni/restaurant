@@ -40,7 +40,6 @@
 					<input id="email_to" type="email" class="form-control" name="email" placeholder="Ajouter l'adresse e-mail" />
 				</div>
 				<div class="form-group col-md-1">
-                    <br/>
 					<a id="add_email" href="#" class="btn btn-primary">Ajouter</a>
 				</div>
 				<div class="form-group col-md-12" id="display_emails"></div>

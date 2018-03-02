@@ -9,14 +9,21 @@
         width: 130px;
         height: 126px;
     }
+    .selectGroup{
+        min-height: 160px;
+    }
+
+    @media (max-width: 767px) {
+        .page-title .title_left {
+            width: 100% !important;
+            text-align:center;
+        }
+    }
 </style>
 <!-- page content -->
 <div class="right_col" role="main">
     <div class="productsList">
         <div class="page-title">
-           <!-- <pre>
-                <?php /*print_r($productsComposition); */?>
-            </pre>-->
             <div class="title_left">
                 <h3>Modifier l'article : <?php echo $meal['name']; ?></h3>
             </div>
@@ -62,12 +69,29 @@
                 <!--<span class="count_bottom"><i class="red"><i class="fa fa-sort-desc"></i>12% </i> par rapport au dernier prix</span>-->
             </div>
         </div>
-        <div class="article-title text-center">
-            <div class="col-md-offset-1 col-md-5 col-sm-6 col-xs-12">
-                 <h4 style="display: inline;">Nom de l'article : </h4> <input type="text" class="mealName" name="name" value="<?php echo $meal['name'];?>"/>
+        <div class="row article-title text-center">
+            <div class="col-md-4 col-sm-6 col-xs-12">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6"><h4 style="display: inline;">Nom de l'article : </h4></div>
+                    <div class="col-xs-12 col-sm-6"><input type="text" class="mealName" name="name"
+                                                   value="<?php echo $meal['name']; ?>"/></div>
+                </div>
             </div>
-            <div class="col-md-offset-1 col-md-5 col-sm-6 col-xs-12">
-                <h4 style="display: inline;">Prix de vente : </h4> <input value="<?php echo $meal['sellPrice']; ?>" type="text" class="sellPriceProduct" name="sellPrice"/>
+
+            <div class="col-md-4 col-sm-6 col-xs-12">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6"><h4 style="display: inline;">Prix de vente : </h4></div>
+                    <div class="col-xs-12 col-sm-6"><input value="<?php echo $meal['sellPrice']; ?>" type="text"
+                                                          class="sellPriceProduct" name="sellPrice"/></div>
+                </div>
+            </div>
+
+            <div class="col-md-4 col-sm-6 col-xs-12">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6"><h4 style="display: inline;">Nombre d'articles : </h4></div>
+                    <div class="col-xs-12 col-sm-6"><input value="<?php echo $meal['quantity']; ?>" type="number"
+                                                          class="mealQuantity"/></div>
+                </div>
             </div>
         </div>
         <div class="row mealComposition">
@@ -75,7 +99,9 @@
             <div class="col-md-6  col-sm-6 col-xs-12 product" data-id="<?php echo $key+1; ?>" >
                                 <div class="x_panel">
                                    <div class="x_title">
-                                       <h2><?php echo $pc['name']; ?></h2>
+                                       <h2><?php echo $pc['name']; ?> -
+                                           <?php echo number_format((float)($pc['unit_price'] * $pc['unitConvert']* $pc['mp_quantity']*$meal['quantity']), 2, '.', ''); ?>
+                                       </h2>
                                        <ul class="nav navbar-right panel_toolbox">
                                            <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
                                           <!-- <li><a class="close-link"><i class="fa fa-close"></i></a></li>-->
@@ -144,7 +170,7 @@
 
                                            <input class="form-inline md-button-v" placeholder="Quantité"
                                                   name="quantity"
-                                                  value="<?php echo $pc['mp_quantity']; ?>"
+                                                  value="<?php echo $pc['mp_quantity']* $meal['quantity']; ?>"
                                                   type="text">
 
                                        </div>
@@ -193,7 +219,7 @@
                                         ?>
 
                                         <select name="kgUnitHidden"
-                                                class="kgUnitHidden" <?php echo $KgUnitHidden ?>>
+                                                class="kgUnitHidden md-button-v" <?php echo $KgUnitHidden ?>>
                                             <option value="1" name="Kilogramme">Kilogramme</option>
                                             <option value="0.001" name="Gramme">Gramme</option>
                                             <option value="0.000001" name="Milligramme">Milligramme</option>
@@ -234,7 +260,7 @@
                     <?php
                     //Columns must be a factor of 12 (1,2,3,4,6,12)
                     $numOfCols = 6;
-                    $numOfSMCols = 3;
+                    $numOfSMCols = 2;
                     $rowCount = 0;
                     $bootstrapColMDWidth = 12 / $numOfCols;
                     $bootstrapColSMWidth = 12 / $numOfSMCols;
@@ -285,6 +311,7 @@
             calulPrixTotal();
         });
         $(document).on('keyup','input[name="quantity"]',calulPrixTotal);
+        $(document).on('keyup','.mealQuantity',calulPrixTotal);
 
         $(document).on('change','.productSelectNew',{'checkOldProducts':true},calulPrixTotal);
         $(document).on('change','.productSelect,.kgUnitHidden,.lUnitHidden',calulPrixTotal);
@@ -292,10 +319,12 @@
         function calulPrixTotal() {
             var prixTotal = parseFloat(0);
             var panel = $(this).closest('.product');
+            var mealQuantity= $(".mealQuantity").val();
             updateOptions(false);
             for (var i = 1; i <= productsCount; i++) {
                 var row = $('.product[data-id=' + i + ']');
                 l_panel = row.closest('.product');
+                var title = l_panel.find("div.x_title h2");
                 var unit = l_panel.find('select[name="product"] option:selected').attr('data-unit');
                 var weightByunit = l_panel.find('select[name="product"] option:selected').attr('data-weightByunit');
                 var quantity = parseFloat(row.find('input[type="text"]').val().replace(',', '.'));
@@ -321,8 +350,12 @@
                     unit_price *= unitConvert;
                 }
 
-                if (quantity > 0 && unit_price > 0)
-                    prixTotal += quantity * unit_price;
+                if (quantity > 0 && unit_price > 0){
+                    var productPrice= parseFloat(quantity * unit_price/mealQuantity);
+                    title.html("Produit - " + (quantity * unit_price).toFixed(3) + "dh");
+                    prixTotal += productPrice;
+                }
+
             }
             sellPrice=$(".sellPriceProduct").val();
             $(".count.sellPrice.green").html(sellPrice+'DH');
@@ -356,6 +389,10 @@
             var productsList=[];
             var prixTotal=0;
             var name=$('input.mealName').val();
+            var mealQuantity = $(".mealQuantity").val();
+            if(mealQuantity==0 || mealQuantity==""){
+                mealQuantity=1;
+            }
             for (var i = 1; i <= productsCount; i++) {
 
                 var row = $('.product[data-id=' + i + ']');
@@ -381,12 +418,13 @@
 
                 if (quantity > 0){
                     var product= {
-                        'id': id, 'quantity': quantity, 'unit_price': unit_price, 'profit': profit,
+                        'id': id, 'quantity': quantity/mealQuantity, 'unit_price': unit_price, 'profit': profit,
                         'unit': unitConvertName,
                         'unitConvert': unitConvert
                     };
                     if (unit_price > 0) {
-                        prixTotal += quantity * unit_price;
+                        var productPrice = parseFloat(quantity * unit_price / mealQuantity);
+                        prixTotal += productPrice;
                     }
                     productsList.push(product);
                 }
@@ -397,11 +435,11 @@
             if(profit<0){
                 profit=0;
             }
-            var meal={'name':name,'id':<?php echo $meal['id']; ?>,'group':group,'productsList': productsList, 'cost': prixTotal,'sellPrice': sellPrice,'profit': profit};
+            var meal={'name':name,'id':<?php echo $meal['id']; ?>,'group':group,'productsList': productsList,"quantity": mealQuantity, 'cost': prixTotal,'sellPrice': sellPrice,'profit': profit};
 
             if(validate(meal)){
                 $.ajax({
-                    url: "<?php echo base_url(); ?>admin/meal/editApi",
+                    url: "<?php echo base_url(); ?>admin/meal/apiEdit",
                     type: "POST",
                     dataType: "json",
                     data: {'meal': meal},
@@ -416,6 +454,8 @@
                                 showConfirmButton: false
                             });
                             document.location.href = data.redirect;
+                            var nextId = parseInt(<?php echo $meal['id']; ?>) + parseInt(1);
+                            window.location.href = "<?php echo base_url("admin/meal/edit/"); ?>" + nextId;
                         }
                         else {
                             /*$('#show_id').html("<div style='border:1px solid red;font-size: 11px;margin:0 auto !important;'>" + response.error + "</div>");*/
@@ -515,7 +555,10 @@
             productModel.attr('data-id',productsCount);
             $('.mealComposition').append(productModel);
             $('.productsCount').html(productsCount);
-            updateOptions(true);
+            console.log("productsCount", productsCount);
+            if(productsCount>1){
+                updateOptions(true);
+            }
         }
 
         function updateOptions(newProductt) {

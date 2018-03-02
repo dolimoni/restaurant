@@ -3,6 +3,9 @@
     .profile_details:nth-child(3n) {
         clear: none;
     }
+    .showProvider{
+        min-height: 178px;
+    }
 </style>
 <!-- page content -->
 <div class="right_col" role="main">
@@ -10,6 +13,9 @@
         <div class="page-title">
             <div class="title_left">
                 <h3>Liste des fournisseurs</h3>
+                <label for="exampleInputName2">Rechercher</label>
+                <input type="text" placeholder="Nom du fournisseur" class="form-control" id="searchInput"
+                       onkeyup="myFunction()">
             </div>
         </div>
         <div class="clearfix"></div>
@@ -17,6 +23,7 @@
         <div class="article-title">
             <a class="btn btn-primary" data-toggle="collapse" href="#collapseExample" aria-expanded="false"
                aria-controls="collapseExample">Nouveau</a>
+            <a class="btn btn-info" href="<?php echo base_url("admin/provider/allOrders");?>">Toutes les commandes</a>
         </div>
         <div class="collapse" id="collapseExample">
             <?php echo validation_errors(); ?>
@@ -25,16 +32,18 @@
                     <div class="row">
                         <div class="col-xs-4">
                             <br>
-                            <label for="name">Titre :</label>
-                            <input type="text"  class="form-control" name="title"
-                                   placeholder="Titre"
-                                   required>
+                            <label for="name">Group :</label>
+                            <select class="form-control" name="title">
+                                <option value="0">Aucun</option>
+                                <?php foreach ($providerGroups as $providerGroup){ ?>
+                                <option value="<?php echo $providerGroup["id"] ?>"><?php echo $providerGroup["title"] ?></option>
+                                <?php } ?>
+                            </select>
                         </div><div class="col-xs-4">
                             <br>
                             <label for="name">Nom :</label>
                             <input type="text"  class="form-control" name="name"
-                                   placeholder="Nom"
-                                   >
+                                   placeholder="Nom" required>
                         </div><div class="col-xs-4">
                             <br>
                             <label for="name">Prénom :</label>
@@ -99,17 +108,19 @@
                         <input type="hidden" name="id"/>
                         <div class="col-xs-4">
                             <br>
-                            <label for="name">Titre :</label>
-                            <input type="text" class="form-control" name="title"
-                                   placeholder="Titre"
-                                   required>
+                            <label for="name">Groupe :</label>
+                            <select class="form-control" name="title">
+                                <option value="0">Aucun</option>
+                                <?php foreach ($providerGroups as $providerGroup) { ?>
+                                    <option value="<?php echo $providerGroup["id"] ?>"><?php echo $providerGroup["title"] ?></option>
+                                <?php } ?>
+                            </select>
                         </div>
                         <div class="col-xs-4">
                             <br>
                             <label for="name">Nom :</label>
                             <input type="text" class="form-control" name="name"
-                                   placeholder="Nom"
-                                   >
+                                   placeholder="Nom" required>
                         </div>
                         <div class="col-xs-4">
                             <br>
@@ -178,7 +189,8 @@
        <div class="container">
            <div class="row">
                <?php foreach ($providers as $provider) { ?>
-                   <div class="col-md-4 col-sm-4 col-xs-12 profile_details" data-id="<?php echo $provider['id']; ?>">
+                   <div class="col-md-4 col-sm-4 col-xs-12 profile_details"
+                        data-name="<?php echo $provider['name'] . " " . $provider['prenom']; ?>" data-id="<?php echo $provider['id']; ?>">
                        <div class="well profile_view">
                            <div class="col-sm-12 showProvider" data-id="<?php echo $provider['id']; ?>">
                                <h4 class="brief"><i> <?php echo $provider['title']; ?> </i></h4>
@@ -214,7 +226,7 @@
                                    <button aria-expanded="false"
                                            data-id="<?php echo $provider['id'] ?>"
                                            data-name="<?php echo $provider['name'] ?>"
-                                           data-title="<?php echo $provider['title'] ?>"
+                                           data-title="<?php echo $provider['pg_id'] ?>"
                                            data-prenom="<?php echo $provider['prenom'] ?>"
                                            data-address="<?php echo $provider['address'] ?>"
                                            data-phone="<?php echo $provider['phone'] ?>"
@@ -356,8 +368,12 @@
             }
             l_id = $(this).attr('data-id');
 
+            var l_title=0;
+            if($(this).attr('data-title')!==""){
+                l_title= $(this).attr('data-title');
+            }
             $('#editProvider input[name="name"]').val($(this).attr('data-name'));
-            $('#editProvider input[name="title"]').val($(this).attr('data-title'));
+            $('#editProvider select[name="title"]').val(l_title);
             $('#editProvider input[name="prenom"]').val($(this).attr('data-prenom'));
             $('#editProvider input[name="address"]').val($(this).attr('data-address'));
             $('#editProvider input[name="phone"]').val($(this).attr('data-phone'));
@@ -444,4 +460,25 @@
 
         }
     });
+</script>
+
+
+<!--Search in table-->
+<script>
+    function myFunction() {
+        var input, filter, table, tr, td, i;
+        input = document.getElementById("searchInput");
+        filter = input.value.toUpperCase();
+        profiles = document.getElementsByClassName("profile_details");
+        for (i = 0; i < profiles.length; i++) {
+            profile = profiles[i].getAttribute("data-name");
+            if (profile) {
+                if (profile.toUpperCase().indexOf(filter) > -1) {
+                    profiles[i].style.display = "";
+                } else {
+                    profiles[i].style.display = "none";
+                }
+            }
+        }
+    }
 </script>

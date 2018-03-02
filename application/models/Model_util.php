@@ -2,6 +2,41 @@
 
 class model_util extends CI_Model {
 
+    public function getUser($id){
+        $this->db->where("id",$id);
+        return $this->db->get("users")->row_array();
+    }
+
+    public function allUsers(){
+        $this->db->order_by("id","asc");
+        $this->db->where("status", "enabled");
+        return $this->db->get("users")->result_array();
+    }
+
+    public function createUser($data,$actions){
+        $this->load->model('model_ACL');
+        $this->db->insert("users",$data);
+        $user_id = $this->db->insert_id();
+        $this->model_ACL->createDefaultAclForUser($user_id, $data["type"]);
+        $this->model_ACL->updateUserAcl($user_id,$actions, $data["type"]);
+
+    }
+    public function editUser($user_id,$data,$actions){
+        $this->load->model('model_ACL');
+        $this->db->where("id", $user_id);
+
+        $this->db->update("users",$data);
+        $this->model_ACL->updateUserAcl($user_id, $actions, "user");
+    }
+
+    public function deleteUser($user_id)
+    {
+        $this->db->where('user', $user_id);
+        $this->db->delete('acl');
+
+        $this->db->where('id', $user_id);
+        $this->db->delete('users');
+    }
     public function isLastDayInMonth($day){
         $date = new DateTime('now');
         $date = $date->format('Y-m-d');
@@ -54,6 +89,10 @@ class model_util extends CI_Model {
         $this->model_db->troncate('employee');
         $this->model_db->troncate('employee_event');
         $this->model_db->troncate('orderdetails');
+        $this->model_db->troncate('stock_history');
+        $this->model_db->troncate('stock_meal');
+        $this->model_db->troncate('stock_product');
+        $this->model_db->troncate('magazin');
         $this->model_db->troncate('order');
 
 
@@ -67,6 +106,7 @@ class model_util extends CI_Model {
         $sql = "SET FOREIGN_KEY_CHECKS = 0;";
         $this->query($sql);
         $this->model_db->troncate('group');
+        $this->model_db->troncate('department');
 
         $sql = "SET FOREIGN_KEY_CHECKS = 1;";
         $this->query($sql);
@@ -110,6 +150,8 @@ class model_util extends CI_Model {
                 $this->db->delete("product_composition");
                 $this->db->where("id >=", 1);
                 $this->db->delete("quantity");
+                $this->db->where("id >=", 1);
+                $this->db->delete("product_autoconsum");
             }else if ($table==="provider"){
                 $this->db->where("id >=",1);
                 $this->db->delete("provider");
@@ -157,6 +199,63 @@ class model_util extends CI_Model {
 
         $sql = "SET FOREIGN_KEY_CHECKS = 1;";
         $this->query($sql);
+    }
+
+    public function diffDate($start, $end){
+        // Date d'aujourd'hui
+        $endDateTime = new DateTime($end);
+
+        $startDateTime = new DateTime($start);
+
+
+        $interval = date_diff($startDateTime, $endDateTime);
+        $diffJours = $interval->format('%R%a');
+
+        return $diffJours;
+    }
+
+    function date_fct($a, $b)
+    {
+        return strtotime($a) - strtotime($b);
+    }
+
+    public function sortDate($data, $columnName)
+    {
+        $columnArray = array_column($data, $columnName);
+
+
+        usort($columnArray, array($this, "date_fct"));
+
+        $response = array();
+
+        foreach ($columnArray as $columnElement) {
+            foreach ($data as $dataElement) {
+                if ($columnElement === $dataElement[$columnName]) {
+                    $response[] = $dataElement;
+                }
+            }
+        }
+
+        return $response;
+    }
+
+    public function mergeDateArray($a1,$a2){
+        $sums = array();
+        $sums= $a1;
+        foreach ($a2 as $key2 => $item2) {
+            $date_exists = false;
+            foreach ($a1 as $key1 => $item1) {
+                if($item1["paymentDate"]=== $item2["paymentDate"]){
+                    $sums[$key1]["price"] += $item2["price"];
+                    $date_exists = true;
+                    break;
+                }
+            }
+            if (!$date_exists) {
+                $sums[]= $item2;
+            }
+        }
+        return $sums;
     }
 
 

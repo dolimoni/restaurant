@@ -19,7 +19,7 @@
                 <div class="col-md-12 col-sm-12 col-xs-12">
                     <div class="x_panel">
                         <div class="x_title">
-                            <h2>Liste des produits vendu aujoud'hui</h2>
+                            <h2>Liste des articles vendu</h2>
                             <ul class="nav navbar-right panel_toolbox">
                                 <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
                                 <li><a class="close-link"><i class="fa fa-close"></i></a></li>
@@ -27,24 +27,35 @@
                             <div class="clearfix"></div>
                         </div>
 
-                        <form id="addSalesFileForm" enctype="multipart/form-data">
 
-                            <fieldset>
-                                <div class="row">
-                                    <div class="col-xs-4">
-                                        <br>
-                                        <label for="image">Importer le fichier des ventes :</label>
-                                        <input type="file" class="form-control" name="image" size="20485760">
-                                    </div>
-                                </div>
-                                <br/>
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-6 col-md-4">
+                                <label for="paiementDate">Date du rapport :</label>
+                                <?php include('include/calender.php'); ?>
+                            </div>
+                            <div class="col-xs-12 col-sm-12 col-md-12">
+                                <form id="addSalesFileForm" enctype="multipart/form-data">
 
-                                <div class="text-right">
-                                    <input class="btn btn-success" type="submit" name="addSalesFile" value="Confirmer"/>
-                                </div>
+                                    <fieldset>
+                                        <div class="row">
+                                            <div class="col-xs-4">
+                                                <br>
+                                                <label for="image">Importer le fichier des ventes :</label>
+                                                <input type="file" class="form-control" name="image" size="20485760">
+                                            </div>
+                                        </div>
+                                        <br/>
 
-                            </fieldset>
-                        </form>
+                                        <div class="text-right">
+                                            <input class="btn btn-success" type="submit" name="addSalesFile"
+                                                   value="Confirmer"/>
+                                        </div>
+
+                                    </fieldset>
+                                </form>
+                            </div>
+                        </div>
+
 
                         <ul class="nav nav-tabs">
                             <li class="active"><a data-toggle="tab" href="#home">Toutes les ventes</a></li>
@@ -99,6 +110,7 @@
                                 --><?php /*} */ ?>
 
                                     </table>
+                                    <input type="checkbox" name="deleteSales"/> Supprimer les anciens ventes de ce jour
                                     <div class="text-right">
                                         <button type="button" class="btn btn-success " name="validate">
                                             Valider
@@ -159,10 +171,18 @@
     <!-- /page content -->
 
 <?php $this->load->view('admin/partials/admin_footer'); ?>
+<script src="<?php echo base_url('assets/vendors/bootstrap-progressbar/bootstrap-progressbar.min.js'); ?>"></script>
+
+<script src="<?php echo base_url('assets/vendors/moment/min/moment.min.js'); ?>"></script>
+
+<script src="<?php echo base_url('assets/vendors/bootstrap-daterangepicker/daterangepicker.js'); ?>"></script>
+
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
 <script>
 
     $(document).ready(function () {
-        var report_date='';
+        var report_date = moment($("#single_cal3").val()).format("YYYY-MM-DD") + "T10";
         $('#addSalesFileForm').on('submit', function (e) {
             e.preventDefault();
             var formData = new FormData(this);
@@ -191,7 +211,8 @@
                         var invalid= 0;
                         var validAmountTotal=0;
                         var validQuantityTotal=0;
-                        report_date=data.response.sales['dateTime'];
+                        //report_date=data.response.sales['dateTime'];
+                        report_date = moment($("#single_cal3").val()).format("YYYY-MM-DD") + "T10";
 
                         $.each(data.response.sales.rows, function (key, row) {
                             var rowContent = '<tr data-id="'+key+'">' +
@@ -290,6 +311,12 @@
 
         $('button[name="validate"]').on('click', function () {
             var mealsList = [];
+            report_date = moment($("#single_cal3").val()).format("YYYY-MM-DD") + "T10";
+            var deleteSales = $('input[name="deleteSales"]').is(':checked');
+            var params={
+                "deleteSales":deleteSales,
+                "report_date": moment($("#single_cal3").val()).format("YYYY-MM-DD"),
+            }
             $('tr.validate').each(function (i, obj) {
                 var tr = $(this);
                 var id = tr.find('td[data-type="id"]').text();
@@ -298,6 +325,7 @@
                 var qunatity = tr.find('td[data-type="quantity"]').text();
                 var amount = tr.find('td[data-type="amount"]').text();
                 var name = tr.find('td[data-type="name"]').text();
+
                 var meal = {
                     'id': id,
                     'externalCode': externalCode,
@@ -312,10 +340,10 @@
                 }
             });
 
-            var myData = {'mealsList': mealsList};
+            var myData = {'mealsList': mealsList,"params": params};
             $('#loading').show();
             $.ajax({
-                url: "<?php echo base_url(); ?>admin/meal/apiConsumption",
+                url: "<?php echo base_url("admin/meal/apiConsumption"); ?>",
                 type: "POST",
                 dataType: "json",
                 data: myData,
