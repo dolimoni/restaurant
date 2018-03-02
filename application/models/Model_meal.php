@@ -571,7 +571,7 @@ class model_meal extends CI_Model {
                 } else if ($st_part === "0" and $time > $params["st_part"]) {
                     $dataConsumptionHistory["st_part"] = $todayConsumption["s_total"];
                 }
-                $dataConsumptionHistory["report_date"] = $report_date;
+                $this->db->where("report_date", $report_date);
                 $this->db->update("consumption_history", $dataConsumptionHistory);
             }else{
                 $dataConsumptionHistory["report_date"] = $report_date;

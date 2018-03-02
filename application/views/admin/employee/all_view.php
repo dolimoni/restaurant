@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="<?php echo base_url("assets/vendors/jquery-ui/themes/overcast/jquery-ui.min.css"); ?>">
+<link rel="stylesheet" href="<?php echo base_url("assets/vendors/jquery-ui-month-picker/src/MonthPicker.css"); ?>">
 <?php $this->load->view('admin/partials/admin_header.php'); ?>
 <style>
     .profile_details:nth-child(3n) {
@@ -8,10 +10,8 @@
         margin-right: 11px;
     }
 
-    .ui-datepicker-calendar {
-        display: none;
-    }
 </style>
+
 <!-- page content -->
 <div class="right_col" role="main">
     <div class="productsList">
@@ -62,7 +62,7 @@
                                 <th>Soustraction</th>
                             </tr>
                             </tfoot>
-                            <tbody>
+                            <tbody id="tbody">
                             <?php foreach ($salaries as $salary) { ?>
                                 <tr>
                                     <td>
@@ -90,24 +90,27 @@
 
 
 <?php $this->load->view('admin/partials/admin_footer'); ?>
+<script src="<?php echo base_url('assets/vendors/moment/min/moment.min.js'); ?>"></script>
 
 <script src="<?php echo base_url("assets/vendors/datatables.net/js/jquery.dataTables.min.js"); ?>"></script>
+<script src="<?php echo base_url("assets/vendors/jquery-ui/jquery-ui.min.js"); ?>"></script>
+<script src="<?php echo base_url("assets/vendors/jquery-ui-month-picker/src/MonthPicker.js"); ?>"></script>
 <script>
     $(document).ready(function () {
+        var table;
         var handleDataTableButtons = function () {
             if ($("#datatable-bestPrice").length) {
-                $("#datatable-bestPrice").DataTable({
+                table=$("#datatable-bestPrice").DataTable({
                     aaSorting: [[0, 'desc']],
-                    responsive: true,
-                    "language": {
-                        "url": "<?php echo base_url("assets/vendors/datatables.net/French.json"); ?>"
-                    }
-                });
-            }
-
-            if ($("#datatable-allPrice").length) {
-                $("#datatable-allPrice").DataTable({
-                    aaSorting: [[0, 'desc']],
+                    "columns": [
+                        {"data": "name"},
+                        {"data": "prenom"},
+                        {"data": "advance"},
+                        {"data": "salary"},
+                        {"data": "remain"},
+                        {"data": "absence"},
+                        {"data": "substraction"}
+                    ],
                     responsive: true,
                     "language": {
                         "url": "<?php echo base_url("assets/vendors/datatables.net/French.json"); ?>"
@@ -126,23 +129,66 @@
             };
         }();
 
+        $('#startDate').MonthPicker({
+            i18n: {
+                year: "année",
+                prevYear: "l'année dernière",
+                nextYear: "l'année prochaine",
+                months: ["Jan", "Fév", "Mar", "Avr", "Mai", "Jui", "Jul", "Aou", "Sep", "Oct", "Nov", "Dec"]
+            },
+            Button: '<button type="button" class="ui-datepicker-trigger">...</button>',
+            OnAfterChooseMonth: function (selectedDate) {
+                var myData = {
+                    "startDate": formattedDate(selectedDate)
+                };
+                $.ajax({
+                    url: "<?php echo base_url("admin/employee/apiAll"); ?>",
+                    type: "POST",
+                    dataType: "json",
+                    data: myData,
+                    beforeSend: function () {
+                        $('#loading').show();
+                    },
+                    complete: function () {
+                        $('#loading').hide();
+                    },
+                    success: function (data) {
+                        if (data.status === "success") {
+                            table.clear();
+                              $.each(data.salaries, function (key,salary) {
+                                  table.row.add({
+                                      "name": "<a href='<?php echo base_url('admin/employee/show/'); ?>" + salary.id + "'>" + salary.name + "</a>",
+                                      "prenom": salary.prenom,
+                                      "advance": salary.advance,
+                                      "salary": salary.salary,
+                                      "remain": salary.remain,
+                                      "absence": salary.absence,
+                                      "substraction": salary.substraction
+                                  }).draw();
+                               });
+
+                        }
+                        else {
+                            console.log('Error');
+                        }
+                    },
+                    error: function (data) {
+                    }
+                });
+            }
+        });
+
+        function formattedDate(d) {
+            let month = String(d.getMonth() + 1);
+            let day = String(d.getDate());
+            const year = String(d.getFullYear());
+
+            if (month.length < 2) month = '0' + month;
+            if (day.length < 2) day = '0' + day;
+
+            return `${year}-${month}-${day}`;
+        }
+
         TableManageButtons.init();
     });
 </script>
-
-<script type="text/javascript">
-    $(function () {
-        $('.date-picker').daterangepicker({
-            changeMonth: true,
-            changeYear: true,
-            showButtonPanel: true,
-            dateFormat: 'MM yy',
-            onClose: function (dateText, inst) {
-                var month = $("#ui-datepicker-div .ui-datepicker-month :selected").val();
-                var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
-                $(this).datepicker('setDate', new Date(year, month, 1));
-            }
-        });
-    });
-</script>
-

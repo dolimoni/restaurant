@@ -124,6 +124,24 @@ class Employee extends BaseController {
         $this->log_end($data);
     }
 
+    public function apiAll()
+    {
+        $this->log_begin();
+        try {
+            $startDate = $this->input->post('startDate');
+            $salaries = $this->model_employee->getMonthSalaries($startDate);
+            $this->log_middle($salaries);
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'success',"salaries"=> $salaries)));
+            $this->log_end(array('status' => 'success'));
+        } catch (Exception $e) {
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'error')));
+        }
+    }
+
     public function apiEditMainEmployee()
     {
         $this->log_begin();

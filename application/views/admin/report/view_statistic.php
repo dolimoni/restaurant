@@ -58,8 +58,8 @@
                     DH
                 </div>
                 <?php if(number_format($params["parts"],0)=="2"){ ?>
-                <div class="count_top"><i class="fa fa-dollar"></i> <span>Matin:</span> <span class="st_part"><?php echo number_format((float)$report['consumption_history']['st_part'], 1, '.', ''); ?></span> DH</div>
-                <div class="count_top"><i class="fa fa-dollar"></i> <span style="margin-right: 7px;">Soir:</span> <span class="nd_part"><?php echo number_format((float)$report['consumption_history']['nd_part'], 1, '.', ''); ?></span> DH</div>
+                <div class="count_top"><i class="fa fa-dollar"></i> <span>Matin:</span> <span class="st_part"><?php echo number_format((float)$report['consumption_history']['st_part'], 2, '.', ''); ?></span> DH</div>
+                <div class="count_top"><i class="fa fa-dollar"></i> <span style="margin-right: 7px;">Soir:</span> <span class="nd_part"><?php echo number_format((float)$report['consumption_history']['turnover']-(float)$report['consumption_history']['st_part'], 2, '.', ''); ?></span> DH</div>
                 <?php }?>
                 <?php if (number_format($params["parts"], 0) == "3") { ?>
                     <div class="count_top"><i class="fa fa-dollar"></i>
