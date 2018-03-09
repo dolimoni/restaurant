@@ -2,6 +2,15 @@
 
 class model_params extends CI_Model {
 
+    public function getConfigParams(){
+        $params=$this->db->get("config")->row_array();
+        $response=array();
+        $response["orderReception"]=($params["orderReception"] === "true")? "checked":"";
+        $response["orderPayment"]=($params["orderPayment"] === "true")? "checked":"";
+        $response["editOrderDate"]=($params["editOrderDate"] === "true")? "checked":"";
+        $response["editConsumptionDate"]=($params["editConsumptionDate"] === "true")? "checked":"";
+        return $response;
+    }
 	public function config()
 	{
         $result = $this->db->get('config')->row_array();
@@ -14,7 +23,9 @@ class model_params extends CI_Model {
 
 	public function update($data)
 	{
+	    $response=array("status"=>"success");
         $this->db->update('config',$data);
+        return $response;
 	}
 
 	public function acl($controller, $action, $user_id){

@@ -194,13 +194,34 @@ class model_employee extends CI_Model {
         $this->load->model('model_util');
         $lastDay = $this->model_util->getLastDayInMonth($date);
 
-        $this->db->select("s.salary,s.advance,s.remain,s.paymentDate,s.absence,s.substraction,e.name,e.prenom,e.id");
+        $this->db->select("s.salary,s.advance,s.remain,s.paymentDate,s.absence,s.substraction,e.name,e.prenom,e.id,s.paid");
         $this->db->from("salary s");
         $this->db->join("employee e","e.id=s.employee");
         $this->db->where('paymentDate', $lastDay);
         $salaries=$this->db->get()->result_array();
         return $salaries;
 
+    }
+
+    public function updatePaymentSalary($id){
+        $this->db->where('id', $id);
+        $db_salary = $this->db->get('salary')->row_array();
+        $paymentDate = strtotime(date("Y-m-d H:i:s"));
+        $paid = "false";
+        if ($db_salary["paid"] === "true") {
+            $this->db->where('id', $id);
+            $this->db->update('salary', array("paid" => "false", "reelPaymentDate" => null));
+        } else {
+            $this->db->where('id', $id);
+            $this->db->update('salary', array("paid" => "true", "reelPaymentDate" => date("Y-m-d H:i:s")));
+            $paymentDate = strtotime(date("Y-m-d H:i:s"));
+            $paid = "true";
+        }
+        $salary = array(
+            "paid" => $paid,
+            "paymentDate" => date("d-m-Y", $paymentDate),
+        );
+        return $salary;
     }
 
     public function addSalary($id){
@@ -215,7 +236,7 @@ class model_employee extends CI_Model {
             'paymentDate' => $lastDay,
             'substraction' => 0,
             'absence' => 0,
-            'paid' => "falsse"
+            'paid' => "false"
         );
         $data["employee"] = $employee['id'];
         $this->db->insert('salary', $data);

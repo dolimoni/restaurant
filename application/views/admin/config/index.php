@@ -143,140 +143,188 @@
                     Mes informations
                 </div>
                 <div class="x_content">
-                    <div id="responsiveTabsDemo" class="r-tabs">
-                        <ul class="r-tabs-nav">
-                            <li class="r-tabs-tab r-tabs-state-active"><a href="#tab-1" class="r-tabs-anchor">
-                                    Détails </a>
-                            </li>
-                            <!-- <li class="r-tabs-tab r-tabs-state-default"><a href="#tab-3" class="r-tabs-anchor">
-                                     Factures</a>
-                             </li>-->
-                        </ul>
+                    <div class="" role="tabpanel" data-example-id="togglable-tabs">
 
-                        <div class="r-tabs-accordion-title r-tabs-state-active"><a href="#tab-1" class="r-tabs-anchor">
-                                Détails </a></div>
-                        <div id="tab-1" class="r-tabs-panel r-tabs-state-active" style="display: block;">
-                            <div class="row">
-                                <div class="col-md-6 col-sm-8 col-xs-12">
-                                    <div class="form-group">
-                                        <div class="row">
-                                            <div class="col-md-4">
-                                                <label>Nom</label>
-                                            </div>
-                                            <div class="col-md-8">
-                                                <?php echo $user['last_name']; ?>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <div class="row">
-                                            <div class="col-md-4">
-                                                <label>Prénom</label>
-                                            </div>
-                                            <div class="col-md-8">
-                                                <?php echo $user['first_name']; ?>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <div class="row">
-                                            <div class="col-md-4">
-                                                <label>Téléphone</label>
-                                            </div>
-                                            <div class="col-md-8">
-                                                <?php echo $user['mobile']; ?>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <div class="row">
-                                            <div class="col-md-4">
-                                                <label>Email</label>
-                                            </div>
-                                            <div class="col-md-8">
-                                                <?php echo $user['email']; ?>
+                        <ul id="myTab" class="nav nav-tabs bar_tabs sm-hidden" role="tablist">
+                            <li role="presentation" class="active"><a href="#tab_products" id="home1-tab"
+                                                                      role="tab"
+                                                                      data-toggle="tab"
+                                                                      aria-expanded="true">Détails</a>
+                            </li>
+                            <li role="presentation"><a href="#tab_productsToOrder" id="home-tab"
+                                                       role="tab"
+                                                       data-toggle="tab" aria-expanded="false">Paramètres</a>
+                            </li>
+                        </ul>
+                        <div class="col-md-3 col-sm-12 col-xs-12 md-hidden">
+
+                            <ul class="nav nav-tabs tabs-left">
+                                <li class="active"><a href="#tab_products" data-toggle="tab" aria-expanded="true">Détails</a>
+                                </li>
+                                <li class=""><a href="#tab_productsToOrder" data-toggle="tab" aria-expanded="true">Paramètres
+                                        à commander</a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div id="myTabContent" class="tab-content col-md-12 col-sm-12 col-xs-12">
+
+                            <!--------------------------------------------Products Tab------------------------------------------------------>
+                            <div role="tabpanel" class="tab-pane fade active in" id="tab_products"
+                                 aria-labelledby="home-tab">
+                                <div class="row">
+                                    <div class="col-md-6 col-sm-8 col-xs-12">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    <label>Nom</label>
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <?php echo $user['last_name']; ?>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <div class="row">
-                                            <div class="col-md-4">
-                                                <label>Adresse</label>
-                                            </div>
-                                            <div class="col-md-8">
-                                                <?php echo $user['address']; ?>
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    <label>Prénom</label>
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <?php echo $user['first_name']; ?>
+                                                </div>
                                             </div>
                                         </div>
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    <label>Téléphone</label>
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <?php echo $user['mobile']; ?>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    <label>Email</label>
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <?php echo $user['email']; ?>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    <label>Adresse</label>
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <?php echo $user['address']; ?>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br/>
+                                        <!--<button class="btn btn-info action"
+                                                onclick="window.location.href='<?php /*echo base_url("admin/config/editUser/" . $user['id']); */?>'">
+                                            <span></span>Modifier
+                                        </button>-->
                                     </div>
-                                    <br/>
-                                    <button class="btn btn-info action"
-                                            onclick="window.location.href='<?php echo base_url("admin/config/editUser/". $user['id']); ?>'">
-                                        <span></span>Modifier
-                                    </button>
+                                    <div class="col-md-6 col-sm-4 col-xs-12">
+                                        <img src="<?= base_url('assets/images/' . $params['photo']); ?>" alt="icon">
+                                    </div>
                                 </div>
-                                <div class="col-md-6 col-sm-4 col-xs-12">
-                                    <img src="<?= base_url('assets/images/' . $params['photo']); ?>" alt="icon">
+                                <div class="x_panel">
+                                    <div class="x_title">
+                                        Liste des utilisateurs
+                                    </div>
+                                    <div class="x_content">
+                                        <table id="datatable-users"
+                                               class="table table-striped table-bordered dt-responsive nowrap"
+                                               cellspacing="0" width="100%">
+                                            <thead>
+                                            <tr>
+                                                <th>Nom</th>
+                                                <th>Prénom</th>
+                                                <th>Téléphone</th>
+                                                <th>Email</th>
+                                                <th>Role</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                            </thead>
+                                            <tfoot>
+                                            <tr>
+                                                <th>Nom</th>
+                                                <th>Prénom</th>
+                                                <th>Téléphone</th>
+                                                <th>Email</th>
+                                                <th>Role</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                            </tfoot>
+                                            <tbody>
+                                            <?php foreach ($allUsers as $user) { ?>
+                                                <tr>
+                                                    <td><?php echo $user["first_name"]; ?></td>
+                                                    <td><?php echo $user["last_name"]; ?></td>
+                                                    <td><?php echo $user["mobile"]; ?></td>
+                                                    <td><?php echo $user["email"]; ?></td>
+                                                    <td><?php echo $user["type"]; ?></td>
+                                                    <td>
+                                                        <a href=" <?php echo base_url(); ?>admin/config/editUser/<?php echo $user['id']; ?>"
+                                                           class="btn btn-primary  btn-xs"><i class="fa fa-pencil"></i></a>
+                                                        <?php if ($user["type"] !== "admin") : ?>
+                                                            <a data-id="<?php echo $user['id']; ?>"
+                                                               class="btn btn-danger btn-xs deleteUser"><i
+                                                                        class="fa fa-trash"></i></a>
+                                                        <?php endif; ?>
+                                                    </td>
+                                                </tr>
+                                            <?php } ?>
+                                            </tbody>
+                                        </table>
+                                    </div> <!-- /content -->
+                                    <?php if ($params["addUsers"] === "true") : ?>
+                                        <button class="btn btn-info action"
+                                                onclick="window.location.href='<?php echo base_url("admin/config/createUser"); ?>'">
+                                            <span></span>Nouveau
+                                        </button>
+                                    <?php endif; ?>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                </div> <!-- /content -->
-            </div>
+                            <!--------------------------------------------End Products Tab------------------------------------------------------>
 
-            <div class="x_panel">
-                <div class="x_title">
-                    Liste des utilisateurs
-                </div>
-                <div class="x_content">
-                    <table id="datatable-users" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
-                        <thead>
-                        <tr>
-                            <th>Nom</th>
-                            <th>Prénom</th>
-                            <th>Téléphone</th>
-                            <th>Email</th>
-                            <th>Role</th>
-                            <th>Actions</th>
-                        </tr>
-                        </thead>
-                        <tfoot>
-                        <tr>
-                            <th>Nom</th>
-                            <th>Prénom</th>
-                            <th>Téléphone</th>
-                            <th>Email</th>
-                            <th>Role</th>
-                            <th>Actions</th>
-                        </tr>
-                        </tfoot>
-                        <tbody>
-                            <?php foreach ($allUsers as $user){ ?>
-                            <tr>
-                                <td><?php echo  $user["first_name"]; ?></td>
-                                <td><?php echo  $user["last_name"]; ?></td>
-                                <td><?php echo  $user["mobile"]; ?></td>
-                                <td><?php echo  $user["email"]; ?></td>
-                                <td><?php echo  $user["type"]; ?></td>
-                                <td>
-                                    <a href=" <?php echo base_url(); ?>admin/config/editUser/<?php echo $user['id']; ?>"
-                                       class="btn btn-primary  btn-xs"><i class="fa fa-pencil"></i></a>
-                                    <?php if($user["type"]!=="admin") :?>
-                                    <a data-id="<?php echo $user['id']; ?>" class="btn btn-danger btn-xs deleteUser"><i class="fa fa-trash"></i></a>
-                                    <?php endif; ?>
-                                </td>
-                            </tr>
-                            <?php } ?>
-                        </tbody>
-                    </table>
-                </div> <!-- /content -->
-                <?php if($params["addUsers"]==="true") :?>
-                <button class="btn btn-info action"
-                        onclick="window.location.href='<?php echo base_url("admin/config/createUser"); ?>'">
-                    <span></span>Nouveau
-                </button>
-                <?php endif; ?>
-            </div><!-- /x-panel -->
+                            <!--------------------------------------------Products to order Tab------------------------------------------------------>
+
+                            <div role="tabpanel" class="tab-pane fade" id="tab_productsToOrder"
+                                 aria-labelledby="home-tab">
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <label><input type="checkbox" name="orderReception" <?php echo $params["config_params"]["orderReception"] ?>/> Réception automatique des commandes</label>
+                                    </div>
+                                    <div class="col-xs-12">
+                                        <label><input type="checkbox" name="orderPayment" <?php echo $params["config_params"]["orderPayment"] ?> /> Paiement automatique des commandes</label>
+                                    </div>
+                                    <div class="col-xs-12">
+                                        <label><input type="checkbox" name="editOrderDate" <?php echo $params["config_params"]["editOrderDate"] ?> /> Modifier la date des commandes</label>
+                                    </div>
+                                    <div class="col-xs-12">
+                                        <label><input type="checkbox" name="editConsumptionDate" <?php echo $params["config_params"]["editConsumptionDate"] ?> /> Modifier la date de vente des articles</label>
+                                    </div>
+                                </div>
+                                <br/>
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <input type="submit" value="Modifier" name="editParameters"
+                                               class="btn btn-success"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--------------------------------------------End Products to Tab------------------------------------------------------>
+                        </div>
+                    </div><!-- /content -->
+            </div>
         </div>
+            <!-- /x-panel -->
     </div>
 </div>
 
@@ -378,6 +426,64 @@
 
 
 
+<script>
+    $(document).ready(function () {
+        $("input[name=editParameters").on("click",editParametersEvent);
+        function editParametersEvent(){
+            var orderReception = $('input[name="orderReception"]').is(':checked');
+            var orderPayment = $('input[name="orderPayment"]').is(':checked');
+            var editOrderDate = $('input[name="editOrderDate"]').is(':checked');
+            var editConsumptionDate = $('input[name="editConsumptionDate"]').is(':checked');
 
+            var parameters={
+                "orderReception": orderReception,
+                "orderPayment": orderPayment,
+                "editOrderDate": editOrderDate,
+                "editConsumptionDate": editConsumptionDate,
+            }
+            console.log(parameters);
+            $.ajax({
+                    url: "<?php echo base_url("admin/config/apiEditParameters"); ?>",
+                    type: "POST",
+                    dataType: "json",
+                    data: {'parameters': parameters},
+                    beforeSend: function () {
+                        $('#loading').show();
+                    },
+                    complete: function () {
+                        $('#loading').hide();
+                    },
+                    success: function (data) {
+                           if(data.status==="success"){
+                               swal({
+                                   title: "Success",
+                                   text: "L'opération a été bien effecuté",
+                                   type: "success",
+                                   timer: 1500,
+                                   showConfirmButton: false
+                               });
+                           }else{
+                                   swal({
+                                       title: "Erreur",
+                                       text: "Une erreur s'est produite",
+                                       type: "warning",
+                                       timer: 1500,
+                                       showConfirmButton: false
+                                   });
+                                }
+                            },
+                            error: function (data) {
+                                swal({
+                                    title: "Erreur",
+                                    text: "Une erreur s'est produite",
+                                    type: "warning",
+                                    timer: 1500,
+                                    showConfirmButton: false
+                            });
+                    }
+            });
+        }
+    });
+</script>
 
 

@@ -43,6 +43,7 @@ class Budget extends BaseController {
     {
         $this->log_begin();
         $data['purchases']= $this->model_budget->getPurchases();
+        $data["report"]['purchase_history']= $this->model_budget->purchase_history();
         $data['params'] = $this->getParams();
         $this->load->view('admin/budget/purchase',$data);
         $this->log_end($data);

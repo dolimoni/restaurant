@@ -88,7 +88,7 @@
                                        onkeyup="myFunction()">
                             </div>
                             <div class="col-md-offset-5 col-md-4 col-sm-6 col-xs-12 text-center">
-                                <label for="exampleInputName2">Fiches Techniques complétés</label>
+                                <label for="exampleInputName2">Fiches Techniques complétées</label>
                                 <b><div style="font-size: 20px;"><?php echo count($hasAtLeasOneProduct) . "/" . count($meals); ?></div></b>
                             </div>
                         </div>
@@ -102,8 +102,10 @@
                                     <th>Nom</th>
                                     <th class="sm-hidden">Famille</th>
                                     <th>Prix de vente</th>
+                                    <?php if ($this->session->userdata('type') !== "cuisine") : ?>
                                     <th class="danger">Coût de revient</th>
                                     <th class="benefit">Bénifices</th>
+                                    <?php endif; ?>
                                     <th width="20%">Action</th>
                                 </tr>
                                 </thead>
@@ -113,8 +115,10 @@
                                     <th>Nom</th>
                                     <th class="sm-hidden">Famille</th>
                                     <th>Prix de vente</th>
+                                    <?php if ($this->session->userdata('type') !== "cuisine") : ?>
                                     <th class="danger">Coût de revient</th>
                                     <th class="benefit">Bénifices</th>
+                                    <?php endif; ?>
                                     <th>Action</th>
                                 </tr>
                                 </tfoot>
@@ -125,8 +129,10 @@
                                         <td><?php echo $meal['meal_name']; ?></td>
                                         <td class="sm-hidden"><?php echo $meal['g_name']; ?></td>
                                         <td><?php echo $meal['sellPrice']; ?></td>
+                                    <?php if ($this->session->userdata('type') !== "cuisine") : ?>
                                         <td class="danger"><?php echo number_format((float)($meal['cost']), 2, '.', ''); ?></td>
                                         <td class="benefit"><?php echo number_format((float)($meal['profit']), 2, '.', ''); ?></td>
+                                    <?php endif; ?>
                                         <td>
                                             <a href=" <?php echo base_url(); ?>admin/meal/edit/<?php echo $meal['meal_id']; ?>"
                                                class="btn btn-primary  btn-xs"><i class="fa fa-pencil"></i></a>

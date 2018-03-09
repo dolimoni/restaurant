@@ -152,6 +152,7 @@
                                     <th>Absences</th>
                                     <th>Soustraction</th>
                                     <th>Date de paiement<br></th>
+                                    <th>Actions</th>
                                 </tr>
                                 </thead>
                                 <tfoot>
@@ -162,6 +163,7 @@
                                     <th>Absences</th>
                                     <th>Soustraction</th>
                                     <th>Date de paiement<br></th>
+                                    <th>Actions</th>
                                 </tr>
                                 </tfoot>
                                 <tbody id="idtbody">
@@ -178,7 +180,18 @@
                                         <td class="<?php echo $active ?>"><?php echo $salary['absence'];?></td>
                                         <td class="<?php echo $active ?>"><?php echo $salary['substraction'];?></td>
                                         <!--<td><?php /*if($salary['paid']==="true"){echo $salary['paymentDate'];}*/?></td>-->
-                                        <td class="<?php echo $active ?>"><?php echo $salary['paymentDate']; ?></td>
+                                        <td class="<?php echo $active ?>"><?php echo $salary['reelPaymentDate']; ?></td>
+                                        <td class="<?php echo $active ?>">
+                                            <?php if ($active === "") { ?>
+                                                <button class="btn btn-success btn-sm payEmployee"
+                                                        data-id="<?php echo $salary["id"]; ?>">Payer
+                                                </button>
+                                            <?php } else { ?>
+                                                <button class="btn btn-danger btn-sm impayEmployee"
+                                                        data-id="<?php echo $salary["id"]; ?>">Annuler le paiement
+                                                </button>
+                                            <?php } ?>
+                                        </td>
                                     </tr>
                                 <?php } ?>
                                 </tbody>
@@ -237,8 +250,6 @@
             if (typeof ($.fn.fullCalendar) === 'undefined') {
                 return;
             }
-            console.log('init_calendar');
-
             var date = new Date(),
                 d = date.getDate(),
                 m = date.getMonth(),
@@ -460,6 +471,57 @@
             });
         }
 
+        $(".payEmployee").on("click",{paid:"true"},employeePaymentEvent);
+        $(".impayEmployee").on("click",{paid:"false"},employeePaymentEvent);
+
+        function employeePaymentEvent(event){
+            var myData={
+                "paid": event.data.paid,
+                "id":$(this).attr("data-id")
+            };
+            console.log(myData);
+            $.ajax({
+                    url: "<?php echo base_url("admin/employee/apiPayment"); ?>",
+                    type: "POST",
+                    dataType: "json",
+                    data: myData,
+                    beforeSend: function () {
+                        $('#loading').show();
+                    },
+                    complete: function () {
+                        $('#loading').hide();
+                    },
+                    success: function (data) {
+                           if(data.status==="success"){
+                               swal({
+                                   title: "Success",
+                                   text: "L'opération a été bien effecuté",
+                                   type: "success",
+                                   timer: 1500,
+                                   showConfirmButton: false
+                               });
+                               location.reload();
+                           }else{
+                                   swal({
+                                       title: "Erreur",
+                                       text: "Une erreur s'est produite",
+                                       type: "warning",
+                                       timer: 1500,
+                                       showConfirmButton: false
+                                   });
+                                }
+                            },
+                            error: function (data) {
+                                swal({
+                                    title: "Erreur",
+                                    text: "Une erreur s'est produite",
+                                    type: "warning",
+                                    timer: 1500,
+                                    showConfirmButton: false
+                            });
+                    }
+            });
+        }
 
         function editProviderData(edit) {
             $('.provider-firstName').attr('contenteditable', edit);

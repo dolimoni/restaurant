@@ -94,7 +94,7 @@ class Report extends BaseController
         $this->log_end(array('status' => 'success', 'prices' => $prices, 'providers' => $providers));
     }
 
-    public function printSpendingReport(){
+    public function apiPrintSpendingReport(){
         $this->log_begin();
         try {
             $startDate = $this->input->post('startDate');
@@ -113,8 +113,27 @@ class Report extends BaseController
                 ->set_output(json_encode(array('status' => "success", 'report' => $report)));
         }
     }
+    public function apiPrintGlobalReport(){
+        $this->log_begin();
+        try {
+            $startDate = $this->input->post('startDate');
+            $endDate = $this->input->post('endDate');
+            $report = $this->model_report->global_report_detail($startDate, $endDate);
+            $report["startDate"]= date('d-m-Y', strtotime($startDate));
+            $report["endDate"]= date('d-m-Y', strtotime($endDate));
+            $output = $this->createPDF($report,"global");
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => "success", 'filepath' => $output)));
+            $this->log_end($report);
+        } catch (Exception $e) {
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => "success", 'report' => $report)));
+        }
+    }
 
-    public function printSalesReport(){
+    public function apiPrintSalesReport(){
         $this->log_begin();
         try {
             $startDate = $this->input->post('startDate');
@@ -146,6 +165,8 @@ class Report extends BaseController
             $html = $this->load->view('admin/report/pdf/order', $data, true);
         }else if($type === "sale"){
             $html = $this->load->view('admin/report/pdf/sale', $data, true);
+        }else if($type === "global"){
+            $html = $this->load->view('admin/report/pdf/global', $data, true);
         }
         $pdf->WriteHTML($html);
         $output="";
@@ -153,6 +174,8 @@ class Report extends BaseController
             $output = 'uploads/pdf/order' . date('Y_m_d_H_i_s') . '_.pdf';
         }else if($type === "sale"){
             $output = 'uploads/pdf/sale' . date('Y_m_d_H_i_s') . '_.pdf';
+        }else if($type === "global"){
+            $output = 'uploads/pdf/global' . date('Y_m_d_H_i_s') . '_.pdf';
         }
         $pdf->Output(FCPATH . "$output", 'F');
         return $output;

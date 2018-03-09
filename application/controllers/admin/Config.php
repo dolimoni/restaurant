@@ -18,6 +18,7 @@ class Config extends BaseController {
         $data["user"]=$this->model_util->getUser(6);
         $data["allUsers"] = $this->model_util->allUsers();
         $data['params'] = $this->getParams();
+        $data['params']["config_params"] = $this->model_params->getConfigParams();
         $this->load->view('admin/config/index',$data);
 	}
 
@@ -130,5 +131,23 @@ class Config extends BaseController {
         }
 
 	}
+
+	public function apiEditParameters(){
+        try {
+
+            $this->load->model("model_params");
+            $this->log_begin();
+            $parameters = $this->input->post("parameters");
+            $response=$this->model_params->update($parameters);
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode($response));
+            $this->log_end(array('status' => 'success'));
+        } catch (Exception $e) {
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'error')));
+        }
+    }
 
 }

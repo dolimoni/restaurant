@@ -68,6 +68,15 @@ class Provider extends BaseController
         $this->log_end($data);
     }
 
+    public function statistic()
+    {
+        $this->log_begin();
+        $data['params'] = $this->getParams();
+        $data["impaidOrders"]=$this->model_provider->getImpaidProviders();
+        $this->parser->parse('admin/provider/view_statistic', $data);
+        $this->log_end($data);
+    }
+
     public function group($id_group)
     {
         $this->log_begin();
@@ -182,6 +191,26 @@ class Provider extends BaseController
                 ->set_content_type("application/json")
                 ->set_output(json_encode(array('status' => 'success', 'paymentDate' => $order["paymentDate"],"paid"=>$order["paid"])));
             $this->log_end(array('status' => 'success'));
+        } catch (Exception $e) {
+
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'error')));
+        }
+    }
+
+    public function apiStatistic(){
+        $this->log_begin();
+        try {
+            $this->load->model('model_report');
+            $startDate = $this->input->post('startDate');
+            $endDate = $this->input->post('endDate');
+            $response=$this->model_report->providerReport($startDate,$endDate);
+            $response["report"]["impaidOrders"] = $this->model_provider->getImpaidProviders($startDate, $endDate);
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode($response));
+            $this->log_end($response);
         } catch (Exception $e) {
 
             $this->output

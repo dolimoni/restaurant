@@ -13,6 +13,8 @@ class model_group extends CI_Model {
 			   'department' => $group['department'],
         );
 		$this->db->insert('group', $data);
+		$id= $meal_id = $this->db->insert_id();
+		return $id;
 	}
 
 
@@ -107,6 +109,22 @@ class model_group extends CI_Model {
 		return $result->row_array();
 	}
 
+	public function getUndefinedGroup(){
+        $this->db->where("name","UNDEFINED");
+        $group=$this->db->get("group")->row_array();
+        if($group){
+            return $group["id"];
+        }else{
+            $group=array(
+                "name"=>"UNDEFINED",
+                "image"=>"restaurant.jpg",
+                "department"=>1
+            );
+            $id=$this->add($group);
+            return $id;
+        }
+    }
+
 	public function getByNum($num)
 	{
 		$this->db->where('num', $num);
@@ -148,7 +166,9 @@ class model_group extends CI_Model {
 
 	public function delete($id)
 	{
-		$this->db->where('id', $id);
-		$this->db->delete('group');
+	    if($id!=="1"){
+            $this->db->where('id', $id);
+            $this->db->delete('group');
+        }
 	}
 }

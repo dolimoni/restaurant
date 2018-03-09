@@ -28,7 +28,6 @@ class Login extends CI_Controller {
     public function checklogin() {   // fields name, Boxes name to show, the checks functions
         $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email');
         $this->form_validation->set_rules('password', 'Password', 'trim|required|callback_verifylogin');
-        
         if($this->form_validation->run() == FALSE) {
             $this->load->view('view_login');
         } 
@@ -41,6 +40,8 @@ class Login extends CI_Controller {
                 redirect('admin/department/show');
             } else if ($this->session->userdata('type') == "user") {
                 redirect('admin/employee/main');
+            } else if ($this->session->userdata('type') == "cuisine") {
+                redirect('admin/meal/group');
             }
         }
     }

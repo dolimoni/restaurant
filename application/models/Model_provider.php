@@ -302,6 +302,21 @@ class model_provider extends CI_Model {
         return $order;
     }
 
+    public function getImpaidProviders($startDate=null,$endDate=null){
+        $this->db->select("sum(o.ttc) as amount");
+        $this->db->select("o.id,date(created_at) as date,p.name,p.id as p_id");
+        $this->db->from("order o");
+        $this->db->join("provider p","p.id=o.provider");
+        $this->db->where("paid","false");
+        if ($startDate) {
+            $this->db->where('date(o.created_at)>=', $startDate);
+            $this->db->where('date(o.created_at)<=', $endDate);
+        }
+        $this->db->group_by("o.provider");
+        $this->db->order_by("o.created_at");
+        return $this->db->get()->result_array();
+    }
+
     public function deleteProduct($product_id, $quantity_id)
     {
         $this->db->where('id', $quantity_id);

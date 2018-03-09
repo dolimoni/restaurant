@@ -24,6 +24,7 @@
             <a class="btn btn-primary" data-toggle="collapse" href="#collapseExample" aria-expanded="false"
                aria-controls="collapseExample">Nouveau</a>
             <a class="btn btn-info" href="<?php echo base_url("admin/provider/allOrders");?>">Toutes les commandes</a>
+            <a class="btn btn-warning" href="<?php echo base_url("admin/provider/statistic");?>">Statistiques</a>
         </div>
         <div class="collapse" id="collapseExample">
             <?php echo validation_errors(); ?>

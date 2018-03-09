@@ -352,7 +352,10 @@
                                                 </tr>
                                                 </tfoot>
                                                 <tbody>
-                                                <?php foreach ($orders as $order) {
+                                                <?php
+                                                $impaidAmount = 0;
+                                                $paidAmount = 0;
+                                                foreach ($orders as $order) {
                                                     $orderStatus = "En attente";
                                                     $paid = "Non payée";
                                                     $paidClass="orderImpaid";
@@ -366,9 +369,12 @@
                                                     }
 
                                                     if($order['paid']==="true"){
+                                                        $paidAmount+=(float)$order['ttc'];
                                                         $paid="Payée";
                                                         $paidClass="orderPaid";
                                                         $paymentDate=date("d-m-Y", $paymentDateTime);
+                                                    }else{
+                                                        $impaidAmount+= (float)$order['ttc'];
                                                     }
                                                     $datetime = $order['created_at'];
                                                     $created_at = strtotime($datetime);
@@ -392,6 +398,15 @@
                                                         </td>
                                                     </tr>
                                                 <?php } ?>
+                                                <tr>
+                                                    <td>#</td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td>Payé : <?php echo $paidAmount; ?>Dh</td>
+                                                    <td>Impayé : <?php echo $impaidAmount; ?>Dh</td>
+                                                </tr>
                                                 </tbody>
                                             </table>
                                         </div>

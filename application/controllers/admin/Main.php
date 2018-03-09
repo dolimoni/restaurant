@@ -112,8 +112,11 @@ class Main extends BaseController
                 $priceCSV= $sale['3'] / 100 / $quantity;
                 if($meal['name']=== $sale['1'] /*and $priceCSV == $meal['sellPrice']*/){
                     $data['sales']['rows'][$key]['status']='valid';
-                }else{
-                    $data['sales']['rows'][$key]['status'] = 'Invalid';
+                }else if(!$meal){
+                    $undefinedMeal= $this->model_meal->createUndefined($sale['0'],$sale['1']);
+                    $id=$this->model_meal->addSimpleMeal($undefinedMeal);
+                    $data['sales']['rows'][$key]['status'] = 'valid';
+                    //$data['sales']['rows'][$key]['status'] = 'Invalid';
                     //$data['sales']['rows'][$key]['meal'] = $meal;
                 }
             }
@@ -154,8 +157,12 @@ class Main extends BaseController
                 if($meal['name']=== $sale['1'] /*and $priceCSV == $meal['sellPrice']*/){
                     $data['sales']['rows'][$key]['status']='valid';
                     $mealsList[]=$mealItem;
-                }else{
-                    $data['sales']['rows'][$key]['status'] = 'Invalid';
+                }else if (!$meal){
+                    $undefinedMeal = $this->model_meal->createUndefined($sale['0'], $sale['1']);
+                    $meal_id=$this->model_meal->addSimpleMeal($undefinedMeal);
+                    $mealItem["id"]= $meal_id;
+                    $data['sales']['rows'][$key]['status'] = 'valid';
+                    $mealsList[] = $mealItem;
 
                 }
             }
@@ -225,12 +232,6 @@ class Main extends BaseController
     {
         $this->load->model('model_util');
         $this->model_util->clean();
-    }
-
-    public function clear()
-    {
-        $this->load->model('model_util');
-        $this->model_util->clear();
     }
 
     public function populate()

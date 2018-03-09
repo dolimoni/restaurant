@@ -90,4 +90,19 @@ class model_budget extends CI_Model {
             $this->db->delete('reparation');
     }
 
+    public function purchase_history($startDate=null,$endDate=null){
+        $response = array();
+        $this->db->select('sum(p.price) as price');
+        $this->db->select('date(p.created_at) as created_at');
+        $this->db->from('purchase p');
+        if ($startDate) {
+            $this->db->where('date(p.created_at)>=', $startDate);
+            $this->db->where('date(p.created_at)<=', $endDate);
+        }
+        $this->db->group_by("date(p.created_at)");
+        $purchase_history = $this->db->get()->result_array();
+
+        return $purchase_history;
+    }
+
 }

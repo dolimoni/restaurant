@@ -38,6 +38,7 @@
                 <div class="count productsCount"><?php echo count($productsComposition); ?></div>
                 <!--<span class="count_bottom"><i class="green">4% </i> From last Week</span>-->
             </div>
+            <?php if ($this->session->userdata('type') !== "cuisine") : ?>
             <div class="col-md-3 col-sm-6 col-xs-12 tile_stats_count">
                 <span class="count_top"><i class="fa fa-line-chart"></i> Coût</span>
                 <div class="count cost">
@@ -50,11 +51,13 @@
                     DH</div>
                 <!--<span class="count_bottom"><i class="green"><i class="fa fa-sort-asc"></i>3% </i> From last Week</span>-->
             </div>
+            <?php endif; ?>
             <div class="col-md-3 col-sm-6 col-xs-12 tile_stats_count">
                 <span class="count_top"><i class="fa fa-line-chart"></i> Prix de vente</span>
                 <div class="count sellPrice green"><?php echo $meal['sellPrice'];?>DH</div>
                 <!--<span class="count_bottom"><i class="green"><i class="fa fa-sort-asc"></i>69% </i></span>-->
             </div>
+            <?php if ($this->session->userdata('type') !== "cuisine") : ?>
             <div class="col-md-3 col-sm-6 col-xs-12 tile_stats_count">
                 <span class="count_top"><i class="fa fa-line-chart"></i> Bénifices</span>
                 <div class="count gain">
@@ -68,29 +71,27 @@
                     DH</div>
                 <!--<span class="count_bottom"><i class="red"><i class="fa fa-sort-desc"></i>12% </i> par rapport au dernier prix</span>-->
             </div>
+            <?php endif; ?>
         </div>
         <div class="row article-title text-center">
-            <div class="col-md-4 col-sm-6 col-xs-12">
+            <div class="col-xs-12">
                 <div class="row">
-                    <div class="col-xs-12 col-sm-6"><h4 style="display: inline;">Nom de l'article : </h4></div>
-                    <div class="col-xs-12 col-sm-6"><input type="text" class="mealName" name="name"
-                                                   value="<?php echo $meal['name']; ?>"/></div>
-                </div>
-            </div>
-
-            <div class="col-md-4 col-sm-6 col-xs-12">
-                <div class="row">
-                    <div class="col-xs-12 col-sm-6"><h4 style="display: inline;">Prix de vente : </h4></div>
-                    <div class="col-xs-12 col-sm-6"><input value="<?php echo $meal['sellPrice']; ?>" type="text"
-                                                          class="sellPriceProduct" name="sellPrice"/></div>
-                </div>
-            </div>
-
-            <div class="col-md-4 col-sm-6 col-xs-12">
-                <div class="row">
-                    <div class="col-xs-12 col-sm-6"><h4 style="display: inline;">Nombre d'articles : </h4></div>
-                    <div class="col-xs-12 col-sm-6"><input value="<?php echo $meal['quantity']; ?>" type="number"
-                                                          class="mealQuantity"/></div>
+                    <div class="col-xs-12 col-sm-6 col-md-3">
+                        <label>Nom de l'article : </label>
+                        <input value="<?php echo $meal["name"]; ?>" type="text" class="form-control mealName" name="name"/>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 col-md-3">
+                        <label>Prix de vente : </label>
+                        <input value="<?php echo $meal["sellPrice"]; ?>" type="text" class="form-control sellPriceProduct" name="sellPrice"/>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 col-md-3">
+                        <label>Nombre d'articles : </label>
+                        <input value="<?php echo $meal["quantity"]; ?>" type="number" class="form-control mealQuantity"/>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 col-md-3">
+                        <label>Code Caisse : </label>
+                        <input value="<?php echo $meal["externalCode"]; ?>" type="number" class="form-control externalCode" disabled />
+                    </div>
                 </div>
             </div>
         </div>
@@ -99,9 +100,11 @@
             <div class="col-md-6  col-sm-6 col-xs-12 product" data-id="<?php echo $key+1; ?>" >
                                 <div class="x_panel">
                                    <div class="x_title">
+                                     <?php if ($this->session->userdata('type') !== "cuisine") : ?>
                                        <h2><?php echo $pc['name']; ?> -
                                            <?php echo number_format((float)($pc['unit_price'] * $pc['unitConvert']* $pc['mp_quantity']*$meal['quantity']), 2, '.', ''); ?>
                                        </h2>
+                                     <?php endif; ?>
                                        <ul class="nav navbar-right panel_toolbox">
                                            <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
                                           <!-- <li><a class="close-link"><i class="fa fa-close"></i></a></li>-->
@@ -126,7 +129,7 @@
                                            $KgUnitHidden = 'hidden';
                                            $LUnitHidden = 'hidden';
                                            $unitConvert = $pc['unitConvert'];
-                                           if ($pc['unit'] === "kg") {
+                                           if ($pc['unit'] === "kg" || $pc['unit'] === "pcs") {
                                                $KgUnitHidden = '';
                                            }
                                            if ($pc['unit'] === "L") {
@@ -334,6 +337,7 @@
                 var unitConvert = 1;
                 if (unit === 'kg') {
                     //prix par unité
+                    console.log("this is "+unit);
                     var weightByunitConvert = 0;
                     if (weightByunit > 0) {
                         weightByunitConvert = weightByunit / 1000;
@@ -344,10 +348,30 @@
                     unit_price *= unitConvert;
                 }
                 if (unit === 'L') {
-
                     unitConvert = parseFloat(l_panel.find('select[name="lUnitHidden"] option:selected').val());
                     unitConvertName = l_panel.find('select[name="lUnitHidden"] option:selected').text();
                     unit_price *= unitConvert;
+                }
+                if (unit === 'pcs') {
+                    //prix par unité
+                    console.log("this is " + unit);
+                    var weightByunitConvert = 0;
+                    if (weightByunit > 0) {
+                        weightByunitConvert = weightByunit / 1000;
+                    }
+                    l_panel.find('select[name="kgUnitHidden"] option[name=pcs]').val(1);
+                    unitConvert = parseFloat(l_panel.find('select[name="kgUnitHidden"] option:selected').val());
+                    unitConvertName = l_panel.find('select[name="kgUnitHidden"] option:selected').text();
+                    unitConvertName = unitConvertName.replace(/\s/g, '');
+                    if (unitConvertName === "Kilogramme") {
+                        unit_price = (unit_price / weightByunit) / 0.001;
+                    } else if (unitConvertName === "Gramme") {
+                        unit_price = (unit_price / weightByunit);
+                    } else if (unitConvertName === "Milligramme") {
+                        unit_price = (unit_price / weightByunit) * 0.001;
+                    } else {
+                        unit_price *= unitConvert;
+                    }
                 }
 
                 if (quantity > 0 && unit_price > 0){
@@ -370,6 +394,8 @@
             changeUnit(panel.find('select[name="product"] option:selected').attr('data-unit'), panel);
         };
 
+        calulPrixTotal();
+
 
         function changeUnit(value, panel) {
             if (value === 'kg') {
@@ -379,13 +405,12 @@
                 panel.find('.lUnitHidden').removeAttr('hidden');
                 panel.find('.kgUnitHidden').attr('hidden', true);
             } else {
-                panel.find('.kgUnitHidden').attr('hidden', true);
+                panel.find('.kgUnitHidden').removeAttr('hidden');
                 panel.find('.lUnitHidden').attr('hidden', true);
             }
         }
 
         $('input[name="buttonSubmit"]').on('click', function () {
-            $('#loading').show();
             var productsList=[];
             var prixTotal=0;
             var name=$('input.mealName').val();
@@ -416,6 +441,31 @@
                     unit_price *= unitConvert;
                 }
 
+                if (unit === 'pcs') {
+                    var weightByunit = l_panel.find('select[name="product"] option:selected').attr('data-weightByunit');
+                    unitConvertName = l_panel.find('select[name="kgUnitHidden"] option:selected').text();
+                    var weightByunitConvert = 0;
+                    if (weightByunit > 0) {
+                        weightByunitConvert = weightByunit / 1000;
+                    }
+                    unitConvert = l_panel.find('select[name="kgUnitHidden"] option:selected').val();
+                    unitConvertName=unitConvertName.replace(/\s/g, '');
+                    if(unitConvertName=="Pcs"){
+                        unitConvert = 1;
+                    }else{
+                        unitConvert = unitConvert / weightByunitConvert;
+                    }
+                    if (unitConvertName === "Kilogramme") {
+                        unit_price = (unit_price / weightByunit) / 0.001;
+                    } else if (unitConvertName === "Gramme") {
+                        unit_price = (unit_price / weightByunit);
+                    } else if (unitConvertName === "Milligramme") {
+                        unit_price = (unit_price / weightByunit) * 0.001;
+                    } else {
+                        unit_price *= unitConvert;
+                    }
+                }
+
                 if (quantity > 0){
                     var product= {
                         'id': id, 'quantity': quantity/mealQuantity, 'unit_price': unit_price, 'profit': profit,
@@ -438,6 +488,8 @@
             var meal={'name':name,'id':<?php echo $meal['id']; ?>,'group':group,'productsList': productsList,"quantity": mealQuantity, 'cost': prixTotal,'sellPrice': sellPrice,'profit': profit};
 
             if(validate(meal)){
+                $('#loading').show();
+                console.log(meal);
                 $.ajax({
                     url: "<?php echo base_url(); ?>admin/meal/apiEdit",
                     type: "POST",

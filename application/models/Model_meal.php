@@ -42,21 +42,54 @@ class model_meal extends CI_Model {
 
 	public function add($meal)
 	{
-		$data = array(
-			   'name' => $meal['name'],
-			   'group' => $meal['group'],
-			   'cost' => $meal['cost'],
-			   'sellPrice' => $meal['sellPrice'],
-			   'profit' => $meal['profit'],
-			   'quantity' => $meal['quantity'],
-			   'products_count' => count($meal['productsList']),
+
+	    $response=array(
+	        "status"=>true,
+        );
+
+	    $db_meal=$this->getByExternalCode($meal["externalCode"]);
+	    if($db_meal and $meal["externalCode"]!="000000000000000000"){
+            $response["status"]="warning";
+            $response["msg"]="Le code caisse existe déjà";
+            return $response;
+        }else{
+	        if($meal["externalCode"] === "000000000000000000"){
+                $meal["externalCode"]=null;
+            }
+            $data = array(
+                'name' => $meal['name'],
+                'group' => $meal['group'],
+                'cost' => $meal['cost'],
+                'sellPrice' => $meal['sellPrice'],
+                'profit' => $meal['profit'],
+                'quantity' => $meal['quantity'],
+                'externalCode' => $meal['externalCode'],
+                'products_count' => count($meal['productsList']),
             );
-		$this->db->insert('meal', $data);
-        $meal_id = $this->db->insert_id();
-        $this->addProductsForMeal($meal_id,$meal['productsList']);
-        $this->updateConsumptionRate($meal_id);
-        return $meal_id;
+            $this->db->insert('meal', $data);
+            $meal_id = $this->db->insert_id();
+            $this->addProductsForMeal($meal_id, $meal['productsList']);
+            $this->updateConsumptionRate($meal_id);
+            $response['redirect']=base_url('admin/meal/view/' . $meal_id);
+            return $response;
+        }
 	}
+
+	public function addSimpleMeal($meal){
+        $db_meal = $this->getByExternalCode($meal['code']);
+        if (!$db_meal) {
+            $data = array(
+                'name' => $meal['name'],
+                'group' => $meal['group'],
+                'externalCode' => $meal['code'],
+                'sellPrice' => $meal['sellPrice'],
+                'products_count' => 0,
+            );
+            $this->db->insert('meal', $data);
+            $id= $this->db->insert_id();
+            return $id;
+        }
+    }
 
 	public function edit($meal)
 	{
@@ -800,5 +833,18 @@ class model_meal extends CI_Model {
     public function getMealsOnly()
     {
         return $this->db->get("meal")->result_array();
+    }
+
+    public function createUndefined($externalCode,$name="UNDEFINED"){
+        $this->load->model("model_group");
+        $id_group=$this->model_group->getUndefinedGroup();
+        $meal= array(
+            "name" => $name,
+            "group" => $id_group,
+            "code" => $externalCode,
+            "sellPrice" => 0,
+            "products_count" => 0,
+        );
+        return $meal;
     }
 }

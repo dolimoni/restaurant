@@ -175,11 +175,11 @@ class Meal extends BaseController {
             $this->log_end($data);
         }else{
             $meal = $this->input->post('meal');
-            $id = $this->model_meal->add($meal);
-            $this->log_end(array('status' => true, 'redirect' => base_url('admin/meal/view/' . $id)));
+            $response = $this->model_meal->add($meal);
+            $this->log_end($response);
             $this->output
                 ->set_content_type("application/json")
-                ->set_output(json_encode(array('status' => true, 'redirect' => base_url('admin/meal/view/'.$id))));
+                ->set_output(json_encode($response));
 
 
         }

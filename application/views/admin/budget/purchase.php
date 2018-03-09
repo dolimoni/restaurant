@@ -159,69 +159,127 @@
             <br>
         </div>
          <!-- /row -->
-        <div class="row table-responsive">
-            <table id="datatable-purchase" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
-                <thead>
-                <tr>
-                    <th>Article</th>
-                    <th>Quantité</th>
-                    <th>Prix</th>
-                    <th>Fournisseur</th>
-                    <th>Téléphone</th>
-                    <th>Commentaire</th>
-                    <th>Réglement</th>
-                    <th>Date de commande</th>
-                    <th>Date de paiement</th>
-                    <th>Actions</th>
-                </tr>
-                </thead>
-                <tfoot>
-                <tr>
-                    <th>Article</th>
-                    <th>Quantité</th>
-                    <th>Prix</th>
-                    <th>Fournisseur</th>
-                    <th>Téléphone</th>
-                    <th>Commentaire</th>
-                    <th>Réglement</th>
-                    <th>Date de commande</th>
-                    <th>Date de paiement</th>
-                    <th>Actions</th>
-                </tr>
-                </tfoot>
-                <tbody>
-                   <?php foreach ($purchases as $purchase) {
-                       $paid="Impayé";
-                       if($purchase['paid']==="true"){
-                           $paid="Payé";
-                       }
-                       ?>
-                       <tr data-id="<?php echo $purchase["id"]; ?>">
-                           <td data-article="<?php echo $purchase['article']; ?>"><?php echo $purchase['article'];?></td>
-                           <td data-quantity="<?php echo $purchase['quantity']; ?>"><?php echo $purchase['quantity'];?></td>
-                           <td data-price="<?php echo $purchase['price']; ?>"><?php echo $purchase['price'];?>DH</td>
-                           <td data-provider="<?php echo $purchase['provider']; ?>"><?php echo $purchase['provider'];?></td>
-                           <td data-tel="<?php echo $purchase['tel']; ?>"><?php echo $purchase['tel'];?></td>
-                           <td data-comment="<?php echo $purchase['comment']; ?>"><?php echo $purchase['comment'];?></td>
-                           <td data-paid="<?php echo $purchase['paid']; ?>"><?php echo $paid;?></td>
-                           <td><?php echo $purchase['created_at'];?></td>
-                           <td><?php echo $purchase['paymentDate'];?></td>
-                           <td>
-                               <button class="btn btn-info btn-xs action editPurchase small-button" data-type="edit"><span
-                                           class="glyphicon glyphicon-edit"></span></button>
-                               <button class="btn btn-danger btn-xs action deletePurchase small-button" data-type="delete"><span
-                                           class="fa fa-trash"></span></button>
-                           </td>
-                       </tr>
-                   <?php } ?>
-                </tbody>
-            </table>
+        <div class="row">
+            <div class="x_panel">
+                <div class="x_content">
+                    <div class="table-responsive">
+                        <table id="datatable-purchase" class="table table-striped table-bordered dt-responsive nowrap"
+                               cellspacing="0" width="100%">
+                            <thead>
+                            <tr>
+                                <th>Article</th>
+                                <th>Quantité</th>
+                                <th>Prix</th>
+                                <th>Fournisseur</th>
+                                <th>Téléphone</th>
+                                <th>Commentaire</th>
+                                <th>Réglement</th>
+                                <th>Date de commande</th>
+                                <th>Date de paiement</th>
+                                <th>Actions</th>
+                            </tr>
+                            </thead>
+                            <tfoot>
+                            <tr>
+                                <th>Article</th>
+                                <th>Quantité</th>
+                                <th>Prix</th>
+                                <th>Fournisseur</th>
+                                <th>Téléphone</th>
+                                <th>Commentaire</th>
+                                <th>Réglement</th>
+                                <th>Date de commande</th>
+                                <th>Date de paiement</th>
+                                <th>Actions</th>
+                            </tr>
+                            </tfoot>
+                            <tbody>
+                            <?php foreach ($purchases as $purchase) {
+                                $paid = "Impayé";
+                                if ($purchase['paid'] === "true") {
+                                    $paid = "Payé";
+                                }
+                                ?>
+                                <tr data-id="<?php echo $purchase["id"]; ?>">
+                                    <td data-article="<?php echo $purchase['article']; ?>"><?php echo $purchase['article']; ?></td>
+                                    <td data-quantity="<?php echo $purchase['quantity']; ?>"><?php echo $purchase['quantity']; ?></td>
+                                    <td data-price="<?php echo $purchase['price']; ?>"><?php echo $purchase['price']; ?>
+                                        DH
+                                    </td>
+                                    <td data-provider="<?php echo $purchase['provider']; ?>"><?php echo $purchase['provider']; ?></td>
+                                    <td data-tel="<?php echo $purchase['tel']; ?>"><?php echo $purchase['tel']; ?></td>
+                                    <td data-comment="<?php echo $purchase['comment']; ?>"><?php echo $purchase['comment']; ?></td>
+                                    <td data-paid="<?php echo $purchase['paid']; ?>"><?php echo $paid; ?></td>
+                                    <td><?php echo $purchase['created_at']; ?></td>
+                                    <td><?php echo $purchase['paymentDate']; ?></td>
+                                    <td>
+                                        <button class="btn btn-info btn-xs action editPurchase small-button"
+                                                data-type="edit"><span
+                                                    class="glyphicon glyphicon-edit"></span></button>
+                                        <button class="btn btn-danger btn-xs action deletePurchase small-button"
+                                                data-type="delete"><span
+                                                    class="fa fa-trash"></span></button>
+                                    </td>
+                                </tr>
+                            <?php } ?>
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="x_panel">
+                    <div class="x_title">
+                        <h2>Historique
+                            <small>Historique de commande</small>
+                        </h2>
+                        <div class="filter">
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content">
+                        <div class="col-xs-12">
+                            <div class="demo-container" style="height:280px">
+                                <div id="chart_plot_05" class="demo-placeholder"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
 
 <?php $this->load->view('admin/partials/admin_footer'); ?>
+<script src="<?php echo base_url('assets/build2/js/budget/purchase/variousPurchase.js'); ?>"></script>
+
+<!-- bootstrap-daterangepicker -->
+<script src="<?php echo base_url('assets/vendors/moment/min/moment.min.js'); ?>"></script>
+<script src="<?php echo base_url('assets/vendors/bootstrap-daterangepicker/daterangepicker.js'); ?>"></script>
+<script>
+    var base_url = "<?php echo base_url(); ?>";
+    <?php
+    $js_array = json_encode($report);
+    echo "var report = " . $js_array . ";\n";
+    ?>
+</script>
+
+
+<!-- Flot -->
+<script src="<?php echo base_url('assets/vendors/Flot/jquery.flot.js'); ?>"></script>
+<script src="<?php echo base_url('assets/vendors/Flot/jquery.flot.pie.js'); ?>"></script>
+<script src="<?php echo base_url('assets/vendors/Flot/jquery.flot.time.js'); ?>"></script>
+<script src="<?php echo base_url('assets/vendors/Flot/jquery.flot.stack.js'); ?>"></script>
+<script src="<?php echo base_url('assets/vendors/Flot/jquery.flot.resize.js'); ?>"></script>
+
+<!-- DateJS -->
+<script src="<?php echo base_url('assets/vendors/DateJS/build/date.js'); ?>"></script>
+
 
 <script src="<?php echo base_url("assets/vendors/datatables.net/js/jquery.dataTables.min.js"); ?>"></script>
 <script>

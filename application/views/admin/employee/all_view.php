@@ -49,6 +49,7 @@
                                 <th>Reste</th>
                                 <th>Absences</th>
                                 <th>Soustraction</th>
+                                <th>Payé</th>
                             </tr>
                             </thead>
                             <tfoot>
@@ -60,10 +61,16 @@
                                 <th>Reste</th>
                                 <th>Absences</th>
                                 <th>Soustraction</th>
+                                <th>Payé</th>
                             </tr>
                             </tfoot>
                             <tbody id="tbody">
-                            <?php foreach ($salaries as $salary) { ?>
+                            <?php foreach ($salaries as $salary) {
+                                $paidFr="Oui";
+                                if($salary["paid"]==="false"){
+                                    $paidFr="Non";
+                                }
+                                ?>
                                 <tr>
                                     <td>
                                         <a href="<?php echo base_url("admin/employee/show/".$salary["id"]);?>">
@@ -76,6 +83,7 @@
                                     <td><?php echo $salary['remain']; ?></td>
                                     <td><?php echo $salary['absence']; ?></td>
                                     <td><?php echo $salary['substraction']; ?></td>
+                                    <td><?php echo $paidFr ?></td>
                                 </tr>
                             <?php } ?>
                             </tbody>
@@ -105,11 +113,12 @@
                     "columns": [
                         {"data": "name"},
                         {"data": "prenom"},
-                        {"data": "advance"},
                         {"data": "salary"},
+                        {"data": "advance"},
                         {"data": "remain"},
                         {"data": "absence"},
-                        {"data": "substraction"}
+                        {"data": "substraction"},
+                        {"data": "paid"}
                     ],
                     responsive: true,
                     "language": {
@@ -156,6 +165,10 @@
                         if (data.status === "success") {
                             table.clear();
                               $.each(data.salaries, function (key,salary) {
+                                  var paidFr="Oui";
+                                  if(salary["paid"]==="false"){
+                                      paidFr="Non";
+                                  }
                                   table.row.add({
                                       "name": "<a href='<?php echo base_url('admin/employee/show/'); ?>" + salary.id + "'>" + salary.name + "</a>",
                                       "prenom": salary.prenom,
@@ -163,7 +176,8 @@
                                       "salary": salary.salary,
                                       "remain": salary.remain,
                                       "absence": salary.absence,
-                                      "substraction": salary.substraction
+                                      "substraction": salary.substraction,
+                                      "paid": paidFr
                                   }).draw();
                                });
 

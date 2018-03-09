@@ -347,6 +347,13 @@
                     <?php endif; ?>
 
 
+                    <?php if ($this->session->userdata('type') == "cuisine") : ?>
+                            <li><a href="<?= base_url('admin/meal/group'); ?>">Mes familles</a></li>
+                            <li><a href="<?= base_url('admin/Meal/add'); ?>">Ajouter un article</a></li>
+                            <li><a href="<?= base_url('admin/Meal/index'); ?>">Mes fiches techniques</a></li>
+                    <?php endif; ?>
+
+
                   <li>
                  </li>
                 </ul>

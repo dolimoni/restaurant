@@ -27,10 +27,31 @@ $totalQuantity=0;
 
             <div class="row">
                 <div class="col-md-12">
-                    <div id="reportrange1" class="pull-right"
+                    <div id="reportrange" class="pull-right"
                          style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc">
                         <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
                         <span>December 30, 2014 - January 28, 2015</span> <b class="caret"></b>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="x_panel">
+                        <div class="x_title">
+                            <h2>Historique
+                                <small>Historique de stock</small>
+                            </h2>
+                            <div class="filter">
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+                            <div class="col-xs-12">
+                                <div class="demo-container" style="height:280px">
+                                    <div id="chart_plot_05" class="demo-placeholder"></div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -167,8 +188,11 @@ $totalQuantity=0;
 
 <?php $this->load->view('admin/partials/admin_footer'); ?>
 <script src="https://code.highcharts.com/highcharts.js"></script>
-<script src="<?php echo base_url("assets/vendors/datatables.net/js/jquery.dataTables.min.js"); ?>"></script>
 
+
+
+<script src="<?php echo base_url("assets/vendors/datatables.net/js/jquery.dataTables.min.js"); ?>"></script>
+<script src="<?php echo base_url('assets/build2/js/product/statistic.js'); ?>"></script>
 
 <script>
     $(document).ready(function () {
@@ -290,7 +314,12 @@ $totalQuantity=0;
 <script src="<?php echo base_url('assets/vendors/moment/min/moment.min.js'); ?>"></script>
 <script src="<?php echo base_url('assets/vendors/bootstrap-daterangepicker/daterangepicker.js'); ?>"></script>
 <script>
-    var rangeLink = "<?php echo base_url('admin/report/apiRange'); ?>";
+    var base_url = "<?php echo base_url(); ?>";
+    var product_id = "<?php echo $product['id']; ?>";
+    <?php
+    $js_array = json_encode($report);
+    echo "var report = " . $js_array . ";\n";
+    ?>
 </script>
 
 <script src="<?php echo base_url('assets/vendors/bootstrap-daterangepicker/daterangepicker.js'); ?>"></script>
@@ -300,6 +329,18 @@ $totalQuantity=0;
 
 <!--Statistiques-->
 <script src="<?php echo base_url('assets/build/js/canvasjs.min.js'); ?>"></script>
+
+
+<!-- Flot -->
+<script src="<?php echo base_url('assets/vendors/Flot/jquery.flot.js'); ?>"></script>
+<script src="<?php echo base_url('assets/vendors/Flot/jquery.flot.pie.js'); ?>"></script>
+<script src="<?php echo base_url('assets/vendors/Flot/jquery.flot.time.js'); ?>"></script>
+<script src="<?php echo base_url('assets/vendors/Flot/jquery.flot.stack.js'); ?>"></script>
+<script src="<?php echo base_url('assets/vendors/Flot/jquery.flot.resize.js'); ?>"></script>
+
+<!-- DateJS -->
+<script src="<?php echo base_url('assets/vendors/DateJS/build/date.js'); ?>"></script>
+
 <script>
     $(document).ready(function () {
 
@@ -340,7 +381,6 @@ $totalQuantity=0;
 
 
 <script>
-
     <?php
     $js_array = json_encode($productInventory);
     echo "var productInventory = " . $js_array . ";\n";
@@ -352,7 +392,7 @@ $totalQuantity=0;
             type: 'column'
         };
         var title = {
-            text: 'Précision du stock'
+            text: 'Inventaire'
         };
         var xAxis = {
             categories: ['Historique']
@@ -405,141 +445,5 @@ $totalQuantity=0;
     }
 
     inventory(productInventory);
-    var cb = function (start, end, label) {
-        console.log(start.toISOString(), end.toISOString(), label);
-        $('#reportrange1 span').html(start.format('YYYY/MM/DD') + ' - ' + end.format('MMMM D, YYYY'));
-        console.log(start.format('YYYY/MM/DD'));
 
-        myData = {
-            'id':<?php echo $product['id']; ?>,
-            'startDate': start.format('YYYY/MM/DD'),
-            'endDate': end.format('YYYY/MM/DD')
-        };
-        $.ajax({
-            url: "<?php echo base_url('admin/product/apiStatistics'); ?>",
-            type: "POST",
-            dataType: "json",
-            data: myData,
-            success: function (data) {
-                if (data.status === "success") {
-                    /*****************************CHANGE CONSOMMATION GRAPH****************************************************/
-                    //empty quantity graph
-                    $('.product-quantity .progress-bar').css({
-                        'display': 'none',
-                    });
-                    $('.product-quantity .w_right span:nth-child(1)').html(0);
-                    //price graph
-                    var myDataPoints = [];
-                    var mealConsumptionRateRange = data.report.productConsumptionRate;
-                    inventory(data.report.productInventory);
-                    var totalQuantity=0;
-                    $.each(mealConsumptionRateRange, function (key, mealConsumptionRateProduct) {
-                        totalQuantity+= parseFloat(mealConsumptionRateProduct['sum_quantity']);
-                        console.log(totalQuantity);
-                        if (mealConsumptionRateProduct['avg_unit_price']) {
-                            var total = parseFloat(mealConsumptionRateProduct['avg_unit_price'] * mealConsumptionRateProduct['sum_quantity']);
-                            var point = {
-                                y: total,
-                                label: mealConsumptionRateProduct['name'],
-                                unit: 'DH',
-                                yRound:total.toFixed(2)
-                            };
-                            myDataPoints.push(point);
-                            if (!$('#quantity_' + mealConsumptionRateProduct['meal']).length) {
-                                var productModel = $(".product-quantity-model").clone().removeAttr("hidden");
-                                productModel.addClass("widget_summary");
-                                productModel.attr('id', 'quantity_' + mealConsumptionRateProduct['product']);
-                                productModel.removeClass("product-quantity-model");
-                                productModel.find(' .progress-bar').attr('style', 'width: ' + Math.round(mealConsumptionRateProduct['sum_quantity'] / mealConsumptionRateRange['totalQuantity'] * 100) + '%')
-                                productModel.find(' .w_right span:nth-child(1)').html(mealConsumptionRateProduct['sum_quantity']);
-                                productModel.find(' .w_right span:nth-child(2)').html(" " + mealConsumptionRateProduct['unit']);
-                                productModel.find(".w_left.w_25").html(mealConsumptionRateProduct["name"]);
-                                $(".productsConsomationList").append(productModel);
-                                console.log(productModel);
-                            }
-                            //change quantity graph
-                            $('#quantity_' + mealConsumptionRateProduct['meal'] + ' .progress-bar').attr('style', 'width: ' + Math.round(mealConsumptionRateProduct['sum_quantity'] / mealConsumptionRateRange['totalQuantity'] * 100) + '%')
-                            $('#quantity_' + mealConsumptionRateProduct['meal'] + ' .w_right span:nth-child(1)').html(mealConsumptionRateProduct['sum_quantity']);
-                        }
-                    });
-                    $(".product-quantity-total").find(' .w_right span:nth-child(1)').html(parseFloat(totalQuantity).toFixed(2));
-
-
-                    var chart = new CanvasJS.Chart("chartContainer", {
-                        animationEnabled: true,
-                        data: [{
-                            type: "doughnut",
-                            startAngle: 60,
-                            //innerRadius: 60,
-                            indexLabelFontSize: 17,
-                            indexLabel: "{label} - #percent%",
-                            toolTipContent: "<b>{label}:</b> {yRound} (#percent%)",
-                            dataPoints: myDataPoints
-                        }]
-                    });
-                    chart.render();
-                    /*********************************************************************************/
-
-                }
-                else {
-                    console.log('Error');
-                }
-            },
-            error: function (data) {
-            }
-        });
-    };
-
-    function changeReportData(data) {
-        console.log("reportData", data);
-        $('.report_amount').html(data['amount'] + 'DH');
-        $('.report_cost').html(data['cost'] + 'DH');
-        $('.report_profit').html(data['profit'] + 'DH');
-        $('.report_lost').html(data['lost']);
-        <?php if($params['department'] === "false"){ ?>
-        $('.report_quantity').html(data['quantity']);
-        <?php }else { ?>
-        $('.report_quantity').html(data['quantity'] + '/' + data['prepared']);
-        <?php } ?>
-
-        //$('.report_products').html(data['prepared']);
-    }
-    var optionSet1 = {
-        startDate: moment().subtract(29, 'days'),
-        endDate: moment(),
-        minDate: '01/01/2017',
-        maxDate: '12/31/2027',
-        showDropdowns: true,
-        showWeekNumbers: true,
-        timePicker: false,
-        timePickerIncrement: 1,
-        timePicker12Hour: true,
-        ranges: {
-            'Aujourd\'hui': [moment(), moment()],
-            'Hier': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-            'Dernier 7 jours': [moment().subtract(6, 'days'), moment()],
-            'Dernier 30 jours': [moment().subtract(29, 'days'), moment()],
-            'Ce mois': [moment().startOf('month'), moment().endOf('month')],
-            'Mois précédent': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
-        },
-        opens: 'left',
-        buttonClasses: ['btn btn-default'],
-        applyClass: 'btn-small btn-primary',
-        cancelClass: 'btn-small',
-        format: 'MM/DD/YYYY',
-        separator: ' to ',
-        locale: {
-            applyLabel: 'Envoyer',
-            cancelLabel: 'Annuler',
-            fromLabel: 'From',
-            toLabel: 'To',
-            customRangeLabel: 'Personnalisé',
-            daysOfWeek: ['Lu', 'Ma', 'Me', 'Je', 'Ve', 'Sa', 'Di'],
-            monthNames: ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'],
-            firstDay: 1
-        }
-    };
-
-    $('#reportrange1 span').html(moment().subtract(29, 'days').format('MMMM D, YYYY') + ' - ' + moment().format('MMMM D, YYYY'));
-    $('#reportrange1').daterangepicker(optionSet1, cb);
 </script>

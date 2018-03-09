@@ -308,6 +308,8 @@
 
 <script>
 
+    var old_unit="<?php echo $product["unit"]; ?>";
+    console.log(old_unit);
     $(document).ready(function () {
         $("input[name=saveAndGo]").on("click", {saveType: "saveAndGo"},save)
         $('#editProductForm').submit({saveType:"simple"},save);
@@ -342,40 +344,59 @@
                 'status': 'active'
             };
 
-            $.ajax({
-                url: "<?php echo base_url('admin/product/apiEdit'); ?>",
-                type: "POST",
-                dataType: "json",
-                data: {"product": product},
-                beforeSend: function () {
-                    $('#loading').show();
-                },
-                complete: function () {
-                    $('#loading').hide();
-                },
-                success: function (data) {
-                    if (data.status = "success") {
-                        swal({
-                            title: "Success",
-                            text: "Success",
-                            type: "success",
-                            timer: 1500,
-                            showConfirmButton: false
-                        });
-                        var nextId = parseInt(id) + parseInt(1);
-                        if(e.data.saveType==="saveAndGo"){
-                            window.location.href = "<?php echo base_url("admin/product/edit/"); ?>" + nextId;
-                        }else{
-                            window.location.href = "<?php echo base_url("admin/product/index/"); ?>";
+            if(validate(product)){
+                $.ajaxx({
+                    url: "<?php echo base_url('admin/product/apiEdit'); ?>",
+                    type: "POST",
+                    dataType: "json",
+                    data: {"product": product},
+                    beforeSend: function () {
+                        $('#loading').show();
+                    },
+                    complete: function () {
+                        $('#loading').hide();
+                    },
+                    success: function (data) {
+                        if (data.status = "success") {
+                            swal({
+                                title: "Success",
+                                text: "Success",
+                                type: "success",
+                                timer: 1500,
+                                showConfirmButton: false
+                            });
+                            var nextId = parseInt(id) + parseInt(1);
+                            if (e.data.saveType === "saveAndGo") {
+                                window.location.href = "<?php echo base_url("admin/product/edit/"); ?>" + nextId;
+                            } else {
+                                window.location.href = "<?php echo base_url("admin/product/index/"); ?>";
+                            }
                         }
-                    }
-                },
-                error: function (data) {
+                    },
+                    error: function (data) {
 
-                }
-            });
+                    }
+                });
+            }
         }
 
+        function validate(product){
+            var validate=false;
+            if(old_unit!==product["unit"] && product["weightByUnit"]<=0){
+                swal({
+                    title: "Attention",
+                    text: "Vous devez renseigner le poid par unité après le changement de l'unité",
+                    type: "warning",
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+                validate = false;
+            }else{
+                validate=true;
+            }
+
+            return validate;
+        }
     });
 
 

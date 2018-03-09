@@ -12,18 +12,32 @@ class model_order extends CI_Model {
 	public function add($order)
 	{
 
+	    $db_params=$this->db->get("config")->row_array();
         $data = array(
             'provider' => $order['provider']['id'],
             'tva' => $order['tva'],
             'ttc' => $order['underTotal']*(1+$order['tva']/100),
         );
+        $order_id=0;
+        if($db_params["orderReception"]==="true"){
+            $data["status"]="received";
+            $this->db->insert('order', $data);
+            $order_id = $this->db->insert_id();
+            $this->load->model("model_product");
+            $this->model_product->updateQuantities($order['productsList'], 'up', $order['provider']['id'], $order_id);
+        }else{
+            $this->db->insert('order', $data);
+            $order_id = $this->db->insert_id();
+        }
 
-        $this->db->insert('order', $data);
-        $orderId = $this->db->insert_id();
+        if ($db_params["orderPayment"] === "true") {
+            $this->payOrder($order_id);
+        }
+
         foreach ($order['productsList'] as $product) {
             $data = array(
                 'product' => $product['id'],
-                'order_id' => $orderId,
+                'order_id' => $order_id,
                 'quantity' => $product['quantity'],
                 'od_price' => $product['unit_price'],
                 'quantity_id' => $product['idQuantity'],
@@ -248,4 +262,27 @@ class model_order extends CI_Model {
         $this->db->delete('stock_history');
 
 	}
+
+    public function payOrder($id)
+    {
+        $this->db->where('id', $id);
+
+        $db_order = $this->db->get('order')->row_array();
+        $paymentDate = strtotime(date("Y-m-d H:i:s"));
+        $paid = "false";
+        if ($db_order["paid"] === "true") {
+            $this->db->where('id', $id);
+            $this->db->update('order', array("paid" => "false", "paymentDate" => null));
+        } else {
+            $this->db->where('id', $id);
+            $this->db->update('order', array("paid" => "true", "paymentDate" => date("Y-m-d H:i:s")));
+            $paymentDate = strtotime(date("Y-m-d H:i:s"));
+            $paid = "true";
+        }
+        $order = array(
+            "paid" => $paid,
+            "paymentDate" => date("d-m-Y", $paymentDate),
+        );
+        return $order;
+    }
 }

@@ -25,6 +25,9 @@
                    <a href="<?php echo base_url("admin/report"); ?>" class="btn btn-info" name="printSalesReport">
                        <span class="fa fa-print"></span>Rapport des articles
                    </a>
+                   <a class="btn btn-primary" name="printGlobalReport" style="min-width:180px;">
+                       <span class="fa fa-print"></span>Rapport global
+                   </a>
                </div>
               <!-- <div class="col-xs-12 col-sm-3">
                    <a class="btn btn-success" name="printSalesReport">
@@ -180,7 +183,6 @@
 </div>
 
 <?php $this->load->view('admin/partials/admin_footer'); ?>
-<script src="<?php echo base_url('assets/build2/js/besystem.js'); ?>"></script>
 
 <!-- bootstrap-daterangepicker -->
 <script src="<?php echo base_url('assets/vendors/moment/min/moment.min.js'); ?>"></script>
@@ -528,8 +530,9 @@
 <script>
     $(document).ready(function () {
 
-        $("a[name=printSpendingReport]").on("click", {url: "admin/report/printSpendingReport"}, printReportEvent);
-        $("a[name=printSalesReport]").on("click", {url: "admin/report/printSalesReport"}, printReportEvent);
+        $("a[name=printSpendingReport]").on("click", {url: "admin/report/apiPrintSpendingReport"}, printReportEvent);
+        $("a[name=printSalesReport]").on("click", {url: "admin/report/apiPrintSalesReport"}, printReportEvent);
+        $("a[name=printGlobalReport]").on("click", {url: "admin/report/apiPrintGlobalReport"}, printReportEvent);
         function printReportEvent(event){
             var myData = {
                 "startDate": $('#reportrange').data('daterangepicker').startDate.format('YYYY-MM-DD'),
@@ -548,13 +551,6 @@
                 },
                 success: function (data) {
                     if (data.status === "success") {
-                        swal({
-                            title: "Success",
-                            text: "L'opération a été bien effecuté",
-                            type: "success",
-                            timer: 1500,
-                            showConfirmButton: false
-                        });
                         window.open("<?=base_url()?>" + data.filepath);
                     } else {
                         swal({

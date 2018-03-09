@@ -239,6 +239,28 @@ class model_util extends CI_Model {
         return $response;
     }
 
+    public function sortDateBreak($data, $columnName)
+    {
+        $columnArray = array_column($data, $columnName);
+
+
+        usort($columnArray, array($this, "date_fct"));
+
+        $response = array();
+
+        foreach ($columnArray as $key0=> $columnElement) {
+            foreach ($data as $key => $dataElement) {
+                if ($columnElement === $dataElement[$columnName]) {
+                    $element= $data[$key];
+                    $response[] = $element;
+                    break;
+                }
+            }
+        }
+
+        return $response;
+    }
+
     public function mergeDateArray($a1,$a2){
         $sums = array();
         $sums= $a1;

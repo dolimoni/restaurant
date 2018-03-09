@@ -142,6 +142,23 @@ class Employee extends BaseController {
         }
     }
 
+    public function apiPayment(){
+        $this->log_begin();
+        try {
+            $paid = $this->input->post('paid');
+            $id = $this->input->post('id');
+            $this->model_employee->updatePaymentSalary($id);
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'success')));
+            $this->log_end(array('status' => 'success'));
+        } catch (Exception $e) {
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'error')));
+        }
+    }
+
     public function apiEditMainEmployee()
     {
         $this->log_begin();

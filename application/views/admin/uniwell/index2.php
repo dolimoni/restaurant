@@ -31,7 +31,13 @@
             <hr>
             <div class="row">
                 <div class="row">
-                    <div class="col-xs-12 col-sm-6 col-md-4">
+                    <?php
+                    $hidden = "hidden";
+                    if ($params["editConsumptionDate"] === "true"){
+                     $hidden="";
+                    }
+                    ?>
+                    <div class="col-xs-12 col-sm-6 col-md-4" <?php echo $hidden; ?>>
                         <label for="paiementDate">Date du rapport :</label>
                         <?php include('include/calender.php'); ?>
                     </div>

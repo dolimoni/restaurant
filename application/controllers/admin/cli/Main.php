@@ -113,9 +113,12 @@ class Main extends CI_Controller
                 if($meal['name']=== $sale['1'] /*and $priceCSV == $meal['sellPrice']*/){
                     $data['sales']['rows'][$key]['status']='valid';
                     $mealsList[]=$mealItem;
-                }else{
-                    $data['sales']['rows'][$key]['status'] = 'Invalid';
-
+                }else if(!$meal){
+                    $undefinedMeal = $this->model_meal->createUndefined($sale['0'], $sale['1']);
+                    $meal_id = $this->model_meal->addSimpleMeal($undefinedMeal);
+                    $mealItem["id"] = $meal_id;
+                    $data['sales']['rows'][$key]['status'] = 'valid';
+                    $mealsList[] = $mealItem;
                 }
             }
             $this->log_middle($mealsList);

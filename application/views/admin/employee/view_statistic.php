@@ -84,7 +84,7 @@
 </div>
 
 <?php $this->load->view('admin/partials/admin_footer'); ?>
-<script src="<?php echo base_url('assets/build2/js/besystem.js'); ?>"></script>
+
 
 <!-- bootstrap-daterangepicker -->
 <script src="<?php echo base_url('assets/vendors/moment/min/moment.min.js'); ?>"></script>

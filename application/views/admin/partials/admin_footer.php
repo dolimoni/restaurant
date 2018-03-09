@@ -22,6 +22,7 @@
     <!-- Custom Theme Scripts -->
     <script src="<?php echo base_url('assets/build/js/custom.js'); ?>"> </script>
 
+    <script src="<?php echo base_url('assets/build2/js/besystem.js'); ?>"></script>
 
     <script src="<?php echo base_url('assets/js/v6car.js');?>"></script>
 
