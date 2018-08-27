@@ -1,6 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class model_provider extends CI_Model {
+class model_provider extends MY_Model {
 
     private $current_db = 0;
 
@@ -368,6 +368,73 @@ class model_provider extends CI_Model {
         $this->db->where('product', $product_id);
         $this->db->update('quantity',array("visibility"=>"hidden"));
     }
+
+    public function getInvitations($params){
+
+        $this->setGlobalDb();
+        $this->db->select('i.*,p.*');
+        $this->db->from('invitation i');
+        $this->db->join('provider p','p.id=i.provider');
+        $this->db->where('customer',$params['ref_client']);
+        $this->db->where('status','sent');
+        $result = $this->db->get()->result_array();
+        $this->setLocalDb();
+        return $result;
+
+    }
+    public function getInvitation($id){
+
+        $this->setGlobalDb();
+        $this->db->select('i.*,p.*,p.id p_id');
+        $this->db->from('invitation i');
+        $this->db->join('provider p','p.id=i.provider');
+        $this->db->where('i.id',$id);
+        $result = $this->db->get()->row_array();
+        $this->setLocalDb();
+        return $result;
+
+    }
+    public function updateInvitationStatus($data){
+
+        $this->setGlobalDb();
+        $invitation=$this->getInvitation($data['id']);
+        $this->setGlobalDb();
+
+        if ($data['status']==='accepted'){
+            $this->db->where('id',$data['id']);
+            $this->db->update('invitation',array('status'=>'accepted'));
+        }else if($data['status']==='refused'){
+            $this->db->where('id',$data['id']);
+            $this->db->update('invitation',array('status'=>'refused'));
+        }else if($data['status']==='bloqued'){
+            $this->db->where('id',$data['id']);
+            $this->db->update('invitation',array('status'=>'bloqued'));
+        }
+
+
+        $this->db->where('id',$invitation['provider']);
+        $provider = $this->db->get('provider')->row_array();
+
+        $this->setLocalDb();
+
+
+        $provider_data = array(
+            'title' => $provider['title'],
+            'stockitmain' => $provider['id'],
+            'name' => $provider['last_name'],
+            'prenom' => $provider['first_name'],
+            'address' => $provider['address'],
+            'phone' => $provider['phone'],
+            'mail' => $provider['email'],
+            'tva' => 0,
+            'image' => 'profile-default-male.png',
+        );
+
+        $this->add($provider_data);
+
+
+    }
+
 
     /**
      * @return int

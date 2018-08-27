@@ -31,10 +31,11 @@ class Provider extends BaseController
         $this->log_begin();
         if (!$this->input->post('addProvider')) {
             $data['message'] = '';
+            $data['params'] = $this->getParams();
             $data['providers'] = $this->model_provider->getAll();
             $data["providerGroups"] = $this->model_provider->getGroups();
             $data['products'] = $this->model_provider->getAllProducts();
-            $data['params'] = $this->getParams();
+            $data['invitations'] = $this->model_provider->getInvitations($data['params']);
             $this->parser->parse('admin/provider/add', $data);
             $this->log_end($data);
         } else {
@@ -249,6 +250,7 @@ class Provider extends BaseController
     {
         $this->log_begin();
         $id = $this->uri->segment(4);
+        $data['params'] = $this->getParams();
         $data['provider'] = $this->model_provider->get($id);
         if (!$data['provider']) {
             redirect('/admin/provider');
@@ -258,7 +260,7 @@ class Provider extends BaseController
         $data['quotations'] = $this->model_provider->getQuotations($id);
         $data['orders'] = $this->model_provider->getOrders($id);
         $data['statistics'] = $this->model_provider->getStatistics($id);
-        $data['params'] = $this->getParams();
+
         $this->load->view('admin/provider/show', $data);
         $this->log_end($data);
     }
@@ -602,6 +604,25 @@ class Provider extends BaseController
         }
     }
 
+
+
+    public function apiUpdateInvitationStatus()
+    {
+        $this->log_begin();
+        try {
+            $data = $this->input->post('data');
+            $this->model_provider->updateInvitationStatus($data);
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'success')));
+            $this->log_end(array('status' => 'success'));
+        } catch (Exception $e) {
+
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'error')));
+        }
+    }
 
 
     public function apiDeleteProvider()
