@@ -384,18 +384,24 @@
 
             <!-- Modal Footer -->
             <div class="modal-footer">
-                <button type="button" class="btn btn-default"
+                <button type="button" class="btn btn-default small-button"
                         data-dismiss="modal">
                     Annuler
                 </button>
-                <input type="button" class="btn btn-success payOrder" value="Payer la commande">
+                <input type="button" class="btn btn-success payOrder small-button" value="Payer la commande">
                 </input>
-                <button type="submit" class="btn btn-warning" name="editPrint">
+                <button type="submit" class="btn btn-warning small-button" name="editPrint">
                     <span class="fa fa-print"></span> Imprimer
                 </button>
-                <button type="button" class="btn btn-primary" name="editOrder">
-                    Modifier
-                </button>
+                <?php if($provider['stockitmain']==='0'){?>
+                    <button type="button" class="btn btn-primary small-button" name="editOrder">
+                        <?= lang('save') ?>
+                    </button>
+                <?php }else{ ?>
+                    <button type="button" class="btn btn-primary small-button" name="editOrder">
+                       Répondre
+                    </button>
+                <?php } ?>
             </div>
         </div>
     </div>

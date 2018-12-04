@@ -129,10 +129,23 @@
                           <?php if (isset($params["acl"]["Provider"]["index"]) or $this->session->userdata('type') === "admin"): ?>
                           <li><a href="<?= base_url('admin/provider'); ?>">Liste des fournisseurs</a></li>
                           <?php endif; ?>
-                          <?php if (isset($params["acl"]["Provider"]["compaire"]) or $this->session->userdata('type') === "admin"): ?>
+                          <?php if (isset($params["acl"]["Provider"]["index"]) or $this->session->userdata('type') === "admin"): ?>
+                          <li><a href="<?= base_url('admin/provider/allOrders'); ?>">Mes commandes</a></li>
+                          <?php endif; ?>
+                          <?php if (isset($params["acl"]["Provider"]["index"]) or $this->session->userdata('type') === "admin"): ?>
+                          <li><a href="<?= base_url('admin/provider/statistic'); ?>">Statistiques</a></li>
+                          <?php endif; ?>
+                          <?php if ((isset($params["acl"]["Provider"]["compaire"]) or $this->session->userdata('type') === "admin")
+                          and $params['pack']==='pro')
+
+                              :?>
                           <li><a href="<?= base_url('admin/provider/compare'); ?>">Comparaison</a></li>
                           <?php endif; ?>
+                          <?php if ((isset($params["acl"]["Provider"]["compaire"]) or $this->session->userdata('type') === "admin")
+                                    and $params['pack']==='pro')
+                              :?>
                           <li><a href="<?= base_url('admin/provider/groups'); ?>">Groupes des fournisseurs</a></li>
+                          <?php endif; ?>
                       </ul>
                   </li>
                     <?php endif; ?>
@@ -185,7 +198,10 @@
                       <!-----------------------------------------End---------------------------------------------------->
 
                       <!-----------------------------------------Begin-------------------------------------------------->
-                    <?php if ($params['department'] === "true" and (isset($params["acl"]["department"]) or $this->session->userdata('type') === "admin")) { ?>
+                    <?php if (($params['department'] === "true" and (isset($params["acl"]["department"]) or $this->session->userdata('type') === "admin"))
+                                and $params['pack']==='pro') {
+
+                    ?>
                       <li><a>
                       <i class="fa fa-users"></i> Départements <span
                                       class="fa fa-chevron-down"></span></a>
@@ -206,7 +222,11 @@
                       <!-----------------------------------------Begin-------------------------------------------------->
                       <?php
 
-                      if (isset($params["acl"]["Employee"]) or $this->session->userdata('type') === "admin"):?>
+                      if ((isset($params["acl"]["Employee"]) or $this->session->userdata('type') === "admin")
+
+                            and $params['pack']==='pro')
+
+                          :?>
                       <li>
                       <a>
                         <i class="fa fa-male"></i>Gestion du personnel <span class="fa fa-chevron-down"></span></a>
@@ -231,7 +251,10 @@
                     <?php if (isset($params["acl"]["Report"]["index"]) or $this->session->userdata('type') === "admin"): ?>
                       <li><a href="<?= base_url('admin/report'); ?>">Rapport des articles</a></li>
                     <?php endif; ?>
-                    <?php if (isset($params["acl"]["reports"]["index"]) or $this->session->userdata('type') === "admin"): ?>
+                    <?php if ((isset($params["acl"]["reports"]["index"]) or $this->session->userdata('type') === "admin")
+                    and $params['pack']==='pro')
+
+                        :?>
                       <li><a href="<?= base_url('admin/reports'); ?>">Rapport du jour</a></li>
                     <?php endif; ?>
                     </ul>
@@ -240,7 +263,10 @@
                       <!-----------------------------------------End---------------------------------------------------->
 
                       <!-----------------------------------------Begin-------------------------------------------------->
-                    <?php if (isset($params["acl"]["Budget"]) or $this->session->userdata('type') === "admin"): ?>
+                    <?php if ((isset($params["acl"]["Budget"]) or $this->session->userdata('type') === "admin")
+                                and $params['pack']==='pro')
+
+                        :?>
                   <li>
                       <a><i class="fa fa-dollar"></i>Gestion des charges<span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
@@ -282,7 +308,8 @@
                       <!-----------------------------------------End---------------------------------------------------->
 
                       <!-----------------------------------------Begin-------------------------------------------------->
-                    <?php if ($params['multi_site'] === "true" and (isset($params["acl"]["Agency"]) or $this->session->userdata('type') === "admin")) { ?>
+                    <?php if (($params['multi_site'] === "true" and (isset($params["acl"]["Agency"]) or $this->session->userdata('type') === "admin"))
+                                and $params['pack']==='pro') { ?>
                       <li>
                           <a><i class="fa fa-exchange"></i>Agences<span class="fa fa-chevron-down"></span></a>
                           <ul class="nav child_menu">
@@ -409,7 +436,7 @@
                   </ul>
                 </li>
                   <?php
-                  if ($this->session->userdata('type') == "admin") {
+                  if ($this->session->userdata('type') == "admin" and $params['pack']==='pro') {
                       $activeAlert="passive-alert";
                       $alertes_count=0;
                       if (isset($params["alertes"]) and count($params["alertes"])>0) {

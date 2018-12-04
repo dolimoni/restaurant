@@ -24,7 +24,7 @@ $totalQuantity=0;
         <div class="clearfix"></div>
         <hr>
         <div class="text-center tile_stats_count">
-            <h1 class="count"><?php echo $product["name"]; ?></h1>
+            <h1 class="count"><a href="<?php echo base_url('admin/product/edit/'.$product['id']) ?>"><?php echo $product["name"]; ?></a> </h1>
         </div>
 
         <div class="row productsListContent" id="productPanel">
@@ -39,7 +39,7 @@ $totalQuantity=0;
                 </div>
             </div>
             <div class="row">
-                <div class="col-xs-12">
+                <div class="col-xs-12 chart_plot_05_panel">
                     <div class="x_panel">
                         <div class="x_title">
                             <h2>Historique
@@ -58,7 +58,7 @@ $totalQuantity=0;
                         </div>
                     </div>
                 </div>
-                <div class="col-xs-12">
+                <div class="col-xs-12 chart_plot_07_panel">
                     <div class="x_panel">
                         <div class="x_title">
                             <h2>Historique
@@ -79,6 +79,13 @@ $totalQuantity=0;
                 </div>
             </div>
             <div class="row">
+                <?php
+                $hidden='';
+                if(count($report['productConsumptionRate'])===0){
+                    $hidden='hidden';
+                }
+
+                ?>
                 <div class="col-md-6 col-sm-6 col-xs-12">
                     <div class="x_panel tile fixed_height_320">
                         <div class="x_title">
@@ -92,7 +99,6 @@ $totalQuantity=0;
                             <div class="clearfix"></div>
                         </div>
                         <div class="x_content scroll productsConsomationList">
-                            <h4>Quantité des produits utitlisés</h4>
                             <?php foreach ($report['productConsumptionRate'] as $productConsumptionRate) {
                                 $totalQuantity += $productConsumptionRate['sum_quantity'];
                                 ?>
@@ -105,7 +111,7 @@ $totalQuantity=0;
                                     <div class="w_center w_55">
                                         <div class="progress">
                                             <div class="progress-bar bg-green" role="progressbar"
-                                                 style="width: <?php echo round($productConsumptionRate['sum_quantity'] / $report['totalConsumptionQuantity'] * 100); ?>%;">
+                                                 style="width: <?php echo number_format(round($productConsumptionRate['sum_quantity'] / $report['totalConsumptionQuantity'] * 100),2); ?>%;">
                                             </div>
                                         </div>
                                     </div>
@@ -114,9 +120,9 @@ $totalQuantity=0;
                                     <span><?php
                                         $l_quantity = $productConsumptionRate['sum_quantity'];
                                         if ($productConsumptionRate['unit'] === 'pcs') {
-                                            $l_quantity = number_format((float)$l_quantity, 0, '.', '');
+                                            $l_quantity = number_format((float)$l_quantity, 0);
                                         }
-                                        echo $l_quantity . ' ';
+                                        echo number_format($l_quantity,2) . ' ';
                                         ?>
                                     </span>
                                         <span>
@@ -259,13 +265,59 @@ $totalQuantity=0;
                             </tr>
                             </tfoot>
                             <tbody>
-                            <?php foreach ($product_orders as $product_order) { ?>
+                            <?php foreach ($product_orders as $product_order) {
+                                $totalOrderQuantity=$product_order['quantity'];
+                                if($product_order['pack']==='true'){
+                                    $totalOrderQuantity= number_format($product_order['quantity'],0).' pack de '.$product_order['piecesByPack'].' pieces';
+                                }
+                                ?>
                                 <tr>
-                                    <td><?php echo $product_order['quantity'] ?></td>
-                                    <td><?php echo $product_order['od_price']/$product_order['quantity'] ?></td>
+                                    <td><?php echo $totalOrderQuantity ?></td>
                                     <td><?php echo $product_order['od_price'] ?></td>
+                                    <td><?php echo $product_order['od_price']*$product_order['quantity'] ?></td>
                                     <td><?php echo $product_order['name'] ?></td>
                                     <td><?php echo $product_order['orderDate'] ?></td>
+                                </tr>
+                            <?php } ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <h2 class="large-title-reverse">Historique des pertes</h2>
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="table-responsive">
+                        <table id="datatable-losts" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+                            <thead>
+                            <tr>
+                                <th>Quantité</th>
+                                <th>Type de perte</th>
+                            </tr>
+                            </thead>
+                            <tfoot>
+                            <tr>
+                                <th>Quantité</th>
+                                <th>Prix unitaire</th>
+                            </tr>
+                            </tfoot>
+                            <tbody>
+                            <?php foreach ($product_losts as $product_lost) {
+                                $lostType='';
+                                if($product_lost['type']==='delete'){
+                                    $lostType='Suppression de stock';
+                                }else if($product_lost['type']==='lost'){
+                                    $lostType='Perte manuelle';
+                                }else if($product_lost['type']==='init'){
+                                    $lostType='Perte à la commande';
+                                }else if($product_lost['type']==='inventory'){
+                                    $lostType='Inventaire';
+                                }
+                                ?>
+                                <tr>
+                                    <td><?php echo $product_lost['quantity']; ?></td>
+                                    <td><?php echo $lostType; ?></td>
                                 </tr>
                             <?php } ?>
                             </tbody>
@@ -427,7 +479,12 @@ $totalQuantity=0;
         $('#container').highcharts(json);
     }
 
-    inventory(productInventory);
+    if(productInventory.length>0){
+        $('#container').show();
+        inventory(productInventory);
+    }else{
+        $('#container').fadeOut();
+    }
 
 </script>
 

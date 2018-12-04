@@ -89,13 +89,28 @@ function init() {
 
     $('select[name=unit]').on('change', function() {
 
-        if(this.value!=='pcs'){
+        let unit=this.value;
+        if(unit!=='pcs'){
             $('#pack').attr('disabled','true');
             $('div.piecesByPack').fadeOut();
             $('#pack').prop('checked', false); // Unchecks it
         }else{
             $('#pack').removeAttr('disabled');
         }
+
+        if(unit==='kg'){
+            $('label.lost_type').attr('data-tg-on','gr');
+            $('input[name="lost_type"]').removeAttr('disabled');
+        }else if(unit==='L'){
+            $('label.lost_type').attr('data-tg-on','cl');
+            $('input[name="lost_type"]').removeAttr('disabled');
+        }else if(unit==='pcs'){
+            $('label.lost_type').attr('data-tg-on','%');
+            $('input[name="lost_type"]').attr('checked','checked')
+            $('input[name="lost_type"]').attr('disabled','disabled');
+        }
+
+        console.log(unit);
     });
 
 }

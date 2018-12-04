@@ -155,7 +155,7 @@
                                                        role="tab"
                                                        data-toggle="tab" aria-expanded="false"><?= lang('parameters'); ?></a>
                             </li>
-                            <li role="presentation"><a href="#tab_support" id="home-tab"
+                            <li role="presentation" class="hidden"><a href="#tab_support" id="home-tab"
                                                        role="tab"
                                                        data-toggle="tab" aria-expanded="false"><?= lang('support'); ?></a>
                             </li>
@@ -167,7 +167,7 @@
                                 </li>
                                 <li class=""><a href="#tab_productsToOrder" data-toggle="tab" aria-expanded="true"><?= lang('parameters'); ?></a>
                                 </li>
-                                <li class=""><a href="#tab_support" data-toggle="tab" aria-expanded="true"><?= lang('support'); ?></a>
+                                <li class="hidden"><a href="#tab_support" data-toggle="tab" aria-expanded="true"><?= lang('support'); ?></a>
                                 </li>
                             </ul>
                         </div>
@@ -283,8 +283,8 @@
                                                                    class="btn btn-danger btn-xs deleteUser"><i
                                                                             class="fa fa-trash"></i></a>
                                                             <?php endif; ?>
-                                                            <a href=" <?php echo base_url(); ?>admin/email/compose/<?php echo $user['id']; ?>"
-                                                               class="btn btn-success  btn-xs"><i class="fa fa-envelope-o"></i></a>
+                                                           <!-- <a href=" <?php /*echo base_url(); */?>admin/email/compose/<?php /*echo $user['id']; */?>"
+                                                               class="btn btn-success  btn-xs"><i class="fa fa-envelope-o"></i></a>-->
                                                         </td>
                                                     </tr>
                                                 <?php } ?>
@@ -335,7 +335,7 @@
                                 </div>
                             </div>
                             <!--------------------------------------------End Products to order Tab------------------------------------------------------>
-                            <div role="tabpanel" class="tab-pane fade" id="tab_support"
+                            <div role="tabpanel" class="tab-pane fade hidden" id="tab_support"
                                  aria-labelledby="home-tab">
                                 <p>Besystem Help Desk vous permet de gérer entièrement le processus de support dans un seul outil, de l’enregistrement à la fermeture du ticket. Le système fournit aussi des statistiques et des rapports qui facilitent le suivi de votre gestion de support.</p>
                                 <p>Toutes les informations relatives à un ticket sont sauvegardées et stockées au sein de HelpDesk. Notre solution, s'inspirant des meilleures pratiques ITIL, vous permet de gérer tous les incidents, questions et réclamations; des questions Ressources Humaines, questions Service Client (SAV, hotline, ...).

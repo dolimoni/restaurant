@@ -76,7 +76,9 @@
                 <div class="count report_amount"> <?php echo number_format((float)$report['consumption']['turnover'], 1, '.', ''); ?>
                     <small>DH</small>
                 </div>
-                <?php if(number_format($params["parts"],0)=="2"){ ?>
+                <?php
+                if($params['pack']==='pro'){
+                if(number_format($params["parts"],0)=="2"){ ?>
                 <div class="count_top"><i class="fa fa-dollar"></i> <span><?= lang('morning') ?>:</span> <span class="st_part"><?php echo number_format((float)$report['consumption_history']['st_part'], 2, '.', ''); ?></span> DH</div>
                 <div class="count_top"><i class="fa fa-dollar"></i> <span style="margin-right: 7px;"><?= lang('evening') ?>:</span> <span class="nd_part"><?php echo number_format((float)$report['consumption_history']['turnover']-(float)$report['consumption_history']['st_part'], 2, '.', ''); ?></span> DH</div>
                 <?php }?>
@@ -91,7 +93,7 @@
                     <div class="count_top"><i class="fa fa-dollar"></i> <span style="margin-right: 39px;"><?= lang('evening') ?></span>
                         : <span class="rd_part"><?php echo number_format((float)$report['consumption_history']['rd_part'], 1, '.', ''); ?></span> <small>DH</small>
                     </div>
-                <?php } ?>
+                <?php }} ?>
                 <!-- <span class="count_bottom"><i class="green">4% </i> From last Week</span>-->
             </div>
             <div class="col-md-3 col-sm-6 col-xs-12 tile_stats_count">

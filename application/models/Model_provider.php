@@ -225,8 +225,10 @@ class model_provider extends MY_Model {
         }
 		$this->db->where('q.provider', $id);
 		$this->db->where('p.status', "active");
+		$this->db->where('q.deleted', "false");
 		//$this->db->where('q.visibility', $visibility);
 		$this->db->order_by("p.name","asc");
+		$this->db->group_by("p.id","asc");
 		$products = $this->db->get()->result_array();
 		if($marks){
 		    foreach ($products as $key=>$product){
@@ -433,6 +435,13 @@ class model_provider extends MY_Model {
         $this->add($provider_data);
 
 
+    }
+
+
+    public function getByAttribut($table,$attribute,$value){
+        $this->db->where($attribute,$value);
+        $result=$this->db->get($table)->result_array();
+        return $result;
     }
 
 

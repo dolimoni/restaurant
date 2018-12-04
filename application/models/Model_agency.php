@@ -157,12 +157,15 @@ class model_agency extends CI_Model {
         foreach ($stock['productsList'] as $product) {
             $product['department'] = $stock['department'];
 
+
+            // modifier le stock local
             $agency = $this->getAgency($product['department']);
 
             $this->model_product->updateQuantity($product['id'], $product['quantity']);
 
             $response = $this->model_product->updateLocalQuantity($product['id'], $product['quantity']);
 
+            // envoyer le stock à l'agence
             $this->addStockProductsPrice($agency, $product["id"], $response, $product['quantity']);
 
         }
@@ -172,8 +175,8 @@ class model_agency extends CI_Model {
 
 
         // response : liste quantities used in consumption product
+        $db_product=$this->model_product->getById($product_id);
         if ($agency["type"] === "master") {
-            $db_product=$this->model_product->getById($product_id);
             foreach ($response["quantities"] as $quantityItem) {
                 $quantityData = array(
                     "quantity" => $quantityItem["quantity"],
@@ -191,28 +194,31 @@ class model_agency extends CI_Model {
                 $this->db->insert('stock_history', $quantityData);
 
             }
-        } else {
+        } else if ($agency["type"] === "slave") {
 
             // send products to remote db
-            $this->model_product->setCurrentDb($agency["id"]);
-            $this->model_provider->setCurrentDb($agency["id"]);
-            $slaveProduct = $this->model_product->getProductByMasterId($product_id);
-            $this->model_product->updateQuantity($slaveProduct['id'], $quantity, "up");
-            foreach ($response["quantities"] as $quantityItem) {
-                $slaveProvider=$this->model_provider->getProviderByMasterId($quantityItem["provider"]);
-                if($slaveProvider==NULL){
-                    $slaveProvider["id"]=0;
+
+            if($agency["transfert"]==='true'){
+                $this->model_product->setCurrentDb($agency["id"]);
+                $this->model_provider->setCurrentDb($agency["id"]);
+                $slaveProduct = $this->model_product->getProductByMasterId($product_id);
+                $this->model_product->updateQuantity($slaveProduct['id'], $quantity, "up");
+                foreach ($response["quantities"] as $quantityItem) {
+                    $slaveProvider=$this->model_provider->getProviderByMasterId($quantityItem["provider"]);
+                    if($slaveProvider==NULL){
+                        $slaveProvider["id"]=0;
+                    }
+                    $quantityData = array(
+                        "quantity" => $quantityItem["quantity"],
+                        "unit_price" => $quantityItem["unit_price"],
+                        "product" => $slaveProduct['id'],
+                        "provider"=> $slaveProvider["id"],
+                    );
+                    $this->model_product->accumulateQuantity($quantityData);
                 }
-                $quantityData = array(
-                    "quantity" => $quantityItem["quantity"],
-                    "unit_price" => $quantityItem["unit_price"],
-                    "product" => $slaveProduct['id'],
-                    "provider"=> $slaveProvider["id"],
-                );
-                $this->model_product->accumulateQuantity($quantityData);
+                $this->model_product->setCurrentDb(0);
+                $this->model_provider->setCurrentDb(0);
             }
-            $this->model_product->setCurrentDb(0);
-            $this->model_provider->setCurrentDb(0);
 
             // add product to stock_history in local db
             foreach ($response["quantities"] as $quantityItem) {
@@ -220,7 +226,7 @@ class model_agency extends CI_Model {
                     "quantity" => $quantityItem["quantity"],
                     "unit_price" => $quantityItem["unit_price"],
                     "product" => $product_id,
-                    "unit" => $slaveProduct['unit'],
+                    "unit" => $db_product['unit'],
                     "provider" => $quantityItem["provider"],
                     "department" => $agency["id"],
                     "type" => "out",
@@ -347,15 +353,28 @@ class model_agency extends CI_Model {
         }
     }
 
-    public function getProductsHistory()
+    public function getProductsHistory($agency='0',$group="false",$startDate=null,$endDate=null)
     {
-        $this->db->select('sh.id as sh_id,p.id as p_id,p.name,a.name as a_name,p.name as p_name,sh.type,sh.quantity,sh.unit,sh.removal,p.min_quantity,p.totalQuantity,Date(sh.created_at) as date');
+        $this->db->select('sh.id as sh_id,p.id as p_id,p.name,a.name as a_name,p.name as p_name,sh.type,sh.unit,sh.removal,p.min_quantity,p.totalQuantity,Date(sh.created_at) as date');
+        if($group==="true"){
+            $this->db->select('sum(sh.quantity) quantity');
+            $this->db->group_by('p.id');
+        }else{
+            $this->db->select('sh.quantity');
+        }
         $this->db->from('stock_history sh');
         $this->db->join('product p', 'p.id=sh.product');
         $this->db->join('agency a', 'a.id=sh.department', 'left');
         $this->db->where("sh.type","out");
         $this->db->where("sh.quantity>",0);
         $this->db->where("sh.destination","agency");
+        if ($startDate) {
+            $this->db->where('date(sh.created_at)>=', $startDate);
+            $this->db->where('date(sh.created_at)<=', $endDate);
+        }
+        if($agency!=='0'){
+            $this->db->where('a.id', $agency);
+        }
         $this->db->order_by("sh.created_at","desc");
         $result = $this->db->get();
         return $result->result_array();

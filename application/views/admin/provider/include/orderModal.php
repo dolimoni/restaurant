@@ -126,6 +126,7 @@
                                 </div>
                             </form>
 
+                            <?php if($params['pack']==='pro'){ ?>
                             <div class="col-sm-12 col-md-offset-3">
                                 <button type="button" class="selected"
                                         id="price" placeholder="Oui" style="width: 250px;" data-toggle="collapse"
@@ -133,6 +134,7 @@
                                         aria-controls="email"><?= lang('send_by_email') ?>
                                 </button>
                             </div>
+                            <?php } ?>
 
 
                             <br/>
@@ -384,9 +386,15 @@
                 <button type="submit" class="btn btn-warning small-button" name="print">
                     <span class="fa fa-print"></span> <?= lang('print') ?>
                 </button>
-                <button type="button" class="btn btn-primary small-button" name="save">
-                    <?= lang('save') ?>
-                </button>
+                <?php if($provider['stockitmain']==='0'){?>
+                    <button type="button" class="btn btn-primary small-button" name="save">
+                        <?= lang('save') ?>
+                    </button>
+                <?php }else{ ?>
+                    <button type="button" class="btn btn-primary small-button" name="save">
+                        Envoyer la commande
+                    </button>
+                <?php } ?>
             </div>
         </div>
     </div>

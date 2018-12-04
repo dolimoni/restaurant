@@ -73,7 +73,7 @@
 
                                 <button data-id="<?php echo $agency['id']; ?>" type="button"
                                         data-name="<?php echo $agency['name'] ?>"
-                                        class="btn btn-success btn-xs activateAgency hidden">
+                                        class="btn btn-success btn-xs activateAgencyy hidden">
                                     <i class="fa fa-eye"> </i>Activer
                                 </button>
                                 <button data-id="<?php echo $agency['id']; ?>" type="button"
@@ -103,7 +103,9 @@
 
 
 <?php $this->load->view('admin/partials/admin_footer'); ?>
-
+<style>
+    var activateAgency_url="<?php echo base_url('admin/agency/apiActivate'); ?>";
+</style>
 
 <script>
 
@@ -190,7 +192,7 @@
 
         $('.profile_details-link,.activateAgency').on('click', function () {
             var id = $(this).attr('data-id');
-            var activateAgency="<?php echo base_url('admin/agency/apiActivate'); ?>";
+            var activateAgency=activateAgency_url;
             apiRequest(activateAgency,{'id':id});
         });
     });

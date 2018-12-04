@@ -21,6 +21,7 @@ class Main extends BaseController
 
         $this->load->model('model_product');
         $this->load->model('model_meal');
+        $this->load->model('model_sale');
 
 
     }
@@ -35,7 +36,15 @@ class Main extends BaseController
 
         $data['params'] = $this->getParams();
 
-        $this->load->view('admin/uniwell/index',$data);
+        if($data['params']['app_sales']==='sioges'){
+
+            $this->load->view('admin/uniwell/sioges_index',$data);
+
+        }else if($data['params']['app_sales']==='sioges'){
+
+            $this->load->view('admin/uniwell/index',$data);
+        }
+
     }
     public function index2()
     {
@@ -52,6 +61,9 @@ class Main extends BaseController
         $data["sales"]=$this->model_report->reportRange(Date("Y-m-d"), Date("Y-m-d"));
         $this->load->view('admin/uniwell/index2',$data);
     }
+
+
+
 
     private function readSalesCSV($file_name){
         $this->log_begin();
@@ -99,6 +111,8 @@ class Main extends BaseController
         $this->log_end($data);
         return $data;
     }
+
+
     public function apiLoadFile()
     {
         try {
@@ -131,49 +145,94 @@ class Main extends BaseController
         }
     }
 
+    public function apiLoadSiogesFile()
+    {
+        try {
+            $this->log_begin();
+            $file_path = $this->uploadFile();
+            $data['sales'] = $this->model_sale->readSiogesSales($file_path);
+            $sales=$this->model_sale->getSiogesMeals($data);
+            foreach ($sales as $key => $sale) {
+                $meal = $this->model_meal->getByExternalCode($sale['externalCode']);
+                if($meal['name']=== $sale['meal'] /*and $priceCSV == $meal['sellPrice']*/){
+                    $sales[$key]['status']='valid';
+                }else if(!$meal){
+                    $undefinedMeal= $this->model_meal->createUndefined($sale['externalCode'],$sale['meal']);
+                    $this->model_meal->addSimpleMeal($undefinedMeal);
+                    $sales[$key][$key]['status'] = 'valid';
+                }
+            }
+            $response['sales']=$sales;
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'success', 'response' => $response)));
+            $this->log_end($data);
+        } catch (Exception $e) {
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'error')));
+        }
+    }
+
 
     public function ftp()
     {
         try {
+            $params = $this->getParams();
             $this->log_begin();
-            //$data['sales'] = $this->readSalesCSV(base_url('uploads/ftp/z-plu_1_0001001.csv'));
-            $data['sales'] = $this->readSalesCSV(base_url('uploads/ftp/z-plu_1_0001001.csv'));
-            //$data['sales'] = $this->readSalesCSV('/var/www/html/dagino/uploads/ftp/x-plu_1_0001001.csv');
-            //$data['sales'] = $this->readSalesCSV('/var/www/html/dagino/uploads/ftp/x-plu_1_0001001.csv');
-            $mealsList=array();
-            $this->log_middle($data['sales']);
-            foreach ($data['sales']['rows'] as $key => $sale) {
-                $meal = $this->model_meal->getByExternalCode($sale['0']);
-                $quantity = $sale[2] / 1000;
-                $priceCSV= $sale['3'] / 100 / $quantity;
-                $date=explode('T', $data['sales']['dateTime']);
-                $mealItem=array(
-                    'id'=>$meal['id'],
-                    'externalCode'=>$sale['0'],
-                    'quantity'=> $sale[2] / 1000,
-                    'amount'=>$sale['3'] / 100,
-                    'date'=> $date
-                );
-                if($meal['name']=== $sale['1'] /*and $priceCSV == $meal['sellPrice']*/){
-                    $data['sales']['rows'][$key]['status']='valid';
-                    $mealsList[]=$mealItem;
-                }else if (!$meal){
-                    $undefinedMeal = $this->model_meal->createUndefined($sale['0'], $sale['1']);
-                    $meal_id=$this->model_meal->addSimpleMeal($undefinedMeal);
-                    $mealItem["id"]= $meal_id;
-                    $data['sales']['rows'][$key]['status'] = 'valid';
-                    $mealsList[] = $mealItem;
 
-                }
+            $mealsList=array();
+            if($params['app_sales']==='uniwell'){
+                $data['sales'] = $this->model_sale->readUniwellSales(base_url('uploads/ftp/z-plu_1_0001001.csv'));
+                $mealsList=$this->getUniwellMeals($data);
+                $this->clean();
+                $this->model_meal->consumption($mealsList);
+            }else if($params['app_sales']==='sioges'){
+                $file = FCPATH.'uploads/ftp/rapport.xls';
+                $data['sales'] = $this->model_sale->readSiogesSales($file);
+                $mealsList=$this->model_sale->getSiogesMeals($data);
+                $this->clean();
+                $this->model_meal->consumption($mealsList);
+
             }
-            $this->log_middle($mealsList);
-            $this->clean();
-            $this->model_meal->consumption($mealsList);
+            //$this->log_middle($mealsList);
+
             $this->log_end(array('status' => 'error'));
 
         } catch (Exception $e) {
 
         }
+    }
+
+    private function getUniwellMeals($data){
+        $mealsList=array();
+        $this->log_middle($data['sales']);
+        foreach ($data['sales']['rows'] as $key => $sale) {
+            $meal = $this->model_meal->getByExternalCode($sale['0']);
+            $quantity = $sale[2] / 1000;
+            $priceCSV= $sale['3'] / 100 / $quantity;
+            $date=explode('T', $data['sales']['dateTime']);
+            $mealItem=array(
+                'id'=>$meal['id'],
+                'externalCode'=>$sale['0'],
+                'quantity'=> $sale[2] / 1000,
+                'amount'=>$sale['3'] / 100,
+                'date'=> $date
+            );
+            if($meal['name']=== $sale['1'] /*and $priceCSV == $meal['sellPrice']*/){
+                $data['sales']['rows'][$key]['status']='valid';
+                $mealsList[]=$mealItem;
+            }else if (!$meal){
+                $undefinedMeal = $this->model_meal->createUndefined($sale['0'], $sale['1']);
+                $meal_id=$this->model_meal->addSimpleMeal($undefinedMeal);
+                $mealItem["id"]= $meal_id;
+                $data['sales']['rows'][$key]['status'] = 'valid';
+                $mealsList[] = $mealItem;
+
+            }
+        }
+
+        return $mealsList;
     }
 
 

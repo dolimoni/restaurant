@@ -24,6 +24,7 @@
                     <th>Quantité finale</th>
                     <th>Différence</th>
                     <th>Quantité actuelle</th>
+                    <th>% de perte</th>
                     <th>Date d'inventaire</th>
                     <th>Actions</th>
                 </tr>
@@ -35,6 +36,7 @@
                     <th>Quantité finale</th>
                     <th>Différence</th>
                     <th>Quantité actuelle</th>
+                    <th>% de perte</th>
                     <th>Date d'inventaire</th>
                     <th>Actions</th>
                 </tr>
@@ -45,6 +47,10 @@
                        if($product['delta']<0){
                            $status="danger";
                        }
+                       $lostPercent=0;
+                       if($product['consr']>0){
+                           $lostPercent=($product['consr']-$product['consth'])/$product['consr']*100;
+                       }
                        ?>
                        <tr class="<?php echo $status ?>">
                            <td><?php echo $product['name'];?></td>
@@ -52,6 +58,7 @@
                            <td><?php echo $product['final_stock'];?></td>
                            <td><?php echo $product['delta'];?></td>
                            <td><?php echo number_format($product['totalQuantity'], 2); ?></td>
+                           <td><?php echo number_format($lostPercent,2).'%';?></td>
                            <td><?php echo $product['inventory_date'];?></td>
                            <td>
                                <a href=" <?php echo base_url('admin/product/statistic/' . $product['product']); ?>"

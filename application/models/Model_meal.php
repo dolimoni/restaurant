@@ -547,7 +547,7 @@ class model_meal extends CI_Model {
                             $this->db->where('product', $m_product['p_id']);
                             $this->db->where('type', "sale");
                             $this->db->where('unit_price', $quantity['unit_price']);
-                            $this->db->where('quantity>', 0);
+                            $this->db->where('quantity>=', 0);
                             $q = $this->db->get("consumption_product");
 
                             if ($q->num_rows() > 0) {

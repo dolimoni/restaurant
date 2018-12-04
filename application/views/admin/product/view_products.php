@@ -14,6 +14,9 @@
                     <a href="<?php echo base_url("admin/product/inventoryHistory"); ?>" class="btn btn-success" name="printSalesReport" style="min-width: 220px;">
                         <span class="fa fa-print"></span><?= lang("inventory_history"); ?>
                     </a>
+                    <a href="<?php echo base_url("admin/product/export"); ?>" class="btn btn-warning" style="min-width: 220px;">
+                        <span class="fa fa-print"></span>Exporter
+                    </a>
                 </div>
 
             </div>

@@ -222,7 +222,7 @@
                                 </div>
                                 <!-- <button class="btn btn-info btn-xs action validationButton" data-type="mute"><span
                                              class="glyphicon fa fa-bell-slash-o"></span></button>-->
-                               <div >
+                               <!--<div >
                                    <button class="btn btn-warning btn-xs action dayResport " data-type="day"><span
                                                class="glyphicon "></span>+1J
                                    </button>
@@ -232,7 +232,7 @@
                                    <button class="btn btn-warning btn-xs action monthResport " data-type="month"><span
                                                class="glyphicon"></span>+1M
                                    </button>
-                               </div>
+                               </div>-->
 
                             </td>
                         </tr>
@@ -254,6 +254,7 @@
     var swal_warning_delete_lang = "<?= lang("swal_warning_delete"); ?>";
     var swal_success_delete_lang = "<?= lang("swal_success_delete"); ?>";
     var swal_success_report_alert_lang = "<?= lang("swal_success_report_alert"); ?>";
+    var addRegularCostForm_url="<?php echo base_url('admin/budget/apiAddRegularCostForm'); ?>";
 </script>
 <!-- NProgress -->
 <script src="<?php echo base_url('assets/vendors/bootstrap-progressbar/bootstrap-progressbar.min.js'); ?>"></script>
@@ -308,30 +309,15 @@
     $(document).ready(function () {
         $('#addRegularCostForm').on('submit', function (e) {
             e.preventDefault();
-            var formData = new FormData(this);
-            $.ajax({
-                type: 'POST',
-                url: "<?php echo base_url('admin/budget/apiAddRegularCostForm'); ?>",
-                data: formData,
-                cache: false,
-                contentType: false,
-                processData: false,
-                success: function (data) {
-                    swal({
-                        title: "Success",
-                        text: swal_success_operation_lang,
-                        type: "success",
-                        timer: 1500,
-                        showConfirmButton: false
-                    });
-                    location.reload();
-                },
-                error: function (data) {
-                    console.log("error");
-                    console.log(data);
-                }
-            });
-
+            let regularCost = {
+                  'article':$(this).find('input[name=article]').val(),
+                  'price':$(this).find('input[name=price]').val(),
+                  'periodicity':$(this).find('select[name=periodicity]').val(),
+                  'reminderDate':$(this).find('input[name=reminderDate]').val(),
+                  'paiementDate':$(this).find('input[name=paiementDate]').val(),
+                  'description':$(this).find('input[name=description]').val(),
+            };
+            apiRequest(addRegularCostForm_url,{'regularCost':regularCost});
         });
 
         $('#editAlertForm').on('submit', function (e) {
@@ -430,7 +416,7 @@
             });
             $('input[name="reminderDate"]').val(moment().startOf('day').format('Y-M-D'));
 
-            $('#single_cal4').daterangepicker({
+            $('#single_cal3').daterangepicker({
                 singleDatePicker: true,
                 singleClasses: "picker_3"
             }, function (start, end, label) {

@@ -95,8 +95,8 @@
                                    <div class="x_content">
 
                                        <?php
-                                       $KgUnitHidden='hidden';
-                                       $LUnitHidden='hidden';
+                                       $KgUnitHidden='hide';
+                                       $LUnitHidden='hide';
                                        if(isset($products) && count($products)>0){
                                            if ($products[0]['unit'] === "kg") {
                                                $KgUnitHidden = '';
@@ -401,15 +401,16 @@
         };
 
         function changeUnit(value,panel) {
+
             if(value==='kg'){
-                panel.find('.kgUnitHidden').removeAttr('hidden');
-                panel.find('.lUnitHidden').attr('hidden',true);
+                panel.find('.kgUnitHidden').removeClass('hide');
+                panel.find('.lUnitHidden').addClass('hide');
             }else if(value==='L'){
-                panel.find('.lUnitHidden').removeAttr('hidden');
-                panel.find('.kgUnitHidden').attr('hidden', true);
+                panel.find('.lUnitHidden').removeClass('hide');
+                panel.find('.kgUnitHidden').addClass('hide');
             }else{
-                panel.find('.kgUnitHidden').removeAttr('hidden');
-                panel.find('.lUnitHidden').attr('hidden', true);
+                panel.find('.kgUnitHidden').removeClass('hide');
+                panel.find('.lUnitHidden').addClass('hide');
             }
         }
 

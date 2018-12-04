@@ -20,19 +20,25 @@
                                                           data-toggle="tab"
                                                           aria-expanded="false">Mes fournisseurs</a>
                 </li>
+                <?php if ($params['pack']==='pro'):?>
                 <li role="presentation"><a href="#tab_productsToOrder" id="home-tab"
                                            role="tab"
                                            data-toggle="tab" aria-expanded="true">Mes invitations (<?php echo count($invitations); ?>)</a>
                 </li>
+
+                <?php endif; ?>
             </ul>
+            <?php if ($params['pack']==='pro'):?>
             <div class="col-md-3 col-sm-12 col-xs-12 md-hidden">
                 <ul class="nav nav-tabs tabs-left">
                     <li class="active"><a href="#tab_products" data-toggle="tab" aria-expanded="true"><?= lang('details'); ?></a>
                     </li>
+
                     <li class=""><a href="#tab_productsToOrder" data-toggle="tab" aria-expanded="true"><?= lang('parameters'); ?></a>
                     </li>
                 </ul>
             </div>
+            <?php endif; ?>
             <div class="tab-content">
                 <div role="tabpanel" class="tab-pane fade active in" id="tab_products"
                      aria-labelledby="home-tab">

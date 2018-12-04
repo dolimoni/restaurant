@@ -44,8 +44,27 @@ class Agency extends BaseController
         $data['products'] = $this->model_agency->getProductsHistory();
         $data['productsList'] = $this->model_product->getAll(false, true);
         $data['productsList'] = $this->sortListByName($data['productsList']);
+        $data['agencies'] = $this->model_agency->getAll();
         $data['params'] = $this->getParams();
         $this->parser->parse('admin/agency/view_historyProducts', $data);
+    }
+    public function apiFilterHistoryProducts()
+    {
+        $this->load->model('department/model_stock');
+        $startDate=$this->input->post('startDate');
+        $endDate=$this->input->post('endDate');
+        $groupProducts=$this->input->post('groupProducts');
+        $agency=$this->input->post('agency');
+        try {
+            $data['products'] = $this->model_agency->getProductsHistory($agency,$groupProducts,$startDate,$endDate);
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'success','response'=>$data)));
+        } catch (Exception $e) {
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => 'error')));
+        }
     }
 
     public function show($id)

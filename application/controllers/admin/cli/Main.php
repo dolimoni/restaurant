@@ -7,7 +7,7 @@
  *
  */
 
-class Main extends CI_Controller
+class Main extends BaseController
 {
 
 
@@ -20,19 +20,9 @@ class Main extends CI_Controller
             echo "Forbidden access";
         }*/
 
-        // The path to the "application" folder
-        if (is_dir($application_folder)) {
-            define('FCPATH', $application_folder . '/');
-        } else {
-            if (!is_dir(FCPATH . $application_folder . '/')) {
-                exit("Your application folder path does not appear to be set correctly. Please open the following file and correct this: " . SELF);
-            }
-
-            define('FCPATH', FCPATH . $application_folder . '/');
-        }
-
         $this->load->model('model_product');
         $this->load->model('model_meal');
+        $this->load->model('model_sale');
 
 
     }
@@ -90,12 +80,32 @@ class Main extends CI_Controller
 
     public function ftp()
     {
+        $params=$this->getParams();
+        if($params['app_sales']==='sioges'){
+            $this->siogesFTP();
+        }else if($params['app_sales']==='uniwell'){
+
+        }
+    }
+
+
+    public function siogesFTP(){
+        try {
+            $file = FCPATH.'uploads/ftp/rapport.xls';
+            $data['sales'] = $this->model_sale->readSiogesSales($file);
+            $mealsList=$this->model_sale->getSiogesMeals($data);
+            $this->clean();
+            $this->model_meal->consumption($mealsList,false,true);
+
+        } catch (Exception $e) {
+
+        }
+    }
+
+    public function uniwellFTP(){
         try {
             $this->log_begin();
-            //$data['sales'] = $this->readSalesCSV(base_url('uploads/ftp/z-plu_1_0001001.csv'));
             $data['sales'] = $this->readSalesCSV(FCPATH.'uploads/ftp/z-plu_1_0001001.csv');
-            //$data['sales'] = $this->readSalesCSV('/var/www/html/dagino/uploads/ftp/x-plu_1_0001001.csv');
-            //$data['sales'] = $this->readSalesCSV('/var/www/html/dagino/uploads/ftp/x-plu_1_0001001.csv');
             $mealsList=array();
             $this->log_middle($data['sales']);
             foreach ($data['sales']['rows'] as $key => $sale) {
@@ -136,40 +146,6 @@ class Main extends CI_Controller
         } catch (Exception $e) {
 
         }
-    }
-
-
-    private function uploadFile()
-    {
-        $valid_file = true;
-        $message = '';
-        //if they DID upload a file...
-        if ($_FILES['image']['name']) {
-            //if no errors...
-            if (!$_FILES['image']['error']) {
-                //now is the time to modify the future file name and validate the file
-                $new_file_name = strtolower($_FILES['image']['name']); //rename file
-                if ($_FILES['image']['size'] > (20024000)) //can't be larger than 20 MB
-                {
-                    $valid_file = false;
-                    $message = 'Oops!  Your file\'s size is to large.';
-                }
-
-                //if the file has passed the test
-                if ($valid_file) {
-                    $file_path = 'assets/images/' . $new_file_name;
-                    move_uploaded_file($_FILES['image']['tmp_name'], FCPATH . $file_path);
-                    $message = 'Congratulations!  Your file was accepted.';
-                }
-            } //if there is an error...
-            else {
-                //set that to be the returned message
-                $message = 'Ooops!  Your upload triggered the following error:  ' . $_FILES['image']['error'];
-            }
-        }
-        $save_path = base_url() . $file_path;
-        $this->log_end(array('file_upload_status' => 'success'));
-        return $file_path;
     }
 
 

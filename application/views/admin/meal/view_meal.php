@@ -43,6 +43,9 @@
                     <a href="<?php echo base_url('admin/meal/groupMeals/' . $meal['group']); ?>" class="btn btn-info" >
                         <?= lang("groupsArticle") ?>
                     </a>
+                    <a href="<?php echo base_url('admin/meal/edit/' . $meal['id']); ?>" class="btn btn-success" >
+                        Modifier
+                    </a>
                     <?php echo form_close(); ?>
                 </div>
             </div> <!-- /col -->

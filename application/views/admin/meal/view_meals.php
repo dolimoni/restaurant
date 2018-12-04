@@ -98,7 +98,7 @@
                                    width="100%">
                                 <thead>
                                 <tr>
-                                    <th class="md-hidden-only">Id</th>
+                                    <th class="md-hidden-only">Numéro</th>
                                     <th><?= lang('name') ?></th>
                                     <th class="sm-hidden"><?= lang('family') ?></th>
                                     <th><?= lang('sale_price') ?></th>
@@ -111,7 +111,7 @@
                                 </thead>
                                 <tfoot>
                                 <tr>
-                                    <th class="md-hidden-only">Id</th>
+                                    <th class="md-hidden-only">Numéro</th>
                                     <th><?= lang('name') ?></th>
                                     <th class="sm-hidden"><?= lang('family') ?></th>
                                     <th><?= lang('sale_price') ?></th>
@@ -158,18 +158,18 @@
                                             <table class="table">
                                                 <thead>
                                                 <tr class="info">
-                                                    <th>Id</th>
+                                                    <th>Numéro</th>
                                                     <th><?= lang('name') ?></th>
                                                     <th><?= lang('price') ?></th>
                                                     <th><?= lang('quantity') ?></th>
-                                                    <th><?= lang('total_price') ?></th>
+                                                    <th><?= lang('Prix total>') ?></th>
                                                     <th><?= lang('consumption_rate') ?></th>
                                                     <th><?= lang('quantity') ?></th>
                                                 </tr>
                                                 </thead>
                                                 <tfoot>
                                                 <tr class="info">
-                                                    <th>Id</th>
+                                                    <th>Numéro</th>
                                                     <th><?= lang('name') ?></th>
                                                     <th><?= lang('price') ?></th>
                                                     <th><?= lang('quantity') ?></th>
@@ -279,6 +279,7 @@
 <!--Search in table-->
 <script>
     function myFunction() {
+        $(".productsRow").hide();
         var input, filter, table, tr, td, i;
         input = document.getElementById("searchInput");
         filter = input.value.toUpperCase();

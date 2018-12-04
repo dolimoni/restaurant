@@ -24,7 +24,7 @@ class Report extends BaseController
     public function index()
     {
         $this->log_begin();
-        $startDate = date('Y-m-d', strtotime('-1 month'));
+        $startDate = date('Y-m-d', strtotime('-12 month'));
         $endDate = date('Y-m-d');
         $this->session->set_userdata('startDate', $startDate);
         $this->session->set_userdata('endDate', $endDate);
@@ -37,7 +37,7 @@ class Report extends BaseController
     {
         $this->log_begin();
         $data['articles']=$this->model_report->report();
-        $start = date('Y-m-d', strtotime('-1 month'));
+        $start = date('Y-m-d', strtotime('-1é month'));
         $end = date('Y-m-d');
         $data['report'] = $this->model_report->global_report($start,$end);
         $this->load->model('model_budget');
@@ -71,7 +71,7 @@ class Report extends BaseController
         $this->log_begin();
         $this->load->model('model_provider');
         $params=$this->input->post('params');
-        $start = date('Y-m-d', strtotime('-1 month'));
+        $start = date('Y-m-d', strtotime('-12 month'));
         $end = date('Y-m-d');
         $articles=$this->model_report->report($params,$start,$end);
         $report=$this->model_report->providerReport($start,$end);

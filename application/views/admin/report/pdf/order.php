@@ -301,6 +301,8 @@
                     <?php } ?>
 
                     <div style="margin-top:30px 0px;"><?= lang('total') ?></div>
+
+                    <?php if($params['pack']==='pro'){ ?>
                     <table class="table1">
                         <thead>
                         <tr>
@@ -321,6 +323,20 @@
                         </tr>
                         </tbody>
                     </table>
+                    <?php }else if($params['pack']==='starter'){ ?>
+                        <table class="table1">
+                            <thead>
+                            <tr>
+                                <th><?= lang('total') ?></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td><?php echo $orders+$advances+$divers+$maintenance+$t_salary; ?></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    <?php } ?>
                     <!--<table class="table2 text-center" >
                         <tr>
                             <td colspan="4" class="text-right">SOUS TOTAL</td>

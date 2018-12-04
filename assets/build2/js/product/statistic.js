@@ -4,6 +4,7 @@ $(document).ready(function () {
 
     var tableConsumptionMeal;
     var tableProductOrdres;
+    var tableProductLosts;
 
     var handleDataTableButtons = function () {
 
@@ -37,6 +38,21 @@ $(document).ready(function () {
                     {"data": "price"},
                     {"data": "provider"},
                     {"data": "orderDate"},
+                ],
+            });
+        }
+
+        if ($("#datatable-losts").length) {
+            tableProductLosts=$("#datatable-losts").DataTable({
+                responsive: true,
+                "lengthMenu": [[25, 50, 200, -1], [25, 50, 200, "Tout"]],
+                "bInfo": false,
+                "language": {
+                    "url": datatable_fr_ulr
+                },
+                "columns": [
+                    {"data": "quantity"},
+                    {"data": "type"}
                 ],
             });
         }
@@ -103,6 +119,7 @@ $(document).ready(function () {
                             var mealConsumptionRateRange = data.report.productConsumptionRate;
                             inventory(data.report.productInventory);
                             var totalQuantity = 0;
+                            console.log(mealConsumptionRateRange);
                             $.each(mealConsumptionRateRange, function (key, mealConsumptionRateProduct) {
                                 totalQuantity += parseFloat(mealConsumptionRateProduct['sum_quantity']);
                                 console.log(totalQuantity);
@@ -121,15 +138,16 @@ $(document).ready(function () {
                                         productModel.attr('id', 'quantity_' + mealConsumptionRateProduct['product']);
                                         productModel.removeClass("product-quantity-model");
                                         productModel.find(' .progress-bar').attr('style', 'width: ' + Math.round(mealConsumptionRateProduct['sum_quantity'] / mealConsumptionRateRange['totalQuantity'] * 100) + '%')
-                                        productModel.find(' .w_right span:nth-child(1)').html(mealConsumptionRateProduct['sum_quantity']);
+                                        productModel.find(' .w_right span:nth-child(1)').html(parseFloat(mealConsumptionRateProduct['sum_quantity']).toFixed(2));
                                         productModel.find(' .w_right span:nth-child(2)').html(" " + mealConsumptionRateProduct['unit']);
                                         productModel.find(".w_left.w_25").html(mealConsumptionRateProduct["name"]);
                                         $(".productsConsomationList").append(productModel);
                                         console.log(productModel);
                                     }
                                     //change quantity graph
-                                    $('#quantity_' + mealConsumptionRateProduct['meal'] + ' .progress-bar').attr('style', 'width: ' + Math.round(mealConsumptionRateProduct['sum_quantity'] / mealConsumptionRateRange['totalQuantity'] * 100) + '%')
-                                    $('#quantity_' + mealConsumptionRateProduct['meal'] + ' .w_right span:nth-child(1)').html(mealConsumptionRateProduct['sum_quantity']);
+                                    $('#quantity_' + mealConsumptionRateProduct['meal'] + ' .progress-bar').attr('style', 'width: ' + Math.round(mealConsumptionRateProduct['sum_quantity'] / data["report"]['totalConsumptionQuantity'] * 100) + '%')
+                                    $('#quantity_' + mealConsumptionRateProduct['meal'] + ' .w_right span:nth-child(1)').html(parseFloat(mealConsumptionRateProduct['sum_quantity']).toFixed(2));
+                                    console.log('width: ' + Math.round(mealConsumptionRateProduct['sum_quantity'] / mealConsumptionRateRange['totalQuantity'] * 100) + '%');
                                 }
                             });
                             $(".product-quantity-total").find(' .w_right span:nth-child(1)').html(parseFloat(totalQuantity).toFixed(2));
@@ -163,11 +181,14 @@ $(document).ready(function () {
 
                             tableProductOrdres.clear().draw();
                             $.each(data.report.product_orders, function (key,product_order ) {
-                                console.log('product_order',product_order);
+                                let totalOrderQuantity=product_order.quantity;
+                                if(product_order.pack==='true'){
+                                    totalOrderQuantity= parseFloat(product_order['quantity']).toFixed(2)+' pack de '+product_order['piecesByPack']+' pieces';
+                                }
                                 var row = tableProductOrdres.row.add({
-                                    "quantity": product_order.quantity,
-                                    "unit_price": parseFloat(product_order.od_price/product_order['quantity']).toFixed(2),
-                                    "price": product_order.od_price,
+                                    "quantity": totalOrderQuantity,
+                                    "unit_price": parseFloat(product_order.od_price),
+                                    "price": parseFloat(product_order.quantity*product_order.od_price).toFixed(2),
                                     "provider": product_order.name,
                                     "orderDate": product_order.orderDate,
                                 }).draw().node();
@@ -198,6 +219,7 @@ $(document).ready(function () {
             });
 
 
+            console.log(stocks);
             $.each(stocks, function (key, stock) {
                 chart_plot_stock_data.push([new Date(stock['orderDate']), parseFloat(stock['quantity'])]);
             });
@@ -341,29 +363,41 @@ $(document).ready(function () {
                 }
             };
 
-            $.plot($("#chart_plot_05"),
-                [{
-                    label: "Consommation",
-                    data: chart_plot_consumption_data,
-                    lines: {
-                        fillColor: "rgba(150, 202, 89, 0.12)"
-                    },
-                    points: {
-                        fillColor: "#fff"
-                    }
-                }], chart_plot_05_settings);
+            if(chart_plot_consumption_data.length>0){
+                $(".chart_plot_05_panel").show();
+                $.plot($("#chart_plot_05"),
+                    [{
+                        label: "Consommation",
+                        data: chart_plot_consumption_data,
+                        lines: {
+                            fillColor: "rgba(150, 202, 89, 0.12)"
+                        },
+                        points: {
+                            fillColor: "#fff"
+                        }
+                    }], chart_plot_05_settings);
+            }else{
+                //console.log('hide');
+                $(".chart_plot_05_panel").fadeOut();
+            }
 
-            $.plot($("#chart_plot_07"),
-                [{
-                    label: "Stock",
-                    data: chart_plot_stock_data,
-                    lines: {
-                        fillColor: "rgba(150, 202, 89, 0.12)"
-                    },
-                    points: {
-                        fillColor: "#fff"
-                    }
-                }], chart_plot_07_settings);
+            if(chart_plot_stock_data.length>0){
+                $(".chart_plot_07_panel").show();
+                $.plot($("#chart_plot_07"),
+                    [{
+                        label: "Stock",
+                        data: chart_plot_stock_data,
+                        lines: {
+                            fillColor: "rgba(150, 202, 89, 0.12)"
+                        },
+                        points: {
+                            fillColor: "#fff"
+                        }
+                    }], chart_plot_07_settings);
+            }else{
+                $(".chart_plot_07_panel").fadeOut();
+            }
+
 
         }
 
@@ -398,7 +432,7 @@ $(document).ready(function () {
 
 
         var optionSet1 = {
-            startDate: moment().subtract(29, 'days'),
+            startDate: moment().subtract(365, 'days'),
             endDate: moment(),
             minDate: '01/01/2017',
             maxDate: '12/31/2027',
@@ -436,7 +470,7 @@ $(document).ready(function () {
             }
         };
 
-        $('#reportrange span').html(moment().subtract(29, 'days').format('MMMM D, YYYY') + ' - ' + moment().format('MMMM D, YYYY'));
+        $('#reportrange span').html(moment().subtract(365, 'days').format('MMMM D, YYYY') + ' - ' + moment().format('MMMM D, YYYY'));
         $('#reportrange').daterangepicker(optionSet1, cb);
 
         $('#reportrange').on('show.daterangepicker', function () {

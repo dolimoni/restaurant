@@ -225,6 +225,7 @@ if (!isset($report['s_cost'])) {
 
 
                 <div class="col-xs-12">
+                    <h3>Historique de consommation</h3>
                     <div class="table-responsive">
                         <table id="datatable-consumption" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
                             <thead>
@@ -253,14 +254,49 @@ if (!isset($report['s_cost'])) {
                         </table>
                     </div>
                 </div>
-                <!--<div class="col-md-6 col-sm-12 col-xs-12 text-center">
-                    <h3 class="count_top" style="display:  inline-block;"><?/*= lang("lost"); */?></h3>
-                    <h3 class="count_top report_lost" style="display:  inline-block;"><?php /*echo number_format((float)$report['s_lost'], 0, '.', ''); */?></h3>
+
+                <div class="col-xs-12">
+                    <h3>Historique des pertes</h3>
+                    <div class="table-responsive">
+                        <table id="datatable-losts" class="table table-striped table-bordered dt-responsive nowrap mgrt10" cellspacing="0" width="100%">
+                            <thead>
+                            <tr>
+                                <th>Quantity</th>
+                                <th>Date</th>
+                            </tr>
+                            </thead>
+                            <tfoot>
+                            <tr>
+                                <th>Quantity</th>
+                                <th>Date</th>
+                            </tr>
+                            </tfoot>
+                            <tbody>
+                            <?php foreach ($report['losts_list'] as $lost) { ?>
+                                <tr>
+                                    <td><?php echo $lost['s_lost'];?></td>
+                                    <td><?php echo $lost['createdAt'];?></td>
+                                </tr>
+                            <?php } ?>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-md-6 col-sm-12 col-xs-12 text-center hide">
+                        <h3 class="count_top" style="display:  inline-block;"><?= lang("lost"); ?></h3>
+                        <h3 class="count_top report_lost" style="display:  inline-block;"><?php echo number_format((float)$report['s_lost'], 0, '.', ''); ?></h3>
+                    </div>
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        <div class="col-md-6">
+                            <h4 style="display: inline;"><?= lang("add_lost"); ?> : </h4>
+                        </div>
+                        <div class="col-md-3">
+                            <input class="form-control" type="number"name="lostQuantity"/>
+                        </div>
+                        <div class="col-md-3">
+                            <button class="btn btn-info lostQuantityButton"><?= lang("confirme"); ?></button>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-md-6 col-sm-6 col-xs-12">
-                    <h4 style="display: inline;"><?/*= lang("add_lost"); */?> : </h4> <input type="number"name="lostQuantity"/>
-                    <button class="btn btn-info lostQuantityButton"><?/*= lang("confirme"); */?></button>
-                </div>-->
 
             </div>
 
@@ -310,8 +346,6 @@ if (!isset($report['s_cost'])) {
         echo "var mealConsumptionRate = " . $js_array . ";\n";
         ?>
 
-
-
         var myDataPoints = [];
         $.each(mealConsumptionRate, function (key, mealConsumptionRateProduct) {
             var point = {
@@ -353,31 +387,7 @@ if (!isset($report['s_cost'])) {
 
 <script>
     var daysInReport =<?php echo $report['rds']; ?>;
-    /*$.ajax({
-        url: apiEvolutionRange_url,
-        type: "POST",
-        dataType: "json",
-        data: {'id':meal_id},
-        success: function (data) {
-            if (data.status === true) {
 
-                if (daysInReport === 1) {
-                    $("#chart_plot_01").hide();
-                    $("#chartContainer1").fadeIn();
-                    oneDayChart(data.evolution);
-                } else {
-                    $("#chartContainer1").hide();
-                    $("#chart_plot_01").fadeIn();
-                    flot_chart(data.evolution,true);
-                }
-            }
-            else {
-                console.log('Error');
-            }
-        },
-        error: function (data) {
-        }
-    });*/
     var myData = {
         'id':<?php echo $meal['id'];?>,
     };
@@ -561,7 +571,8 @@ if (!isset($report['s_cost'])) {
                a = moment(data[0]["createdAt"]);
                b = moment(data[evolutionLength-1]["createdAt"]);
           }
-        c=b.diff(a, 'days');
+        c=Math.abs(b.diff(a, 'days'));
+        daysMarks= Math.round(c/31);
         daysMarks= Math.round(c/31);
         if(daysMarks===0){
             daysMarks=1;
@@ -695,74 +706,74 @@ if (!isset($report['s_cost'])) {
 
 
     function apiEvolutionRangeCallback(data) {
+        /*****************************CHANGE CONSOMMATION GRAPH****************************************************/
+        //empty quantity graph
+        $('.product-quantity .progress-bar').css({
+            'display': 'none',
+        });
+        $('.product-quantity .w_right span:nth-child(1)').html(0);
+        //price graph
+        var myDataPoints = [];
+        var mealConsumptionRateRange = data.evolution.mealConsumptionRateRange;
+        $.each(mealConsumptionRateRange, function (key, mealConsumptionRateProduct) {
+            if (mealConsumptionRateProduct['avg_unit_price']) {
+                var point = {
+                    y: mealConsumptionRateProduct['avg_unit_price'] * mealConsumptionRateProduct['sum_quantity'],
+                    label: mealConsumptionRateProduct['name'],
+                    unit: 'DH'
+                };
+                myDataPoints.push(point);
 
-            /*****************************CHANGE CONSOMMATION GRAPH****************************************************/
-            //empty quantity graph
-            $('.product-quantity .progress-bar').css({
-                'display': 'none',
-            });
-            $('.product-quantity .w_right span:nth-child(1)').html(0);
-            //price graph
-            var myDataPoints = [];
-            var mealConsumptionRateRange = data.evolution.mealConsumptionRateRange;
-            $.each(mealConsumptionRateRange, function (key, mealConsumptionRateProduct) {
-                if (mealConsumptionRateProduct['avg_unit_price']) {
-                    var point = {
-                        y: mealConsumptionRateProduct['avg_unit_price'] * mealConsumptionRateProduct['sum_quantity'],
-                        label: mealConsumptionRateProduct['name'],
-                        unit: 'DH'
-                    };
-                    myDataPoints.push(point);
+                if (!$('#quantity_' + mealConsumptionRateProduct['product']).length) {
+                    var productModel = $(".product-quantity-model").clone().removeAttr("hidden");
+                    productModel.addClass("widget_summary");
+                    productModel.attr('id', 'quantity_' + mealConsumptionRateProduct['product']);
+                    productModel.removeClass("product-quantity-model");
+                    productModel.find(' .progress-bar').attr('style', 'width: ' + parseFloat( Math.round(mealConsumptionRateProduct['sum_quantity'] / mealConsumptionRateRange['totalQuantity'] * 100)).toFixed(2) + '%');
+                    productModel.find(' .w_right span:nth-child(1)').html(parseFloat(mealConsumptionRateProduct['sum_quantity']).toFixed(2));
+                    productModel.find(' .w_right span:nth-child(2)').html(" " + mealConsumptionRateProduct['unit']);
+                    productModel.find(".w_left.w_25").html(mealConsumptionRateProduct["name"]);
+                    $(".productsConsomationList").append(productModel);
+                    console.log(productModel);
+                }
+                //change quantity graph
+                $('#quantity_' + mealConsumptionRateProduct['product'] + ' .progress-bar').attr('style', 'width: ' + parseFloat(Math.round(mealConsumptionRateProduct['sum_quantity'] / mealConsumptionRateRange['totalQuantity'] * 100)).toFixed(2) + '%')
+                $('#quantity_' + mealConsumptionRateProduct['product'] + ' .w_right span:nth-child(1)').html(parseFloat(mealConsumptionRateProduct['sum_quantity']).toFixed(2));
+            }
+        });
 
-                    if (!$('#quantity_' + mealConsumptionRateProduct['product']).length) {
-                        var productModel = $(".product-quantity-model").clone().removeAttr("hidden");
-                        productModel.addClass("widget_summary");
-                        productModel.attr('id', 'quantity_' + mealConsumptionRateProduct['product']);
-                        productModel.removeClass("product-quantity-model");
-                        productModel.find(' .progress-bar').attr('style', 'width: ' + parseFloat( Math.round(mealConsumptionRateProduct['sum_quantity'] / mealConsumptionRateRange['totalQuantity'] * 100)).toFixed(2) + '%');
-                        productModel.find(' .w_right span:nth-child(1)').html(parseFloat(mealConsumptionRateProduct['sum_quantity']).toFixed(2));
-                        productModel.find(' .w_right span:nth-child(2)').html(" " + mealConsumptionRateProduct['unit']);
-                        productModel.find(".w_left.w_25").html(mealConsumptionRateProduct["name"]);
-                        $(".productsConsomationList").append(productModel);
-                        console.log(productModel);
-                    }
-                    //change quantity graph
-                    $('#quantity_' + mealConsumptionRateProduct['product'] + ' .progress-bar').attr('style', 'width: ' + parseFloat(Math.round(mealConsumptionRateProduct['sum_quantity'] / mealConsumptionRateRange['totalQuantity'] * 100)).toFixed(2) + '%')
-                    $('#quantity_' + mealConsumptionRateProduct['product'] + ' .w_right span:nth-child(1)').html(parseFloat(mealConsumptionRateProduct['sum_quantity']).toFixed(2));
+        var chart = new CanvasJS.Chart("chartContainer", {
+            animationEnabled: true,
+            data: [{
+                type: "doughnut",
+                startAngle: 60,
+                //innerRadius: 60,
+                indexLabelFontSize: 17,
+                indexLabel: "{label} - #percent%",
+                toolTipContent: "<b>{label}:</b> {y} (#percent%)",
+                dataPoints: myDataPoints
+            }]
+        });
+        chart.render();
+        /*********************************************************************************/
+        var cost = 0;
+
+        if (data.rds.length === 1) {
+            $("#chart_plot_01").addClass('hide');
+            $("#chartContainer1").fadeIn();
+            oneDayChart(data.evolution);
+            cost = parseFloat(data.evolution[0]['s_cost']).toFixed(2)
+        }else {
+            $("#chartContainer1").hide();
+            $("#chart_plot_01").fadeIn();
+            flot_chart(data.evolution,true);
+            $.each(data.evolution, function (key, meal) {
+                if (meal['id']) {
+                    cost += parseFloat(meal['s_cost']);
                 }
             });
+        }
 
-            var chart = new CanvasJS.Chart("chartContainer", {
-                animationEnabled: true,
-                data: [{
-                    type: "doughnut",
-                    startAngle: 60,
-                    //innerRadius: 60,
-                    indexLabelFontSize: 17,
-                    indexLabel: "{label} - #percent%",
-                    toolTipContent: "<b>{label}:</b> {y} (#percent%)",
-                    dataPoints: myDataPoints
-                }]
-            });
-            chart.render();
-            /*********************************************************************************/
-            var cost = 0;
-            if (data.rds.length === 1) {
-                $("#chart_plot_01").hide();
-                $("#chartContainer1").fadeIn();
-                oneDayChart(data.evolution);
-                cost = parseFloat(data.evolution[0]['s_cost']).toFixed(2)
-            } else {
-                $("#chartContainer1").hide();
-                $("#chart_plot_01").fadeIn();
-                console.log(data.evolution);
-                flot_chart(data.evolution,true);
-                $.each(data.evolution, function (key, meal) {
-                    if (meal['id']) {
-                        cost += parseFloat(meal['s_cost']);
-                    }
-                });
-            }
 
             var productsCount = -2;
             $.each(data.evolution.mealConsumptionRateRange, function (key, products) {
@@ -829,7 +840,7 @@ if (!isset($report['s_cost'])) {
 <script>
     function init_daterangepicker(){
         var optionSet1 = {
-            startDate: moment().subtract(29, 'days'),
+            startDate: moment().subtract(365, 'days'),
             endDate: moment(),
             minDate: '01/01/2017',
             maxDate: '12/31/2027',
@@ -882,7 +893,7 @@ if (!isset($report['s_cost'])) {
             };
             apiRequest(apiEvolutionRange_url,myData,params,apiEvolutionRangeCallback);
         };
-        $('#reportrange1 span').html(moment().subtract(29, 'days').format('MMMM D, YYYY') + ' - ' + moment().format('MMMM D, YYYY'));
+        $('#reportrange1 span').html(moment().subtract(365, 'days').format('MMMM D, YYYY') + ' - ' + moment().format('MMMM D, YYYY'));
         $('#reportrange1').daterangepicker(optionSet1, cb);
     }
     $(document).ready(function () {
@@ -911,6 +922,24 @@ if (!isset($report['s_cost'])) {
                         {"data": "quantity"},
                         {"data": "price"},
                     ],
+                    "bPaginate": false,
+                    "bLengthChange": false,
+                    "bFilter": true,
+                    "bInfo": false,
+                });
+            }
+
+            if ($("#datatable-losts").length) {
+                $("#datatable-losts").DataTable({
+                    responsive: true,
+                    "lengthMenu": [[25, 50, 200, -1], [25, 50, 200, "Tout"]],
+                    "language": {
+                        "url": "<?php echo base_url("assets/vendors/datatables.net/French.json"); ?>"
+                    },
+                    "bPaginate": false,
+                    "bLengthChange": false,
+                    "bFilter": true,
+                    "bInfo": false,
                 });
             }
         };

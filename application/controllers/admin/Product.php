@@ -37,11 +37,24 @@ class Product extends BaseController {
 	{
 	    $this->load->model("model_report");
         $this->log_begin();
-        $start = date('Y-m-d', strtotime('-1 month'));
+        $start = date('Y-m-d', strtotime('-12 month'));
         $end = date('Y-m-d');
         $data['products'] = $this->model_report->consumptionProduct($start,$end);
         $data['params'] = $this->getParams();
         $this->parser->parse('admin/product/view_consumption', $data);
+        $this->log_end($data);
+    }
+
+    public function export()
+	{
+        $this->log_begin();
+        $data['products'] = $this->model_product->getAll(true,false);//param1: get Meals,param2:get compositions
+        $data['sittingMoney'] = $this->model_product->getSittingMoney();
+        $data['productsComposition'] = $this->model_product->getCompositions(true);//true: get Meals
+        $data['providers'] = $this->model_provider->getAll();
+        /* $this->control();*/
+        $data['params'] = $this->getParams();
+        $this->parser->parse('admin/product/view_export_products', $data);
         $this->log_end($data);
     }
 
@@ -154,12 +167,12 @@ class Product extends BaseController {
            $this->model_product->addInventory($productsList);
            $this->output
                ->set_content_type("application/json")
-               ->set_output(json_encode(array('status' => 'success', 'redirect' => base_url('admin/product/index'))));
-           $this->log_end(array('status' => 'success', 'redirect' => base_url('admin/product/index')));
+               ->set_output(json_encode(array('status' => 'success', 'redirect' => base_url('admin/product/inventoryHistory'))));
+           $this->log_end(array('status' => 'success', 'redirect' => base_url('admin/product/inventoryHistory')));
        } catch (Exception $e) {
            $this->output
                ->set_content_type("application/json")
-               ->set_output(json_encode(array('status' => 'error', 'redirect' => base_url('admin/product/index'))));
+               ->set_output(json_encode(array('status' => 'error', 'redirect' => base_url('admin/product/inventoryHistory'))));
        }
     }
 
@@ -185,7 +198,7 @@ class Product extends BaseController {
                if ($data["params"]["multi_site"] === "true") {
                    foreach ($this->slaveAgencies as $slaveAgency) {
                        $this->model_product->setCurrentDb($slaveAgency["id"]);
-                       $slave_product = $this->model_product->getProductByMasterId($product['id']);
+                       $slave_product = $this->model_product->getProductByMasterId($data['products']);
                        $product["id"] = $slave_product["id"];
                        $this->model_product->edit($product, true);
                    }
@@ -295,10 +308,11 @@ class Product extends BaseController {
         $this->log_begin();
         $id = $this->uri->segment(4);
 		$data['product'] = $this->model_product->getById($id);
-        $startDate = date('Y-m-d', strtotime('-1 month'));
+        $startDate = date('Y-m-d', strtotime('-12 month'));
         $endDate = date('Y-m-d');
         $data['report']=$this->report($id, $startDate, $endDate);
         $data['product_orders']=$this->model_product->getOrders($id,$startDate,$endDate);
+        $data['product_losts']=$this->model_product->getLosts($id,$startDate,$endDate);
         $data['productInventory']=$this->model_product->getProductInventory($id);
         $data['params'] = $this->getParams();
         //report
@@ -372,7 +386,9 @@ class Product extends BaseController {
                         }
                         $product["provider"] = $slaveProvider["id"];
                         $product["id"] = $slave_product["id"];
-                        $this->model_product->edit($product,true);
+                        if($slaveAgency['hasRemote']==='true'){
+                            $this->model_product->edit($product,true);
+                        }
                     }
                     $this->model_product->setCurrentDb(0);
                     $this->model_provider->setCurrentDb(0);
@@ -391,7 +407,9 @@ class Product extends BaseController {
                         }
                         $product["id"] = $slave_product["id"];
                         $product["provider"] = $slaveProvider["id"];
-                        $this->model_product->edit($product);
+                        if($slaveAgency['hasRemote']==='true'){
+                            $this->model_product->edit($product);
+                        }
                     }
                     $this->model_product->setCurrentDb(0);
                     $this->model_provider->setCurrentDb(0);

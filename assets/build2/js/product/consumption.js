@@ -30,7 +30,7 @@ function init_daterangepicker() {
                     productsTable.clear();
                       $.each(data.products, function (key,product ) {
                         var editAction="<a href='"+ baseUrl+"/admin/product/edit/"+product.p_id+"' class='btn btn-primary btn-xs'>Modifier</a>";
-                        var deleteticAction="<a href='" + baseUrl + "/admin/product/statistic/" + product.p_id + "' class='btn btn-warning btn-xs'>Statistiques</a>";
+                        var statisticAction="<a href='" + baseUrl + "/admin/product/statistic/" + product.p_id + "' class='btn btn-warning btn-xs'>Statistiques</a>";
                          var row = productsTable.row.add({
                               "id": product.p_id,
                               "name": product.name,
@@ -52,12 +52,12 @@ function init_daterangepicker() {
 
 
     var optionSet1 = {
-        startDate: moment().subtract(29, 'days'),
+        startDate: moment().subtract(365, 'days'),
         endDate: moment(),
         minDate: '01/01/2017',
         maxDate: '12/31/2027',
         dateLimit: {
-            days: 60
+            days: 365
         },
         showDropdowns: true,
         showWeekNumbers: true,
@@ -91,8 +91,8 @@ function init_daterangepicker() {
 
     };
 
-    $('#reportrange span').html(moment().subtract(29, 'days').format('MMMM D, YYYY') + ' - ' + moment().format('MMMM D, YYYY'));
-    startDate=moment().subtract(29, 'days').format('YYYY-MM-DD');
+    $('#reportrange span').html(moment().subtract(365, 'days').format('MMMM D, YYYY') + ' - ' + moment().format('MMMM D, YYYY'));
+    startDate=moment().subtract(365, 'days').format('YYYY-MM-DD');
     endDate= moment().format('YYYY-MM-DD');
     $('#reportrange').daterangepicker(optionSet1, cb);
 

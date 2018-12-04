@@ -637,13 +637,28 @@ class model_report extends CI_Model
         $this->db->where('c.meal', $meal_id);
         $this->db->where('c.type', 'lost');
         if ($startDate) {
-            $this->db->where('DATE(c.report_date) >=', $startDate);
-            $this->db->where('DATE(c.report_date) <=', $endDate);
+            $this->db->where('DATE(c.createdAt) >=', $startDate);
+            $this->db->where('DATE(c.createdAt) <=', $endDate);
         }
         $s_lost = $this->db->get()->row()->s_lost;
 
 
         $report['s_lost'] = $s_lost;
+
+
+        $this->db->select('sum(c.quantity) as s_lost,createdAt');
+        $this->db->from('consumption c');
+        $this->db->where('c.meal', $meal_id);
+        $this->db->where('c.type', 'lost');
+        if ($startDate) {
+            $this->db->where('DATE(c.createdAt) >=', $startDate);
+            $this->db->where('DATE(c.createdAt) <=', $endDate);
+        }
+        $this->db->group_by('YEAR(createdAt), MONTH(createdAt), DAY(createdAt)');
+
+
+
+        $report['losts_list'] = $this->db->get()->result_array();
 
 
         $report['mealConsumptionRate'] = $this->mealConsumptionRate($meal_id,$startDate,$endDate);
@@ -1252,7 +1267,7 @@ class model_report extends CI_Model
         return $data;
     }
 
-    public function consumptionProduct($startDate,$endDate){
+    public function consumptionProduct($startDate,$endDate,$product=0){
         $this->db->select("cp.*,pt.name,pt.id as p_id");
         $this->db->select("sum(cp.quantity) as cp_quantity");
         $this->db->from("consumption_product cp");
@@ -1261,6 +1276,9 @@ class model_report extends CI_Model
         if ($startDate) {
             $this->db->where('c.report_date>=', $startDate);
             $this->db->where('c.report_date<=', $endDate);
+        }
+        if($product>0){
+            $this->db->where('product',$product);
         }
         $this->db->group_by("cp.product");
 

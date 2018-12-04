@@ -135,21 +135,7 @@ class Budget extends BaseController {
     public function apiAddRegularCostForm(){
        try {
            $this->log_begin();
-           $article = $this->input->post('article');
-           $price = $this->input->post('price');
-           $periodicity = $this->input->post('periodicity');
-           $reminderDate = $this->input->post('reminderDate');
-           $description = $this->input->post('description');
-           $paiementDate = $this->input->post('paiementDate');
-
-           $regularCost = array(
-               'article' => $article,
-               'price' => $price,
-               'periodicity' => $periodicity,
-               'reminderDate' => $reminderDate,
-               'description' => $description,
-               'paiementDate' => $paiementDate,
-           );
+           $regularCost = $this->input->post('regularCost');
            $this->log_middle($regularCost);
            $this->model_budget->addRegularCost($regularCost);
 

@@ -69,7 +69,7 @@ function init_daterangepicker() {
     };
 
     var optionSet1 = {
-        startDate: moment().subtract(29, 'days'),
+        startDate: moment().subtract(365, 'days'),
         endDate: moment(),
         minDate: '01/01/2017',
         maxDate: '12/31/2027',
@@ -90,7 +90,7 @@ function init_daterangepicker() {
         buttonClasses: ['btn btn-default'],
         applyClass: 'btn-small btn-primary',
         cancelClass: 'btn-small',
-        format: 'MM/DD/YYYY',
+        format: 'DD/MM/YYYY',
         separator: ' to ',
         locale: {
             applyLabel: 'Envoyer',
@@ -104,7 +104,7 @@ function init_daterangepicker() {
         }
     };
 
-    $('#reportrange span').html(moment().subtract(29, 'days').format('MMMM D, YYYY') + ' - ' + moment().format('MMMM D, YYYY'));
+    $('#reportrange span').html(moment().subtract(365, 'days').format('MMMM D, YYYY') + ' - ' + moment().format('MMMM D, YYYY'));
     $('#reportrange').daterangepicker(optionSet1, cb);
 
     $('#reportrange').on('show.daterangepicker', function () {

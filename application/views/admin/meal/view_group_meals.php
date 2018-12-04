@@ -53,7 +53,7 @@
                                    width="100%">
                                 <thead>
                                 <tr>
-                                    <th class="md-hidden-only">Id</th>
+                                    <th class="md-hidden-only">Numéro</th>
                                     <th><?= lang("name") ?></th>
                                     <th><?= lang("sale_price") ?></th>
                                     <th class="danger"><?= lang("cost") ?></th>
@@ -63,7 +63,7 @@
                                 </thead>
                                 <tfoot>
                                 <tr>
-                                    <th class="md-hidden-only">Id</th>
+                                    <th class="md-hidden-only">Numéro</th>
                                     <th><?= lang("name") ?></th>
                                     <th><?= lang("sale_price") ?></th>
                                     <th class="danger"><?= lang("cost") ?></th>
@@ -103,7 +103,7 @@
                                             <table class="table">
                                                 <thead>
                                                 <tr class="info">
-                                                    <th>Id</th>
+                                                    <th>Numéro</th>
                                                     <th><?= lang("name") ?></th>
                                                     <th><?= lang("price") ?></th>
                                                     <th><?= lang("quantity") ?></th>
@@ -114,7 +114,7 @@
                                                 </thead>
                                                 <tfoot>
                                                 <tr class="info">
-                                                    <th>Id</th>
+                                                    <th>Numéro</th>
                                                     <th><?= lang("name") ?></th>
                                                     <th><?= lang("price") ?></th>
                                                     <th><?= lang("quantity") ?></th>

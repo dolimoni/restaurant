@@ -42,7 +42,7 @@ class Meal extends BaseController {
         $meal_id = $this->uri->segment(4);
         $data['meal'] = $this->model_meal->get($meal_id);
         $data['products'] = $this->model_meal->getProducts($meal_id);
-        $start = date('Y-m-d', strtotime('-1 month'));
+        $start = date('Y-m-d', strtotime('-12 month'));
         $end = date('Y-m-d');
         $data['report'] = $this->model_report->reportById($meal_id,$start,$end);
         $evolution = $this->model_report->evolutionRange($meal_id, $start, $end);
@@ -90,12 +90,12 @@ class Meal extends BaseController {
     }
     public function apiEvolutionRange(){
 
-        $this->log_begin();
+            $this->log_begin();
         $meal_id = $this->input->post('id');
         $startDate = $this->input->post('startDate');
         $endDate = $this->input->post('endDate');
         if(is_null($startDate)){
-            $startDate = date('Y-m-d', strtotime('-1 month'));
+            $startDate = date('Y-m-d', strtotime('-12 month'));
             $endDate = date('Y-m-d');
         }
         $evolution = $this->model_report->evolutionRange($meal_id, $startDate,$endDate);

@@ -114,8 +114,8 @@
                                    <div class="x_content oldContent" style="margin-top:30px;">
                                        <div class="row">
                                            <?php
-                                           $KgUnitHidden = 'hidden';
-                                           $LUnitHidden = 'hidden';
+                                           $KgUnitHidden = 'hide';
+                                           $LUnitHidden = 'hide';
                                            $unitConvert = $pc['unitConvert'];
                                            if ($pc['unit'] === "kg" || $pc['unit'] === "pcs") {
                                                $KgUnitHidden = '';
@@ -206,8 +206,8 @@
                                     <div class="row">
 
                                         <?php
-                                        $KgUnitHidden = 'hidden';
-                                        $LUnitHidden = 'hidden';
+                                        $KgUnitHidden = 'hide';
+                                        $LUnitHidden = 'hide';
                                         if ($products[0]['unit'] === "kg") {
                                             $KgUnitHidden = '';
                                         }
@@ -299,7 +299,8 @@
             </div><!-- /x-panel -->
         </div>
 
-        <input type="submit" name="buttonSubmit" value="<?= lang("edit") ?>" class="btn btn-success"/>
+        <input type="submit" data-type="save" name="buttonSubmit" value="<?= lang("edit") ?>" class="btn btn-success"/>
+        <input type="submit" data-type="saveAndGo" name="buttonSubmit" value="Modifier et passer" class="btn btn-info"/>
     </div>
 </div> <!-- /.col-right -->
 <!-- /page content -->
@@ -423,15 +424,15 @@
 
 
         function changeUnit(value, panel) {
-            if (value === 'kg') {
-                panel.find('.kgUnitHidden').removeAttr('hidden');
-                panel.find('.lUnitHidden').attr('hidden', true);
-            } else if (value === 'L') {
-                panel.find('.lUnitHidden').removeAttr('hidden');
-                panel.find('.kgUnitHidden').attr('hidden', true);
-            } else {
-                panel.find('.kgUnitHidden').removeAttr('hidden');
-                panel.find('.lUnitHidden').attr('hidden', true);
+            if(value==='kg'){
+                panel.find('.kgUnitHidden').removeClass('hide');
+                panel.find('.lUnitHidden').addClass('hide');
+            }else if(value==='L'){
+                panel.find('.lUnitHidden').removeClass('hide');
+                panel.find('.kgUnitHidden').addClass('hide');
+            }else{
+                panel.find('.kgUnitHidden').removeClass('hide');
+                panel.find('.lUnitHidden').addClass('hide');
             }
         }
 
@@ -440,6 +441,7 @@
             var prixTotal=0;
             var name=$('input.mealName').val();
             var mealQuantity = $(".mealQuantity").val();
+            var vm=$(this);
             if(mealQuantity==0 || mealQuantity==""){
                 mealQuantity=1;
             }
@@ -514,7 +516,6 @@
 
             if(validate(meal)){
                 $('#loading').show();
-                console.log(meal);
                 $.ajax({
                     url: "<?php echo base_url(); ?>admin/meal/apiEdit",
                     type: "POST",
@@ -530,9 +531,14 @@
                                 timer: 1500,
                                 showConfirmButton: false
                             });
-                            document.location.href = data.redirect;
-                            var nextId = parseInt(<?php echo $meal['id']; ?>) + parseInt(1);
-                            window.location.href = "<?php echo base_url("admin/meal/edit/"); ?>" + nextId;
+                            let saveType=vm.attr('data-type');
+                            console.log(saveType);
+                            if(saveType==='save'){
+                                document.location.href = data.redirect;
+                            }else{
+                                var nextId = parseInt(<?php echo $meal['id']; ?>) + parseInt(1);
+                                window.location.href = "<?php echo base_url("admin/meal/edit/"); ?>" + nextId;
+                            }
                         }
                         else {
                             /*$('#show_id').html("<div style='border:1px solid red;font-size: 11px;margin:0 auto !important;'>" + response.error + "</div>");*/

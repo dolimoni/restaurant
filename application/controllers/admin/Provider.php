@@ -86,6 +86,7 @@ class Provider extends BaseController
         $data["providerGroups"] = $this->model_provider->getGroups();
         $data['products'] = $this->model_provider->getAllProducts();
         $data['params'] = $this->getParams();
+        $data['invitations'] = $this->model_provider->getInvitations($data['params']);
         $this->parser->parse('admin/provider/add', $data);
         $this->log_end($data);
     }
@@ -255,7 +256,7 @@ class Provider extends BaseController
         if (!$data['provider']) {
             redirect('/admin/provider');
         }
-        $data['products'] = $this->model_provider->getProducts($id,"active",'shown',true);
+        $data['products'] = $this->model_provider->getProducts($id,"none",'shown',true);
         $data['productsToOrder'] = $this->model_product->getToOrderFromProvider($id);
         $data['quotations'] = $this->model_provider->getQuotations($id);
         $data['orders'] = $this->model_provider->getOrders($id);
@@ -478,6 +479,7 @@ class Provider extends BaseController
             $order = $this->input->post('order');
             $provider_id = $order["provider"]["id"];
            // $db_order= $this->model_order->get($order['order_id']);
+
             if (strtolower($order['status']) === "en attente") {
                 $order['status'] = 'pending';
                 $this->model_order->update($order);
@@ -491,13 +493,52 @@ class Provider extends BaseController
             } else {
                 $order['status'] = 'received';
                 $db_order=$this->model_order->getOne($order['id']);
-                $this->model_order->update($order);
                 if($db_order['status']!=='received'){
                     $this->model_product->updateQuantities($order['productsList'], 'up', $provider_id, $order['id']);
                 }
+                $this->model_order->update($order);
                 if ($order['oldStatus'] === "pending") {
                    // $this->model_product->updateQuantities($order['productsList'], 'up');
                 }
+            }
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => "success", 'orderStatus' => $order['status'])));
+            $this->log_end($order);
+        } catch (Exception $e) {
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => false)));
+        }
+    }
+
+    function apiEditOrderStockitMain()
+    {
+
+        $this->log_begin();
+        try {
+            $this->load->model('model_order');
+            $order = $this->input->post('order');
+            $provider_id = $order["provider"]["id"];
+            // $db_order= $this->model_order->get($order['order_id']);
+
+            if (strtolower($order['status']) === "réponse fournisseur" or strtolower($order['status']) === "répondu" ) {
+                $order['status'] = 'answered';
+                $this->model_order->addNegociations($order['id']);
+                $this->model_order->update($order);
+            }
+            if (strtolower($order['status']) === "accepter" ) {
+                $order['status'] = 'wait_shipping';
+                $this->model_order->addNegociations($order['id']);
+                $this->model_order->update($order);
+            }
+            if (strtolower($order['status']) === "reçue" ) {
+                $order['status'] = 'received';
+                $this->model_order->update($order);
+            }
+            if (strtolower($order['status']) === "annulée" ) {
+                $order['status'] = 'canceled';
+                $this->model_order->update($order);
             }
             $this->output
                 ->set_content_type("application/json")

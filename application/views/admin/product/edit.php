@@ -1,8 +1,246 @@
 <?php $this->load->view('admin/partials/admin_header.php'); ?>
+<link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
 <style>
     tr{
         white-space: nowrap;
     }
+
+
+    ul,
+    li {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .tg-list {
+        text-align: center;
+        display: flex;
+        align-items: center;
+    }
+
+    .tg-list-item {
+        margin: 0 1em;
+    }
+
+    h2 {
+        color: #777;
+    }
+
+    h4 {
+        color: #999;
+    }
+
+    .tgl {
+        display: none;
+    }
+    .tgl, .tgl:after, .tgl:before, .tgl *, .tgl *:after, .tgl *:before, .tgl + .tgl-btn {
+        box-sizing: border-box;
+    }
+    .tgl::-moz-selection, .tgl:after::-moz-selection, .tgl:before::-moz-selection, .tgl *::-moz-selection, .tgl *:after::-moz-selection, .tgl *:before::-moz-selection, .tgl + .tgl-btn::-moz-selection {
+        background: none;
+    }
+    .tgl::selection, .tgl:after::selection, .tgl:before::selection, .tgl *::selection, .tgl *:after::selection, .tgl *:before::selection, .tgl + .tgl-btn::selection {
+        background: none;
+    }
+    .tgl + .tgl-btn {
+        outline: 0;
+        display: block;
+        width: 9em;
+        height: 2.2em;
+        position: relative;
+        top: 2px;
+        cursor: pointer;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+    .tgl + .tgl-btn:after, .tgl + .tgl-btn:before {
+        position: relative;
+        display: block;
+        content: "";
+        width: 50%;
+        height: 100%;
+    }
+    .tgl + .tgl-btn:after {
+        left: 0;
+    }
+    .tgl + .tgl-btn:before {
+        display: none;
+    }
+    .tgl:checked + .tgl-btn:after {
+        left: 50%;
+    }
+
+    .tgl-light + .tgl-btn {
+        background: #f0f0f0;
+        border-radius: 2em;
+        padding: 2px;
+        transition: all .4s ease;
+    }
+    .tgl-light + .tgl-btn:after {
+        border-radius: 50%;
+        background: #fff;
+        transition: all .2s ease;
+    }
+    .tgl-light:checked + .tgl-btn {
+        background: #9FD6AE;
+    }
+
+    .tgl-ios + .tgl-btn {
+        background: #fbfbfb;
+        border-radius: 2em;
+        padding: 2px;
+        transition: all .4s ease;
+        border: 1px solid #e8eae9;
+    }
+    .tgl-ios + .tgl-btn:after {
+        border-radius: 2em;
+        background: #fbfbfb;
+        transition: left 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), padding 0.3s ease, margin 0.3s ease;
+        box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1), 0 4px 0 rgba(0, 0, 0, 0.08);
+    }
+    .tgl-ios + .tgl-btn:hover:after {
+        will-change: padding;
+    }
+    .tgl-ios + .tgl-btn:active {
+        box-shadow: inset 0 0 0 2em #e8eae9;
+    }
+    .tgl-ios + .tgl-btn:active:after {
+        padding-right: .8em;
+    }
+    .tgl-ios:checked + .tgl-btn {
+        background: #86d993;
+    }
+    .tgl-ios:checked + .tgl-btn:active {
+        box-shadow: none;
+    }
+    .tgl-ios:checked + .tgl-btn:active:after {
+        margin-left: -.8em;
+    }
+
+    .tgl-skewed + .tgl-btn {
+        overflow: hidden;
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+        transition: all .2s ease;
+        font-family: sans-serif;
+        background: #888;
+    }
+    .tgl-skewed + .tgl-btn:after, .tgl-skewed + .tgl-btn:before {
+        -webkit-transform: skew(10deg);
+        transform: skew(10deg);
+        display: inline-block;
+        transition: all .2s ease;
+        width: 100%;
+        text-align: center;
+        position: absolute;
+        line-height: 2em;
+        font-weight: bold;
+        color: #fff;
+        text-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
+    }
+    .tgl-skewed + .tgl-btn:after {
+        left: 100%;
+        content: attr(data-tg-on);
+    }
+    .tgl-skewed + .tgl-btn:before {
+        left: 0;
+        content: attr(data-tg-off);
+    }
+    .tgl-skewed + .tgl-btn:active {
+        background: #888;
+    }
+    .tgl-skewed + .tgl-btn:active:before {
+        left: -10%;
+    }
+    .tgl-skewed:checked + .tgl-btn {
+        background: #86d993;
+    }
+    .tgl-skewed:checked + .tgl-btn:before {
+        left: -100%;
+    }
+    .tgl-skewed:checked + .tgl-btn:after {
+        left: 0;
+    }
+    .tgl-skewed:checked + .tgl-btn:active:after {
+        left: 10%;
+    }
+
+    .tgl-flat + .tgl-btn {
+        padding: 2px;
+        transition: all .2s ease;
+        background: #fff;
+        border: 4px solid #f2f2f2;
+        border-radius: 2em;
+    }
+    .tgl-flat + .tgl-btn:after {
+        transition: all .2s ease;
+        background: #f2f2f2;
+        content: "";
+        border-radius: 1em;
+    }
+    .tgl-flat:checked + .tgl-btn {
+        border: 4px solid #7FC6A6;
+    }
+    .tgl-flat:checked + .tgl-btn:after {
+        left: 50%;
+        background: #7FC6A6;
+    }
+
+    .tgl-flip + .tgl-btn {
+        padding: 2px;
+        transition: all .2s ease;
+        font-family: sans-serif;
+        -webkit-perspective: 100px;
+        perspective: 100px;
+    }
+    .tgl-flip + .tgl-btn:after, .tgl-flip + .tgl-btn:before {
+        display: inline-block;
+        transition: all .4s ease;
+        width: 100%;
+        text-align: center;
+        position: absolute;
+        line-height: 2em;
+        font-weight: bold;
+        color: #fff;
+        position: absolute;
+        top: 0;
+        left: 0;
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+        border-radius: 4px;
+    }
+    .tgl-flip + .tgl-btn:after {
+        content: attr(data-tg-on);
+        background: #02C66F;
+        -webkit-transform: rotateY(-180deg);
+        transform: rotateY(-180deg);
+    }
+    .tgl-flip + .tgl-btn:before {
+        background: #FF3A19;
+        content: attr(data-tg-off);
+    }
+    .tgl-flip + .tgl-btn:active:before {
+        -webkit-transform: rotateY(-20deg);
+        transform: rotateY(-20deg);
+    }
+    .tgl-flip:checked + .tgl-btn:before {
+        -webkit-transform: rotateY(180deg);
+        transform: rotateY(180deg);
+    }
+    .tgl-flip:checked + .tgl-btn:after {
+        -webkit-transform: rotateY(0);
+        transform: rotateY(0);
+        left: 0;
+        background: #7FC6A6;
+    }
+    .tgl-flip:checked + .tgl-btn:active:after {
+        -webkit-transform: rotateY(20deg);
+        transform: rotateY(20deg);
+    }
+
 </style>
 
 <!-- page content -->
@@ -22,6 +260,10 @@
 
 
 
+
+
+
+
         <div class="col-xs-12 " >
             <div class="x_panel">
                 <div class="x_title">
@@ -33,6 +275,7 @@
                     <div class="clearfix"></div>
                 </div>
                 <div class="x_content">
+
                     <h4><?= lang("quantity"); ?>/<?= lang("price"); ?></h4>
                     <div class="table-responsive">
                         <table id="datatable-quantityy" class="table table-striped table-bordered dt-responsive nowrap"
@@ -148,123 +391,166 @@
                             <label><?php /*echo $message;*/ ?></label>
                             <form method="post" id="editProductForm">
 
-                                   <div class="col-md-6">
-                                       <input name="id" type="hidden" value="<?php echo $product['id']; ?>"/>
-                                       <input name="quantity_id" type="hidden" value="<?php echo $product['q_id']; ?>"/>
-                                       <div class="form-group">
-                                           <?= lang("product"); ?> : <input value="<?php echo $product['name']; ?>" class="form-control"
-                                                                            placeholder="<?= lang("product"); ?>" name="name"
-                                                                            id="username" type="text">
-                                       </div>
-                                       <div class="form-group" hidden>
-                                           Nouvelle marque : <input class="form-control" placeholder="Quantité"
-                                                                    name="quantity" value="0"
-                                                                    type="text" >
-                                       </div>
-                                       <div class="form-group">
-                                           <?= lang("unit_of_measure"); ?> :
-                                           <select class="form-control" name="unit">
-                                               <option name="unit"
-                                                       value="kg" <?php if ($product['unit'] === "kg") echo "selected"; ?>>
-                                                   Kg
-                                               </option>
-                                               <option name="unit"
-                                                       value="L" <?php if ($product['unit'] === "L") echo "selected"; ?>>L
-                                               </option>
-                                               <option name="unit"
-                                                       value="pcs" <?php if ($product['unit'] === "pcs") echo "selected"; ?> >
-                                                   Pcs
-                                               </option>
-                                           </select>
-                                       </div>
+                                  <div class="row">
+                                      <div class="col-md-6">
+                                          <input name="id" type="hidden" value="<?php echo $product['id']; ?>"/>
+                                          <input name="quantity_id" type="hidden" value="<?php echo $product['q_id']; ?>"/>
+                                          <div class="form-group">
+                                              <?= lang("product"); ?> : <input value="<?php echo $product['name']; ?>" class="form-control"
+                                                                               placeholder="<?= lang("product"); ?>" name="name"
+                                                                               id="username" type="text">
+                                          </div>
+                                          <div class="form-group" hidden>
+                                              Nouvelle marque : <input class="form-control" placeholder="Quantité"
+                                                                       name="quantity" value="0"
+                                                                       type="text" >
+                                          </div>
+                                          <div class="form-group">
+                                              <?= lang("unit_of_measure"); ?> :
+                                              <select class="form-control" name="unit">
+                                                  <option name="unit"
+                                                          value="kg" <?php if ($product['unit'] === "kg") echo "selected"; ?>>
+                                                      Kg
+                                                  </option>
+                                                  <option name="unit"
+                                                          value="L" <?php if ($product['unit'] === "L") echo "selected"; ?>>L
+                                                  </option>
+                                                  <option name="unit"
+                                                          value="pcs" <?php if ($product['unit'] === "pcs") echo "selected"; ?> >
+                                                      Pcs
+                                                  </option>
+                                              </select>
+                                          </div>
 
-                                       <div class="form-group">
-                                           <?= lang("provider"); ?> :
-                                           <select class="form-control" name="provider">
-                                               <option value="0"><?= lang("neither"); ?></option>
-                                               <?php foreach ($providers as $provider) {
-                                                   $selected = '';
-                                                   if ($provider['id'] === $product['provider']) {
-                                                       $selected = "selected";
-                                                   }
-                                                   $providerName = $provider['name'];
-                                                   if ($providerName === "") {
-                                                       $providerName = $provider['title'];
-                                                   }
-                                                   ?>
-                                                   ?>
-                                                   <option name="provider"
-                                                           value="<?php echo $provider['id']; ?>" <?php echo $selected; ?>><?php echo $providerName; ?></option>
-                                               <?php } ?>
-                                           </select>
-                                       </div>
-                                       <div class="form-group">
-                                           <?= lang("unit_price"); ?> : <input value="<?php echo $product['unit_price']; ?>"
-                                                                               class="form-control" placeholder="Prix unitaire"
-                                                                               name="unit_price" type="text">
-                                       </div>
+                                          <div class="form-group">
+                                              <?= lang("provider"); ?> :
+                                              <select class="form-control" name="provider">
+                                                  <option value="0"><?= lang("neither"); ?></option>
+                                                  <?php foreach ($providers as $provider) {
+                                                      $selected = '';
+                                                      if ($provider['id'] === $product['provider']) {
+                                                          $selected = "selected";
+                                                      }
+                                                      $providerName = $provider['name'];
+                                                      if ($providerName === "") {
+                                                          $providerName = $provider['title'];
+                                                      }
+                                                      ?>
+                                                      ?>
+                                                      <option name="provider"
+                                                              value="<?php echo $provider['id']; ?>" <?php echo $selected; ?>><?php echo $providerName; ?></option>
+                                                  <?php } ?>
+                                              </select>
+                                          </div>
+                                          <div class="form-group">
+                                              <?= lang("unit_price"); ?> : <input value="<?php echo $product['unit_price']; ?>"
+                                                                                  class="form-control" placeholder="Prix unitaire"
+                                                                                  name="unit_price" type="text">
+                                          </div>
 
-                                   </div>
 
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <?= lang("weightByUnit"); ?> <?= lang("in_gr"); ?><input value="<?php echo $product['weightByUnit']; ?>"
-                                                                                                     class="form-control" placeholder=" <?= lang("weightByUnit"); ?>"
-                                                                                                     name="weightByUnit">
-                                        </div>
-                                        <div class="form-group">
-                                            <?= lang("min_stock_quantity"); ?> : <input
-                                                    value="<?php echo $product['min_quantity']; ?>" class="form-control"
-                                                    placeholder="<?= lang("min_stock_quantity"); ?>"
-                                                    name="min_quantity" type="text">
-                                        </div>
-                                        <div class="form-group">
-                                            <?= lang("daily_consumption"); ?> : <input value="<?php echo $product['daily_quantity']; ?>"
-                                                                                       class="form-control" placeholder="<?= lang("quantity"); ?>"
-                                                                                       name="daily_quantity"
-                                                                                       type="text">
-                                        </div>
-                                        <div class="form-group">
-                                            <?= lang("lost"); ?> : <input class="form-control" placeholder="<?= lang("quantity"); ?>"
-                                                                          name="lostQuantity"
-                                                                          type="number">
-                                        </div>
-                                        <br/>
-                                    </div>
-                                    <?php
-                                    $packNotHidden='hidden';
-                                    $checked='';
-                                    $packCBDisabled='';
-                                    if ($product['pack'] === "true"){
-                                        $checked='checked';
-                                        $packNotHidden='';
-                                    }
-                                    if(strtoupper($product['unit'])!=='PCS'){
-                                        $packCBDisabled='disabled';
-                                    }
-                                    ?>
-                                    <div class="form-group">
-                                        <label>
-                                            <input type="checkbox" checked="checked" name="newUserQuantity"> <?= lang("create_new_stock"); ?>
-                                        </label>
-                                    </div>
 
-                                    <div class="form-group">
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <label>
-                                                    <input id='pack' type="checkbox" <?php echo $checked; ?>  <?php echo $packCBDisabled;?> name="pack">
-                                                    Commander le produit par pack
-                                                </label>
+                                          <label>Perte à la commande : </label>
+
+                                          <div class="form-group">
+
+                                              <ul class="tg-list">
+
+                                                  <?php
+
+                                                  $sub_unit='';
+                                                  $lost_type_checked='';
+                                                  if(strtoupper($product['unit'])==='KG'){
+                                                      $sub_unit='gr';
+                                                  }else if(strtoupper($product['unit'])==='L'){
+                                                      $sub_unit='cl';
+                                                  }else if(strtoupper($product['unit'])==='PCS'){
+                                                      $sub_unit='pièce';
+                                                  }
+
+                                                  if($product['lost_type']==='quantity'){
+                                                      $lost_type_checked='checked';
+                                                  }
+
+                                                  ?>
+                                                  <input value="<?php echo $product['lost_value']; ?>"
+                                                                                      class="form-control" placeholder="Perte à la commande"
+                                                                                      name="lost_value" type="text">
+                                                  <li class="tg-list-item">
+                                                      <input name="lost_type" class="tgl tgl-skewed" id="cb3" <?php echo $lost_type_checked; ?> type="checkbox"/>
+                                                      <label class="tgl-btn lost_type" data-tg-off="%" data-tg-on="<?php echo $sub_unit; ?>" for="cb3"></label>
+                                                  </li>
+
+                                              </ul>
+                                          </div>
+
+
+                                      </div>
+
+                                      <div class="col-md-6">
+                                          <div class="form-group">
+                                              <?= lang("weightByUnit"); ?> <?= lang("in_gr"); ?><input value="<?php echo $product['weightByUnit']; ?>"
+                                                                                                       class="form-control" placeholder=" <?= lang("weightByUnit"); ?>"
+                                                                                                       name="weightByUnit">
+                                          </div>
+                                          <div class="form-group">
+                                              <?= lang("min_stock_quantity"); ?> : <input
+                                                      value="<?php echo $product['min_quantity']; ?>" class="form-control"
+                                                      placeholder="<?= lang("min_stock_quantity"); ?>"
+                                                      name="min_quantity" type="text">
+                                          </div>
+                                          <div class="form-group">
+                                              <?= lang("daily_consumption"); ?> : <input value="<?php echo $product['daily_quantity']; ?>"
+                                                                                         class="form-control" placeholder="<?= lang("quantity"); ?>"
+                                                                                         name="daily_quantity"
+                                                                                         type="text">
+                                          </div>
+                                          <div class="form-group">
+                                              <?= lang("lost"); ?> : <input class="form-control" placeholder="<?= lang("quantity"); ?>"
+                                                                            name="lostQuantity"
+                                                                            type="number">
+                                          </div>
+                                          <br/>
+                                      </div>
+                                  </div>
+
+
+                                    <div class="row">
+                                        <?php
+                                        $packNotHidden='hidden';
+                                        $checked='';
+                                        $packCBDisabled='';
+                                        if ($product['pack'] === "true"){
+                                            $checked='checked';
+                                            $packNotHidden='';
+                                        }
+                                        if(strtoupper($product['unit'])!=='PCS'){
+                                            $packCBDisabled='disabled';
+                                        }
+                                        ?>
+                                        <div class="form-group">
+                                            <label>
+                                                <input type="checkbox" checked="checked" name="newUserQuantity"> <?= lang("create_new_stock"); ?>
+                                            </label>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <label>
+                                                        <input id='pack' type="checkbox" <?php echo $checked; ?>  <?php echo $packCBDisabled;?> name="pack">
+                                                        Commander le produit par pack
+                                                    </label>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="form-group piecesByPack" <?php echo $packNotHidden ?>>
-                                                Nombre de pièces par pack:
-                                                <input value="<?php echo $product['piecesByPack'] ?>" class="form-control" placeholder="Nombre de pièces"
-                                                       name="piecesByPack">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group piecesByPack" <?php echo $packNotHidden ?>>
+                                                    Nombre de pièces par pack:
+                                                    <input value="<?php echo $product['piecesByPack'] ?>" class="form-control" placeholder="Nombre de pièces"
+                                                           name="piecesByPack">
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -378,6 +664,7 @@
 <!-- /page content -->
 
 <?php $this->load->view('admin/partials/admin_footer'); ?>
+<script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
 <script>
     var swal_success_operation_lang = "<?= lang("swal_success_operation"); ?>";
     var swal_error_lang = "<?= lang("swal_error"); ?>";
@@ -457,6 +744,7 @@
             e.preventDefault();
             var newUserQuantity = true;
             var pack='false';
+            var lost_type='percent';
             var id = $('input[name="id"]').val();
             var quantity_id = $('input[name="quantity_id"]').val();
             var name = $('input[name="name"]').val();
@@ -468,10 +756,14 @@
             var min_quantity = $('input[name="min_quantity"]').val();
             var lostQuantity = $('input[name="lostQuantity"]').val();
             var piecesByPack = $('input[name="piecesByPack"]').val();
+            var lost_value = $('input[name="lost_value"]').val();
             newUserQuantity = $('input[name="newUserQuantity"]').is(':checked');
             pack = $('#pack').is(':checked');
+            let lost_type_checked = $('input[name="lost_type"]').is(':checked');
             if (lostQuantity == "") lostQuantity = 0;
+            if (lost_type_checked  && unit!=='pcs') lost_type = "quantity";
             var provider = $('select[name=provider]').val();
+
             var product = {
                 'id': id,
                 'name': name,
@@ -487,8 +779,12 @@
                 'status': 'active',
                 'quantity_id':quantity_id,
                 'piecesByPack':piecesByPack,
-                'pack':pack
+                'pack':pack,
+                'lost_value':lost_value,
+                'lost_type':lost_type,
             };
+
+            console.log(product);
 
             if(validate(product)){
                 $.ajax({

@@ -35,12 +35,19 @@ class model_order extends CI_Model {
             $order_id = $this->db->insert_id();
         }
 
+        $negociation_id=$this->addNegociation($data,$order_id);
+
+        $data_order=$data;
         if ($db_params["orderPayment"] === "true") {
             $this->payOrder($order_id);
         }
 
         foreach ($order['productsList'] as $product) {
             $db_product=$this->model_product->getById($product['id']);
+            $piecesByPack=1;
+            if($product['pack']==='true'){
+                $piecesByPack=$product['piecesByPack'];
+            }
             $data = array(
                 'product' => $product['id'],
                 'product_name' => $db_product["name"],
@@ -50,10 +57,12 @@ class model_order extends CI_Model {
                 'mark' => $product['mark'],
                 'pack' => $product['pack'],
                 'unit' => $db_product['unit'],
-                'piecesByPack' => $product['piecesByPack'],
+                'piecesByPack' => $piecesByPack,
                 'quantity_id' => 0,
             );
             $this->db->insert('orderdetails', $data);
+            $this->addNegociationProducts($data_order,$data,$negociation_id);
+
         }
 
         $this->addAdvances($order,$order_id);
@@ -61,6 +70,26 @@ class model_order extends CI_Model {
 
 
 	}
+
+	public function addNegociation($data,$order_id){
+        $this->db->where('id',$data['provider']);
+        $provider=$this->db->get('provider')->row_array();
+        $data['order_id']=$order_id;
+        $negociation_id=0;
+        if($provider['stockitmain']!=='0'){
+            $negociation_id = $this->db->insert('negociation',$data);
+        }
+
+        return $negociation_id;
+    }
+    public function addNegociationProducts($order,$product,$negociation_id){
+        $this->db->where('id',$order['provider']);
+        $provider=$this->db->get('provider')->row_array();
+        $data['negociation']=$negociation_id;
+        if($provider['stockitmain']!=='0'){
+            $this->db->insert('negociation_product',$product);
+        }
+    }
 
 	public function addAdvances($order,$order_id){
         $advancesAmount=0;
@@ -99,22 +128,31 @@ class model_order extends CI_Model {
 
         $this->db->where("id",$order['id']);
         $this->db->update("order",$data);
+        $data['provider']=$order['provider']['id'];
+        $this->addNegociation($data,$order['id']);
+        $data_order=$data;
         $this->updateAdvances($order);
         if(isset($order['productsList'])){
             foreach ($order['productsList'] as $product) {
+
+                $this->db->where('product',$product['id']);
+                $this->db->where('unit_price',number_format($product['unit_price']/$product['piecesByPack'],"4"));
+                $quntity_id=$this->db->get('quantity')->row('id');
+
                 $this->db->where('order_id', $order['id']);
                 $this->db->where('product', $product['id']);
-                //$this->db->where('quantity_id', $product['idQuantity']);
+                //$this->db->where('quantity_id', $quntity_id);
                 $r = $this->db->get('orderdetails');
 
                 if ($r->num_rows() > 0) {
                     $data = array(
                         'quantity' => $product['quantity'],
                         'od_price' => $product['unit_price'],
+                        'quantity_id' => $quntity_id,
                     );
                     $this->db->where('order_id', $order['id']);
                     $this->db->where('product', $product['id']);
-                    //$this->db->where('quantity_id', $product['idQuantity']);
+                    //$this->db->where('quantity_id', $quntity_id);
                     $this->db->update('orderdetails', $data);
 
                 } else {
@@ -122,7 +160,7 @@ class model_order extends CI_Model {
                         'quantity' => $product['quantity'],
                         'od_price' => $product['unit_price'],
                         'product' => $product['id'],
-                        //'quantity_id' => $product['idQuantity'],
+                        'quantity_id' => $quntity_id,
                         'order_id' => $order['id']
                     );
                     $this->db->insert('orderdetails', $data);
@@ -149,6 +187,7 @@ class model_order extends CI_Model {
 
         return $this->db->affected_rows();
 	}
+
 	private function updateAdvances($order){
         $deletedAdvances=array();
         $advancesAmount=0;
@@ -327,25 +366,32 @@ class model_order extends CI_Model {
 
 	public function delete($order_id)
 	{
-	    $this->db->select("q.id as q_id,p.id as p_id,q.quantity,od.quantity as od_quantity,totalQuantity");
+	    $this->db->select("q.id as q_id,p.id as p_id,q.quantity,od.piecesByPack as od_piecesByPack,od.quantity as od_quantity,totalQuantity,p.inventoryCredit");
 	    $this->db->from("order o");
 	    $this->db->join("orderdetails od","od.order_id=o.id");
 	    $this->db->join("product p","p.id=od.product");
 	    $this->db->join("quantity q","p.id=q.product");
 	    $this->db->where("o.id",$order_id);
-        $this->db->where("od.od_price=q.unit_price");
+        $this->db->where("od.quantity_id=q.id");
 	    $products=$this->db->get()->result_array();
 
 
         foreach ($products as $product) {
             $data=array(
-                "quantity"=> $product["quantity"]-$product["od_quantity"]
+                "quantity"=> $product["quantity"]-$product["od_quantity"]*$product["od_piecesByPack"]
             );
             $this->db->where("id",$product["q_id"]);
+            $this->db->where("deleted",'false');
             $this->db->update("quantity", $data);
 
+            $inventoryCredit= $product["inventoryCredit"]-$product["od_quantity"];
+            if($inventoryCredit<0){
+                $inventoryCredit=0;
+            }
+
             $data=array(
-                "totalQuantity"=> $product["totalQuantity"]-$product["od_quantity"]
+                "totalQuantity"=> $product["totalQuantity"]-$product["od_quantity"],
+                "inventoryCredit"=> $inventoryCredit
             );
             $this->db->where("id",$product["p_id"]);
             $this->db->update("product", $data);
@@ -393,5 +439,16 @@ class model_order extends CI_Model {
         $this->db->where('id', 1);
         $config=$this->db->get('order_config')->row_array();
         return $config;
+    }
+
+    public function changeStatus($order_id,$status){
+        $response=array('status'=>'success');
+        $data=array();
+        if($status==='accepted'){
+            $data['status']='shipping';
+        }
+        $this->db->where('id', $order_id);
+        $this->db->update('order',$data);
+        return $response;
     }
 }

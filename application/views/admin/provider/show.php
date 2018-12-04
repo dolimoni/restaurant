@@ -39,6 +39,11 @@
     #datatable-responsive5_wrapper{
         overflow: scroll;
     }
+    #tab-newOrder,#tab-editOrder{
+        max-height: 300px;
+        overflow: scroll;
+    }
+    
 </style>
 <!-- page content -->
 <div class="right_col" role="main" style="min-height: auto;">
@@ -402,8 +407,14 @@
                                                         $remain=$order['ttc']-$order['advance'];
                                                         if ($order['status'] === "canceled") {
                                                             $orderStatus = lang('canceled');
-                                                        } else if ($order['status'] === "received") {
+                                                        }else if ($order['status'] === "received") {
                                                             $orderStatus = lang('received');
+                                                        }else if ($order['status'] === "response_provider") {
+                                                            $orderStatus = "Réponse fournisseur";
+                                                        }else if ($order['status'] === "answered") {
+                                                            $orderStatus = "Répondu";
+                                                        }else if ($order['status'] === "wait_shipping") {
+                                                            $orderStatus = "En attente de livraison";
                                                         }
 
                                                         if($order['paid']==="true"){
@@ -517,10 +528,19 @@
 
     var apiOrder_url="<?php echo base_url("admin/provider/order") ?>";
     var apiEditOrder_url="<?php echo base_url("admin/provider/apiEditOrder") ?>";
+    var apiEditOrderStockitMain_url="<?php echo base_url("admin/provider/apiEditOrderStockitMain") ?>";
     var apiPrintOrder_url="<?php echo base_url("admin/provider/apiPrintOrder") ?>";
     var apiGetOrder_url="<?php echo base_url("admin/provider/apiGetOrder") ?>";
 
     var apiFilterOrders_url="<?php echo base_url("admin/provider/apiFilterOrders") ?>";
+
+    var refProvider="<?php echo $provider['stockitmain']; ?>";
+    var stockitmain=false;
+    if(refProvider!=='0'){
+        stockitmain=true;
+    }
+
+
 </script>
 <script src="<?php echo base_url("assets/vendors/datatables.net/js/jquery.dataTables.min.js"); ?>"></script>
 
@@ -610,6 +630,7 @@
 <script src="<?php echo base_url('assets/build2/js/provider/editOrder.js'); ?>"></script>
 <script src="<?php echo base_url('assets/build2/js/provider/productsToOrder.js'); ?>"></script>
 <script src="<?php echo base_url('assets/build2/js/provider/getOrder.js'); ?>"></script>
+<script src="<?php echo base_url('assets/build2/js/provider/changeStatusFct.js'); ?>"></script>
 <script>
     $('#payment_date_field').daterangepicker({
         locale: {
@@ -947,7 +968,12 @@
     $('button[name="save"]').on('click', {url: apiOrder_url,sub_url:''}, newOrder);
     $('button[name="orderProducts"]').on('click', {url: apiOrder_url,sub_url:''}, productsToOrder);
 
-    $('button[name=editOrder]').on('click', {url: apiEditOrder_url,sub_url:''}, editOrder);
+    let editOrder_url=apiEditOrder_url;
+    if(stockitmain){
+        editOrder_url=apiEditOrderStockitMain_url;
+    }
+    $('button[name=editOrder]').on('click', {url: editOrder_url,sub_url:''}, editOrder);
+
     $('button[name=editPrint]').on('click', {url: apiPrintOrder_url,sub_url:'admin/provider/apiPrintOrder'}, editOrder);
 
 
@@ -975,61 +1001,6 @@
 
 
 <!-- Change order status -->
-<script>
-    $("#changeStatus").on('click','button',changeStatusEvent);
-    function changeStatusEvent(){
-        var newStatus = $(this).attr("data-type");
-        changeStatus("event",newStatus);
-    }
-
-    function changeStatus(type,newStatus) {
-        if (type === "request" && newStatus==="received") {
-            $(".orderActualStatus").attr("data-toggle", null);
-            $("#changeStatus").removeClass("in");
-        } else {
-            $(".orderActualStatus").attr("data-toggle", "collapse");
-        }
-        switch (newStatus) {
-            case 'received':
-                $('#changeStatus').empty();
-                var b1 = '<button data-toggle="collapse" data-type="pending" href="#changeStatus" type="button" class="btn btn-round btn-info">' + pending_lang + '</button>';
-                var b2 = '<button data-toggle="collapse" data-type="canceled" href="#changeStatus" type="button" class="btn btn-round btn-warning">' + canceled_lang + '</button>';
-                $('#changeStatus').append(b1);
-                $('#changeStatus').append(b2);
-                $(".orderActualStatus").html(received_lang);
-                $(".orderActualStatus").addClass("btn-success");
-                $(".orderActualStatus").removeClass("btn-warning");
-                $(".orderActualStatus").removeClass("btn-info");
-                break;
-            case 'canceled':
-                $('#changeStatus').empty();
-                var b1 = '<button data-toggle="collapse" data-type="received" href="#changeStatus" type="button" class="btn btn-round btn-success">' + received_lang + '</button>';
-                var b2 = '<button data-toggle="collapse" data-type="pending" href="#changeStatus" type="button" class="btn btn-round btn-info">' + pending_lang + '</button>';
-                $('#changeStatus').append(b1);
-                $('#changeStatus').append(b2);
-                $(".orderActualStatus").html(canceled_lang);
-                $(".orderActualStatus").addClass("btn-warning");
-                $(".orderActualStatus").removeClass("btn-info");
-                $(".orderActualStatus").removeClass("btn-success");
-                break;
-            case 'pending':
-                console.log("case 3");
-                $('#changeStatus').empty();
-                var b1 = '<button data-toggle="collapse" data-type="received" href="#changeStatus" type="button" class="btn btn-round btn-success">'+received_lang+'</button>';
-                var b2 = '<button data-toggle="collapse" data-type="canceled" href="#changeStatus" type="button" class="btn btn-round btn-warning">'+canceled_lang+'</button>';
-                $('#changeStatus').append(b1);
-                $('#changeStatus').append(b2);
-                $(".orderActualStatus").html(pending_lang);
-                $(".orderActualStatus").addClass("btn-info");
-                $(".orderActualStatus").removeClass("btn-warning");
-                $(".orderActualStatus").removeClass("btn-success");
-                break;
-            default:
-            //
-        }
-
-    }
-</script>
 
 <!--Edit Profile-->
 
@@ -3617,6 +3588,8 @@
                     orderStatus = 'Annulée'
                 } else if (order['status'] === "received") {
                     orderStatus = 'Reçue';
+                }else if (order['status'] === "response_provider") {
+                    orderStatus = 'Réponse fournisseur';
                 }
 
                 if(order['paid']==="true"){
@@ -3727,7 +3700,7 @@
 
             };
 
-            $('#reportrange span').html(moment().subtract(29, 'days').format('MMMM D, YYYY') + ' - ' + moment().format('MMMM D, YYYY'));
+            $('#reportrange span').html(moment().subtract(365, 'days').format('MMMM D, YYYY') + ' - ' + moment().format('MMMM D, YYYY'));
             startDate=moment().subtract(29, 'days').format('YYYY-MM-DD');
             endDate= moment().format('YYYY-MM-DD');
             $('#reportrange').daterangepicker(optionSet1, cb);
