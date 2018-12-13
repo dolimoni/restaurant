@@ -603,6 +603,9 @@
                                             <td>
                                                 <button data-id="<?php echo $mark['id'] ?>"
                                                         data-name="<?php echo $mark['name'] ?>"
+                                                        data-m_unit="<?php echo $mark['m_unit'] ?>"
+                                                        data-m_unit_price="<?php echo $mark['m_unit_price'] ?>"
+                                                        data-m_weightByUnit="<?php echo $mark['m_weightByUnit'] ?>"
                                                         data-toggle="modal"
                                                         data-target="#editMarkModal"
                                                         class="btn btn-warning btn-xs action editMak"><span

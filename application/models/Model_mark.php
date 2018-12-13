@@ -43,6 +43,9 @@ class model_mark extends CI_Model {
        if(!$this->restoreDeletedMark($mark)){
             $data=array(
                 'name'=>$mark['name'],
+                'm_unit'=>$mark['m_unit'],
+                'm_unit_price'=>$mark['m_unit_price'],
+                'm_weightByUnit'=>$mark['m_weightByUnit'],
             );
             $this->db->where('id',$mark['mark_id']);
             $this->db->update('mark',$data);

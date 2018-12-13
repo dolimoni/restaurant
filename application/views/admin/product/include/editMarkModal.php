@@ -31,9 +31,40 @@
                             <fieldset>
                                 <div class="row">
                                     <input type="hidden" name="id"/>
-                                    <div class="col-xs-8 col-sm-6 col-md-9">
+                                    <div class="col-xs-12 col-sm-6 col-md-3">
+                                        Nom de la marque :
                                         <input type="text" class="form-control" name="name"
-                                               placeholder="Nom de la marque"
+                                               placeholder=""
+                                               required>
+                                    </div>
+                                    <div class="col-xs-12 col-sm-6 col-md-3">
+                                        <div class="form-group">
+                                            <?= lang("unit_of_measure"); ?> :
+                                            <select class="form-control" name="m_unit">
+                                                <option name="unit"
+                                                        value="kg" <?php if ($product['unit'] === "kg") echo "selected"; ?>>
+                                                    Kg
+                                                </option>
+                                                <option name="unit"
+                                                        value="L" <?php if ($product['unit'] === "L") echo "selected"; ?>>L
+                                                </option>
+                                                <option name="unit"
+                                                        value="pcs" <?php if ($product['unit'] === "pcs") echo "selected"; ?> >
+                                                    Pcs
+                                                </option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-12 col-sm-6 col-md-3">
+                                        <?= lang("unit_price"); ?> :
+                                        <input type="text" class="form-control" name="m_unit_price"
+                                               placeholder="" value="<?php echo $product['unit_price']; ?>"
+                                               required>
+                                    </div>
+                                    <div class="col-xs-12 col-sm-6 col-md-3">
+                                        <?= lang("weightByUnit"); ?> en gr:
+                                        <input type="text" class="form-control" name="m_weightByUnit"
+                                               placeholder="" value="<?php echo $product['weightByUnit']; ?>"
                                                required>
                                     </div>
                                     <div class="col-sm-6 col-md-3 col-xs-4">
@@ -48,13 +79,6 @@
 
             <!-- Modal Footer -->
             <div class="modal-footer">
-               <!-- <button type="button" class="btn btn-default small-button"
-                        data-dismiss="modal">
-                    <?/*= lang('cancele') */?>
-                </button>
-                <button type="button" class="btn btn-primary small-button" name="edit">
-                    <?/*= lang('edit') */?>
-                </button>-->
             </div>
         </div>
     </div>

@@ -34,6 +34,23 @@ class Provider extends CI_Controller
         }
     }
 
+    public function getAllOrders(){
+
+        try {
+            $startDate=$this->input->post('startDate');
+            $endDate=$this->input->post('endDate');
+            $orders = $this->model_provider->getAllOrders($startDate,$endDate);
+            $response=array('orders'=>$orders,'status'=>'success');
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode($response));
+        } catch (Exception $e) {
+            $this->output
+                ->set_content_type("application/json")
+                ->set_output(json_encode(array('status' => "error")));
+        }
+    }
+
 
     //get Order by Id
     public function getOrder()

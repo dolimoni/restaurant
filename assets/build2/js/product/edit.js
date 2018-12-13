@@ -2,10 +2,16 @@
 function init() {
     $('#addMarkForm').submit(function (e) {
         e.preventDefault();
-       var name = $(this).find('input[name=name]').val();
+       var name = $(this).find('input[name=m_name]').val();
+       var m_weightByUnit = $(this).find('input[name=m_weightByUnit]').val();
+       var m_unit_price = $(this).find('input[name=m_unit_price]').val();
+       var m_unit = $(this).find('select[name=m_unit]').val();
        var id = $('input[name=id]').val();
        var mark={
            'name':name,
+           'm_weightByUnit':m_weightByUnit,
+           'm_unit_price':m_unit_price,
+           'm_unit':m_unit,
            'product':id
        };
        var data={
@@ -58,17 +64,30 @@ function init() {
     $(".editMak").on('click', function () {
         var id = $(this).attr('data-id');
         var name = $(this).attr('data-name');
+        var m_unit = $(this).attr('data-m_unit');
+        var m_unit_price = $(this).attr('data-m_unit_price');
+        var m_weightByUnit = $(this).attr('data-m_weightByUnit');
+
         $('#editMarkModal input[name=name]').val(name);
+        $('#editMarkModal select[name=m_unit]').val(m_unit);
+        $('#editMarkModal input[name=m_unit_price]').val(m_unit_price);
+        $('#editMarkModal input[name=m_weightByUnit]').val(m_weightByUnit);
         $('#editMarkModal input[name=id]').val(id);
     });
 
     $('#editMarkForm').submit(function (e) {
         e.preventDefault();
         var name = $(this).find('input[name=name]').val();
+        var m_weightByUnit = $(this).find('input[name=m_weightByUnit]').val();
+        var m_unit_price = $(this).find('input[name=m_unit_price]').val();
+        var m_unit = $(this).find('select[name=m_unit]').val();
         var mark_id = $(this).find('input[name=id]').val();
         var id = $('input[name=id]').val();
         var mark={
             'name':name,
+            'm_weightByUnit':m_weightByUnit,
+            'm_unit_price':m_unit_price,
+            'm_unit':m_unit,
             'product':id,
             'mark_id':mark_id
         };

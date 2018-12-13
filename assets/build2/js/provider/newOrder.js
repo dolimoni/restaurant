@@ -86,7 +86,6 @@ function newOrder(event) {
 }
 
 function newOrderCallback(data, params) {
-    console.log(params);
     window.open(data.fullfilepath);
     if (params.data.sub_url !== "admin/provider/apiPrintOrder") {
         var url = window.location.href;

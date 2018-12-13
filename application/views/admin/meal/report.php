@@ -347,6 +347,7 @@ if (!isset($report['s_cost'])) {
         ?>
 
         var myDataPoints = [];
+        console.log('mealConsumptionRate',mealConsumptionRate);
         $.each(mealConsumptionRate, function (key, mealConsumptionRateProduct) {
             var point = {
                 y: mealConsumptionRateProduct['avg_unit_price'] * mealConsumptionRateProduct['sum_quantity'],

@@ -44,6 +44,9 @@ class model_budget extends CI_Model {
 	}
 	public function getPurchases()
 	{
+	    $this->db->select('*');
+	    $this->db->select('date(paymentDate) paymentDate');
+	    $this->db->select('date(created_at) created_at');
 		$result = $this->db->get('purchase');
 		return $result->result_array();
 	}

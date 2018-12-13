@@ -34,7 +34,7 @@ function init_daterangepicker() {
                          var row = productsTable.row.add({
                               "id": product.p_id,
                               "name": product.name,
-                              "quantity": product.cp_quantity,
+                              "quantity": product.cp_quantity+' '+product.unit,
                               "actions": editAction + statisticAction
                           }).draw().node();
                           $(row).addClass("success");

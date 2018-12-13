@@ -205,10 +205,14 @@ class model_provider extends MY_Model {
 		return $result->result_array();
 	}
 
-	public function getAllOrders()
+	public function getAllOrders($startDate=null,$endDate=null)
 	{
         $this->db->select('o.id,pv.id pv_id,pv.name as pv_name,o.ttc as amount,o.paid,o.status,o.created_at,date(o.orderDate) orderDate');
         $this->db->from('order o');
+        if ($startDate) {
+            $this->db->where('date(orderDate)>=', $startDate);
+            $this->db->where('date(orderDate)<=', $endDate);
+        }
         $this->db->join('provider pv',"pv.id=o.provider");
         $this->db->order_by("o.orderDate","desc");
 		$result = $this->db->get();

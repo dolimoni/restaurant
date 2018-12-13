@@ -58,12 +58,12 @@ $(document).ready(function () {
             var myData = {
                 "startDate": formattedDate(selectedDate),
             };
-            var params = {
-                "swal": 'false',
-                "callable":true
-            };
+            // var params = {
+            //     "swal": 'false',
+            //     "callable":true
+            // };
 
-            var response = apiRequest(search_charge_url,myData,params,handleData);
+            var response = apiRequest(search_charge_url,myData);
         }
     });
 

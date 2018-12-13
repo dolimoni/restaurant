@@ -242,7 +242,7 @@
                         </table>
                     <?php } ?>
 
-                    <?php if(count($employees_advance)){ ?>
+                    <?php if(count($employees_advance) and $params['pack']==="pro"){ ?>
                         <div style="margin-top:30px 0px;"><?= lang('employees') ?> : <?= lang('advances') ?></div>
                         <table class="table1">
                             <thead>
@@ -267,7 +267,7 @@
                         </table>
                     <?php } ?>
 
-                    <?php if(count($salaries)){ ?>
+                    <?php if(count($salaries) and $params['pack']==="pro"){ ?>
                         <div style="margin-top:30px 0px;"><?= lang('employees') ?> : <?= lang('salaries') ?></div>
                         <table class="table1">
                             <thead>
@@ -323,15 +323,23 @@
                         </tr>
                         </tbody>
                     </table>
-                    <?php }else if($params['pack']==='starter'){ ?>
+                    <?php }else if($params['pack']==='starter'){
+                        $t_salary=0;
+                        ?>
                         <table class="table1">
                             <thead>
                             <tr>
+                                <th><?= lang('products_order') ?></th>
+                                <th><?= lang('various') ?></th>
+                                <th><?= lang('maintenance') ?></th>
                                 <th><?= lang('total') ?></th>
                             </tr>
                             </thead>
                             <tbody>
                             <tr>
+                                <td><?php echo $orders+$advances; ?></td>
+                                <td><?php echo $divers; ?></td>
+                                <td><?php echo $maintenance; ?></td>
                                 <td><?php echo $orders+$advances+$divers+$maintenance+$t_salary; ?></td>
                             </tr>
                             </tbody>

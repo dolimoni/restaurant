@@ -87,25 +87,25 @@
                                 <td><?php echo number_format($product['sitting_money'] / $sittingMoney * 100, 2); ?>%</td>
                                 <td>
                                     <?php if($params["acl_page"]["acl_write"] or $this->session->userdata('type') === "admin") :?>
-                                    <a href=" <?php echo base_url('admin/product/edit/'. $product['product']); ?>" class="btn btn-primary btn-xs"><?= lang("edit"); ?></a>
+                                    <a href=" <?php echo base_url('admin/product/edit/'. $product['product']); ?>" class="btn btn-primary btn-xs"><i class="fa fa-pencil"></i></a>
                                     <?php endif; ?>
 
                                     <?php if ($params["acl_page"]["acl_delete"] or $this->session->userdata('type') === "admin") : ?>
-                                    <div class="btn btn-info btn-xs open"><?= lang("articles"); ?></div>
+                                    <div class="btn btn-info btn-xs open"><i class="fa fa-cutlery"></i></div>
                                     <?php endif; ?>
 
                                     <?php if ($params["acl_page"]["statistic"] or $this->session->userdata('type') === "admin") : ?>
                                         <a href=" <?php echo base_url('admin/product/statistic/' . $product['product']); ?>"
-                                           class="btn btn-warning btn-xs"><?= lang("statistics"); ?></a>
+                                           class="btn btn-warning btn-xs"><i class="fa fa-line-chart"></i></a>
                                     <?php endif; ?>
 
                                     <?php if (($params["acl_page"]["acl_delete"] or $this->session->userdata('type') === "admin") and ($params["multi_site"] === "true")) : ?>
-                                    <a  class="btn btn-danger btn-xs deleteProduct" data-id="<?php echo $product['product']; ?>"><?= lang("delete"); ?></a>
+                                    <a  class="btn btn-danger btn-xs deleteProduct" data-id="<?php echo $product['product']; ?>"><i class="fa fa-trash"></i></a>
                                     <?php endif; ?>
 
                                     <?php if ($product['min_quantity'] > $product['totalQuantity'] && $product['provider'] > 0 && ($params["acl_page"]["acl_write"] or $this->session->userdata('type') === "admin")) { ?>
                                         <a href=" <?php echo base_url('admin/provider/show/' . $product['provider']); ?>"
-                                           class="btn btn-success btn-xs"><?= lang("order"); ?></a>
+                                           class="btn btn-success btn-xs"><i class="fa fa-shopping-cart"></i></a>
                                     <?php } ?>
                                 </td>
                             </tr>

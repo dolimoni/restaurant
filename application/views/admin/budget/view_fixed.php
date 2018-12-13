@@ -34,7 +34,8 @@
                 <h3><?= lang("fixedCharge_list"); ?></h3>
             </div>
             <div class="col-md-6 col-sm-6 col-xs-12">
-                <h3><?= lang("breakEven"); ?> : <span class="breakEven"><?= $breakEven; ?> DH</span></h3>
+                <h3><?= lang("breakEven"); ?> :
+                    <span class="breakEven"><?= $breakEven; ?> DH</span></h3>
             </div>
             <!--<div class="text-dark col-md-4 col-sm-6 col-xs-12">
                 <h3>Alertes SMS Restante : <?php /*echo $params['sms_available'] */?></h3>

@@ -179,7 +179,7 @@
         </div>
 
         <div class="row" style="margin-top: 10px;">
-            <div class="col-md-6 col-sm-6 col-xs-12">
+            <div class="col-md-6 col-sm-6 col-xs-12 hide">
                 <div class="x_panel tile ">
                     <div class="x_title">
                         <h2><?= lang('expenditure_details') ?></h2>
@@ -196,7 +196,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-6 col-sm-6 col-xs-12">
+            <div class="col-md-12 col-sm-12 col-xs-12">
                 <div class="x_panel tile ">
                     <div class="x_title">
                         <h2><?= lang('expenditure_details') ?></h2>

@@ -172,7 +172,7 @@
          <!-- /row -->
         <div class="row">
             <div class="x_panel">
-                <div class="x_content">
+                <div class="x_content table-responsive">
                     <div class="table-responsive">
                         <table id="datatable-purchase" class="table table-striped table-bordered dt-responsive nowrap"
                                cellspacing="0" width="100%">
@@ -209,6 +209,8 @@
                                 $paid = "Impayé";
                                 if ($purchase['paid'] === "true") {
                                     $paid = "Payé";
+                                }else{
+                                    $purchase['paymentDate']='';
                                 }
                                 ?>
                                 <tr data-id="<?php echo $purchase["id"]; ?>">
@@ -246,8 +248,6 @@
                 <div class="x_panel">
                     <div class="x_title">
                         <h2><?= lang('history'); ?>
-                            <small
-                            <?= lang('order_history'); ?></small>
                         </h2>
                         <div class="filter">
                         </div>
@@ -307,7 +307,7 @@
         var handleDataTableButtons = function () {
             if ($("#datatable-purchase").length) {
                 $("#datatable-purchase").DataTable({
-                    aaSorting: [[0, 'desc']],
+                    aaSorting: [[7, 'desc']],
                     responsive: true,
                     "language": {
                         "url": "<?php echo base_url("assets/vendors/datatables.net/French.json"); ?>"

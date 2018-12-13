@@ -263,16 +263,18 @@
                       <!-----------------------------------------End---------------------------------------------------->
 
                       <!-----------------------------------------Begin-------------------------------------------------->
-                    <?php if ((isset($params["acl"]["Budget"]) or $this->session->userdata('type') === "admin")
-                                and $params['pack']==='pro')
+                    <?php if ((isset($params["acl"]["Budget"]) or $this->session->userdata('type') === "admin"))
 
                         :?>
                   <li>
                       <a><i class="fa fa-dollar"></i>Gestion des charges<span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
+
+                    <?php if($params['pack']==="pro"){ ?>
                       <?php if (isset($params["acl"]["Product"]["inventory"]) or $this->session->userdata('type') === "admin"): ?>
                       <li><a href="<?= base_url('admin/budget/regular'); ?>">Alertes</a></li>
                       <?php endif; ?>
+                    <?php } ?>
 
                       <?php if (isset($params["acl"]["Product"]["inventory"]) or $this->session->userdata('type') === "admin"): ?>
                       <li><a href="<?= base_url('admin/budget/reparation'); ?>">Mes réparations</a></li>

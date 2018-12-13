@@ -27,10 +27,13 @@ function init_daterangepicker() {
                     table_meals.rows()
                         .remove()
                         .draw();
-                    console.log("cleaaar");
                     var total_turnover=parseFloat(0);
                     var total_cost=parseFloat(0);
                     var total_earning=parseFloat(0);
+
+                    var tatolQuantityFinal=0;
+                    var total_turnoverFinal=0;
+                    var total_costFinal=0;
                     $.each(data.articles, function (key, article) {
                         var profit= article['s_amount'] - article['s_cost'];
                         if(parseFloat(article['s_amount']).toFixed(2)==="0.00") {
@@ -39,6 +42,10 @@ function init_daterangepicker() {
                         total_turnover= parseFloat(total_turnover)+ parseFloat(article['s_amount']).toFixed(2);
                         total_cost= parseFloat(total_cost)+ parseFloat(article['s_cost']).toFixed(2);
                         total_earning= parseFloat(total_earning) + parseFloat(profit).toFixed(2);
+
+                        tatolQuantityFinal+=parseFloat(article['s_quantity']);
+                        total_turnoverFinal+=parseFloat(article['s_amount']);
+                        total_costFinal+=parseFloat(article['s_cost']);
                         table_meals.row.add({
                             "name": article['name'],
                             "quantity": article['s_quantity'],
@@ -49,14 +56,14 @@ function init_daterangepicker() {
                         }).draw();
                     });
 
-                    /*table_meals.row.add({
-                        "name": "Total",
-                        "quantity": "",
-                        "amount": total_turnover,
-                        "earnings": total_earning,
-                        "cost": total_cost,
-                        "actions":""
-                    }).draw();*/
+                    table_meals.row.add({
+                        "name": "-",
+                        "quantity": tatolQuantityFinal,
+                        "amount": total_turnoverFinal,
+                        "earnings": total_turnoverFinal-total_costFinal,
+                        "cost": total_costFinal,
+                        "actions": ''
+                    }).draw();
                 }
                 else {
                     console.log('Error');

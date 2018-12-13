@@ -224,15 +224,14 @@ class model_order extends CI_Model {
             $this->db->where('id',$final_advance['id']);
             $this->db->update('order_advances',$data);
         }
-        if($advancesAmount>0){
-            $ttc=$order['underTotal'] * (1 + $order['tva']/100)-$order['discount'];
-            $data=array('advance'=>$advancesAmount);
-            if($advancesAmount==$ttc){
-                $data['paid']='true';
-            }
-            $this->db->where('id',$order['id']);
-            $this->db->update('order',$data);
+        $ttc=$order['underTotal'] * (1 + $order['tva']/100)-$order['discount'];
+        $data=array('advance'=>$advancesAmount);
+        if($advancesAmount>=$ttc){
+            $data['paid']='true';
         }
+        $this->db->where('id',$order['id']);
+        $this->db->update('order',$data);
+
     }
     public function addProducts($productsList, $quotation=null)
 	{

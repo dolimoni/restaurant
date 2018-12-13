@@ -112,7 +112,7 @@
                 </div>
 
                 <div class="text-center">
-                    <b><h1>BON DE COMMMANDE</h1></b>
+                    <b><h1>BON DE COMMANDE</h1></b>
                 </div>
                 <div class="col-md-12 col-sm-12 col-xs-12">
                     <table class="table1">

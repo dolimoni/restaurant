@@ -72,7 +72,7 @@
                                     <td><?php echo $product['p_id']; ?></td>
                                     <td><?php echo $product['name']; ?></td>
                                     <td>
-                                        <?php echo number_format((float)($product['cp_quantity']), 2, '.', ''); ?>
+                                        <?php echo number_format((float)($product['cp_quantity']), 2, '.', '').' '.$product['unit']; ?>
                                     </td>
                                     <td>
                                         <?php if ($params["acl_page"]["acl_write"] or $this->session->userdata('type') === "admin") : ?>

@@ -249,6 +249,7 @@ class model_report extends CI_Model
     public function global_report($startDate=null, $endDate=null){
         $global=array();
 
+        $params=$this->db->get('config')->row_array();
 
         //all sales amount
         $this->db->select('*');
@@ -346,7 +347,7 @@ class model_report extends CI_Model
             //$this->db->where('c.report_date>=', $startDate);
             //$this->db->where('c.report_date<=', $endDate);
         }
-        $this->db->group_by('MONTH(report_date)');
+        $this->db->group_by('YEAR(report_date),MONTH(report_date)');
         $this->db->order_by('report_date', 'DESC');
         $this->db->limit(10);
         $sales_history_month = $this->db->get()->result_array();
@@ -404,6 +405,10 @@ class model_report extends CI_Model
         $global['stock_history']= $stock_history;
         $global["charges"]= $global['stock_history'] + $global['purchase']['price'] + $global['repair']['price'] + $global['salary']['salary'];
 
+        if($params['pack']==="starter"){
+            $global['salary']= 0;
+            $global["charges"]= $global['stock_history'] + $global['purchase']['price'] + $global['repair']['price'] + $global['salary']['salary'];
+        }
 
         return $global;
     }
@@ -661,7 +666,7 @@ class model_report extends CI_Model
         $report['losts_list'] = $this->db->get()->result_array();
 
 
-        $report['mealConsumptionRate'] = $this->mealConsumptionRate($meal_id,$startDate,$endDate);
+        $report['mealConsumptionRate'] = $this->mealConsumptionRateRange($meal_id,$startDate,$endDate);;
         $report['totalPrice'] = $report['mealConsumptionRate']['totalPrice'];
         $report['totalConsumptionQuantity'] = $report['mealConsumptionRate']['totalQuantity'];
         unset($report['mealConsumptionRate']['totalPrice']);
@@ -1268,7 +1273,7 @@ class model_report extends CI_Model
     }
 
     public function consumptionProduct($startDate,$endDate,$product=0){
-        $this->db->select("cp.*,pt.name,pt.id as p_id");
+        $this->db->select("cp.*,pt.name,pt.id as p_id,pt.unit");
         $this->db->select("sum(cp.quantity) as cp_quantity");
         $this->db->from("consumption_product cp");
         $this->db->join("consumption c","c.id=cp.consumption");
