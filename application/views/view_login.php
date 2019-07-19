@@ -25,6 +25,7 @@
                 <button class="button"><span>LOGIN</span></button>
                 <br><br>
             </section>
+            <div style="text-align: center;"><?php echo GOROCO ?></div>
             </form>
         </div>
     </div>

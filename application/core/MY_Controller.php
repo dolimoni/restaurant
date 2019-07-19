@@ -12,7 +12,14 @@ class BaseController extends CI_Controller
 
     public function __construct()
     {
+
         parent::__construct();
+
+
+        if(GOROCO==="G01R01C00"){
+            $this->session->sess_destroy();
+            redirect('login');
+        }
 
         $this->load->model('model_params');
         $this->load->model('model_budget');
