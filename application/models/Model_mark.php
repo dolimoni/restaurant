@@ -11,9 +11,52 @@ class model_mark extends CI_Model {
 
     public function add($mark){
         if(!$this->restoreDeletedMark($mark)){
+            $mark['m_unit_convert']=$this->getUnitConvert($mark);
             $this->db->insert('mark', $mark);
         }
         return $this->response;
+    }
+
+    public function getUnitConvert($mark){
+        $this->db->where('id',$mark['product']);
+        $product=$this->db->get('product')->row_array();
+        $unit_convert=1;
+        if($product['unit']==="pcs"
+            and $product['weightByUnit']>0
+            and $mark['m_unit']==="pcs"){
+            $unit_convert=$mark['m_weightByUnit']/$product['weightByUnit'];
+        }else if($product['unit']==="pcs"
+            and $product['weightByUnit']>0
+            and ($mark['m_unit']==="kg" or $mark['m_unit']==="L")){
+            $unit_convert=1/$product['weightByUnit']*1000;
+        }else if( ($product['unit']==="kg" or $product['unit']==="L")
+            and $mark['m_unit']==="pcs"){
+            $unit_convert=$mark['m_weightByUnit']/1000;
+        }
+        return $unit_convert;
+    }
+
+    public function updateUnitConvert($product){
+
+        $this->db->where('product',$product['id']);
+        $marks=$this->db->get('mark')->result_array();
+        foreach ($marks as $mark){
+            $unit_convert=1;
+            if($product['unit']==="pcs"
+                and $product['weightByUnit']>0
+                and $mark['m_unit']==="pcs"){
+                $unit_convert=$mark['m_weightByUnit']/$product['weightByUnit'];
+            }else if($product['unit']==="pcs"
+                and $product['weightByUnit']>0
+                and ($mark['m_unit']==="kg" or $mark['m_unit']==="L")){
+                $unit_convert=1/$product['weightByUnit']*1000;
+            }else if( ($product['unit']==="kg" or $product['unit']==="L")
+                and $mark['m_unit']==="pcs"){
+                $unit_convert=$mark['m_weightByUnit']/1000;
+            }
+            $this->db->where('id',$mark['id']);
+            $this->db->update('mark',array('m_unit_convert'=>$unit_convert));
+        }
     }
 
     public function getAll(){
@@ -47,6 +90,7 @@ class model_mark extends CI_Model {
                 'm_unit_price'=>$mark['m_unit_price'],
                 'm_weightByUnit'=>$mark['m_weightByUnit'],
             );
+            $data['m_unit_convert']=$this->getUnitConvert($mark);
             $this->db->where('id',$mark['mark_id']);
             $this->db->update('mark',$data);
         }else{
@@ -54,6 +98,21 @@ class model_mark extends CI_Model {
            $this->delete($mark);
        }
         return $this->response;
+    }
+
+    public function updateMarkOrder($orderdetails,$product){
+        $this->db->where('id',$product['mark']);
+        $mark=$this->db->get('mark')->row_array();
+        $data=array(
+            'mark'=>$product['mark'],
+            'm_name'=>$mark['name'],
+            'm_unit'=>$mark['m_unit'],
+            'm_unit_price'=>$mark['m_unit_price'],
+            'm_weightByUnit'=>$mark['m_weightByUnit'],
+            'm_unit_convert'=>$mark['m_unit_convert'],
+        );
+        $this->db->where('orderdetails',$orderdetails['id']);
+        $this->db->update('order_mark',$data);
     }
 
     private function removeDeletedMark($mark){
@@ -76,4 +135,5 @@ class model_mark extends CI_Model {
         }
         return $restored;
     }
+
 }

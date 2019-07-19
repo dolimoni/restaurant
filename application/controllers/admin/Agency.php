@@ -29,6 +29,7 @@ class Agency extends BaseController
         $this->log_end($data);
     }
 
+
      public function addProducts(){
         $this->log_begin();
         $data['agencies']=$this->model_agency->getAll();

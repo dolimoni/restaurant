@@ -62,7 +62,7 @@ $totalQuantity=0;
                     <div class="x_panel">
                         <div class="x_title">
                             <h2>Historique
-                                <small>Historique de stock</small>
+                                <small>Historique de commande</small>
                             </h2>
                             <div class="filter">
                             </div>

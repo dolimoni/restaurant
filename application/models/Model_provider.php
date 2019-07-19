@@ -236,7 +236,7 @@ class model_provider extends MY_Model {
 		$products = $this->db->get()->result_array();
 		if($marks){
 		    foreach ($products as $key=>$product){
-		        $this->db->select('id,name');
+		        $this->db->select('id,name,m_weightByUnit,m_unit,m_unit_price');
 		        $this->db->from('mark');
 		        $this->db->where('product',$product['id']);
 		        $marks=$this->db->get()->result_array();

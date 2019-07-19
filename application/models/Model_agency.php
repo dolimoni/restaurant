@@ -25,6 +25,17 @@ class model_agency extends CI_Model {
        return $this->db->get("agency")->result_array();
     }
 
+
+    public function getAllLocal($get_master=false){
+
+        $this->db->where("status", "enabled");
+
+        if(!$get_master){
+
+        }
+        return $this->db->get("local_agency")->result_array();
+    }
+
     public function getAgency($id){
         $this->db->where("status", "enabled");
         $this->db->where("id", $id);
@@ -166,8 +177,74 @@ class model_agency extends CI_Model {
             $response = $this->model_product->updateLocalQuantity($product['id'], $product['quantity']);
 
             // envoyer le stock à l'agence
-            $this->addStockProductsPrice($agency, $product["id"], $response, $product['quantity']);
+            $this->addLocalStockProductsPrice($agency, $product["id"], $response, $product['quantity']);
 
+        }
+    }
+
+    public function addLocalStockProductsPrice($agency,$product_id,$response,$quantity){
+
+
+        // response : liste quantities used in consumption product
+        $db_product=$this->model_product->getById($product_id);
+        if ($agency["type"] === "master") {
+            foreach ($response["quantities"] as $quantityItem) {
+                $quantityData = array(
+                    "quantity" => $quantityItem["quantity"],
+                    "init_quantity" => $quantityItem["quantity"],
+                    "unit_price" => $quantityItem["unit_price"],
+                    "unit" => $db_product['unit'],
+                    "product" => $product_id,
+                    "provider" => $quantityItem['provider'],
+                    "department"=> $agency["id"]
+                );
+                $this->db->insert('stock_product', $quantityData);
+                $quantityData["type"] = "out";
+                unset($quantityData["init_quantity"]);
+                $quantityData['destination']='agency';
+                $this->db->insert('stock_history', $quantityData);
+
+            }
+        } else if ($agency["type"] === "slave") {
+
+            // send products to remote db
+
+            if($agency["transfert"]==='true'){
+                $this->model_product->setCurrentDb($agency["id"]);
+                $this->model_provider->setCurrentDb($agency["id"]);
+                $slaveProduct = $this->model_product->getProductByMasterId($product_id);
+                $this->model_product->updateQuantity($slaveProduct['id'], $quantity, "up");
+                foreach ($response["quantities"] as $quantityItem) {
+                    $slaveProvider=$this->model_provider->getProviderByMasterId($quantityItem["provider"]);
+                    if($slaveProvider==NULL){
+                        $slaveProvider["id"]=0;
+                    }
+                    $quantityData = array(
+                        "quantity" => $quantityItem["quantity"],
+                        "unit_price" => $quantityItem["unit_price"],
+                        "product" => $slaveProduct['id'],
+                        "provider"=> $slaveProvider["id"],
+                    );
+                    $this->model_product->accumulateQuantity($quantityData);
+                }
+                $this->model_product->setCurrentDb(0);
+                $this->model_provider->setCurrentDb(0);
+            }
+
+            // add product to stock_history in local db
+            foreach ($response["quantities"] as $quantityItem) {
+                $quantityData = array(
+                    "quantity" => $quantityItem["quantity"],
+                    "unit_price" => $quantityItem["unit_price"],
+                    "product" => $product_id,
+                    "unit" => $db_product['unit'],
+                    "provider" => $quantityItem["provider"],
+                    "department" => $agency["id"],
+                    "type" => "out",
+                    'destination'=>'agency'
+                );
+                $this->db->insert('stock_history', $quantityData);
+            }
         }
     }
 

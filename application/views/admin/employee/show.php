@@ -237,8 +237,8 @@
 
 <script src="<?php echo base_url('assets/vendors/moment/min/moment.min.js'); ?>"></script>
 <script src="<?php echo base_url('assets/vendors/fullcalendar/dist/fullcalendar.js');  ?>"></script>
-<script src="<?php echo base_url("assets/vendors/datatables.net/js/jquery.dataTables.min.js"); ?>"></script>
 <script>
+<script src="<?php echo base_url("assets/vendors/datatables.net/js/jquery.dataTables.min.js"); ?>"></script>
     $(document).ready(function () {
         var handleDataTableButtons = function () {
             if ($("#datatable-salary").length) {

@@ -189,6 +189,7 @@ class model_product extends CI_Model {
 	}
     public function edit($product,$newQuantity=false)
     {
+        $this->load->model('model_mark');
         $this->db->where("id", $product['id']);
         $newUnit=false;
         $db_product=$this->db->get("product")->row_array();
@@ -257,6 +258,7 @@ class model_product extends CI_Model {
         }
 
         $this->updateProductUnit($db_product,$product);
+        $this->model_mark->updateUnitConvert($product);
         $this->updateMealsQuantityByProduct($product['id'],strtoupper($product['unit']));
         $this->updateMealsCostByProduct($product['id']);
 
@@ -482,7 +484,7 @@ class model_product extends CI_Model {
                 $this->db->update("inventory", $dataInventory);
                 // la nouvelle quantity de stock est le stock courant + delta
                 $dataQuantity = array(
-                    "quantity" => $inventory["activeStockQuantity"] + $delta
+                    "quantity" => $product["final_stock"]
                 );
                 $this->db->where("id", $quantity["id"]);
                 $this->db->update("quantity", $dataQuantity);
@@ -702,11 +704,12 @@ class model_product extends CI_Model {
         $params=$this->model_params->config();
         if($params['addStockAfterOrder']==='true'){
             foreach ($productsList as $product) {
+
                 $db_product=$this->getById($product['id']);
                 $lost_quantity=0;
-                if(($db_product['unit']==='kg' or $db_product['L']) and $db_product['lost_type']==='quantity'){
+                if(($db_product['unit']==='kg' or $db_product['unit']==="L") and $db_product['lost_type']==='quantity'){
                     $lost_quantity=$product['quantity']*$db_product['lost_value']/1000;
-                }else if(($db_product['unit']==='kg' or $db_product['L']) and $db_product['lost_type']==='percent'){
+                }else if(($db_product['unit']==='kg' or $db_product['unit']==="L") and $db_product['lost_type']==='percent'){
                     $lost_quantity=$product['quantity']*$db_product['lost_value']/100;
                 }else if($db_product['unit']==='pcs'){
                     $lost_quantity=$product['quantity']*$db_product['lost_value']/100;
@@ -726,6 +729,20 @@ class model_product extends CI_Model {
                         $unit_price/=$product['piecesByPack'];
                         $quantity*=$product['piecesByPack'];
                     }
+                    $this->db->where('product',$product['id']);
+                    $this->db->where('order_id',$order_id);
+                    $this->db->where('mark<>0');
+                    $orderdetails=$this->db->get('orderdetails')->row_array();
+
+                    $mark_unit_convert=1;
+                    if(!is_null($orderdetails)){
+                        $this->db->where('orderdetails',$orderdetails['id']);
+                        $order_mark=$this->db->get('order_mark')->row_array();
+                        $mark_unit_convert=$order_mark['m_unit_convert'];
+                    }
+
+                    $quantity*=$mark_unit_convert;
+
                     $productHistory = array(
                         'id' => $product['id'],
                         'quantity' => $quantity,

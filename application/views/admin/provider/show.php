@@ -631,6 +631,7 @@
 <script src="<?php echo base_url('assets/build2/js/provider/productsToOrder.js'); ?>"></script>
 <script src="<?php echo base_url('assets/build2/js/provider/getOrder.js'); ?>"></script>
 <script src="<?php echo base_url('assets/build2/js/provider/changeStatusFct.js'); ?>"></script>
+<script src="<?php echo base_url('assets/build2/js/provider/changeMark.js'); ?>"></script>
 <script>
     $('#payment_date_field').daterangepicker({
         locale: {
@@ -706,27 +707,7 @@
         $('#addProductsModal .formList').append(form);
     }
 
-    //add new produdct to quotation
-    function addFormQuotation(product){
-        productsQuotationCount++;
-        var form = $('#quotationEditModal .addProviderQuotationForm[data-id="1"]').clone().attr('data-id', productsQuotationCount);
-        form.addClass('toHide');
-        form.removeClass('hide');
 
-        //if we add products to be changed
-        if(product){
-            form.find("input[name='product_id']").val(product.id);
-            form.find("input[name='name']").val(product.name);
-            form.find("input[name='price']").val(product.unit_price);
-        }else{
-            form.find("input[name='name']").val("");
-            form.find("input[name='price']").val("");
-            form.find("input[name='product_id']").val("");
-        }
-
-        console.log(form);
-        $('#quotationEditModal .formList').append(form);
-    }
 
     var eventSaveData = {
         'p_productsCount': productsQuotationCount,
@@ -835,40 +816,6 @@
         });
     }
 
-    $('.editQuotation').on('click',function () {
-        $.ajax({
-            url: "<?php echo base_url('admin/provider/apiGetQuotation'); ?>",
-            type: "POST",
-            dataType: "json",
-            data: {'id': $(this).attr('data-id')},
-            success: function (data) {
-                if (data.status === "success") {
-                    var firstProduct = data.quotation[0];
-                    $('#quotationEditModal #quotation_id').val(firstProduct.quotation_id);
-                    $('#quotationEditModal #single_cal1').val(firstProduct.reception_date);
-
-                    $('#quotationEditModal #quotationNumber').val(firstProduct.number);
-
-
-                    $('#quotationEditModal input[name="product_id"]').val(firstProduct.id);
-
-                    $('.addProviderQuotationForm[data-id="1"] input[name="name"]').val(firstProduct.name);
-                    $('.addProviderQuotationForm[data-id="1"] input[name="price"]').val(firstProduct.unit_price);
-                    data.quotation.splice(0,1);
-                    $.each(data.quotation, function (key, product) {
-                        addFormQuotation(product);
-                        $(".infosQuotation input[name='quotation_id']").val(product.quotation_id);
-                    });
-                }
-                else {
-                    console.log('ko');
-                }
-            },
-            error: function (data) {
-                // do something
-            }
-        })
-    });
 
     $('#datatable-responsive5').on('click','.editOrderModal',{url: apiGetOrder_url},getOrder);
 
@@ -936,9 +883,6 @@
        });
     });
 
-    $("#quotationEditModal").on("hidden.bs.modal", function () {
-        $("#quotationEditModal .addProviderQuotationForm.toHide").remove();
-    });
 
     $('button[name=print]').on('click', {url: apiPrintOrder_url,sub_url:'admin/provider/apiPrintOrder'}, newOrder);
     $('button[name=printOrderProducts]').on('click', {url: apiPrintOrder_url}, productsToOrder);
@@ -999,88 +943,6 @@
 </script>
 
 
-
-<!-- Change order status -->
-
-<!--Edit Profile-->
-
-<script>
-    $(document).ready(function () {
-        $('.editProfile').on('click',editProfileEvent);
-        function editProfileEvent(){
-            $(window).scrollTop($('.provider-firstName').offset().top);
-            $('.saveProfile').show();
-
-            editProviderData(true);
-            $('.provider-firstName').focus();
-
-        }
-
-        $('.saveProfile').on('click', saveProfileEvent);
-        function saveProfileEvent(){
-            var provider = {
-                'title': $.trim($('.provider-title').text()),
-                'name': $.trim($('.provider-firstName').text()),
-                'prenom':$.trim($('.provider-lastName').text()),
-                'address':$.trim($('.provider-address').text()),
-                'mail':$.trim($('.provider-mail').text()),
-                'phone':$.trim($('.provider-phone').text()),
-                'id':$('#provider_id').attr('data-id')
-            };
-            $('#loading').show();
-            $.ajax({
-                url: "<?php echo base_url('admin/provider/apiUpdate'); ?>",
-                type: "POST",
-                dataType: "json",
-                data: {'provider': provider},
-                success: function (data) {
-                    if (data.status === 'success') {
-                        $('#loading').hide();
-                        $('.saveProfile').hide();
-                        editProviderData(false);
-                        swal({
-                            title: "Success",
-                            text: swal_success_edit_lang,
-                            type: "success",
-                            timer: 1500,
-                            showConfirmButton: false
-                        });
-                        location.reload();
-                    }
-                    else {
-                        $('#loading').hide();
-                        swal({
-                                title: "Erreur",
-                                text: swal_error_lang,
-                                type: "error",
-                                timer:1500
-                            });
-                        }
-
-                },
-                error: function (data) {
-                    $('#loading').hide();
-                    swal({
-                        title: "Erreur",
-                        text: swal_error_lang,
-                        type: "error",
-                        timer: 1500
-                    });
-                }
-            });
-        }
-
-
-        function editProviderData(edit){
-            $('.provider-firstName').attr('contenteditable', edit);
-            $('.provider-lastName').attr('contenteditable', edit);
-            $('.provider-title').attr('contenteditable', edit);
-            $('.provider-address').attr('contenteditable', edit);
-            $('.provider-phone').attr('contenteditable', edit);
-            $('.provider-mail').attr('contenteditable', edit);
-        }
-    });
-</script>
 
 
 

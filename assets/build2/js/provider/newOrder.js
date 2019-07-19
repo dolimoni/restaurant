@@ -12,10 +12,11 @@ function newOrder(event) {
         var unit = row.find('select[name="product"]').attr('data-unit');
         var pack = row.find('select[name="product"]').attr('data-pack-order');
         var piecesByPack = row.find('select[name="product"]').attr('data-piecesByPack-order');
+        var storage_area = $("#storage_area").val();
         //var idQuantity = row.find('select[name="product"]').attr('data-id-quantity');
         var unit_price = parseFloat(row.find('input[name="unit_price"]').val().replace(',', '.'));
         console.log(id, quantity, unit_price);
-        if (quantity > 0 && unit_price > 0) {
+        if (quantity > 0) {
             underTotal += quantity * unit_price;
             var product = {
                 'id': id,
@@ -66,6 +67,7 @@ function newOrder(event) {
         'shipping': '-',
         'other': '-',
         'email': email,
+        'storage_area': storage_area,
         'advances': advances
     };
 

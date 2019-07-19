@@ -11,7 +11,7 @@
     <title><?php echo $params['name']; ?></title>
 
 
-  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <!-- Global site tag (gtag.js) - Google Analytics  -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=UA-110319921-1"></script>
   <script>
       window.dataLayer = window.dataLayer || [];
@@ -224,7 +224,7 @@
 
                       if ((isset($params["acl"]["Employee"]) or $this->session->userdata('type') === "admin")
 
-                            and $params['pack']==='pro')
+                            and $params['pack']==='starter')
 
                           :?>
                       <li>
@@ -333,6 +333,44 @@
                           </ul>
                       </li>
                     <?php } ?>
+
+
+                      <?php if (((isset($params["acl"]["Agency"]) or $this->session->userdata('type') === "admin"))
+                                and $params['pack']==='starter') { ?>
+                      <!--<li>
+                          <a><i class="fa fa-exchange"></i>Gestion de transfert<span class="fa fa-chevron-down"></span></a>
+                          <ul class="nav child_menu">
+                          <?php /*if (isset($params["acl"]["Agency"]["index"]) or $this->session->userdata('type') === "admin"): */?>
+                              <li><a href="<?/*= base_url('admin/agency/index'); */?>">Mes agences</a></li>
+                          <?php /*endif; */?>
+
+                          <?php /*if (isset($params["acl"]["Agency"]["addProducts"]) or $this->session->userdata('type') === "admin"): */?>
+                              <li><a href="<?/*= base_url('admin/agency/addProducts'); */?>">Envoyer un stock</a></li>
+                          <?php /*endif; */?>
+
+                          <?php /*if (isset($params["acl"]["Agency"]["historyProducts"]) or $this->session->userdata('type') === "admin"): */?>
+                              <li><a href="<?/*= base_url('admin/agency/historyProducts'); */?>">Historique</a></li>
+                          <?php /*endif; */?>
+                          </ul>
+                      </li>-->
+
+                      <li>
+                          <a><i class="fa fa-exchange"></i>Gestion de transfert<span class="fa fa-chevron-down"></span></a>
+                          <ul class="nav child_menu">
+                          <?php if (isset($params["acl"]["Agency"]["index"]) or $this->session->userdata('type') === "admin"): ?>
+                              <li><a href="<?= base_url('admin/localAgency/index'); ?>">Mes agences</a></li>
+                          <?php endif; ?>
+
+                          <?php if (isset($params["acl"]["Agency"]["addProducts"]) or $this->session->userdata('type') === "admin"): ?>
+                              <li><a href="<?= base_url('admin/localAgency/addProducts'); ?>">Envoyer un stock</a></li>
+                          <?php endif; ?>
+
+                          <?php if (isset($params["acl"]["Agency"]["historyProducts"]) or $this->session->userdata('type') === "admin"): ?>
+                              <li><a href="<?= base_url('admin/localAgency/historyProducts'); ?>">Historique</a></li>
+                          <?php endif; ?>
+                          </ul>
+                      </li>
+                    <?php } ?>
                       <!-----------------------------------------End---------------------------------------------------->
 
 
@@ -350,6 +388,13 @@
                   <!--<li><a href="<?/*= base_url('admin/Cron/index'); */?>"><i class="fa fa-refresh"></i> Synchronisation des produits </a></li>-->
 
                     <?php endif; ?>
+
+
+                    <?php
+                        include ('assistant_role.php');
+                    ?>
+
+
 
                     <?php if ($this->session->userdata('type') == "thrifty") : ?>
 

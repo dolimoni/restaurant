@@ -166,7 +166,6 @@
 
             }
 
-            console.log(productsList);
            if(productsList.length>0){
                $('#loading').show();
                $.ajax({

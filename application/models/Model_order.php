@@ -58,9 +58,23 @@ class model_order extends CI_Model {
                 'pack' => $product['pack'],
                 'unit' => $db_product['unit'],
                 'piecesByPack' => $piecesByPack,
+                'storage_area' => $order['storage_area'],
                 'quantity_id' => 0,
             );
             $this->db->insert('orderdetails', $data);
+            $orderdetails_id= $this->db->insert_id();
+            $this->db->where('id',$product['mark']);
+            $mark=$this->db->get('mark')->row_array();
+            if(!is_null($mark)){
+                $mark['orderdetails']=$orderdetails_id;
+                $mark['m_name']=$mark['name'];
+                $mark['mark']=$mark['id'];
+                unset($mark['product']);
+                unset($mark['deleted']);
+                unset($mark['name']);
+                unset($mark['id']);
+                $this->db->insert('order_mark',$mark);
+            }
             $this->addNegociationProducts($data_order,$data,$negociation_id);
 
         }
@@ -115,6 +129,7 @@ class model_order extends CI_Model {
 	public function update($order)
 	{
 
+	    $this->load->model('model_mark');
         $data = array(
             'status' => $order['status'],
             'tva' => $order['tva'],
@@ -145,8 +160,10 @@ class model_order extends CI_Model {
                 $r = $this->db->get('orderdetails');
 
                 if ($r->num_rows() > 0) {
+                    $orderdetails=$r->row_array();
                     $data = array(
                         'quantity' => $product['quantity'],
+                        'mark' => $product['mark'],
                         'od_price' => $product['unit_price'],
                         'quantity_id' => $quntity_id,
                     );
@@ -154,11 +171,13 @@ class model_order extends CI_Model {
                     $this->db->where('product', $product['id']);
                     //$this->db->where('quantity_id', $quntity_id);
                     $this->db->update('orderdetails', $data);
+                    $this->model_mark->updateMarkOrder($orderdetails,$product);
 
                 } else {
                     $data = array(
                         'quantity' => $product['quantity'],
                         'od_price' => $product['unit_price'],
+                        'mark' => $product['mark'],
                         'product' => $product['id'],
                         'quantity_id' => $quntity_id,
                         'order_id' => $order['id']

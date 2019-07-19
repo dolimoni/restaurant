@@ -75,6 +75,50 @@ function init() {
         $('#editMarkModal input[name=id]').val(id);
     });
 
+    $(".addInventory").on('click', function () {
+        var m_unit_convert = $(this).attr('data-m_unit_convert');
+        $('#addInventoryModal input[name=inventory_m_unit]').val(m_unit_convert);
+    });
+
+    $('input[name=inventory_quantity]').on('keyup',function () {
+        var row=$(this).closest('.row');
+        var mark_quantity=parseFloat($(this).val()).toFixed(2);
+
+        if(isNaN(mark_quantity)){
+            mark_quantity=0;
+        }
+
+        var inventory_m_unit=parseFloat($(this).attr('data-m_unit_convert')).toFixed(2);
+        var finalMarkQuantityConvert=parseFloat(mark_quantity*inventory_m_unit).toFixed(2);
+        var product_unit=$('select[name="unit"]').val();
+
+
+        console.log(inventory_m_unit);
+        $('span.finalQuantityConvert').html(calulateMarksQuantity()+' '+product_unit);
+        row.find('.markQuantityLabled').html(mark_quantity);
+        row.find('.markQuantityConvert').html(finalMarkQuantityConvert);
+    });
+
+    function calulateMarksQuantity(){
+        var inputs=$('#addInventoryForm input');
+
+        var finalQuantity=parseFloat(0);
+        $.each(inputs, function (key,input) {
+            var m_unit_convert=parseFloat($(this).attr('data-m_unit_convert')).toFixed(2);
+            var quantity=parseFloat($(this).val()).toFixed(2);
+
+            if(isNaN(m_unit_convert)){
+                m_unit_convert=0;
+            }
+            if(isNaN(quantity)){
+                quantity=0;
+            }
+            finalQuantity +=  + parseFloat(m_unit_convert*quantity).toFixed(2);
+        });
+        finalQuantity=parseFloat(finalQuantity).toFixed(2);
+        return finalQuantity;
+    }
+
     $('#editMarkForm').submit(function (e) {
         e.preventDefault();
         var name = $(this).find('input[name=name]').val();
@@ -95,6 +139,41 @@ function init() {
             'mark': mark
         };
         apiRequest(editMark_url,data);
+    });
+
+    function formatDate(date) {
+        var d = new Date(date),
+            month = '' + (d.getMonth() + 1),
+            day = '' + d.getDate(),
+            year = d.getFullYear();
+
+        if (month.length < 2) month = '0' + month;
+        if (day.length < 2) day = '0' + day;
+
+        return [year, month, day].join('-');
+    }
+
+
+    $('#addInventoryForm').submit(function (e) {
+        e.preventDefault();  //prevent form from submitting
+        var productsList = [];
+        var id = $('input[name="id"]').val();
+        var totalQuantity = $('input[name="totalQuantity"]').val();
+        var initial_stock = parseFloat(totalQuantity);
+        var inventory_m_unit_price=parseFloat($('#addInventoryModal input[name=inventory_m_unit_price]').val()).toFixed(2);
+        var final_stock_convert=calulateMarksQuantity();
+        var delta= final_stock_convert-initial_stock;
+        var d = new Date();
+        var product = {
+            'product': id,
+            'initial_stock': initial_stock,
+            "final_stock": final_stock_convert,
+            "delta":delta,
+            "inventory_date": formatDate(d)
+        };
+        productsList.push(product);
+        let data={"productsList": productsList};
+        apiRequest(addInventory_url,data);
     });
 
 

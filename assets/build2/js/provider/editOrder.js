@@ -14,7 +14,7 @@ function editOrder(event) {
         var pack = row.find('select[name="product"]').attr('data-pack-order');
         var piecesByPack = row.find('select[name="product"]').attr('data-piecesByPack-order');
         // var unit_price = parseFloat(row.find('input[name="product"]').attr('data-price').replace(',', '.'));
-        if (quantity > 0 && unit_price > 0) {
+        if (quantity > 0) {
             underTotal += quantity * unit_price;
             var product = {
                 'id': id,

@@ -19,6 +19,8 @@ class Login extends CI_Controller {
                 redirect('admin/department/show');
             } else if ($this->session->userdata('type') == "user") {
                 redirect('admin/employee/main');
+            }else if ($this->session->userdata('type') == "assistant") {
+                redirect('admin/meal');
             }
         }
 	}
@@ -42,6 +44,8 @@ class Login extends CI_Controller {
                 redirect('admin/employee/main');
             } else if ($this->session->userdata('type') == "cuisine") {
                 redirect('admin/meal/group');
+            }else if ($this->session->userdata('type') == "assistant") {
+                redirect('admin/meal');
             }
         }
     }

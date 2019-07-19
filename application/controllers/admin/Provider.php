@@ -251,12 +251,14 @@ class Provider extends BaseController
     {
         $this->log_begin();
         $id = $this->uri->segment(4);
+        $this->load->model('model_storage');
         $data['params'] = $this->getParams();
         $data['provider'] = $this->model_provider->get($id);
         if (!$data['provider']) {
             redirect('/admin/provider');
         }
         $data['products'] = $this->model_provider->getProducts($id,"none",'shown',true);
+        $data['storage_areas'] = $this->model_storage->getAll();
         $data['productsToOrder'] = $this->model_product->getToOrderFromProvider($id);
         $data['quotations'] = $this->model_provider->getQuotations($id);
         $data['orders'] = $this->model_provider->getOrders($id);

@@ -16,9 +16,10 @@ class Main extends BaseController
 
         parent::__construct();
 
-        /*if (!$this->input->is_cli_request()) {
+        if (!$this->input->is_cli_request()) {
             echo "Forbidden access";
-        }*/
+        }
+
 
         $this->load->model('model_product');
         $this->load->model('model_meal');
@@ -84,7 +85,7 @@ class Main extends BaseController
         if($params['app_sales']==='sioges'){
             $this->siogesFTP();
         }else if($params['app_sales']==='uniwell'){
-
+            $this->uniwellFTP();
         }
     }
 

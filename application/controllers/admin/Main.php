@@ -181,6 +181,7 @@ class Main extends BaseController
             $params = $this->getParams();
             $this->log_begin();
 
+            echo $params['app_sales'];
             $mealsList=array();
             if($params['app_sales']==='uniwell'){
                 $data['sales'] = $this->model_sale->readUniwellSales(base_url('uploads/ftp/z-plu_1_0001001.csv'));

@@ -67,9 +67,9 @@
                                                placeholder="" value="<?php echo $product['weightByUnit']; ?>"
                                                required>
                                     </div>
-                                    <div class="col-sm-6 col-md-3 col-xs-4">
-                                        <input class="btn btn-success" type="submit" name="editMark" value="Confirmer"/>
-                                    </div>
+                                </div>
+                                <div class="row text-right">
+                                    <input class="btn btn-success" type="submit" name="editMark" value="Confirmer"/>
                                 </div>
                             </fieldset>
                         </form>

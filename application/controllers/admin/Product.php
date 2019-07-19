@@ -45,6 +45,16 @@ class Product extends BaseController {
         $this->log_end($data);
     }
 
+    public function storage()
+	{
+	    $this->load->model("model_storage");
+        $this->log_begin();
+        $data['storage_products'] = $this->model_storage->getAllProducts();
+        $data['params'] = $this->getParams();
+        $this->parser->parse('admin/product/view_storage', $data);
+        $this->log_end($data);
+    }
+
     public function export()
 	{
         $this->log_begin();

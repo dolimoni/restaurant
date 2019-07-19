@@ -114,7 +114,15 @@
                                                         class="form-control">
                                                     <option data-mark='0' value="0" data-mark-name=''><?php echo $product['name'] . " (" . $unit . ")"; ?></option>
                                                     <?php foreach ($product['marks'] as $key1 => $mark) { ?>
-                                                        <option data-mark-name='<?php echo $mark['name']; ?>' value="<?php echo $mark['id']; ?>" data-mark="<?php echo $mark['id']; ?>">Marque <?php echo $product['name'].' - '.$mark['name'];?></option>
+                                                        <option
+                                                                data-mark-name='<?php echo $mark['name']; ?>'
+                                                                data-mark-unit_price='<?php echo $mark['m_unit_price']; ?>'
+                                                                data-mark-unit='<?php echo $mark['m_unit']; ?>'
+                                                                data-mark-weightByUnit='<?php echo $mark['m_weightByUnit']; ?>'
+                                                                value="<?php echo $mark['id']; ?>"
+                                                                data-mark="<?php echo $mark['id']; ?>">
+                                                            Marque <?php echo $product['name'].' - '.$mark['name'].' ('.$mark['m_unit'].')';?>
+                                                        </option>
                                                     <?php } ?>
                                                 </select>
                                             </div>

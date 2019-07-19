@@ -53,9 +53,11 @@
                                             <div class="col-xs-12 col-sm-4 col-md-6">
                                                 <a class="btn btn-info btn-block" href="<?php echo base_url("admin/provider/allOrders");?>"><?= lang("allOrders") ?></a>
                                             </div>
+                                            <?php if ($this->session->userdata('type') === "admin") : ?>
                                             <div class="col-xs-12 col-sm-4 col-md-3">
                                                 <a class="btn btn-warning btn-block" href="<?php echo base_url("admin/provider/statistic");?>"><?= lang("statistics") ?></a>
                                             </div>
+                                            <?php endif; ?>
                                         </div>
                                     </div>
                                     <div class="col-xs-12 col-md-5">

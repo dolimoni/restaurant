@@ -394,6 +394,7 @@
                                   <div class="row">
                                       <div class="col-md-6">
                                           <input name="id" type="hidden" value="<?php echo $product['id']; ?>"/>
+                                          <input name="totalQuantity" type="hidden" value="<?php echo $product['totalQuantity']; ?>"/>
                                           <input name="quantity_id" type="hidden" value="<?php echo $product['q_id']; ?>"/>
                                           <div class="form-group">
                                               <?= lang("product"); ?> : <input value="<?php echo $product['name']; ?>" class="form-control"
@@ -489,7 +490,7 @@
 
                                       <div class="col-md-6">
                                           <div class="form-group">
-                                              <?= lang("weightByUnit"); ?> <?= lang("in_gr"); ?><input value="<?php echo $product['weightByUnit']; ?>"
+                                              <?= lang("weightByUnit"); ?> <?= lang("in_gr"); ?><input value="<?php echo number_format( $product['weightByUnit'],0,'.',''); ?>"
                                                                                                        class="form-control" placeholder=" <?= lang("weightByUnit"); ?>"
                                                                                                        name="weightByUnit">
                                           </div>
@@ -580,6 +581,8 @@
                         <div class="x_content">
                             <button class="btn btn-primary" data-toggle="modal"
                                     data-target="#addMarkModal">Ajouter une marque</button>
+                            <button class="btn btn-info" data-toggle="modal"
+                                    data-target="#addInventoryModal">Inventaire</button>
 
                             <div class="table-responsive">
                                 <table id="datatable-quantityy" class="table table-striped table-bordered dt-responsive nowrap"
@@ -587,12 +590,20 @@
                                     <thead>
                                     <tr>
                                         <th>Marque</th>
+                                        <th>Prix d'achat</th>
+                                        <th>Unité</th>
+                                        <th>Poid par unité(en gr)</th>
+                                        <th>Indice de conversion</th>
                                         <th>Action</th>
                                     </tr>
                                     </thead>
                                     <tfoot>
                                     <tr>
                                         <th>Marque</th>
+                                        <th>Prix d'achat</th>
+                                        <th>Unité</th>
+                                        <th>Poid par unité</th>
+                                        <th>Indice de conversion</th>
                                         <th>Action</th>
                                     </tr>
                                     </tfoot>
@@ -600,6 +611,10 @@
                                     <?php foreach ($marks as $mark) { ?>
                                         <tr>
                                             <td width="50%"><?php echo $mark['name'] ?></td>
+                                            <td width="50%"><?php echo $mark['m_unit_price'] ?></td>
+                                            <td width="50%"><?php echo $mark['m_unit'] ?></td>
+                                            <td width="50%"><?php echo number_format($mark['m_weightByUnit'],0,'.','') ?></td>
+                                            <td width="50%"><?php echo $mark['m_unit_convert'] ?></td>
                                             <td>
                                                 <button data-id="<?php echo $mark['id'] ?>"
                                                         data-name="<?php echo $mark['name'] ?>"
@@ -660,6 +675,7 @@
         </div>
         <?php include('include/addMagazinModal.php'); ?>
         <?php include('include/editMarkModal.php'); ?>
+        <?php include('include/addInventoryModal.php'); ?>
 
     </div>
 
@@ -676,8 +692,9 @@
     var swal_success_delete_lang = "<?= lang("swal_success_delete"); ?>";
     var swal_warning_obligatory_weight_lang = "<?= lang("swal_warning_obligatory_weight"); ?>";
 
-    var deleteQuantity_url = "<?php echo base_url('admin/product/apiDeleteQuantity'); ?>"
-    var deleteMark_url = "<?php echo base_url('admin/product/apiDeleteMark'); ?>"
+    var deleteQuantity_url = "<?php echo base_url('admin/product/apiDeleteQuantity'); ?>";
+    var deleteMark_url = "<?php echo base_url('admin/product/apiDeleteMark'); ?>";
+    var addInventory_url = "<?php echo base_url('admin/product/addInventory'); ?>";
 </script>
 <script src="<?php echo base_url("assets/vendors/datatables.net/js/jquery.dataTables.min.js"); ?>"></script>
 

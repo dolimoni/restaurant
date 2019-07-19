@@ -46,6 +46,11 @@
                                                    data-toggle="tab"
                                                    aria-expanded="false"><?= lang('advances') ?></a>
                         </li>
+                        <li role="presentation"><a href="#tab_storage_area"
+                                                   role="tab"
+                                                   data-toggle="tab"
+                                                   aria-expanded="false">Stockage</a>
+                        </li>
                     </ul>
                     <ul class="nav nav-tabs tabs-left md-hidden">
                         <li role="presentation" class="active"><a href="#tab_products_order"
@@ -62,6 +67,11 @@
                                                    role="tab"
                                                    data-toggle="tab"
                                                    aria-expanded="false"><?= lang('advances') ?></a>
+                        </li>
+                        <li role="presentation"><a href="#tab_storage_area"
+                                                   role="tab"
+                                                   data-toggle="tab"
+                                                   aria-expanded="false">Stockage</a>
                         </li>
                     </ul>
                     <div id="tab-newOrder" class="tab-content col-md-12 col-sm-12 col-xs-12" style="margin-bottom:20px">
@@ -85,15 +95,6 @@
                                              data-index="<?php echo $key; ?>">
 
                                             <div class="col-md-6 col-sm-4 col-xs-12">
-                                                <!--<input name="product"
-                                                       value="<?php /*echo $product['name'] . " (" . $product['unit'] . ")"; */?>"
-                                                       disabled
-                                                       data-id="<?php /*echo $product['id']; */?>"
-                                                       data-price="<?php /*echo $product['unit_price']; */?>"
-                                                       data-name="<?php /*echo $product['name']; */?>"
-                                                       data-id-quantity="<?php /*echo $product['q_id']; */?>"
-                                                       data-unit="<?php /*echo $product['unit']; */?>"
-                                                        class="form-control">-->
                                                 <select
                                                         name="product"
                                                         data-product="<?php echo $product['id']; ?>"
@@ -108,7 +109,14 @@
                                                         class="form-control">
                                                     <option data-mark='0' data-mark-name=''><?php echo $product['name'] . " (" . $unit . ")"; ?></option>
                                                     <?php foreach ($product['marks'] as $key1 => $mark) { ?>
-                                                        <option data-mark-name='<?php echo $mark['name']; ?>' data-mark="<?php echo $mark['id']; ?>">Marque <?php echo $product['name'].' - '.$mark['name'];?></option>
+                                                        <option
+                                                                data-mark-name='<?php echo $mark['name']; ?>'
+                                                                data-mark-unit_price='<?php echo $mark['m_unit_price']; ?>'
+                                                                data-mark-unit='<?php echo $mark['m_unit']; ?>'
+                                                                data-mark-weightByUnit='<?php echo $mark['m_weightByUnit']; ?>'
+                                                                data-mark="<?php echo $mark['id']; ?>">
+                                                            Marque <?php echo $product['name'].' - '.$mark['name'].' ('.$mark['m_unit'].')';?>
+                                                        </option>
                                                     <?php } ?>
                                                 </select>
                                             </div>
@@ -373,6 +381,24 @@
                             </div>
                         </div>
                         <!--------------------------------------------End Config Tab------------------------------------------------------>
+
+                        <!--------------------------------------------Storage------------------------------------------------------>
+                        <div role="tabpanel" class="tab-pane" id="tab_storage_area"
+                             aria-labelledby="home-tab">
+                            <div class="row">
+                                <div class="table-responsive">
+                                    <div class="col-md-6">
+                                        <select class="form-control" id="storage_area">
+                                            <?php foreach ($storage_areas as $storage_area){ ?>
+                                                <option id="<?= $storage_area['id'] ?>" value="<?= $storage_area['id'] ?>"><?= $storage_area['name'] ?> </option>
+                                            <?php } ?>
+                                        </select>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <!--------------------------------------------End Storage------------------------------------------------------>
                     </div>
                 </div>
             </div>
