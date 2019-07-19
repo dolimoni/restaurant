@@ -48,10 +48,10 @@
 $active_group = 'default';
 $active_record = TRUE;
 
-$db['default']['hostname'] = 'localhost';//localhost ou 149.91.80.68
-$db['default']['username'] = 'root';//root ou lhpastry
-$db['default']['password'] = 'root'; // ou lhpastry
-$db['default']['database'] = 'restaurant';//restaurant_tmp ou restaurant_test
+$db['default']['hostname'] = 'localhost';
+$db['default']['username'] = 'root';
+$db['default']['password'] = '';
+$db['default']['database'] = 'restaurant';
 $db['default']['dbdriver'] = 'mysqli';
 $db['default']['dbprefix'] = '';
 $db['default']['pconnect'] = TRUE;
@@ -65,10 +65,10 @@ $db['default']['autoinit'] = TRUE;
 $db['default']['stricton'] = FALSE;
 
 
-$db['remote_2']['hostname'] = '149.91.80.68';//localhost ou 149.91.80.68
-$db['remote_2']['username'] = 'lhpastry';//root ou lhpastry
-$db['remote_2']['password'] = 'lhpastry'; // ou lhpastry
-$db['remote_2']['database'] = 'restaurant_test';//restaurant_tmp ou restaurant_test
+$db['remote_2']['hostname'] = 'localhost';
+$db['remote_2']['username'] = 'root';
+$db['remote_2']['password'] = 'root';
+$db['remote_2']['database'] = 'restaurant';
 $db['remote_2']['dbdriver'] = 'mysqli';
 $db['remote_2']['dbprefix'] = '';
 $db['remote_2']['pconnect'] = TRUE;
@@ -82,21 +82,7 @@ $db['remote_2']['autoinit'] = TRUE;
 $db['remote_2']['stricton'] = FALSE;
 
 
-$db['stockitmain']['hostname'] = 'localhost';//localhost ou 149.91.80.68
-$db['stockitmain']['username'] = 'root';//root ou lhpastry
-$db['stockitmain']['password'] = 'root'; // ou lhpastry
-$db['stockitmain']['database'] = 'stockitmain';//restaurant_tmp ou restaurant_test
-$db['stockitmain']['dbdriver'] = 'mysqli';
-$db['stockitmain']['dbprefix'] = '';
-$db['stockitmain']['pconnect'] = TRUE;
-$db['stockitmain']['db_debug'] = TRUE;
-$db['stockitmain']['cache_on'] = FALSE;
-$db['stockitmain']['cachedir'] = '';
-$db['stockitmain']['char_set'] = 'utf8';
-$db['stockitmain']['dbcollat'] = 'utf8_general_ci';
-$db['stockitmain']['swap_pre'] = '';
-$db['stockitmain']['autoinit'] = TRUE;
-$db['stockitmain']['stricton'] = FALSE;
+
 
 
 /* End of file database.php */
