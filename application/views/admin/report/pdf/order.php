@@ -324,7 +324,7 @@
                         </tbody>
                     </table>
                     <?php }else if($params['pack']==='starter'){
-                        $t_salary=0;
+                        //$t_salary=0;
                         ?>
                         <table class="table1">
                             <thead>

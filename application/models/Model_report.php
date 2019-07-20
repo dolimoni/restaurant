@@ -405,10 +405,8 @@ class model_report extends CI_Model
         $global['stock_history']= $stock_history;
         $global["charges"]= $global['stock_history'] + $global['purchase']['price'] + $global['repair']['price'] + $global['salary']['salary'];
 
-        if($params['pack']==="starter"){
-            $global['salary']= 0;
+       $global['salary']= 0;
             $global["charges"]= $global['stock_history'] + $global['purchase']['price'] + $global['repair']['price'] + $global['salary']['salary'];
-        }
 
         return $global;
     }
