@@ -187,9 +187,9 @@
                 //var quantity = parseFloat(row.find('input[name="quantity"]').val().replace(',', '.'));
                 var unit = row.find('select[name="unit"]').val();
                 var unit_price = row.find('input[name="unit_price"]').val();
-                var weightByUnit = row.find('input[name="weightByUnit"]').val();
-                var daily_quantity = row.find('input[name="daily_quantity"]').val();
-                var min_quantity = row.find('input[name="min_quantity"]').val();
+                var weightByUnit = 0;
+                var daily_quantity = 0;
+                var min_quantity =0;
                 var provider = row.find('select[name=provider]').val();
                 var product1 = {'name': name, 'quantity': 0, 'unit': unit, 'unit_price': unit_price,'weightByUnit': weightByUnit,'provider': provider, 'min_quantity': min_quantity, 'daily_quantity': daily_quantity,'status':'active'};
                if(name!==""){

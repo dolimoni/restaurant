@@ -84,7 +84,7 @@
                                 <td><?php echo $product['unit']; ?></td>
                                 <td><?php echo $product['unit_price']; ?></td>
                                 <td><?php echo $product['sitting_money']; ?></td>
-                                <td><?php echo number_format($product['sitting_money'] / $sittingMoney * 100, 2); ?>%</td>
+                                <td>0%</td>
                                 <td>
                                     <?php if($params["acl_page"]["acl_write"] or $this->session->userdata('type') === "admin") :?>
                                     <a href=" <?php echo base_url('admin/product/edit/'. $product['product']); ?>" class="btn btn-primary btn-xs"><i class="fa fa-pencil"></i></a>

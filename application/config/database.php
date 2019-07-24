@@ -50,7 +50,7 @@ $active_record = TRUE;
 
 $db['default']['hostname'] = 'localhost';
 $db['default']['username'] = 'root';
-$db['default']['password'] = 'root';
+$db['default']['password'] = '';
 $db['default']['database'] = 'restaurant';
 $db['default']['dbdriver'] = 'mysqli';
 $db['default']['dbprefix'] = '';
@@ -67,7 +67,7 @@ $db['default']['stricton'] = FALSE;
 
 $db['remote_2']['hostname'] = 'localhost';
 $db['remote_2']['username'] = 'root';
-$db['remote_2']['password'] = 'root';
+$db['remote_2']['password'] = '';
 $db['remote_2']['database'] = 'restaurant';
 $db['remote_2']['dbdriver'] = 'mysqli';
 $db['remote_2']['dbprefix'] = '';
@@ -84,7 +84,7 @@ $db['remote_2']['stricton'] = FALSE;
 
 $db['stockitmain']['hostname'] = 'localhost';//localhost ou 149.91.80.68
 $db['stockitmain']['username'] = 'root';//root ou lhpastry
-$db['stockitmain']['password'] = 'root'; // ou lhpastry
+$db['stockitmain']['password'] = ''; // ou lhpastry
 $db['stockitmain']['database'] = 'stockitmain';//restaurant_tmp ou restaurant_test
 $db['stockitmain']['dbdriver'] = 'mysqli';
 $db['stockitmain']['dbprefix'] = '';
