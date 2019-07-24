@@ -90,7 +90,7 @@ class model_budget extends CI_Model {
         $this->db->where('id', $id);
         $db_purchase=$this->db->get("purchase")->row_array();
         if($db_purchase["paid"]==="false" and $data["paid"]==="true"){
-            $data["paymentDate"]=date("Y-m-d H-i-s");
+            $data["paymentDate"]=$data['paymentDate'];
         }
         $this->db->where('id',$id);
         $this->db->update('purchase', $data);

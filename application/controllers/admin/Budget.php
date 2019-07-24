@@ -106,7 +106,7 @@ class Budget extends BaseController {
            $tel = $this->input->post('tel');
            $comment = $this->input->post('comment');
            $paid = $this->input->post('paid');
-           $paymentDate=date("Y-m-d H-m-s");
+           $paymentDate=$this->input->post('paymentDate');
 
            $purchase = array(
                'article' => $article,

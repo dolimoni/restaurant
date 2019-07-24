@@ -88,6 +88,12 @@
                                 <option value="true"><?= lang('paid'); ?></option>
                             </select>
                         </div>
+
+                        <div class="col-md-4 col-sm-6 col-xs-12">
+                            <br>
+                            <label for="paiementDate">Date :</label>
+                            <?php include('include/calender.php'); ?>
+                        </div>
                     </div>
                     <br/>
 
@@ -159,6 +165,11 @@
                                 <option value="true"><?= lang('paid'); ?></option>
                             </select>
                         </div>
+                        <div class="col-md-4 col-sm-6 col-xs-12">
+                            <br>
+                            <label for="paiementDate">Date :</label>
+                            <?php include('include/calender2.php'); ?>
+                        </div>
                     </div>
                     <br/>
 
@@ -178,6 +189,7 @@
                                cellspacing="0" width="100%">
                             <thead>
                             <tr>
+                                <th>Numéro</th>
                                 <th><?= lang("article"); ?></th>
                                 <th><?= lang("quantity"); ?></th>
                                 <th><?= lang("price"); ?></th>
@@ -192,6 +204,7 @@
                             </thead>
                             <tfoot>
                             <tr>
+                                <th>Numéro</th>
                                 <th><?= lang("article"); ?></th>
                                 <th><?= lang("quantity"); ?></th>
                                 <th><?= lang("price"); ?></th>
@@ -214,6 +227,7 @@
                                 }
                                 ?>
                                 <tr data-id="<?php echo $purchase["id"]; ?>">
+                                    <td><?php echo $purchase['id']; ?></td>
                                     <td data-article="<?php echo $purchase['article']; ?>"><?php echo $purchase['article']; ?></td>
                                     <td data-quantity="<?php echo $purchase['quantity']; ?>"><?php echo $purchase['quantity']; ?></td>
                                     <td data-price="<?php echo $purchase['price']; ?>"><?php echo $purchase['price']; ?>
@@ -224,7 +238,7 @@
                                     <td data-comment="<?php echo $purchase['comment']; ?>"><?php echo $purchase['comment']; ?></td>
                                     <td data-paid="<?php echo $purchase['paid']; ?>"><?php echo $paid; ?></td>
                                     <td><?php echo $purchase['created_at']; ?></td>
-                                    <td><?php echo $purchase['paymentDate']; ?></td>
+                                    <td data-paymentDate="<?php echo $purchase['paymentDate']; ?>"><?php echo $purchase['paymentDate']; ?></td>
                                     <td>
                                         <button class="btn btn-info btn-xs action editPurchase "
                                                 data-type="edit"><span
@@ -307,7 +321,7 @@
         var handleDataTableButtons = function () {
             if ($("#datatable-purchase").length) {
                 $("#datatable-purchase").DataTable({
-                    aaSorting: [[7, 'desc']],
+                    aaSorting: [[0, 'desc']],
                     responsive: true,
                     "language": {
                         "url": "<?php echo base_url("assets/vendors/datatables.net/French.json"); ?>"
@@ -334,9 +348,38 @@
 <script>
 
     $(document).ready(function () {
+
+
+        $('#single_c4').daterangepicker({
+            singleDatePicker: true,
+            singleClasses: "picker_3",
+            locale: {
+                format: 'DD/MM/YYYY'
+            }
+        }, function(start, end, label) {
+            console.log(start.toISOString(), end.toISOString(), label);
+        });
+
+
+        $('#single_c5').daterangepicker({
+            singleDatePicker: true,
+            singleClasses: "picker_3",
+            locale: {
+                format: 'DD/MM/YYYY'
+            }
+        }, function(start, end, label) {
+            console.log(start.toISOString(), end.toISOString(), label);
+        });
+
+
         $('#addPurchaseForm').on('submit', function (e) {
             e.preventDefault();
             var formData = new FormData(this);
+
+            var paymentDate = $('#single_c4').val();
+            paymentDate=convertDate(paymentDate,'/','-',1);
+            formData.append('paymentDate',paymentDate);
+
             $('#loading').show();
             $.ajax({
                 type: 'POST',
@@ -376,6 +419,9 @@
             e.preventDefault();
             var validForm = true;
 
+            var paymentDate = $('#single_c5').val();
+            paymentDate=convertDate(paymentDate,'/','-',1);
+
             var purchase = {
                 'article': $("#editPurchaseForm input[name='articleEdit']").val(),
                 'quantity': $("#editPurchaseForm input[name='quantityEdit']").val(),
@@ -384,6 +430,7 @@
                 'tel': $("#editPurchaseForm input[name='telEdit']").val(),
                 'comment': $("#editPurchaseForm input[name='commentEdit']").val(),
                 'paid': $("#editPurchaseForm select[name='paid']").val(),
+                'paymentDate': paymentDate,
             }
             if (validForm) {
                 $('#loading').show();
@@ -446,6 +493,7 @@
             $('#editPurchase input[name="telEdit"]').val(row.find("[data-tel]").attr('data-tel'));
             $('#editPurchase input[name="commentEdit"]').val(row.find("[data-comment]").attr('data-comment'));
             $('#editPurchase select[name="paid"]').val(row.find("[data-paid]").attr('data-paid'));
+            $('#single_c5').val(row.find("[data-paymentDate]").attr('data-paymentDate'));
             $('#editPurchase input[name="id"]').val(l_id);
         }
 

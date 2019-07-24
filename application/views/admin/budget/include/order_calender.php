@@ -178,17 +178,3 @@
         </div>
     </div>
 </div>
-
-<fieldset>
-    <div class="control-group">
-        <div class="controls">
-            <div class="col-md-11 xdisplay_inputx form-group has-feedback">
-                <input type="text" class="form-control has-feedback-left" id="single_c4" placeholder="Date du paiement"
-                       aria-describedby="inputSuccess2Status3">
-                <span class="fa fa-calendar-o form-control-feedback left" aria-hidden="true"></span>
-                <span id="inputSuccess2Status3" class="sr-only">(success)</span>
-                <input type="hidden" name="paiementDate">
-            </div>
-        </div>
-    </div>
-</fieldset>
