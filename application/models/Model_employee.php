@@ -15,6 +15,12 @@ class model_employee extends CI_Model {
 	public function deleteEmployee($employee_id){
         $this->db->where('id', $employee_id);
         $this->db->delete('employee');
+
+        $this->db->where('employee', $employee_id);
+        $this->db->delete('employee_event');
+
+        $this->db->where('employee', $employee_id);
+        $this->db->delete('salary');
     }
     public function add($worker)
     {

@@ -242,7 +242,9 @@
                         </table>
                     <?php } ?>
 
-                    <?php if(count($employees_advance) and $params['pack']==="pro"){ ?>
+                    <?php
+
+                     if(count($employees_advances) ){ ?>
                         <div style="margin-top:30px 0px;"><?= lang('employees') ?> : <?= lang('advances') ?></div>
                         <table class="table1">
                             <thead>
@@ -267,7 +269,7 @@
                         </table>
                     <?php } ?>
 
-                    <?php if(count($salaries) and $params['pack']==="pro"){ ?>
+                    <?php if(count($salaries)){ ?>
                         <div style="margin-top:30px 0px;"><?= lang('employees') ?> : <?= lang('salaries') ?></div>
                         <table class="table1">
                             <thead>
@@ -302,36 +304,14 @@
 
                     <div style="margin-top:30px 0px;"><?= lang('total') ?></div>
 
-                    <?php if($params['pack']==='pro'){ ?>
-                    <table class="table1">
-                        <thead>
-                        <tr>
-                            <th><?= lang('products_order') ?></th>
-                            <th><?= lang('various') ?></th>
-                            <th><?= lang('maintenance') ?></th>
-                            <th><?= lang('salary') ?></th>
-                            <th><?= lang('total') ?></th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr>
-                            <td><?php echo $orders+$advances; ?></td>
-                            <td><?php echo $divers; ?></td>
-                            <td><?php echo $maintenance; ?></td>
-                            <td><?php echo $t_salary; ?></td>
-                            <td><?php echo $orders+$advances+$divers+$maintenance+$t_salary; ?></td>
-                        </tr>
-                        </tbody>
-                    </table>
-                    <?php }else if($params['pack']==='starter'){
-                        //$t_salary=0;
-                        ?>
+                   
                         <table class="table1">
                             <thead>
                             <tr>
                                 <th><?= lang('products_order') ?></th>
                                 <th><?= lang('various') ?></th>
                                 <th><?= lang('maintenance') ?></th>
+                                <th>Salaire</th>
                                 <th><?= lang('total') ?></th>
                             </tr>
                             </thead>
@@ -340,11 +320,12 @@
                                 <td><?php echo $orders+$advances; ?></td>
                                 <td><?php echo $divers; ?></td>
                                 <td><?php echo $maintenance; ?></td>
+                                 <td><?php echo $t_salary+$advances; ?></td>
                                 <td><?php echo $orders+$advances+$divers+$maintenance+$t_salary; ?></td>
                             </tr>
                             </tbody>
                         </table>
-                    <?php } ?>
+                    
                     <!--<table class="table2 text-center" >
                         <tr>
                             <td colspan="4" class="text-right">SOUS TOTAL</td>

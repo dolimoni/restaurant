@@ -12,7 +12,7 @@ function newOrder(event) {
         var unit = row.find('select[name="product"]').attr('data-unit');
         var pack = row.find('select[name="product"]').attr('data-pack-order');
         var piecesByPack = row.find('select[name="product"]').attr('data-piecesByPack-order');
-        var storage_area = $("#storage_area").val();
+        var storage_area = 0;
         //var idQuantity = row.find('select[name="product"]').attr('data-id-quantity');
         var unit_price = parseFloat(row.find('input[name="unit_price"]').val().replace(',', '.'));
         console.log(id, quantity, unit_price);
