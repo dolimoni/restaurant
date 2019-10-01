@@ -132,7 +132,7 @@ class Report extends BaseController
         try {
             $startDate = $this->input->post('startDate');
             $endDate = $this->input->post('endDate');
-            $report = $this->model_report->global_report_detail($startDate, $endDate);
+            $report = $this->model_report->global_report_detail($startDate, $endDate,false);
             $report["startDate"]= date('d-m-Y', strtotime($startDate));
             $report["endDate"]= date('d-m-Y', strtotime($endDate));
             $output = $this->createPDF($report,"global");

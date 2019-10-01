@@ -444,7 +444,7 @@ class model_report extends CI_Model
 
 
     //SHOULD BE UPDATED WHEN GLOBAL_REPORT FUNCTION IS CHANGED
-    public function global_report_detail($startDate, $endDate){
+    public function global_report_detail($startDate, $endDate,$limit=true){
         $this->db->select('o.*,date(o.paymentDate) paymentDate,p.name,pv.name as pv_name,o.paid,o.status,date(o.orderDate) as date_commande,od.quantity,od_price as unit_price');
         $this->db->select('((od_price*od.quantity)*(o.tva/100+1)) as total');
         $this->db->from('order o');
@@ -540,7 +540,7 @@ class model_report extends CI_Model
         $orders_advances=$this->db->get()->result_array();
 
 
-        $global["sales_history"]= $this->sales_history($startDate, $endDate);
+        $global["sales_history"]= $this->sales_history($startDate, $endDate, $limit);
         $global["charges_history"]= $this->getChargesHistory($startDate, $endDate);
         $global["sales_charges_history"]= $this->mergeSalesAndCharges($global["sales_history"], $global["charges_history"]);
         $global['stocks_history_order'] = $stocks_history_order;
@@ -585,7 +585,7 @@ class model_report extends CI_Model
         $merge_sort=$this->model_util->sortDateBreak($response, "report_date");
         return $merge_sort;
     }
-    public function sales_history($startDate=null, $endDate=null){
+    public function sales_history($startDate=null, $endDate=null,$limit=true){
         //Sales history
         $this->db->select('report_date');
         $this->db->select('sum(c.total) as s_amount');
@@ -597,7 +597,9 @@ class model_report extends CI_Model
         }
         $this->db->group_by('report_date');
         $this->db->order_by('report_date', "desc");
-        $this->db->limit(20);
+        if($limit){
+            $this->db->limit(20);
+        }
         $sales_history = $this->db->get()->result_array();//Sales history
         $sales_history = array_reverse($sales_history);
         return $sales_history;
