@@ -103,13 +103,13 @@
                         </thead>
                         <tbody>
                         <?php foreach ($meals_sale as $meal ) {
-                            $quantity+= number_format((float)$meal['s_quantity'], 2, '.', '');
-                            $amount+= number_format((float)$meal['s_amount'], 2, '.', '');
+                            $quantity+= number_format((float)$meal['s_quantity'], 0, '.', '');
+                            $amount+= number_format((float)$meal['s_total'], 1, '.', '');
                         ?>
                         <tr>
                             <td><?php echo $meal['name']; ?></td>
-                            <td><?php echo number_format((float)$meal['s_quantity'], 2, '.', ''); ?></td>
-                            <td><?php echo number_format((float)$meal['s_amount'], 2, '.', ''); ?></td>
+                            <td><?php echo number_format((float)$meal['s_quantity'], 1, '.', ''); ?></td>
+                            <td><?php echo number_format((float)$meal['s_total'], 1, '.', ''); ?></td>
                         </tr>
                         <?php } ?>
                         <tr style="border-top: solid 1px">

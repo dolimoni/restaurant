@@ -116,6 +116,7 @@ class Report extends BaseController
             $report = $this->model_report->global_report_detail($startDate, $endDate);
             $report["startDate"]= date('d-m-Y', strtotime($startDate));
             $report["endDate"]= date('d-m-Y', strtotime($endDate));
+            //var_dump($report);die();
             $output = $this->createPDF($report,"order");
             $this->output
                 ->set_content_type("application/json")
@@ -155,6 +156,7 @@ class Report extends BaseController
             $report = $this->model_report->global_report_detail($startDate, $endDate);
             $report["startDate"]= date('d-m-Y', strtotime($startDate));
             $report["endDate"]= date('d-m-Y', strtotime($endDate));
+            //var_dump($report);die();
             $output = $this->createPDF($report,"sale");
             $this->output
                 ->set_content_type("application/json")

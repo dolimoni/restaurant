@@ -405,7 +405,7 @@ class model_report extends CI_Model
         $global['stock_history']= $stock_history;
         $global["charges"]= $global['stock_history'] + $global['purchase']['price'] + $global['repair']['price'] + $global['salary']['salary'];
 
-       $global['salary']= 0;
+       //$global['salary']= 0;
             $global["charges"]= $global['stock_history'] + $global['purchase']['price'] + $global['repair']['price'] + $global['salary']['salary'];
 
         return $global;
@@ -431,6 +431,8 @@ class model_report extends CI_Model
         $this->db->where('paid', "false");
         $this->db->like('remarque', 'avance');
         $advancesData= $this->db->get()->result_array();
+
+
         $avancesAmount = 0;
         foreach ($advancesData as $advance) {
             $avanceAmount = explode(' ', $advance['remarque']);
@@ -493,14 +495,16 @@ class model_report extends CI_Model
         $this->db->select('*,m.id as m_id');
         $this->db->select('sum(c.quantity) as s_quantity');
         $this->db->select('sum(c.quantity)*c.amount as s_amount');
+        $this->db->select('sum(c.total) as s_total');
         $this->db->from('meal m');
         $this->db->join('consumption c', 'm.id = c.meal');
         $this->db->where('c.report_date >=', $startDate);
         $this->db->where('c.report_date <=', $endDate);
         $this->db->where('c.type', 'sale');
-        $this->db->where('c.amount>', '0');
+        //$this->db->where('c.amount>', '0');
         $this->db->group_by('c.meal');
         $meals_sale = $this->db->get()->result_array();
+        
 
         $this->db->select('*,s.salary as s_salary');
         $this->db->from('salary s');
@@ -551,6 +555,7 @@ class model_report extends CI_Model
         $global['employees_advances'] = $advancesData;
         $global['salaries'] = $salaries;
         $global['orders_advances'] = $orders_advances;
+        //var_dump($global);die();
         return $global;
 
     }
